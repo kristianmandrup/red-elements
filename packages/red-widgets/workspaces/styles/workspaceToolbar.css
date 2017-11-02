@@ -1,0 +1,188 @@
+/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+.button-group-vertical {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.button-group:not(:last-child) {
+  margin-right: 10px;
+}
+
+#workspace-toolbar {
+  display: none;
+  color: #888;
+  font-size: 12px;
+  line-height: 18px;
+  position: absolute;
+  top: 35px;
+  left: 0;
+  right: 0;
+  padding: 7px;
+  height: 40px;
+  box-sizing: border-box;
+  background: #fff;
+  border-bottom: 1px solid #dddddd;
+  white-space: nowrap;
+  transition: right 0.2s ease;
+  overflow: hidden;
+}
+
+#workspace-toolbar .button {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  box-sizing: border-box;
+  display: inline-block;
+  color: #888 !important;
+  background: #fff;
+  border: 1px solid #ccc;
+  text-align: center;
+  margin: 0;
+  text-decoration: none;
+  cursor: pointer;
+  margin-right: 10px;
+  padding: 2px 8px;
+}
+
+#workspace-toolbar .button.disabled {
+  cursor: default;
+  color: #ccc !important;
+}
+
+#workspace-toolbar .button:hover, #workspace-toolbar .button:focus {
+  text-decoration: none;
+}
+
+#workspace-toolbar .button:not(.disabled):hover {
+  color: #666 !important;
+  background: #ddd;
+}
+
+#workspace-toolbar .button:not(.disabled):focus {
+  color: #999 !important;
+}
+
+#workspace-toolbar .button:not(.disabled):active {
+  color: #666 !important;
+  background: #efefef;
+  text-decoration: none;
+}
+
+#workspace-toolbar .button.selected:not(.disabled) {
+  color: #AAA !important;
+  background: #efefef;
+}
+
+.button-group #workspace-toolbar .button:not(:first-child) {
+  border-left: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.button-group #workspace-toolbar .button:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.button-group-vertical #workspace-toolbar .button {
+  display: block;
+  min-width: 22px;
+}
+
+.button-group-vertical #workspace-toolbar .button:not(:first-child) {
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.button-group-vertical #workspace-toolbar .button:not(:last-child) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#workspace-toolbar .button:focus {
+  outline: 1px solid rgba(85, 150, 230, 0.2);
+}
+
+#workspace-toolbar .button-group {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#workspace-toolbar .button-group .button:first-child {
+  margin-right: 0;
+}
+
+#workspace-toolbar .button-group:not(.spinner-group) .button:not(:first-child) {
+  border-left: none;
+}
+
+#workspace-toolbar .button-group .button.active {
+  background: #efefef;
+  cursor: default;
+}
+
+#workspace-toolbar .spinner-value {
+  width: 25px;
+  color: #888;
+  padding: 0 5px;
+  display: inline-block;
+  text-align: center;
+  border-top: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
+  margin: 0;
+  height: 24px;
+  font-size: 12px;
+  background: #f9f9f9;
+  line-height: 22px;
+  box-sizing: border-box;
+}

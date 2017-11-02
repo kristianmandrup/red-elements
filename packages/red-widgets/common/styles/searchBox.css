@@ -1,0 +1,113 @@
+/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+.button-group-vertical {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.button-group:not(:last-child) {
+  margin-right: 10px;
+}
+
+.red-ui-searchBox-container {
+  position: relative;
+}
+
+.red-ui-searchBox-container i {
+  font-size: 10px;
+  color: #666;
+}
+
+.red-ui-searchBox-container i.fa-search {
+  position: absolute;
+  pointer-events: none;
+  left: 8px;
+  top: 9px;
+}
+
+.red-ui-searchBox-container i.fa-times {
+  position: absolute;
+  right: 5px;
+  top: 9px;
+}
+
+.red-ui-searchBox-container input {
+  border-radius: 0;
+  border: none;
+  width: 100%;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  padding: 3px 17px 3px 22px;
+  margin: 0px;
+  height: 30px;
+  box-sizing: border-box;
+}
+
+.red-ui-searchBox-container input:focus {
+  border: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+.red-ui-searchBox-container a {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  display: none;
+}
+
+.red-ui-searchBox-container .red-ui-searchBox-resultCount {
+  position: absolute;
+  right: 18px;
+  top: 4px;
+  background: #eee;
+  color: #666;
+  padding: 1px 8px;
+  font-size: 9px;
+  border-radius: 4px;
+}

@@ -1,0 +1,235 @@
+/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+.button-group-vertical {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.button-group:not(:last-child) {
+  margin-right: 10px;
+}
+
+.red-ui-typedInput-container {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 34px;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  vertical-align: middle;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+.red-ui-typedInput-container .red-ui-typedInput-input {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  outline: red;
+}
+
+.red-ui-typedInput-container input {
+  width: 100%;
+  padding: 0 0 0 3px;
+  margin: 0;
+  height: 32px;
+  border: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: none;
+  vertical-align: middle;
+}
+
+.red-ui-typedInput-container.red-ui-typedInput-focus:not(.input-error) {
+  border-color: rgba(85, 150, 230, 0.8) !important;
+}
+
+.red-ui-typedInput-container button {
+  text-align: left;
+  border: none;
+  position: absolute;
+  box-sizing: border-box;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  padding: 0 1px 0 5px;
+  display: inline-block;
+  background: #efefef;
+  height: 32px;
+  line-height: 32px;
+  vertical-align: middle;
+  color: #555;
+}
+
+.red-ui-typedInput-container button i {
+  position: relative;
+  top: -3px;
+  margin-right: 4px;
+  margin-top: 1px;
+  vertical-align: middle;
+}
+
+.red-ui-typedInput-container button i.fa-ellipsis-h {
+  top: -1px;
+}
+
+.red-ui-typedInput-container button.disabled {
+  cursor: default;
+}
+
+.red-ui-typedInput-container button.disabled i {
+  color: #bbb;
+}
+
+.red-ui-typedInput-container button span {
+  display: inline-block;
+  height: 100%;
+  padding: 0 1px 0 5px;
+}
+
+.red-ui-typedInput-container button:not(.disabled):hover {
+  text-decoration: none;
+  background: #ddd;
+}
+
+.red-ui-typedInput-container button:focus {
+  text-decoration: none;
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgba(85, 150, 230, 0.8);
+}
+
+.red-ui-typedInput-container button:not(.disabled):active {
+  background: #ddd;
+  text-decoration: none;
+}
+
+.red-ui-typedInput-container button.red-ui-typedInput-full-width {
+  width: 100%;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.red-ui-typedInput-container button.red-ui-typedInput-option-expand {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  right: 0;
+}
+
+.red-ui-typedInput-container button.red-ui-typedInput-option-trigger {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  padding: 0 0 0 0;
+  position: absolute;
+  width: calc( 100%);
+}
+
+.red-ui-typedInput-container button.red-ui-typedInput-option-trigger i {
+  position: absolute;
+  right: 4px;
+  top: 7px;
+}
+
+.red-ui-typedInput-container button.red-ui-typedInput-option-trigger .red-ui-typedInput-option-label {
+  background: #fff;
+  position: absolute;
+  left: 0;
+  right: 23px;
+  top: 0;
+  padding: 0 5px 0 5px;
+}
+
+.red-ui-typedInput-container button.red-ui-typedInput-option-trigger .red-ui-typedInput-option-caret {
+  top: 0;
+  position: absolute;
+  right: 0;
+  width: 17px;
+}
+
+.red-ui-typedInput-container button.red-ui-typedInput-option-trigger:focus {
+  box-shadow: none;
+}
+
+.red-ui-typedInput-container button.red-ui-typedInput-option-trigger:focus .red-ui-typedInput-option-caret {
+  box-shadow: inset 0 0 0 1px rgba(85, 150, 230, 0.8);
+}
+
+.red-ui-typedInput-options {
+  border: 1px solid #dddddd;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  border: 1px solid #bbbbbb;
+  background: #fff;
+  z-index: 2000;
+}
+
+.red-ui-typedInput-options a {
+  padding: 6px 18px 6px 6px;
+  display: block;
+  border-bottom: 1px solid #dddddd;
+  color: #333;
+}
+
+.red-ui-typedInput-options a:hover {
+  text-decoration: none;
+  background: #ddd;
+}
+
+.red-ui-typedInput-options a:focus {
+  text-decoration: none;
+  background: #ddd;
+  outline: none;
+}
+
+.red-ui-typedInput-options a:active {
+  text-decoration: none;
+  background: #ddd;
+}

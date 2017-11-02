@@ -1,0 +1,20 @@
+{
+  "name": "@tecla5/red-ui-shared",
+  "version": "0.0.0",
+  "description": "shared ui assets and helpers",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "ava"
+  },
+  "keywords": [
+    "node-red"
+  ],
+  "author": "Kristian Mandrup",
+  "license": "ISC",
+  "dependencies": {
+    "i18next": "^9.0.1"
+  }
+}
