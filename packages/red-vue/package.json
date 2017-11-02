@@ -1,8 +1,8 @@
 {
   "private": true,
-  "name": "@tecla5/red-ui-app",
-  "productName": "red-ui-app",
-  "description": "node-red full app",
+  "name": "@tecla5/red-vue",
+  "productName": "red-vue",
+  "description": "node-red Vue component and app to showcase",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
@@ -53,7 +53,7 @@
     "@stencil/router": "^0.0.17"
   },
   "devDependencies": {
-    "ava": "^0.19.1",
+    "ava": "^0.23.0",
     "browser-env": "^2.0.31",
     "cross-env": "^5.0.0",
     "node-sass": "^4.5.3",

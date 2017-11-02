@@ -1,0 +1,19 @@
+{
+  "name": "@tecla5/red-vue",
+  "productName": "red-vue",
+  "private": true,
+  "description": "node-red jQuery widgets, controller logic and styles",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "test": "ava"
+  },
+  "dependencies": {
+    "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "ava": "^0.23.0",
+    "browser-env": "^2.0.31",
+    "cross-env": "^5.0.0"
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "name": "@tecla5/red-elements",
-  "productName": "red-elements",
-  "description": "node-red UI custom elements",
+  "name": "@tecla5/red-stencil",
+  "productName": "red-stencil",
+  "description": "node-red UI custom elements using StencilJS",
   "private": true,
   "version": "0.0.1",
   "files": [

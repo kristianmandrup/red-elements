@@ -1,5 +1,5 @@
 {
-  "name": "@tecla5/red-ui-shared",
+  "name": "@tecla5/red-shared",
   "version": "0.0.0",
   "description": "shared ui assets and helpers",
   "main": "index.js",

@@ -1,14 +1,25 @@
 # Red UI
 
-Node-red UI for Vue 2.x.
+Node-red UI using Custom Elements (possibly wrapped for Vue 2+)
 
-This project contains packages for the (main) components used in the [node-red](nodered.org/) [editor](https://github.com/node-red/node-red/tree/master/editor), originally extracted and partly refactore in [red-editor](https://github.com/tecla5/red-editor).
+This project contains packages for the (main) components used in the [node-red](nodered.org/) [editor](https://github.com/node-red/node-red/tree/master/editor), originally extracted and partly refactored in [red-editor](https://github.com/tecla5/red-editor).
 
-Each package is a [Vue 2](vuejs.org/) project created via [create-vue-app](https://www.npmjs.com/package/create-vue-app) CLI.
+We aim to repackage the original editor components as native Custom Elements, which can be used and reused across any platform or framework.
+
+We will primarily be using StencilJS, so that it works nicely with Ionic 4 (coming very soon), which wil deliver a full cross-platform experience, using the native web standards as the platform, including Cordoba, PWA, Electron etc.
+
+One "ring" to rule them all!!!
 
 ## Packages
 
 This [lerna](https://lernajs.io/) project contains the following packages:
+
+- `_red-shared` shared assets, styles and utility scripts
+- `red-stencil` stencil app with stencil custom elements (native browser elements)
+- `red-vue` Vue components, wrapping custom elements
+- `red-widgets` original jQuery elements/widgets from node red
+
+### components/elements
 
 - `red-ui-app` Full application
 - `red-ui-canvas` Canvas for flows drawing, using [D3](https://d3js.org/)
@@ -25,9 +36,6 @@ This [lerna](https://lernajs.io/) project contains the following packages:
 - `red-ui-sidebar` Sidebar with tabs for extra info and management
 - `red-ui-tray` Slide-over modal tray panel (for Node Editor etc.)
 - `red-ui-workspaces` Manage workspaces (ie. projects)
-
-Each package is a separate node module and can be published as such.
-Lerna is used to manage the module workflow, link package dependencies etc.
 
 ## Tracking development
 
@@ -48,7 +56,7 @@ Components should first be configured to work as a "blank slate", simply as a di
 </div>
 ```
 
-Then assemble the components, bottom up and assemble the top level components in the `red-ui-app` package for a full static page.
+Then assemble the components, bottom up and assemble the top level components in the `red-ui-app` module for a full static page.
 
 ## Modern Custom Elements (ie. Web components)
 
@@ -77,25 +85,9 @@ We will manage and track development directly on github, using [ZenHub](https://
 
 Please use a test driven approach, see the `/test` folder.
 
-We aim to use [NightmareJS](http://www.nightmarejs.org/) for End-to-End acceptance testing (simulated browser user testing.
+We aim to use [NightmareJS](http://www.nightmarejs.org/) (or Jest?) for End-to-End acceptance testing (ie. simulated browser user testing.
 
-## Individual Package structure
-
-Each package contains a selfish-contained Vue application project with a Poi configuration.
-
-The Vue app should be used to test out (Vue) components for the package as they are developed.
-
-- `src` all source files
-- `test` all test files (using `ava` for unit tests and `nightmarejs` for E2E tests)
-- `static` any static assets such as images etc
-
-### src
-
-TOOO: possibly move `static` folder here
-
-- `components` all component files
-
-#### components
+#### Vue components
 
 - `polyfills.js` ES6 browser polyfills
 - `index.js` Vue app bootstrap file (possibly)
@@ -115,10 +107,9 @@ Same goes for the page template used, (ie. `template: path.join(__dirname, 'inde
 
 The controllers are self contained and control all their internal state and view updates using jQuery "magic" etc. Don't touch (too much!)
 
-- `vue` vue components (wrapping lit-elements, ie. custom elements)
-- `custom-elements` custom elements, using `lit-html` or `stencilJS`
 - `styles` CSS and Sass styles used by components
 - `util` various small/useful utility functions
+- `test` unit and/or e2e tests
 
 ## StencilJS
 
@@ -160,9 +151,7 @@ A lerna package can been configured with dependencies such as demonstrated in th
 ```txt
   "dependencies": {
     ...
-    "@tecla5/red-ui-sidebar": "x",
-    "@tecla5/red-ui-canvas": "x",
-    "@tecla5/red-ui-palette": "x"
+    "@tecla5/red-stencil": "x",
     ...
   }
 ```
