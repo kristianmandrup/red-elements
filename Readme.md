@@ -1,5 +1,7 @@
 # Red UI
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/kristianmandrup/red-elements.svg)](https://greenkeeper.io/)
+
 Node-red UI for Vue 2.x.
 
 This project contains packages for the (main) components used in the [node-red](nodered.org/) [editor](https://github.com/node-red/node-red/tree/master/editor), originally extracted and partly refactore in [red-editor](https://github.com/tecla5/red-editor).
