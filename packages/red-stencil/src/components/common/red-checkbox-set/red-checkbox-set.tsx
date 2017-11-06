@@ -1,8 +1,6 @@
 import { Component, Prop, Element } from '@stencil/core'
 import { controllers } from '../controllers'
-import { createjQueryWidget } from "./util"
-
-
+import { createjQueryWidget } from "../_util"
 
 @Component({
   tag: 'red-checkbox-set',
@@ -16,7 +14,7 @@ export class RedCheckboxSet {
     controllers.CheckboxSet(RED)
 
     // now turn this element into a CheckboxSet jQuery widget
-    createjQueryWidget(this, this.me, 'red-ui-checkboxSet');
+    createjQueryWidget(this.me);
   }
 
   // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
