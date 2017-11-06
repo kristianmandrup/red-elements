@@ -19,19 +19,19 @@ import {
 }
 from './tabs'
 import {
-  factory as CheckboxSet
+  default as CheckboxSet
 }
 from './checkboxSet'
 import {
-  factory as TypedInput
+  default as TypedInput
 }
 from './typed-input'
 import {
-  factory as EditableList
+  default as EditableList
 }
 from './editable-list'
 import {
-  factory as SearchBox
+  default as SearchBox
 }
 from './search-box'
 
