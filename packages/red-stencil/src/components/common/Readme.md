@@ -4,8 +4,12 @@ The Common components are the main building blocks used for other higher level c
 
 ## Components
 
-- `CheckBoxSet`
-- `EditableList`
+The name of a custom element must be of the form `\w+-(\w+-)*` ie, a word, then a dash, then alphanumeric. This is to avoid clashing with native elements which are all one word element.
+
+A custom element is defined by a Javascript class and registered with a tag name, by convention the dasherized class name.
+
+- `RedCheckBoxSet` ie. `red-checkbox-set` custom element
+- `RedEditableList` ie. `red-editable-list` custom element
 - ...
 
 ## TODO
