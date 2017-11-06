@@ -1,14 +1,14 @@
 import {
-  View
+  Search
 }
-from './view'
+from './editor'
 
 export const controllers = {
-  View
+  Search,
 }
 
 export default controllers
 
 export {
-  View
+  Search
 }

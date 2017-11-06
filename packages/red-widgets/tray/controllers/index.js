@@ -1,14 +1,14 @@
 import {
-  View
+  Tray
 }
-from './view'
+from './sidebar'
 
 export const controllers = {
-  View
+  Tray
 }
 
 export default controllers
 
 export {
-  View
+  Tray
 }

@@ -1,14 +1,14 @@
 import {
-  View
+  LibraryUI
 }
-from './view'
+from './library'
 
 export const controllers = {
-  View
+  LibraryUI
 }
 
 export default controllers
 
 export {
-  View
+  LibraryUI
 }

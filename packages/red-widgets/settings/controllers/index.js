@@ -1,14 +1,14 @@
 import {
-  View
+  UserSettings
 }
-from './view'
+from './userSettings'
 
 export const controllers = {
-  View
+  UserSettings
 }
 
 export default controllers
 
 export {
-  View
+  UserSettings
 }

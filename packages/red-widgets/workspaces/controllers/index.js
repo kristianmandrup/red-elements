@@ -1,14 +1,14 @@
 import {
-  View
+  Workspaces
 }
-from './view'
+from './workspaces'
 
 export const controllers = {
-  View
+  Workspaces
 }
 
 export default controllers
 
 export {
-  View
+  Workspaces
 }
