@@ -9,8 +9,8 @@
     "dev": "poi",
     "build": "poi build",
     "lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
-    "lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-ui-app",
-    "lerna:clean": "rm -f package.json.lock 2> /dev/null && echo y | lerna clean --scope @tecla5/red-ui-app",
+    "lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-vue",
+    "lerna:clean": "rm -f package.json.lock 2> /dev/null && echo y | lerna clean --scope @tecla5/red-vue",
     "report": "poi build --bundle-report",
     "serve": "serve dist --single",
     "test": "cross-env NODE_ENV=test ava"

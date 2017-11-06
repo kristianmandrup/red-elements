@@ -8,6 +8,8 @@
     "dist/"
   ],
   "scripts": {
+    "lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-stencil",
+    "lerna:clean": "rm -f package.json.lock 2> /dev/null && echo y | lerna clean --scope @tecla5/red-stencil",
     "build": "stencil build --prerender",
     "dev": "sd concurrent \"stencil build --dev --watch\" \"stencil-dev-server\" ",
     "serve": "stencil-dev-server",
@@ -28,14 +30,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ionic-team/stencil-app-starter.git"
+    "url": "git+https://github.com/tecla5/red-stencil.git"
   },
   "author": "Ionic Team",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ionic-team/stencil"
+    "url": "https://github.com/tecla5/red-stencil"
   },
-  "homepage": "https://github.com/ionic-team/stencil",
+  "homepage": "https://github.com/tecla5/red-stencil",
   "jest": {
     "transform": {
       "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/@stencil/core/testing/jest.preprocessor.js"
