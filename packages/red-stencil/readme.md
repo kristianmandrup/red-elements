@@ -13,15 +13,20 @@ Stencil also enables a number of key capabilities on top of Web Components, in p
 To start a new project using Stencil, clone this repo to a new directory:
 
 ```bash
-git clone https://github.com/ionic-team/stencil-starter.git my-app
-cd my-app
+git clone https://github.com/tecla5/red-elements.git red-elements
+cd packages/red-stencil
 git remote rm origin
 ```
 
-and run:
+Use lerna to resolve dependencies:
 
 ```bash
-npm install
+npm run lerna:update
+```
+
+Start the server/app
+
+```bash
 npm start
 ```
 
