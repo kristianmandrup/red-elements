@@ -1,10 +1,10 @@
 exports.config = {
-  bundles: [
-    { components: ['my-name'] }
-  ],
-  collections: [
-    { name: '@stencil/router' }
-  ]
+  bundles: [{
+    components: ['red-checkbox-set', 'red-editable-list']
+  }],
+  collections: [{
+    name: '@stencil/router'
+  }]
 };
 
 exports.devServer = {

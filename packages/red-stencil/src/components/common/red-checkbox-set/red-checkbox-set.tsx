@@ -2,10 +2,10 @@ import { Component, Prop } from '@stencil/core';
 
 
 @Component({
-  tag: 'my-name',
-  styleUrl: 'my-name.scss'
+  tag: 'red-checkbox-set',
+  styleUrl: 'red-checkbox-set.scss'
 })
-export class MyName {
+export class RedCheckboxSet {
 
   @Prop() first: string;
 

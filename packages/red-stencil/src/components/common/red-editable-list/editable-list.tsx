@@ -2,10 +2,10 @@ import { Component, Prop } from '@stencil/core';
 
 
 @Component({
-  tag: 'my-name',
-  styleUrl: 'my-name.scss'
+  tag: 'red-editable-list',
+  styleUrl: 'red-editable-list.scss'
 })
-export class MyName {
+export class RedEditableList {
 
   @Prop() first: string;
 

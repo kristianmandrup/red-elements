@@ -6,31 +6,64 @@
 
 import '@stencil/router';
 
-import { MyName as MyName } from './components/my-name/my-name';
+import { RedCheckboxSet as RedCheckboxSet } from './components/common/red-checkbox-set/red-checkbox-set';
 
-interface HTMLMyNameElement extends MyName, HTMLElement {
+interface HTMLRedCheckboxSetElement extends RedCheckboxSet, HTMLElement {
 }
-declare var HTMLMyNameElement: {
-  prototype: HTMLMyNameElement;
-  new (): HTMLMyNameElement;
+declare var HTMLRedCheckboxSetElement: {
+  prototype: HTMLRedCheckboxSetElement;
+  new (): HTMLRedCheckboxSetElement;
 };
 declare global {
   interface HTMLElementTagNameMap {
-      "my-name": HTMLMyNameElement;
+      "red-checkbox-set": HTMLRedCheckboxSetElement;
   }
   interface ElementTagNameMap {
-      "my-name": HTMLMyNameElement;
+      "red-checkbox-set": HTMLRedCheckboxSetElement;
   }
   namespace JSX {
       interface IntrinsicElements {
-          "my-name": JSXElements.MyNameAttributes;
+          "red-checkbox-set": JSXElements.RedCheckboxSetAttributes;
       }
   }
   namespace JSXElements {
-      export interface MyNameAttributes extends HTMLAttributes {
+      export interface RedCheckboxSetAttributes extends HTMLAttributes {
+          mode?: string,
+          color?: string,
         
-          first?: any,
-          last?: any
+          first?: string,
+          last?: string
+      }
+  }
+}
+
+import { RedEditableList as RedEditableList } from './components/common/red-editable-list/editable-list';
+
+interface HTMLRedEditableListElement extends RedEditableList, HTMLElement {
+}
+declare var HTMLRedEditableListElement: {
+  prototype: HTMLRedEditableListElement;
+  new (): HTMLRedEditableListElement;
+};
+declare global {
+  interface HTMLElementTagNameMap {
+      "red-editable-list": HTMLRedEditableListElement;
+  }
+  interface ElementTagNameMap {
+      "red-editable-list": HTMLRedEditableListElement;
+  }
+  namespace JSX {
+      interface IntrinsicElements {
+          "red-editable-list": JSXElements.RedEditableListAttributes;
+      }
+  }
+  namespace JSXElements {
+      export interface RedEditableListAttributes extends HTMLAttributes {
+          mode?: string,
+          color?: string,
+        
+          first?: string,
+          last?: string
       }
   }
 }
