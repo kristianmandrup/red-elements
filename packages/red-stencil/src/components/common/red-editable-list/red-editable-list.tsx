@@ -14,7 +14,7 @@ export class RedEditableList {
     controllers.EditableList(RED)
 
     // now turn this element into a CheckboxSet jQuery widget
-    createjQueryWidget(this.me);
+    createjQueryWidget(this.me, 'editableList');
   }
 
   // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
