@@ -15,7 +15,7 @@
  **/
 import {
     Context
-} from '../context'
+} from './context'
 
 export class View extends Context {
     constructor(ctx) {

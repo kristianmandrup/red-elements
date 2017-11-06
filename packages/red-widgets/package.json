@@ -1,10 +1,11 @@
 {
-  "name": "@tecla5/red-vue",
-  "productName": "red-vue",
+  "name": "@tecla5/red-widgets",
+  "productName": "red-widgets",
   "private": true,
   "description": "node-red jQuery widgets, controller logic and styles",
   "version": "0.0.1",
   "license": "MIT",
+  "main": "index.js",
   "scripts": {
     "test": "ava"
   },

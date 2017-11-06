@@ -1,20 +1,62 @@
-export {
+import {
   Menu
 }
 from './menu'
-export {
+import {
   Panel
 }
 from './panel'
-export {
+import {
   Popover
 }
 from './popover'
-export {
+import {
   Stack
 }
 from './stack'
-export {
+import {
   Tabs
 }
 from './tabs'
+import {
+  factory as CheckboxSet
+}
+from './checkboxSet'
+import {
+  factory as TypedInput
+}
+from './typed-input'
+import {
+  factory as EditableList
+}
+from './editable-list'
+import {
+  factory as SearchBox
+}
+from './search-box'
+
+export const controllers = {
+  Menu,
+  Panel,
+  Popover,
+  Stack,
+  Tabs,
+  CheckboxSet,
+  TypedInput,
+  EditableList,
+  SearchBox
+}
+
+export default controllers
+
+export {
+  Menu,
+  Panel,
+  Popover,
+  Stack,
+  Tabs,
+  CheckboxSet,
+  TypedInput,
+  EditableList,
+  SearchBox
+}
