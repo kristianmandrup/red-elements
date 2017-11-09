@@ -3,12 +3,23 @@ import {
 } from 'jquery';
 
 // used to turn a DOM element (ie. custom element root elem) into a jQuery widget
-export function createjQueryWidget(rootElem, owidgetName, ptions = {}) {
+export function createjQueryWidget(options = {}) {
+  const {
+    $el,
+    widgetName,
+    options
+  } = options
   // get the element by refName, such as by class
-  if (rootElem) {
-    console.log(rootElem)
-    $(rootElem)[widgetName](options)
-  } else {
-    console.log(`missing element: ${refName}`)
+  if (!$el) {
+    let errMsg = `missing root element: $el in options`
+    console.error(errMsg)
+    // throw new Error(errMsg)
+    return
   }
+  console.log('createjQueryWidget', {
+    $el,
+    widgetName,
+    options
+  })
+  $($el)[widgetName](options)
 }

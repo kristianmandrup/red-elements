@@ -8,21 +8,18 @@ import { createjQueryWidget } from "../_util"
 })
 export class RedPanel {
   constructor() {
-    // registers CheckboxSet as a jQuery widget on $
-    controllers.Panel()
-    // now turn this element into a CheckboxSet jQuery widget
-    createjQueryWidget(this.me);
+    controllers.Panel({
+      id: this.id
+    })
   }
 
-  // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
-  @Element() me: HTMLElement;
-
-  @Prop() first: string;
+  @Prop() id: string;
 
   render() {
     return (
-      <div>
-        Panel {this.first}
+      <div id="{this.id}">
+        <div class="panel first">first child</div>
+        <div class="panel first">second child</div>
       </div>
     );
   }
