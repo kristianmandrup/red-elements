@@ -3,10 +3,10 @@ import { controllers } from '../controllers'
 import { createjQueryWidget } from "../_util"
 
 @Component({
-  tag: 'red-pop-over',
+  tag: 'red-popover',
   // styleUrl: 'red-pop-over.scss'
 })
-export class RedPopOver {
+export class RedPopover {
   constructor() {
     // registers CheckboxSet as a jQuery widget on $
     controllers.PopOver()

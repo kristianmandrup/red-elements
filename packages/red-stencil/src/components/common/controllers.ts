@@ -1,7 +1,7 @@
 import {
   common
 }
-from '../_widgets'
+  from '../_widgets'
 
 const {
   controllers
