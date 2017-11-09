@@ -6,10 +6,8 @@ Then wrap the custom elements as Vue components and build up a Vue app, composed
 
 ## Status
 
-Currently the package [lit-html-element](https://www.npmjs.com/package/lit-html-element) has been defined as a dependency for each of the UI packages of this lerna project.
+Currently some skeleton StencilJS components have been defined for most of the original widgets/components in *red-widgets* package.
 
-Next step is to wrap the components!
+You can also see the *red-vue* package for reference (as this was the first attempt at wrapping the components)
 
-## Mocking the runtime/api
-
-Until the new api/runtime are ready for showtime, we could potentially mock the dependency...
+Please see the [StenciJS specs](https://github.com/kristianmandrup/red-elements/blob/master/packages/red-stencil/Specs.md) for a full specification and development guide with examples.
