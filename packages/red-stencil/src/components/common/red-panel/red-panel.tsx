@@ -7,7 +7,7 @@ import { createjQueryWidget } from "../_util"
   // styleUrl: 'red-panel.scss'
 })
 export class RedPanel {
-  constructor() {
+  componentDidLoad() {
     controllers.Panel({
       id: this.id
     })

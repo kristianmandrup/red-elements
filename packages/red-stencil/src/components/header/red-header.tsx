@@ -14,11 +14,6 @@ interface Action {
   // styleUrl: '../_shared/header.scss'
 })
 export class RedHeader {
-  constructor() {
-    // use Canvas as component controller
-    // new controllers.Header()
-  }
-
   // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
   @Element() me: HTMLElement;
 

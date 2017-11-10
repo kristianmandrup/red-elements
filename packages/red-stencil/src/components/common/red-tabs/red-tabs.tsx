@@ -7,9 +7,14 @@ import { createjQueryWidget } from "../_util"
   // styleUrl: 'red-tabs.scss'
 })
 export class RedTabs {
-  constructor() {
+  // TODO: move to appropriate component lifecycle method!!!
+
+  componentDidLoad() {
     // registers Tabs as a jQuery widget on $
-    controllers.Tabs()
+    controllers.Tabs({
+      id: this.id
+    })
+
     // now turn this element into a Tabs jQuery widget
     createjQueryWidget(this.me);
   }
@@ -17,12 +22,15 @@ export class RedTabs {
   // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
   @Element() me: HTMLElement;
 
-  @Prop() first: string;
+  @Prop() id: string;
 
   render() {
     return (
-      <div>
-        Tabs {this.first}
+      <div class="red-ui-tabs" id={this.id}>
+        <ul>
+          <li class="red-ui-tab">hello</li>
+          <li class="red-ui-tab">bye</li>
+        </ul>
       </div>
     );
   }

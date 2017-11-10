@@ -238,6 +238,22 @@ export class RedPanel {
 }
 ```
 
+## Lifecycle
+
+See [component lifecycle](https://stenciljs.com/docs/component-lifecycle)
+
+Where the Vue components used `mount`, we need to init the controller at a similar point in the lifecycle where the DOM is available for the controller to interact with!
+
+Most likely:
+
+```ts
+  componentDidLoad() {
+    console.log('The component has been rendered');
+  }
+```
+
+## Render
+
 Note that the TSX rendered by the `render` function will be replaced and controlled by the widget, and thus only acts as placeholder.
 
 The Panel widget might require a specific HTML element layout to configure itself. You will have to look into the Panel jQuery widget code to get an idea the specific requirements (this applies for each widget on a case-by-case basis!)
@@ -325,7 +341,9 @@ import { createjQueryWidget } from "../_util"
   // styleUrl: 'red-panel.scss'
 })
 export class RedPanel {
-  constructor() {
+
+  // only do this when component is fully loaded!!!
+  componentDidLoad() {
     // registers CheckboxSet as a jQuery widget on $
     controllers.Panel({
       // specific panel opts
