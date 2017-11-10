@@ -15,7 +15,7 @@
  **/
 import {
   jQuery
-} from './jquery';
+} from './jquery-ui'
 import {
   Validators
 } from './utils/validators'

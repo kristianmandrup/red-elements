@@ -15,7 +15,7 @@
  **/
 import {
   default as $
-} from 'jquery';
+} from 'jquery'
 
 export class Menu {
   constructor(options) {

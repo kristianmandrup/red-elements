@@ -15,7 +15,8 @@
  **/
 import {
   default as $
-} from 'jquery';
+} from 'jquery'
+
 import 'jquery-ui-dist/jquery-ui.min'
 
 export class Tabs {

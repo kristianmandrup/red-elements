@@ -16,7 +16,7 @@
 // jQuery
 import {
   jQuery
-} from './jquery';
+} from './jquery-ui'
 const log = console.log
 
 export default factory

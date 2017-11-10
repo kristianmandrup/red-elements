@@ -1,6 +1,9 @@
 exports.config = {
   bundles: [{
-    components: ['red-checkbox-set', 'red-editable-list']
+    components: [
+      'red-checkbox-set',
+      // 'red-editable-list'
+    ]
   }],
   collections: [{
     name: '@stencil/router'

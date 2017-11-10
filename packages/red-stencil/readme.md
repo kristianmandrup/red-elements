@@ -18,10 +18,16 @@ cd packages/red-stencil
 git remote rm origin
 ```
 
-Use lerna to resolve dependencies:
+Use [lerna](lernajs.io/) to resolve internal and external package dependencies:
 
 ```bash
-npm run lerna:update
+red-elements/packages/red-stencil $ npm run lerna:update
+```
+
+Install dependencies for `red-widgets` (note: `red-stencil` references its "widget controllers" from here)
+
+```bash
+red-elements/packages/red-widgets $ npm install
 ```
 
 Start the server/app

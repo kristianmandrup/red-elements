@@ -83,9 +83,9 @@ from 'jquery';
 import 'jquery-ui-dist/jquery-ui.min'
 
 // jQuery UI CSS
-import 'jquery-ui-dist/jquery-ui.min.css'
-import 'jquery-ui-dist/jquery-ui.structure.min.css'
-import 'jquery-ui-dist/jquery-ui.theme.min.css'
+import 'jquery-ui-dist/jquery-ui.css'
+import 'jquery-ui-dist/jquery-ui.structure.css'
+import 'jquery-ui-dist/jquery-ui.theme.css'
 ```
 
 

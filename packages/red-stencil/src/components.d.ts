@@ -31,39 +31,152 @@ declare global {
           mode?: string,
           color?: string,
         
-          first?: string,
-          last?: string
+          first?: string
       }
   }
 }
 
-import { RedEditableList as RedEditableList } from './components/common/red-editable-list/editable-list';
+import { MainMenu as MainMenu } from './navigation/main-menu';
 
-interface HTMLRedEditableListElement extends RedEditableList, HTMLElement {
+interface HTMLMainMenuElement extends MainMenu, HTMLElement {
 }
-declare var HTMLRedEditableListElement: {
-  prototype: HTMLRedEditableListElement;
-  new (): HTMLRedEditableListElement;
+declare var HTMLMainMenuElement: {
+  prototype: HTMLMainMenuElement;
+  new (): HTMLMainMenuElement;
 };
 declare global {
   interface HTMLElementTagNameMap {
-      "red-editable-list": HTMLRedEditableListElement;
+      "main-menu": HTMLMainMenuElement;
   }
   interface ElementTagNameMap {
-      "red-editable-list": HTMLRedEditableListElement;
+      "main-menu": HTMLMainMenuElement;
   }
   namespace JSX {
       interface IntrinsicElements {
-          "red-editable-list": JSXElements.RedEditableListAttributes;
+          "main-menu": JSXElements.MainMenuAttributes;
       }
   }
   namespace JSXElements {
-      export interface RedEditableListAttributes extends HTMLAttributes {
+      export interface MainMenuAttributes extends HTMLAttributes {
           mode?: string,
           color?: string,
         
-          first?: string,
-          last?: string
+      }
+  }
+}
+
+import { RedRouter as RedRouter } from './navigation/red-router';
+
+interface HTMLRedRouterElement extends RedRouter, HTMLElement {
+}
+declare var HTMLRedRouterElement: {
+  prototype: HTMLRedRouterElement;
+  new (): HTMLRedRouterElement;
+};
+declare global {
+  interface HTMLElementTagNameMap {
+      "red-router": HTMLRedRouterElement;
+  }
+  interface ElementTagNameMap {
+      "red-router": HTMLRedRouterElement;
+  }
+  namespace JSX {
+      interface IntrinsicElements {
+          "red-router": JSXElements.RedRouterAttributes;
+      }
+  }
+  namespace JSXElements {
+      export interface RedRouterAttributes extends HTMLAttributes {
+          mode?: string,
+          color?: string,
+        
+      }
+  }
+}
+
+import { HomePage as HomePage } from './pages/home-page';
+
+interface HTMLHomePageElement extends HomePage, HTMLElement {
+}
+declare var HTMLHomePageElement: {
+  prototype: HTMLHomePageElement;
+  new (): HTMLHomePageElement;
+};
+declare global {
+  interface HTMLElementTagNameMap {
+      "home-page": HTMLHomePageElement;
+  }
+  interface ElementTagNameMap {
+      "home-page": HTMLHomePageElement;
+  }
+  namespace JSX {
+      interface IntrinsicElements {
+          "home-page": JSXElements.HomePageAttributes;
+      }
+  }
+  namespace JSXElements {
+      export interface HomePageAttributes extends HTMLAttributes {
+          mode?: string,
+          color?: string,
+        
+      }
+  }
+}
+
+import { PalettePage as PalettePage } from './pages/palette-page';
+
+interface HTMLPalettePageElement extends PalettePage, HTMLElement {
+}
+declare var HTMLPalettePageElement: {
+  prototype: HTMLPalettePageElement;
+  new (): HTMLPalettePageElement;
+};
+declare global {
+  interface HTMLElementTagNameMap {
+      "palette-page": HTMLPalettePageElement;
+  }
+  interface ElementTagNameMap {
+      "palette-page": HTMLPalettePageElement;
+  }
+  namespace JSX {
+      interface IntrinsicElements {
+          "palette-page": JSXElements.PalettePageAttributes;
+      }
+  }
+  namespace JSXElements {
+      export interface PalettePageAttributes extends HTMLAttributes {
+          mode?: string,
+          color?: string,
+        
+      }
+  }
+}
+
+import { TabsPage as TabsPage } from './pages/tabs-page';
+
+interface HTMLTabsPageElement extends TabsPage, HTMLElement {
+}
+declare var HTMLTabsPageElement: {
+  prototype: HTMLTabsPageElement;
+  new (): HTMLTabsPageElement;
+};
+declare global {
+  interface HTMLElementTagNameMap {
+      "tabs-page": HTMLTabsPageElement;
+  }
+  interface ElementTagNameMap {
+      "tabs-page": HTMLTabsPageElement;
+  }
+  namespace JSX {
+      interface IntrinsicElements {
+          "tabs-page": JSXElements.TabsPageAttributes;
+      }
+  }
+  namespace JSXElements {
+      export interface TabsPageAttributes extends HTMLAttributes {
+          mode?: string,
+          color?: string,
+        
       }
   }
 }
