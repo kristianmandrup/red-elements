@@ -28,6 +28,15 @@ In the end we can reuse the custom elements in a Vue app inside Vue components o
 
 The components all go in `src/components`. The components structure should mirror the structure in `red-widgets`.
 
+## attribute vs. property
+
+Please see [JS: attribute vs. property](http://lucybain.com/blog/2014/attribute-vs-property/)
+
+JS DOM objects have properties. These properties are kind of like instance variables for the particular element. As such, a property can be different types (boolean, string, etc.). Properties can be accessed using jQuery’s prop method (as seen below) and also by interacting with the object in vanilla JS.
+
+Attributes are in the HTML itself, rather than in the DOM. They are very similar to properties, but not quite as good. When a property is available it’s recommended that you work with properties rather than attributes.
+
+An attribute is only ever a string, no other type.
 ## Putting the widget in control
 
 Please note that for now, we want to reuse as much of the existing (legacy) widget logic as possible. We will pass in the Custom Element root element `$el` to the widget controller so that it can take over full control of the renderd DOM for the custom element.
@@ -36,8 +45,79 @@ In a stencilJS component, the `$el` is decorated with `@Element` and points to t
 
 ## Example: Header
 
-The following describes the strategy for wrapping header as a Custom Element
+The following describes the strategy for wrapping `header` as a Custom Element:
+
+```ts
+@Component({
+  tag: 'red-header',
+  // styleUrl: '../_shared/header.scss'
+})
+export class RedHeader {
+  constructor() {
+  }
+
+  // point to root element rendered
+  @Element() me: HTMLElement;
+
+  render() {
+    return (
+      <div class="header">
+      </div>
+    )
+  }
+}
+```
+
+### Render with props
+
+We have started by copying the full `<template>` content from `Header.vue` and then reconfiguring the data bindings to work with TSX (Typescript JSX) syntax.
+
 First have a look at the full skeleton `red-header.tsx` file:
+
+```ts
+// reuse Header.vue template from red-vue
+// orignally extracted from node-red mustache templates!
+render() {
+  return (
+    <div id="header" class="header">
+      <span class="logo">
+        <a href={this.url}>
+          <img src={this.image.src} title={this.image.title}>
+            <span>{this.title}</span>
+            <a id="btn-login" class="btn btn-primary">{this.action.title}</a>
+          </img>
+        </a>
+      </span>
+      <ul class="header-toolbar hide">
+        <li>
+          <a id="btn-sidemenu" class="button" data-toggle="dropdown" href="#">
+            <i class="fa fa-bars"></i>
+          </a>
+        </li>
+      </ul>
+      <div id="header-shade" class="hide"></div>
+    </div>);
+}
+```
+
+We end up with property refs like: `{this.image.title}`
+
+This requires us to define interfaces and props such as:
+
+```ts
+interface Image {
+  src?: string;
+  title?: string
+}
+
+export class RedHeader {
+  // ...
+  @Prop() image: Image;
+ // ...
+}
+```
+
+The full `header.tsx` as a custom element:
 
 ```ts
 import { Component, Prop, Element } from '@stencil/core'
@@ -57,19 +137,19 @@ interface Action {
 })
 export class RedHeader {
   constructor() {
+    // use Canvas as component controller
+    // new controllers.Header()
   }
 
-  // point to root element rendered
+  // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
   @Element() me: HTMLElement;
 
-  // props used/referenced in render
   @Prop() url: string;
   @Prop() image: Image;
   @Prop() title: string;
   @Prop() action: Action;
 
   // reuse Header.vue template from red-vue
-  // orignally extracted from node-red mustache templates!
   render() {
     return (
       <div id="header">
@@ -91,27 +171,6 @@ export class RedHeader {
         <div id="header-shade" class="hide"></div>
       </div>);
   }
-}
-```
-
-### Props
-
-We have started by copying the full `<template>` content from `Header.vue` and then reconfiguring the data bindings to work with TSX (Typescript JSX) syntax.
-
-We end up with property refs like: `{this.image.title}`
-
-This requires us to define interfaces and props such as:
-
-```ts
-interface Image {
-  src?: string;
-  title?: string
-}
-
-export class RedHeader {
-  // ...
-  @Prop() image: Image;
- // ...
 }
 ```
 

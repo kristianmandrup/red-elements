@@ -1,6 +1,4 @@
 import { Component, Prop, Element } from '@stencil/core'
-// import { header } from '../_widgets'
-// const { controllers } = header
 
 interface Image {
   src?: string;
