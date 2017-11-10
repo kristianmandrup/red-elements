@@ -11,13 +11,15 @@ export class RedMainContainer {
   // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
   @Element() me: HTMLElement;
 
-  @Prop() title: string;
-
   // reuse Header.vue template from red-vue
   render() {
     return (
-      <div id="library">
-        <h3>Library</h3>
+      <div id="main-container" class="sidebar-closed hide">
+        <red-workspace />
+        <red-palette />
+        <red-editor />
+        <red-sidebar />
+        <div id="sidebar-separator"></div>
       </div>
     );
   }

@@ -199,7 +199,7 @@ export class RedHeader {
 
 ## Example: common Panel
 
-the original node-red Panel is a jQuery widget.
+The original node-red Panel is a jQuery widget.
 We will use the controller approach outlined above:
 
 - instantiate the jQuery widget with the root element of the custom element
