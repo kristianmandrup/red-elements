@@ -7,7 +7,7 @@ import { createjQueryWidget } from "../_util"
   styleUrl: 'red-checkbox-set.scss'
 })
 export class RedCheckboxSet {
-  constructor() {
+  componentDidLoad() {
     // RED should (ideally) be the RED runtime
     const RED = {}
     // registers CheckboxSet as a jQuery widget on $
