@@ -7,7 +7,7 @@ import { createjQueryWidget } from "../_util"
   // styleUrl: 'red-typed-input.scss'
 })
 export class RedTypedInput {
-  constructor() {
+  componentDidLoad() {
     // registers TypedInput as a jQuery widget on $
     controllers.TypedInput()
     // now turn this element into a TypedInput jQuery widget
@@ -17,12 +17,12 @@ export class RedTypedInput {
   // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
   @Element() me: HTMLElement;
 
-  @Prop() first: string;
+  @Prop() id: string;
 
   render() {
     return (
-      <div>
-        TypedInput {this.first}
+      <div id={this.id}>
+        TypedInput
       </div>
     );
   }

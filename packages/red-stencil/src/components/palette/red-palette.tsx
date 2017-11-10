@@ -7,7 +7,7 @@ const { controllers } = palette
   // styleUrl: 'red-menu.scss'
 })
 export class RedPalette {
-  constructor() {
+  componentDidLoad() {
     // use Library controller as component controller
     // we likely have to pass `me`, so it can control the rendered DOM
     this.palette = new controllers.Palette({
@@ -19,7 +19,6 @@ export class RedPalette {
   @Element() me: HTMLElement;
 
   @Prop() palette: any;
-  @Prop() title: string;
 
   // reuse Header.vue template from red-vue
   render() {

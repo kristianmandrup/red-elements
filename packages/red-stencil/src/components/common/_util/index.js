@@ -6,7 +6,7 @@ import {
 export function createjQueryWidget(options = {}) {
   const {
     $el,
-    widgetName,
+    name,
     options
   } = options
   // get the element by refName, such as by class
@@ -18,8 +18,8 @@ export function createjQueryWidget(options = {}) {
   }
   console.log('createjQueryWidget', {
     $el,
-    widgetName,
+    name,
     options
   })
-  $($el)[widgetName](options)
+  $($el)[name](options)
 }

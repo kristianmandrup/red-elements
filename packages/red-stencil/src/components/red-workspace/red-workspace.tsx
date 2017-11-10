@@ -3,11 +3,11 @@ import { workspaces } from '../_widgets'
 const { controllers } = workspaces
 
 @Component({
-  tag: 'red-workspaces',
+  tag: 'red-workspace',
   // styleUrl: 'red-menu.scss'
 })
-export class RedWorkspaces {
-  constructor() {
+export class RedWorkspace {
+  componentDidLoad() {
     // use Library controller as component controller
     // we likely have to pass `me`, so it can control the rendered DOM
     this.workspaces = new controllers.Workspaces({
@@ -19,13 +19,16 @@ export class RedWorkspaces {
   @Element() me: HTMLElement;
 
   @Prop() workspaces: any;
-  @Prop() title: string;
 
   // reuse Header.vue template from red-vue
   render() {
     return (
-      <div id="workspaces">
-        <h3>Workspaces</h3>
+      <div id="workspace">
+        <ul id="workspace-tabs"></ul>
+        <div id="chart" tabindex="1"></div>
+        <div id="workspace-toolbar"></div>
+        <red-workspace-footer />
+        <div id="editor-shade" class="hide"></div>
       </div>
     );
   }

@@ -7,25 +7,31 @@ import { createjQueryWidget } from "../_util"
   styleUrl: 'red-editable-list.scss'
 })
 export class RedEditableList {
-  constructor() {
-    // RED should (ideally) be the RED runtime
-    const RED = {}
+  componentDidLoad() {
+    // context should (ideally) be the RED runtime?
+    const ctx = {
+      id: this.id
+    }
     // registers CheckboxSet as a jQuery widget on $
-    controllers.EditableList(RED)
+    // use new ?
+    controllers.EditableList(ctx)
 
-    // now turn this element into a CheckboxSet jQuery widget
-    createjQueryWidget(this.me, 'editableList');
+    // now turn this element into a EditableList jQuery widget
+    createjQueryWidget({
+      $el: this.me,
+      name: 'editableList' // name of widget
+    });
   }
 
   // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
   @Element() me: HTMLElement;
 
-  @Prop() first: string;
+  @Prop() id: string;
 
   render() {
     return (
-      <div>
-        Editable list {this.first}
+      <div id={this.id}>
+        Editable list
       </div>
     );
   }

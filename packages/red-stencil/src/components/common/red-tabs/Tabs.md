@@ -31,3 +31,16 @@ export default {
   }
 };
 ```
+
+## Individual tab elements
+
+We can enhance this by using individual tab elements: `red-tab`
+
+```ts
+  <div class="red-ui-tabs" id="my-tabs">
+    <ul>
+      <red-tab caption="hello" />
+      <red-tab caption="bye" />
+    </ul>
+  </div>
+```

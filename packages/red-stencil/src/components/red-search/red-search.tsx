@@ -7,7 +7,7 @@ const { controllers } = search
   // styleUrl: 'red-menu.scss'
 })
 export class RedSearch {
-  constructor() {
+  componentDidLoad() {
     // use Library controller as component controller
     // we likely have to pass `me`, so it can control the rendered DOM
     this.search = new controllers.Search({

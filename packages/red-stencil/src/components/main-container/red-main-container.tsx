@@ -1,12 +1,10 @@
-import { Component, Prop, Element } from '@stencil/core'
+import { Component } from '@stencil/core'
 
 @Component({
   tag: 'red-main-container',
   // styleUrl: '../_shared/header.scss'
 })
 export class RedMainContainer {
-  @Element() me: HTMLElement;
-
   // reuse Header.vue template from red-vue
   render() {
     return (

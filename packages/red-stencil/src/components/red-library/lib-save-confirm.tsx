@@ -1,4 +1,4 @@
-import { Component, Prop, Element } from '@stencil/core'
+import { Component } from '@stencil/core'
 import { library } from '../_widgets'
 const { controllers } = library
 
@@ -12,10 +12,7 @@ export class LibSaveConfirm {
     controllers
   }
 
-  // @Prop() library: any;
-  @Prop() id: string;
-
-  // reuse Header.vue template from red-vue
+  // extracted from mustache template
   render() {
     return (
       <div id="node-dialog-library-save-confirm" class="save-confirm hide">

@@ -9,7 +9,7 @@ const { controllers } = nodeEditor
 })
 export class RedNodeEditor {
   componentDidLoad() {
-    console.log('RedEditor');
+    console.log('NodeEditor');
     let ctx: any = {}
     ctx.actions = new Actions(ctx)
     new controllers.Editor(ctx)

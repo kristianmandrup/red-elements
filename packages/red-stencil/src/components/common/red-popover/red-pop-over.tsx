@@ -7,7 +7,7 @@ import { createjQueryWidget } from "../_util"
   // styleUrl: 'red-pop-over.scss'
 })
 export class RedPopover {
-  constructor() {
+  componentDidLoad() {
     // registers CheckboxSet as a jQuery widget on $
     controllers.PopOver()
     // now turn this element into a CheckboxSet jQuery widget

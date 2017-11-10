@@ -7,7 +7,7 @@ import { createjQueryWidget } from "../_util"
   // styleUrl: 'red-menu.scss'
 })
 export class RedMenu {
-  constructor() {
+  componentDidLoad() {
     // registers CheckboxSet as a jQuery widget on $
     controllers.Menu()
     // now turn this element into a CheckboxSet jQuery widget

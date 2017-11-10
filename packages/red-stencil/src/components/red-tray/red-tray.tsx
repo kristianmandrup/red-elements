@@ -7,7 +7,7 @@ const { controllers } = tray
   // styleUrl: 'red-menu.scss'
 })
 export class RedTray {
-  constructor() {
+  componentDidLoad() {
     // use Library controller as component controller
     // we likely have to pass `me`, so it can control the rendered DOM
     this.tray = new controllers.Tray({

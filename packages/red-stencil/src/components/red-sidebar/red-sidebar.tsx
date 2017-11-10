@@ -7,7 +7,7 @@ const { controllers } = sidebar
   // styleUrl: 'red-menu.scss'
 })
 export class RedSidebar {
-  constructor() {
+  componentDidLoad() {
     // use Library controller as component controller
     // we likely have to pass `me`, so it can control the rendered DOM
     this.sidebar = new controllers.Sidebar({
@@ -25,7 +25,10 @@ export class RedSidebar {
   render() {
     return (
       <div id="sidebar">
-        <h3>Sidebar</h3>
+        <ul id="sidebar-tabs"></ul>
+        <div id="sidebar-content"></div>
+        <div id="sidebar-footer"></div>
+        <div id="sidebar-shade" class="hide"></div>
       </div>
     );
   }

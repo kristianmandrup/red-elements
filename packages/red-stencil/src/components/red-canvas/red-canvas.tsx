@@ -7,7 +7,7 @@ const { controllers } = canvas
   // styleUrl: 'red-menu.scss'
 })
 export class RedCanvas {
-  constructor() {
+  componentDidLoad() {
     // use Canvas as component controller
     // we likely have to pass `me`, so it can control the rendered DOM
     this.canvas = new controllers.Canvas({

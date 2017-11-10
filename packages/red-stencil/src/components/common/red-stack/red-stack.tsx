@@ -7,7 +7,7 @@ import { createjQueryWidget } from "../_util"
   // styleUrl: 'red-stack.scss'
 })
 export class RedStack {
-  constructor() {
+  componentDidLoad() {
     // registers Stack as a jQuery widget on $
     controllers.Stack()
     // now turn this element into a Stack jQuery widget

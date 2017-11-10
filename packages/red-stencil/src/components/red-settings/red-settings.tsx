@@ -7,7 +7,7 @@ const { controllers } = settings
   // styleUrl: 'red-menu.scss'
 })
 export class RedSettings {
-  constructor() {
+  componentDidLoad() {
     // use Library controller as component controller
     // we likely have to pass `me`, so it can control the rendered DOM
     this.settings = new controllers.Settings({

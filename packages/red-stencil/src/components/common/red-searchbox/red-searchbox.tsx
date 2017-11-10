@@ -7,7 +7,7 @@ import { createjQueryWidget } from "../_util"
   // styleUrl: 'red-searchbox.scss'
 })
 export class RedSearchbox {
-  constructor() {
+  componentDidLoad() {
     // registers Searchbox as a jQuery widget on $
     controllers.Searchbox()
     // now turn this element into a Searchbox jQuery widget

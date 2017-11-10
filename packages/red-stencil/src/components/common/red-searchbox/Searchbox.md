@@ -1,0 +1,3 @@
+# Searchbox
+
+Insights & observations about Searchbox widget...
