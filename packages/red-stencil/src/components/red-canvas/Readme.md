@@ -7,3 +7,10 @@ The nodes are selected from the `Palette` component, which contains a categorize
 Each such node can be configured via the `Node Editor` component (ie. a form with custom fields as per the particular component).
 
 Node-red plugins can be used to register Nodes for particular contexts and scenarios.
+
+## Definition
+
+TODO
+## Usage
+
+TODO

@@ -1,5 +1,7 @@
 # Header
 
+Header details...
+
 ### Render with props
 
 We have started by copying the full `<template>` content from `Header.vue` and then reconfiguring the data bindings to work with TSX (Typescript JSX) syntax.
