@@ -29,6 +29,66 @@ Start with the simple components (containers) without controller logic, such as 
   // nodeEditor,
 ```
 
+## jQuery widgets
+
+In order to succeed, you need to first have a firm grasp of jQuery and jQuery widgets API. This will allow you to understand the existing widgets and how they can be repurposed (and in time refactored) to serve in a Custom Elements context.
+
+- [How To Use the Widget Factory](https://learn.jquery.com/jquery-ui/widget-factory/how-to-use-the-widget-factory/)
+- [Widget factory](https://jqueryui.com/widget/)
+- [jQuery UI widgets](https://api.jqueryui.com/category/widgets/)
+- [jQuery widgets tutorials](https://www.tutorialspoint.com/jquery/jquery-widgets.htm)
+- [Making Use of jQuery UI's Widget Factory](https://code.tutsplus.com/tutorials/making-use-of-jquery-uis-widget-factory--net-29606)
+
+Use `jquery-ui` distribution
+
+- [jquery-ui-dist](https://www.npmjs.com/package/jquery-ui-dist)
+
+### 3rd party lib dependencies
+
+The editor has the following essential library dependencies. Might well be more.
+See [red-editor](https://github.com/tecla5/red-editor/blob/master/package.json#L21) for a complete list
+
+```json
+"dependencies": {
+  "normalize.css": "^7.0.0",
+  "promise-polyfill": "^6.0.2",
+  "d3": "^4.10.2",
+  "font-awesome": "^4.7.0",
+  "i18next": "^9.0.1",
+  "jquery": "^3.2.1",
+  "jquery-ui-dist": "^1.12.1",
+  "jsonata": "^1.3.1",
+  "bootstrap": "^3.3.7",
+  "bootstrap-select": "^1.12.4",
+  "ace-builds": "^1.2.8",
+  "marked": "^0.3.6",
+
+  // internal package deps
+  "@tecla5/red-ui-header": "^0.0.0",
+  "@tecla5/red-ui-main-container": "^0.0.0",
+
+  // stencil
+  "@stencil/router": "^0.0.17"
+}
+```
+
+For using jQuery UI have a base file `/_shared/jquery.js`, which include in all widgets.
+
+```js
+export {
+  default as jQuery
+}
+from 'jquery';
+// import 'jquery-ui' // uses alias (see poi.config.js)
+import 'jquery-ui-dist/jquery-ui.min'
+
+// jQuery UI CSS
+import 'jquery-ui-dist/jquery-ui.min.css'
+import 'jquery-ui-dist/jquery-ui.structure.min.css'
+import 'jquery-ui-dist/jquery-ui.theme.min.css'
+```
+
+
 ### Stencil - getting started
 
 Some stencil learning resources:
