@@ -1,0 +1,25 @@
+.lookup {
+  .row1 {
+    display: inline-block;
+    height: 100%;
+    padding-right: 20px;
+    vertical-align: top;
+    width: 30%;
+    .select-lib {
+      border: 1px solid #999;
+      width: 100%;
+      height: 100%;
+      overflow: scroll;
+    }
+  }
+  .row2 {
+    vertical-align: top;
+    display: inline-block;
+    width: 65%;
+    height: 100%;
+    .node-text-editor {
+      height: 100%;
+      width: 95%;
+    }
+  }
+}

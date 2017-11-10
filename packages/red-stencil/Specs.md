@@ -391,6 +391,118 @@ This should give you enough of an overview to continue develop the remainder of 
 
 When in doubt, run the full *node-red* project (from github) and look deeper into the code there for how it is done, then transfer it here and slowly refactor as needed.
 
+## Library dialogs
+
+The library panel comes with multiple dialogs for:
+
+- finding/loading a library
+- saving a library
+
+The original dialogs can be found as `.mst` mustache templates under `src/templates`
+
+The original `.mst` template is raw HTML with a lot of ugly, unmaintainable inline styles
+
+```html
+<div id="node-dialog-library-lookup" class="hide">
+    <form class="form-horizontal">
+        <div class="form-row">
+            <ul id="node-dialog-library-breadcrumbs" class="breadcrumb">
+                <li class="active"><a href="#" data-i18n="[append]library.breadcrumb"></a></li>
+            </ul>
+        </div>
+        <div class="form-row">
+            <div style="vertical-align: top; display: inline-block; height: 100%; width: 30%; padding-right: 20px;">
+                <div id="node-select-library" style="border: 1px solid #999; width: 100%; height: 100%; overflow:scroll;"><ul></ul></div>
+            </div>
+            <div style="vertical-align: top; display: inline-block;width: 65%; height: 100%;">
+                <div style="height: 100%; width: 95%;" class="node-text-editor" id="node-select-library-text" ></div>
+            </div>
+        </div>
+    </form>
+</div>
+```
+
+In order to use it within our component, we need to convert the inline styles into nested CSS classes:
+
+```scss
+.lookup {
+  .row1 {
+    display: inline-block;
+    height: 100%;
+    padding-right: 20px;
+    vertical-align: top;
+    width: 30%;
+
+    .select-lib {
+      border: 1px solid #999;
+      width: 100%;
+      height: 100%;
+      overflow: scroll;
+    }
+  }
+  .row2 {
+    vertical-align: top;
+    display: inline-block;
+    width: 65%;
+    height: 100%;
+
+    .node-text-editor {
+      height: 100%;
+      width: 95%;
+    }
+  }
+}
+```
+
+Which makes our TSX work out and look much cleaner and prettier :)
+Note that we added a `lookup` class to the container div in order to ensure the CSS styling context (just in case).
+
+```jsx
+<div id="node-dialog-library-lookup" class="lookup hide">
+  <form class="form-horizontal">
+    <div class="form-row">
+      <ul id="node-dialog-library-breadcrumbs" class="breadcrumb">
+        <li class="active"><a href="#" data-i18n="[append]library.breadcrumb"></a></li>
+      </ul>
+    </div>
+    <div class="form-row">
+      <div class="row">
+        <div id="node-select-library" class="select-lib"><ul></ul></div>
+      </div>
+      <div class="row2">
+        <div class="node-text-editor" id="node-select-library-text" ></div>
+      </div>
+    </div>
+  </form>
+</div >
+```
+
+## Save dialog
+
+Sometimes you have to hack a bit with the attributes to make them work with JSX/TSX. The label `for` attribute is another example
+
+```html
+<div id="node-dialog-library-save" class="hide">
+  <form class="form-horizontal">
+    <div class="form-row">
+      <label for="node-dialog-library-save-folder" data-i18n="[append]library.folder"><i class="fa fa-folder-open"></i> </label>
+  ...
+</div>
+```
+
+The TSX equivalent is `htmlFor`
+
+```tsx
+<div id="node-dialog-library-save" class="hide">
+  <form class="form-horizontal">
+    <div class="form-row">
+      <label htmlFor="node-dialog-library-save-folder" data-i18n="[append]library.folder"><i class="fa fa-folder-open"></i> </label>
+      ...
+</div>
+```
+
+Your editor/IDE should warn you! Use Visual Studio Code (VSC) ;)
+
 ## Add 3rd party dependencies
 
 Make sure that relevant dependencies are added to package.json, such as jquery-ui for the `draggable` panel.
@@ -403,6 +515,21 @@ Stencil uses a [dev-server](https://github.com/ionic-team/stencil-dev-server) to
 
 Now register the component in the `stencil.config.js`.
 Then insert the new custom element tag `<red-panel id="test-panel"/>` in the `index.html` app page.
+
+```js
+// stencil.config.js
+exports.config = {
+  bundles: [{
+    // add more here ...
+    components: ['red-checkbox-set', 'red-editable-list']
+    // potentially make more bundles (will be loaded dynamically)
+    // perhaps a bundle per page
+  }],
+  collections: [{
+    name: '@stencil/router'
+  }]
+};
+```
 
 ## Add router and pages
 

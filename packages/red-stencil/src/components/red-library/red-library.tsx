@@ -7,7 +7,7 @@ const { controllers } = library
   // styleUrl: 'red-menu.scss'
 })
 export class RedLibrary {
-  constructor() {
+  componentDidLoad() {
     // use Library controller as component controller
     // we likely have to pass `me`, so it can control the rendered DOM
     // alternatively, pass the id for it to get a handle
