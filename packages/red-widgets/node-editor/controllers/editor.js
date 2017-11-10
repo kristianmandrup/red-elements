@@ -21,7 +21,7 @@ import {
 } from 'jquery';
 import {
   Tray
-} from '@tecla5/red-ui-tray/src/components/controllers/tray'
+} from '../../tray/controllers'
 
 export class Editor extends Context {
   constructor(ctx) {

@@ -26,7 +26,7 @@ import {
 } from './tips'
 import {
   Stack
-} from '@tecla5/red-ui-common/src/components/controllers/stack'
+} from '../../common/controllers'
 import {
   I18n
 } from '@tecla5/red-shared/src/i18n'

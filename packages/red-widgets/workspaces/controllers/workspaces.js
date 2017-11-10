@@ -18,7 +18,7 @@ import {
 } from './context'
 import {
   Tabs
-} from '@tecla5/red-ui-common/src/components/controllers/tabs'
+} from '../../src/common/controllers'
 
 export class Workspaces extends Context {
   createTabs(options) {

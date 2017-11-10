@@ -1,7 +1,4 @@
-import {
-  context
-}
-from './default-context'
+import context from './default-context'
 
 export const data = {
   context

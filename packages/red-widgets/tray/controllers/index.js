@@ -1,7 +1,7 @@
 import {
   Tray
 }
-from './sidebar'
+from './tray'
 
 export const controllers = {
   Tray

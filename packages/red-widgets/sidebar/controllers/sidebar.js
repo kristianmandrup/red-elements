@@ -35,7 +35,7 @@ const log = console.log
 
 import {
   Tabs
-} from '@tecla5/red-ui-common/src/components/controllers/tabs'
+} from '../../tabs/controllers'
 
 import {
   Actions

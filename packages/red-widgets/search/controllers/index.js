@@ -1,7 +1,7 @@
 import {
   Search
 }
-from './editor'
+from './search'
 
 export const controllers = {
   Search,
