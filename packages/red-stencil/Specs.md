@@ -362,3 +362,8 @@ For *red-runtime* you can use mocking/stubbing libs such as [SinonJS](http://sin
 
 May the coding Gods be with you!! :)
 
+## Document as you go
+
+For the `library` element, we have started a `Library.md` document to document the widget/controller used and how to best use it in the Cutom Element (CE).
+
+Please write such guides for each element wrapped, as it will help you think clearly and make it easier for other devs than the line to continue with a "head start" :)
