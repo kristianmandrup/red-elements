@@ -4,7 +4,7 @@ const { controllers } = library
 
 @Component({
   tag: 'lib-lookup',
-  // styleUrl: 'red-menu.scss'
+  styleUrl: 'styles/lookup.scss'
 })
 export class LibLookup {
   componentDidLoad() {

@@ -4,7 +4,7 @@ const { controllers } = sidebar
 
 @Component({
   tag: 'red-sidebar',
-  // styleUrl: 'red-menu.scss'
+  styleUrl: 'styles/sidebar.scss'
 })
 export class RedSidebar {
   componentDidLoad() {
@@ -16,10 +16,9 @@ export class RedSidebar {
   }
 
   // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
-  @Element() me: HTMLElement;
+  @Element() me: HTMLElement
 
-  @Prop() sidebar: any;
-  @Prop() title: string;
+  @Prop() sidebar: any
 
   // reuse Header.vue template from red-vue
   render() {

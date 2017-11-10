@@ -6,7 +6,7 @@ const { UserSettings } = settings.controllers
 
 @Component({
   tag: 'red-palette-editor',
-  // styleUrl: 'red-menu.scss'
+  styleUrl: 'styles/palette-editor.scss'
 })
 export class RedPaletteEditor {
   componentDidLoad() {

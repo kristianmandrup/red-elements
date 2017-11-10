@@ -11,7 +11,7 @@ interface Action {
 
 @Component({
   tag: 'red-header',
-  // styleUrl: '../_shared/header.scss'
+  styleUrl: 'styles/header.scss'
 })
 export class RedHeader {
   // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38

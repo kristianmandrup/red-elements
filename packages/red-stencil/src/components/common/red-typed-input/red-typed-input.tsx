@@ -4,7 +4,8 @@ import { createjQueryWidget } from "../_util"
 
 @Component({
   tag: 'red-typed-input',
-  // styleUrl: 'red-typed-input.scss'
+  // TODO: move here
+  styleUrl: '../../_shared/styles/typedInput.scss'
 })
 export class RedTypedInput {
   componentDidLoad() {

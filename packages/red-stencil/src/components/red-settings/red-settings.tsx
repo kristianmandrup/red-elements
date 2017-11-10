@@ -4,7 +4,7 @@ const { controllers } = settings
 
 @Component({
   tag: 'red-settings',
-  // styleUrl: 'red-menu.scss'
+  styleUrl: 'styles/userSettings.scss'
 })
 export class RedSettings {
   componentDidLoad() {

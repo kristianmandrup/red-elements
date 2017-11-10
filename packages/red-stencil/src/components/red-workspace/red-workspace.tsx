@@ -4,7 +4,7 @@ const { controllers } = workspaces
 
 @Component({
   tag: 'red-workspace',
-  // styleUrl: 'red-menu.scss'
+  styleUrl: 'styles/workspace.scss'
 })
 export class RedWorkspace {
   componentDidLoad() {
@@ -26,7 +26,7 @@ export class RedWorkspace {
       <div id="workspace">
         <ul id="workspace-tabs"></ul>
         <div id="chart" tabindex="1"></div>
-        <div id="workspace-toolbar"></div>
+        <red-workspace-toolbar />
         <red-workspace-footer />
         <div id="editor-shade" class="hide"></div>
       </div>

@@ -4,7 +4,7 @@ const { controllers } = library
 
 @Component({
   tag: 'lib-save-confirm',
-  // styleUrl: 'red-menu.scss'
+  styleUrl: 'styles/save-confirm.scss'
 })
 export class LibSaveConfirm {
   componentDidLoad() {

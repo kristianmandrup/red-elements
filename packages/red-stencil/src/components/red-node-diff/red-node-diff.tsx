@@ -2,7 +2,7 @@ import { Component, Prop, Element } from '@stencil/core'
 
 @Component({
   tag: 'red-node-diff',
-  // styleUrl: '../_shared/header.scss'
+  styleUrl: 'styles/diff.scss'
 })
 export class RedNodeDiff {
   componentDidLoad() {

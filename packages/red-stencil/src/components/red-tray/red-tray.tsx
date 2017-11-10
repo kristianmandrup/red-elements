@@ -3,8 +3,7 @@ import { tray } from '../_widgets'
 const { controllers } = tray
 
 @Component({
-  tag: 'red-tray',
-  // styleUrl: 'red-menu.scss'
+  tag: 'red-tray'
 })
 export class RedTray {
   componentDidLoad() {

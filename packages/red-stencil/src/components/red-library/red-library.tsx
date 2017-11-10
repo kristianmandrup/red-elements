@@ -3,8 +3,7 @@ import { library } from '../_widgets'
 const { controllers } = library
 
 @Component({
-  tag: 'red-library',
-  // styleUrl: 'red-menu.scss'
+  tag: 'red-library'
 })
 export class RedLibrary {
   componentDidLoad() {

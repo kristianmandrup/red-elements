@@ -8,6 +8,8 @@ Each such node can be configured via the `Node Editor` component (ie. a form wit
 
 Node-red plugins can be used to register Nodes for particular contexts and scenarios.
 
+Note: In original node-red, canvas is referenced simply as `view` such as in `view.js`
+
 ## Definition
 
 TODO

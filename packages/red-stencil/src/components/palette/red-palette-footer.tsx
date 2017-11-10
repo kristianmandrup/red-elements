@@ -2,7 +2,7 @@ import { Component } from '@stencil/core'
 
 @Component({
   tag: 'red-palette-footer',
-  // styleUrl: 'red-menu.scss'
+  styleUrl: 'styles/palette.scss' // extract into own palette-footer.scss
 })
 export class RedPaletteFooter {
   // reuse Header.vue template from red-vue

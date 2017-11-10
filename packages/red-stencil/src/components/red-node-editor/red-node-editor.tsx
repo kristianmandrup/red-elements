@@ -5,7 +5,7 @@ const { controllers } = nodeEditor
 
 @Component({
   tag: 'red-node-editor',
-  // styleUrl: '../_shared/header.scss'
+  styleUrl: 'styles/editor.scss'
 })
 export class RedNodeEditor {
   componentDidLoad() {

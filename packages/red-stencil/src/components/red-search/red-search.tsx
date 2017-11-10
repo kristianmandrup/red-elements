@@ -4,7 +4,7 @@ const { controllers } = search
 
 @Component({
   tag: 'red-search',
-  // styleUrl: 'red-menu.scss'
+  styleUrl: 'styles/search.scss'
 })
 export class RedSearch {
   componentDidLoad() {

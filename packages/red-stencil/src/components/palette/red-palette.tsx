@@ -4,7 +4,7 @@ const { controllers } = palette
 
 @Component({
   tag: 'red-palette',
-  // styleUrl: 'red-menu.scss'
+  styleUrl: 'styles/palette.scss'
 })
 export class RedPalette {
   componentDidLoad() {
