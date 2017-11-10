@@ -363,6 +363,34 @@ export class RedPanel {
 }
 ```
 
+## Main container
+
+As a final example, we will demonstrate `MainContainer` which uses composition:
+We note that the `render` method composes the rendering of itself from registered custom elements such as `<red-workspace />`. Sweet :)
+
+```ts
+export class RedMainContainer {
+  @Element() me: HTMLElement;
+
+  // reuse Header.vue template from red-vue
+  render() {
+    return (
+      <div id="main-container" class="sidebar-closed hide">
+        <red-workspace />
+        <red-palette />
+        <red-editor />
+        <red-sidebar />
+        <div id="sidebar-separator"></div>
+      </div>
+    );
+  }
+}
+```
+
+This should give you enough of an overview to continue develop the remainder of the components as Custom Elements and gradually add more functionality.
+
+When in doubt, run the full *node-red* project (from github) and look deeper into the code there for how it is done, then transfer it here and slowly refactor as needed.
+
 ## Add 3rd party dependencies
 
 Make sure that relevant dependencies are added to package.json, such as jquery-ui for the `draggable` panel.

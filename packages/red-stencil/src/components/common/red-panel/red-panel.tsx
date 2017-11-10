@@ -1,6 +1,6 @@
-import { Component, Prop, Element } from '@stencil/core'
+import { Component, Prop } from '@stencil/core'
 import { controllers } from '../controllers'
-import { createjQueryWidget } from "../_util"
+// import { createjQueryWidget } from "../_util"
 
 @Component({
   tag: 'red-panel',

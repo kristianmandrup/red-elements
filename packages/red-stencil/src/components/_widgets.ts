@@ -1,11 +1,11 @@
 export {
   common,
   canvas,
-  // header,
+  header,
   library,
   // mainContainer,
   // nodeDiff,
-  // nodeEditor,
+  nodeEditor,
   palette,
   search,
   settings,

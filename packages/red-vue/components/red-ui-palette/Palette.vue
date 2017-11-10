@@ -11,28 +11,26 @@
   </div>
 </template>
 <script>
-const log = console.log
-import { Palette } from './controllers/palette'
-import PaletteEditor from './PaletteEditor'
-import {
-  Events
-} from '@tecla5/red-ui-shared/src/events'
+const log = console.log;
+import { Palette } from "./controllers/palette";
+import PaletteEditor from "./PaletteEditor";
+import { Events } from "@tecla5/red-shared/src/events";
 
 let RED = {
   events: new Events(RED)
-}
+};
 
 export default {
-  name: 'palette',
+  name: "palette",
   components: {
-    'red-palette-editor': PaletteEditor,
-    'red-palette-footer': PaletteFooter
+    "red-palette-editor": PaletteEditor,
+    "red-palette-footer": PaletteFooter
   },
   mounted() {
-    log('editor')
-    new Palette(RED)
+    log("editor");
+    new Palette(RED);
   }
-}
+};
 </script>
 
 <style lang="scss" src="./styles/palette.scss">

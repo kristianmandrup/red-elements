@@ -29,7 +29,7 @@ import {
 } from '@tecla5/red-ui-common/src/components/controllers/stack'
 import {
   I18n
-} from '@tecla5/red-ui-shared/src/i18n'
+} from '@tecla5/red-shared/src/i18n'
 
 import marked from 'marked'
 

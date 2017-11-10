@@ -21,7 +21,7 @@ import {
 } from 'jquery'
 import {
   I18n
-} from '@tecla5/red-ui-shared/src/i18n'
+} from '@tecla5/red-shared/src/i18n'
 
 
 export class SidebarTabConfig extends Context {

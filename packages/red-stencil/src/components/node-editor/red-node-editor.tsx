@@ -1,11 +1,18 @@
 import { Component, Prop, Element } from '@stencil/core'
+import { nodeEditor } from '../_widgets'
+import { Actions } from "@tecla5/red-shared/src/ui/actions";
+const { controllers } = nodeEditor
 
 @Component({
   tag: 'red-node-editor',
   // styleUrl: '../_shared/header.scss'
 })
 export class RedNodeEditor {
-  constructor() {
+  componentDidLoad() {
+    console.log('RedEditor');
+    let ctx: any = {}
+    ctx.actions = new Actions(ctx)
+    new controllers.Editor(ctx)
   }
 
   // See https://medium.com/@gilfink/getting-to-know-stencil-decorators-350c13ce6d38
@@ -13,7 +20,8 @@ export class RedNodeEditor {
 
   @Prop() title: string;
 
-  // reuse Header.vue template from red-vue
+  // reuse Editor.vue template from red-vue ??
+  // or see node-red mustached .mst template ??
   render() {
     return (
       <div id="node-editor">

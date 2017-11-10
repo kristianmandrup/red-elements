@@ -3,20 +3,20 @@
   </div>
 </template>
 <script>
-const log = console.log
-import { Editor } from './controllers/editor'
-import { Actions } from '@tecla5/red-ui-shared/src/ui/actions'
+const log = console.log;
+import { Editor } from "./controllers/editor";
+import { Actions } from "@tecla5/red-shared/src/ui/actions";
 
 export default {
-  name: 'editor',
+  name: "editor",
   mounted() {
-    log('editor')
+    log("editor");
     let RED = {
       actions: new Actions(RED)
-    }
-    new Editor(RED)
+    };
+    new Editor(RED);
   }
-}
+};
 </script>
 
 <style lang="scss" src="./styles/editor.scss">

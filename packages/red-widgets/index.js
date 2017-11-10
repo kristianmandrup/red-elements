@@ -8,10 +8,10 @@ import {
 }
 from './common'
 
-// import {
-//   header
-// }
-// from './header'
+import {
+  header
+}
+from './header'
 
 import {
   library
@@ -28,10 +28,10 @@ from './library'
 // }
 // from './node-diff'
 
-// import {
-//   nodeEditor
-// }
-// from './node-editor'
+import {
+  nodeEditor
+}
+from './node-editor'
 
 import {
   palette
@@ -45,7 +45,7 @@ export const widgets = {
   library,
   // mainContainer,
   // nodeDiff,
-  // nodeEditor,
+  nodeEditor,
   palette,
   search,
   settings,

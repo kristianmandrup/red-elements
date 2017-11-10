@@ -39,7 +39,7 @@ import {
 
 import {
   Actions
-} from '@tecla5/red-ui-shared/src/ui/actions'
+} from '@tecla5/red-shared/src/ui/actions'
 
 // Note: Ensure Jquery UI has been initialized so .draggable widget is available
 

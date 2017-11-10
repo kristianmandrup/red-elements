@@ -25,7 +25,14 @@ export class RedPalette {
   render() {
     return (
       <div id="palette">
-        <h3>Library</h3>
+        <img src="red/images/spin.svg" class="palette-spinner hide" />
+        <div id="palette-search" class="palette-search hide">
+          <input type="text" data-i18n="[placeholder]palette.filter"></input>
+        </div>
+        <red-palette-editor />
+        <div id="palette-container" class="palette-scroll hide"></div>
+        <red-palette-footer />
+        <div id="palette-shade" class="hide"></div>
       </div>
     );
   }

@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-stencil",
+    "lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
     "lerna:clean": "rm -f package.json.lock 2> /dev/null && echo y | lerna clean --scope @tecla5/red-stencil",
     "build": "stencil build --prerender",
     "dev": "sd concurrent \"stencil build --dev --watch\" \"stencil-dev-server\" ",
@@ -20,7 +21,8 @@
   "dependencies": {
     "@stencil/core": "next",
     "@stencil/router": "latest",
-    "@tecla5/red-widgets": "^0.0.1"
+    "@tecla5/red-widgets": "^0.0.1",
+    "@tecla5/red-shared": "^0.0.1"
   },
   "devDependencies": {
     "@stencil/dev-server": "latest",
