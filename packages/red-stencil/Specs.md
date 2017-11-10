@@ -12,7 +12,24 @@ We will primarily be using StencilJS, so that it works nicely with Ionic 4 (comi
 
 First make each of the original [node-red](nodered.org/) UI/editor components into [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Custom_Elements) using [StencilJS](https://stenciljs.com/)
 
-Skeleton stencil components have already been created. Please look inside the `red-vue` package to get an idea and start porting the Vue components there, mainly the `<template>` elements and some minor component logic.
+Please see what has been done so far for `Panel` and `Header` to get an idea.
+Also look at `Library.md` document (under `red-library`) to get an understanding of how to track legacy widget functionlity and convert it or use in a C.E context.
+
+Skeleton stencil components have already been created for most widgets.
+
+Please look inside the `red-vue` package to get an idea. Start porting the Vue components there, mainly the `<template>` elements and some minor component logic.
+
+Start with the simple components (containers) without controller logic, such as `MainContainer`, `Header` etc. Basically any widget with no controller logic exported in `red-widgets`.
+
+```js
+  // header,
+  library,
+  // mainContainer,
+  // nodeDiff,
+  // nodeEditor,
+```
+
+### Stencil - getting started
 
 Some stencil learning resources:
 
@@ -23,6 +40,12 @@ Some stencil learning resources:
 Wrapping the node-red jQuery based components/widgets as native Custom Elements makes it much easier to compose the app and port it for various frameworks etc.
 
 In the end we can reuse the custom elements in a Vue app inside Vue components or in similar fashion in a React, Angular or whatever (dare I say Ionic app!)
+
+## shared assets
+
+Please note that the is a `src/_shared` folder to be used for shared functionality. You could put the `_widgets.ts` file here and iny other resources that act as bridges to external logic, such as the `red-widgets` or `red-shared` package.
+
+Note that the `red-shared` package contains a bunch of static asset files, tests and more that can be useful to include or to use as reference (such as looking at tests etc.)
 
 ## components
 
@@ -41,7 +64,7 @@ An attribute is only ever a string, no other type.
 
 Please note that for now, we want to reuse as much of the existing (legacy) widget logic as possible. We will pass in the Custom Element root element `$el` to the widget controller so that it can take over full control of the renderd DOM for the custom element.
 
-In a stencilJS component, the `$el` is decorated with `@Element` and points to the root element rendered by the `render` function.
+In a StencilJS component, the `$el` is decorated with `@Element` and points to the root element rendered by the `render` function.
 
 ## Example: Header
 

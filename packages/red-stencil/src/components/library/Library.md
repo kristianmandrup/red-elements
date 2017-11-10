@@ -1,5 +1,9 @@
 ## Library
 
+Library detective work...
+
+How to track down the working of existing widgets in order to rework and use them in Custom Elements ;0
+
 ## controller widget
 
 The controller widget for library is a class called `LibraryUI` (note: feel free to rename it to `Library`. Stick with suitable conventions)
@@ -9,12 +13,102 @@ The constructor takes an `options` object with:
 - `type: string` (required)
 - ...
 
-I believe that `ctx._` is a reference to lodash, which used to be available on a global `RED` context object, now simply referenced as `ctx`.
+Now we check originating [node-red editor](https://github.com/tecla5/red-editor) code, to confirm what `_` is.
 
-Note: Please check originating node-red editor code, to confirm if `_` is lodash or some other library!
+It turns out that `ctx._` is a reference to [i18next](https://www.npmjs.com/package/i18next)
+
+```js
+// package.json (node-red)
+  "dependencies": {
+     "i18next": "1.10.6",
+     //...
+```
+
+The `_` shortcut used to be available on a global `RED` context object, now simply referenced as `ctx` (in slightly refactored code of *red-editor*).
+
+```js
+RED["_"] = function() {
+    return i18n.t.apply(null,arguments);
+}
+```
+
+The original *library* code can be found in `library.js` of the *node-red* project:
+
+```js
+function createUI(options) {
+    var libraryData = {};
+    var selectedLibraryItem = null;
+    var libraryEditor = null;
+}
+
+// public API
+module.exports = {
+  init: function() {
+
+      RED.actions.add("core:library-export",exportFlow);
+
+      RED.events.on("view:selection-changed",function(selection) {
+          if (!selection.nodes) {
+              RED.menu.setDisabled("menu-item-export",true);
+      / ...
+  },
+  create: createUI,
+}
+```
+
+We can see that:
+
+- `LibraryUI` class was made to replace the `createUi` function
+- `Library` class was made to replace the `library.init` function
+
+The main `Library` class likely uses and controls one or more `LibraryUI` instances. We see the library initializing its `ui` instance var with a `LibraryUI` instance here.
+
+Note that `createUI(options)` receives the options we are looking to better understand...
+
+```js
+    createUI(options) {
+        var libraryData = {};
+        var selectedLibraryItem = null;
+        var libraryEditor = null;
+
+        // Orion editor has set/getText
+        // ACE editor has set/getValue
+        // normalise to set/getValue
+        if (options.editor.setText) {
+            // Orion doesn't like having pos passed in, so proxy the call to drop it
+            options.editor.setValue = function (text, pos) {
+                options.editor.setText.call(options.editor, text);
+            }
+        }
+        if (options.editor.getText) {
+            options.editor.getValue = options.editor.getText;
+        }
+
+        this.ui = new LibraryUI(options)
+    }
+
+// ...
+
+create: createUI
+```
+
+To make it our detective work a little harder, we see that `createUI` is exposed publicly simply as `create`. So we likely have to look for sth like `library.create` to find where it is instantiated!
+
+We find it used in one of the build in node templates `80-function.html`
+
+```js
+RED.library.create({
+    url:"functions", // where to get the data from
+    type:"function", // the type of object the library is for
+    editor:this.editor, // the field name the main text body goes to
+    mode:"ace/mode/javascript",
+    fields:['name','outputs']
+});
+```
+
+Now we know how to pass some valid arguments which should init it correctly for display and operation :)
 
 ```ts
-import _ from 'lodash'
 
 export class LibraryUI {
     constructor(options) {
@@ -28,14 +122,16 @@ export class LibraryUI {
         );
 ```
 
-We can instead import `lodash` (or whatever lib) as `_` and use it directly.
+We can instead import `i18n` to use as `_` directly.
 
 ```ts
-import _ from 'lodash'
+import i18n from 'i18n'
+// same as: function _(...args) => { i18n.t.apply(null, ...args) }
+const _ = i18n.t
 
 export class LibraryUI {
     constructor(options) {
-      /// ...
+      /// ... lookup translation in 18n by key
       _("library.saveToLibrary") +
 ```
 
