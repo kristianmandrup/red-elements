@@ -1,5 +1,4 @@
 const nightmare = require('../nightmare')
-import test from 'ava'
 import {
   Diff
 } from './ui'
@@ -9,13 +8,13 @@ function create(ctx) {
   return new Diff(ctx)
 }
 
-test('Diff: create', t => {
+test('Diff: create', () => {
   let diff = create(ctx)
-  t.deepEqual(diff.currentDiff, {})
-  t.falsy(diff.diffVisible)
+  expect(diff.currentDiff).toEqual({})
+  expect(diff.diffVisible).toBeFalsy()
 })
 
-test('Diff: buildDiffPanel', t => {
+test('Diff: buildDiffPanel', () => {
   let diff = create(ctx)
   let container = $('#container')
   diff.buildDiffPanel(container)
@@ -23,7 +22,7 @@ test('Diff: buildDiffPanel', t => {
   // use nightmare
 })
 
-test('Diff: formatWireProperty', t => {
+test('Diff: formatWireProperty', () => {
   let diff = create(ctx)
   let container = $('#container')
 
@@ -35,7 +34,7 @@ test('Diff: formatWireProperty', t => {
   // use nightmare
 })
 
-test('Diff: createNodeIcon', t => {
+test('Diff: createNodeIcon', () => {
   let diff = create(ctx)
   // TODO: real data
   let node = {}
@@ -45,7 +44,7 @@ test('Diff: createNodeIcon', t => {
   // use nightmare
 })
 
-test('Diff: createNode', t => {
+test('Diff: createNode', () => {
   let diff = create(ctx)
   // TODO: real data
   let node = {}
@@ -54,7 +53,7 @@ test('Diff: createNode', t => {
 
   // use nightmare
 })
-test('Diff: createNodeDiffRow', t => {
+test('Diff: createNodeDiffRow', () => {
   let diff = create(ctx)
   // TODO: real data
   let node = {}
@@ -63,7 +62,7 @@ test('Diff: createNodeDiffRow', t => {
 
   // use nightmare
 })
-test('Diff: createNodePropertiesTable', t => {
+test('Diff: createNodePropertiesTable', () => {
   let diff = create(ctx)
   // TODO: real data
   let node = {}
@@ -75,7 +74,7 @@ test('Diff: createNodePropertiesTable', t => {
   // use nightmare
 })
 
-test('Diff: createNodeConflictRadioBoxes', t => {
+test('Diff: createNodeConflictRadioBoxes', () => {
   let diff = create(ctx)
   // TODO: real data
   let node = {}
@@ -90,14 +89,14 @@ test('Diff: createNodeConflictRadioBoxes', t => {
   // use nightmare
 })
 
-test('Diff: refreshConflictHeader', t => {
+test('Diff: refreshConflictHeader', () => {
   let diff = create(ctx)
   diff.refreshConflictHeader()
 
   // use nightmare
 })
 
-test('Diff: getRemoteDiff', t => {
+test('Diff: getRemoteDiff', () => {
   let diff = create(ctx)
   let cb = function () {
     return 'x'
@@ -106,14 +105,14 @@ test('Diff: getRemoteDiff', t => {
   // use nightmare
 })
 
-test('Diff: showRemoteDiff', t => {
+test('Diff: showRemoteDiff', () => {
   let diff = create(ctx)
   let difference = {}
   diff.showRemoteDiff(difference)
   // use nightmare
 })
 
-test('Diff: parseNodes', t => {
+test('Diff: parseNodes', () => {
   let diff = create(ctx)
   let node = {
     id: 'x'
@@ -125,7 +124,7 @@ test('Diff: parseNodes', t => {
   // use nightmare
 })
 
-test('Diff: generateDiff', t => {
+test('Diff: generateDiff', () => {
   let diff = create(ctx)
   let node = {
     id: 'x'
@@ -136,7 +135,7 @@ test('Diff: generateDiff', t => {
   // use nightmare
 })
 
-test('Diff: resolveDiffs', t => {
+test('Diff: resolveDiffs', () => {
   let diff = create(ctx)
   let localDiff = {}
   let remoteDiff = {}
@@ -144,14 +143,14 @@ test('Diff: resolveDiffs', t => {
   // use nightmare
 })
 
-test('Diff: showDiff', t => {
+test('Diff: showDiff', () => {
   let diff = create(ctx)
   let difference = {}
   diff.showDiff(difference)
   // use nightmare
 })
 
-test('Diff: mergeDiff', t => {
+test('Diff: mergeDiff', () => {
   let diff = create(ctx)
   let difference = {}
   diff.mergeDiff(difference)

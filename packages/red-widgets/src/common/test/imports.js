@@ -1,12 +1,15 @@
-import test from 'ava'
-const Nightmare = require('nightmare')
-const nightmare = new Nightmare()
+// const Nightmare = require('nightmare')
+// const nightmare = new Nightmare()
+import * as matchers from 'jest-jquery-matchers'
 export {
   controllers
 }
 from '../controllers'
 
-export {
-  test,
-  nightmare
-}
+beforeAll(done => {
+  jest.addMatchers(matchers);
+});
+
+// export {
+// nightmare
+// }

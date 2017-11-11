@@ -1,25 +1,23 @@
-import test from 'ava'
-
-test('main: create', t => {
+test('main: create', () => {
 
 })
 
-test('main: loadNodeList', async t => {
+test('main: loadNodeList', async () => {
 
 })
 
-test('main: loadNodes', async t => {
+test('main: loadNodes', async () => {
 
 })
 
-test('main: loadFlows', async t => {
+test('main: loadFlows', async () => {
 
 })
 
-test('main: showAbout', async t => {
+test('main: showAbout', async () => {
 
 })
 
-test('main: loadEditor', async t => {
+test('main: loadEditor', async () => {
 
 })
