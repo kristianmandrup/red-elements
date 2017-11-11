@@ -23,10 +23,10 @@ from './library'
 // }
 // from './main-container'
 
-// import {
-//   nodeDiff
-// }
-// from './node-diff'
+import {
+  nodeDiff
+}
+from './node-diff'
 
 import {
   nodeEditor
@@ -43,6 +43,7 @@ export const widgets = {
   common,
   // library,
   // nodeEditor,
+  // nodeDiff
   // palette,
   // search,
   // settings,

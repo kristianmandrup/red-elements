@@ -6,11 +6,13 @@ import {
 } from '../controllers'
 
 const {
-  Diff
+  Library,
+  LibraryUI
 } = controllers
 
 export {
   test,
   nightmare,
-  Diff
+  Library,
+  LibraryUI
 }
