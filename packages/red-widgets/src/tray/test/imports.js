@@ -6,11 +6,11 @@ import {
 } from '../controllers'
 
 const {
-  Workspaces
+  Tray
 } = controllers
 
 export {
   test,
   nightmare,
-  Workspaces
+  Tray
 }

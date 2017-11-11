@@ -6,11 +6,17 @@ import {
 } from '../controllers'
 
 const {
-  Workspaces
+  Sidebar,
+  TabConfig,
+  TabInfo,
+  Tips
 } = controllers
 
 export {
   test,
   nightmare,
-  Workspaces
+  Sidebar,
+  TabConfig,
+  TabInfo,
+  Tips
 }

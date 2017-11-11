@@ -6,11 +6,13 @@ import {
 } from '../controllers'
 
 const {
-  Workspaces
+  Search,
+  TypeSearch
 } = controllers
 
 export {
   test,
   nightmare,
-  Workspaces
+  Search,
+  TypeSearch
 }

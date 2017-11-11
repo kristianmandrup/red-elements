@@ -1,8 +1,9 @@
-const nightmare = require('../nightmare')
-import test from 'ava'
 import {
-  Sidebar
-} from './ui'
+  test,
+  nightmare,
+  Sidebar,
+} from '../imports'
+
 const ctx = {}
 
 function create(ctx) {

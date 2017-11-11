@@ -6,11 +6,11 @@ import {
 } from '../controllers'
 
 const {
-  Workspaces
+  UserSettings
 } = controllers
 
 export {
   test,
   nightmare,
-  Workspaces
+  UserSettings
 }
