@@ -1,8 +1,8 @@
-const nightmare = require('../nightmare')
-import test from 'ava'
 import {
+  test,
+  nightmare,
   Palette
-} from '../ui'
+} from '../imports'
 
 test('Editor: semVerCompare', t => {})
 test('Editor: delayCallback', t => {})

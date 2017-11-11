@@ -1,3 +1,7 @@
+import {
+  Context
+} from './context'
+
 export class TypeSearch extends Context {
   constructor(ctx) {
     super(ctx)

@@ -1,8 +1,8 @@
-const nightmare = require('../nightmare')
-import test from 'ava'
 import {
+  test,
+  nightmare,
   Palette
-} from '../ui'
+} from '../imports'
 
 test('Palette: createCategoryContainer', t => {})
 test('Palette: setLabel', t => {})
