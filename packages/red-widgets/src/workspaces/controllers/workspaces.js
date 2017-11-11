@@ -18,7 +18,7 @@ import {
 } from './context'
 import {
   Tabs
-} from '../../src/common/controllers'
+} from '../../common/controllers'
 
 export class Workspaces extends Context {
   createTabs(options) {

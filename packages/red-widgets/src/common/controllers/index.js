@@ -21,7 +21,7 @@ from './tabs'
 import {
   default as CheckboxSet
 }
-from './checkboxSet'
+from './checkbox-set'
 import {
   default as TypedInput
 }
