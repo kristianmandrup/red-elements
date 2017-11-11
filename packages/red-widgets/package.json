@@ -7,7 +7,8 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "test": "ava"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "normalize.css": "^7.0.0",
@@ -25,32 +26,21 @@
   },
   "devDependencies": {
     "ava": "^0.23.0",
-    "nightmare": "^2.10.0",
-    "browser-env": "^2.0.31",
-    "cross-env": "^5.0.0",
     "babel-cli": "^6.24.0",
     "babel-core": "^6.24.1",
+    "babel-jest": "^21.2.0",
     "babel-polyfill": "^6.23.0",
-    "babel-preset-env": "^1.3.1"
+    "babel-preset-env": "^1.3.1",
+    "browser-env": "^2.0.31",
+    "cross-env": "^5.0.0",
+    "enzyme-to-json": "^3.2.2",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^21.2.1",
+    "jest-jquery-matchers": "^1.4.2"
   },
   "babel": {
     "presets": [
       "env"
     ]
-  },
-  "ava": {
-    "files": [
-      "test/**/*.test.js"
-    ],
-    "concurrency": 1,
-    "failFast": true,
-    "failWithoutAssertions": false,
-    "tap": true,
-    "powerAssert": false,
-    "require": [
-      "babel-register",
-      "babel-polyfill"
-    ],
-    "babel": "inherit"
   }
 }
