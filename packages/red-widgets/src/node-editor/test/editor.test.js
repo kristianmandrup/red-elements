@@ -1,8 +1,6 @@
 import {
-  test,
-  nightmare,
   Editor
-} from '../imports'
+} from './imports'
 
 const ctx = {}
 

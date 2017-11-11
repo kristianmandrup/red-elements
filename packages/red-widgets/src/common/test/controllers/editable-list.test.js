@@ -1,6 +1,4 @@
 import {
-  test,
-  nightmare,
   controllers
 } from '../imports'
 

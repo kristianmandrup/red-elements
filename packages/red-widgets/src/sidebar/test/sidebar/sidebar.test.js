@@ -1,6 +1,4 @@
 import {
-  test,
-  nightmare,
   Sidebar,
 } from '../imports'
 

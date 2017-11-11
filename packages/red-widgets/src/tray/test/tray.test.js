@@ -1,12 +1,6 @@
 import {
-  test,
-  nightmare,
-  controllers
-} from '../imports'
-
-const {
   Tray
-} = controllers
+} from './imports'
 
 const ctx = {}
 

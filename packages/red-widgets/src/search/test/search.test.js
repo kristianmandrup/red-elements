@@ -1,8 +1,6 @@
 import {
-  test,
-  nightmare,
   Search
-} from '../imports'
+} from './imports'
 const ctx = {}
 
 function create(ctx) {

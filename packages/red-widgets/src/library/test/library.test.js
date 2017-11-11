@@ -1,10 +1,7 @@
 import {
-  test,
-  nightmare,
   Library,
   LibraryUI
-
-} from '../imports'
+} from './imports'
 
 const ctx = {}
 

@@ -1,6 +1,4 @@
 import {
-  test,
-  nightmare,
   SidebarTabConfig
 } from '../imports'
 

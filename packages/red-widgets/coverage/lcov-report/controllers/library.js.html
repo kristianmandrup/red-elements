@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for controllers/library.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">All files</a> / <a href="index.html">controllers</a> library.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">2.53% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>2/79</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/32</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">6.25% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/16</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">2.53% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>2/79</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+import {
+  Context
+} from './context'
+&nbsp;
+import {
+  default as $
+} from 'jquery'
+&nbsp;
+export class Library extends Context {
+  constructor(ctx) {
+    super(ctx)
+&nbsp;
+    ctx.actions.add("core:library-export", exportFlow);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    ctx.events.on("view:selection-changed", <span class="fstat-no" title="function not covered" >fu</span>nction (selection) {</span>
+<span class="cstat-no" title="statement not covered" >      if (!selection.nodes) {</span>
+<span class="cstat-no" title="statement not covered" >        ctx.menu.setDisabled("menu-item-export", true);</span>
+<span class="cstat-no" title="statement not covered" >        ctx.menu.setDisabled("menu-item-export-clipboard", true);</span>
+<span class="cstat-no" title="statement not covered" >        ctx.menu.setDisabled("menu-item-export-library", true);</span>
+      } else {
+<span class="cstat-no" title="statement not covered" >        ctx.menu.setDisabled("menu-item-export", false);</span>
+<span class="cstat-no" title="statement not covered" >        ctx.menu.setDisabled("menu-item-export-clipboard", false);</span>
+<span class="cstat-no" title="statement not covered" >        ctx.menu.setDisabled("menu-item-export-library", false);</span>
+      }
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (ctx.settings.theme("menu.menu-item-import-library") !== false) {</span>
+<span class="cstat-no" title="statement not covered" >      loadFlowLibrary();</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.exportToLibraryDialog = $('&lt;div id="library-dialog" class="hide"&gt;&lt;form class="dialog-form form-horizontal"&gt;&lt;/form&gt;&lt;/div&gt;')</span>
+      .appendTo("body")
+      .dialog({
+        modal: true,
+        autoOpen: false,
+        width: 500,
+        resizable: false,
+        title: ctx._("library.exportToLibrary"),
+        buttons: [{
+            id: "library-dialog-cancel",
+            text: ctx._("common.label.cancel"),
+            click: <span class="fstat-no" title="function not covered" >fu</span>nction () {
+<span class="cstat-no" title="statement not covered" >              $(this).dialog("close");</span>
+            }
+          },
+          {
+            id: "library-dialog-ok",
+            class: "primary",
+            text: ctx._("common.label.export"),
+            click: <span class="fstat-no" title="function not covered" >fu</span>nction () {
+              //TODO: move this to ctx.library
+              var flowName = <span class="cstat-no" title="statement not covered" >$("#node-input-library-filename").val();</span>
+<span class="cstat-no" title="statement not covered" >              if (!/^\s*$/.test(flowName)) {</span>
+<span class="cstat-no" title="statement not covered" >                $.ajax({</span>
+                  url: 'library/flows/' + flowName,
+                  type: "POST",
+                  data: $("#node-input-library-filename").attr('nodes'),
+                  contentType: "application/json; charset=utf-8"
+                }).done(<span class="fstat-no" title="function not covered" >fu</span>nction () {
+<span class="cstat-no" title="statement not covered" >                  ctx.library.loadFlowLibrary();</span>
+<span class="cstat-no" title="statement not covered" >                  ctx.notify(ctx._("library.savedNodes"), "success");</span>
+                }).fail(<span class="fstat-no" title="function not covered" >fu</span>nction (xhr, textStatus, err) {
+<span class="cstat-no" title="statement not covered" >                  if (xhr.status === 401) {</span>
+<span class="cstat-no" title="statement not covered" >                    ctx.notify(ctx._("library.saveFailed", {</span>
+                      message: ctx._("user.notAuthorized")
+                    }), "error");
+                  } else {
+<span class="cstat-no" title="statement not covered" >                    ctx.notify(ctx._("library.saveFailed", {</span>
+                      message: xhr.responseText
+                    }), "error");
+                  }
+                });
+              }
+<span class="cstat-no" title="statement not covered" >              $(this).dialog("close");</span>
+            }
+          }
+        ],
+        open: <span class="fstat-no" title="function not covered" >fu</span>nction (e) {
+<span class="cstat-no" title="statement not covered" >          $(this).parent().find(".ui-dialog-titlebar-close").hide();</span>
+        },
+        close: <span class="fstat-no" title="function not covered" >fu</span>nction (e) {}
+      });
+<span class="cstat-no" title="statement not covered" >    this.exportToLibraryDialog.children(".dialog-form").append($(</span>
+      '&lt;div class="form-row"&gt;' +
+      '&lt;label for="node-input-library-filename" data-i18n="[append]editor:library.filename"&gt;&lt;i class="fa fa-file"&gt;&lt;/i&gt; &lt;/label&gt;' +
+      '&lt;input type="text" id="node-input-library-filename" data-i18n="[placeholder]editor:library.fullFilenamePlaceholder"&gt;' +
+      '&lt;input type="text" style="display: none;" /&gt;' + // Second hidden input to prevent submit on Enter
+      '&lt;/div&gt;'
+    ));
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  lo</span>adFlowLibrary() {
+<span class="cstat-no" title="statement not covered" >    $.getJSON("library/flows", <span class="fstat-no" title="function not covered" >fu</span>nction (data) {</span>
+      //console.log(data);
+&nbsp;
+      var buildMenu = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >fu</span>nction (data, root) {</span>
+        var i;
+        var li;
+        var a;
+        var ul = <span class="cstat-no" title="statement not covered" >document.createElement("ul");</span>
+<span class="cstat-no" title="statement not covered" >        if (root === "") {</span>
+<span class="cstat-no" title="statement not covered" >          ul.id = "menu-item-import-library-submenu";</span>
+        }
+<span class="cstat-no" title="statement not covered" >        ul.className = "dropdown-menu";</span>
+<span class="cstat-no" title="statement not covered" >        if (data.d) {</span>
+<span class="cstat-no" title="statement not covered" >          for (i in data.d) {</span>
+<span class="cstat-no" title="statement not covered" >            if (data.d.hasOwnProperty(i)) {</span>
+<span class="cstat-no" title="statement not covered" >              li = document.createElement("li");</span>
+<span class="cstat-no" title="statement not covered" >              li.className = "dropdown-submenu pull-left";</span>
+<span class="cstat-no" title="statement not covered" >              a = document.createElement("a");</span>
+<span class="cstat-no" title="statement not covered" >              a.href = "#";</span>
+              var label = <span class="cstat-no" title="statement not covered" >i.replace(/^node-red-contrib-/, "").replace(/^node-red-node-/, "").replace(/-/, " ").replace(/_/, " ");</span>
+<span class="cstat-no" title="statement not covered" >              a.innerHTML = label;</span>
+<span class="cstat-no" title="statement not covered" >              li.appendChild(a);</span>
+<span class="cstat-no" title="statement not covered" >              li.appendChild(buildMenu(data.d[i], root + (root !== "" ? "/" : "") + i));</span>
+<span class="cstat-no" title="statement not covered" >              ul.appendChild(li);</span>
+            }
+          }
+        }
+<span class="cstat-no" title="statement not covered" >        if (data.f) {</span>
+<span class="cstat-no" title="statement not covered" >          for (i in data.f) {</span>
+<span class="cstat-no" title="statement not covered" >            if (data.f.hasOwnProperty(i)) {</span>
+<span class="cstat-no" title="statement not covered" >              li = document.createElement("li");</span>
+<span class="cstat-no" title="statement not covered" >              a = document.createElement("a");</span>
+<span class="cstat-no" title="statement not covered" >              a.href = "#";</span>
+<span class="cstat-no" title="statement not covered" >              a.innerHTML = data.f[i];</span>
+<span class="cstat-no" title="statement not covered" >              a.flowName = root + (root !== "" ? "/" : "") + data.f[i];</span>
+<span class="cstat-no" title="statement not covered" >              a.onclick = <span class="fstat-no" title="function not covered" >fu</span>nction () {</span>
+<span class="cstat-no" title="statement not covered" >                $.get('library/flows/' + this.flowName, <span class="fstat-no" title="function not covered" >fu</span>nction (data) {</span>
+<span class="cstat-no" title="statement not covered" >                  ctx.view.importNodes(data);</span>
+                });
+              };
+<span class="cstat-no" title="statement not covered" >              li.appendChild(a);</span>
+<span class="cstat-no" title="statement not covered" >              ul.appendChild(li);</span>
+            }
+          }
+        }
+<span class="cstat-no" title="statement not covered" >        return ul;</span>
+      };
+      var examples;
+<span class="cstat-no" title="statement not covered" >      if (data.d &amp;&amp; data.d._examples_) {</span>
+<span class="cstat-no" title="statement not covered" >        examples = data.d._examples_;</span>
+<span class="cstat-no" title="statement not covered" >        delete data.d._examples_;</span>
+      }
+      var menu = <span class="cstat-no" title="statement not covered" >buildMenu(data, "");</span>
+<span class="cstat-no" title="statement not covered" >      $("#menu-item-import-examples").remove();</span>
+<span class="cstat-no" title="statement not covered" >      if (examples) {</span>
+<span class="cstat-no" title="statement not covered" >        ctx.menu.addItem("menu-item-import", {</span>
+          id: "menu-item-import-examples",
+          label: ctx._("menu.label.examples"),
+          options: []
+        })
+<span class="cstat-no" title="statement not covered" >        $("#menu-item-import-examples-submenu").replaceWith(buildMenu(examples, "_examples_"));</span>
+      }
+      //TODO: need an api in ctx.menu for this
+<span class="cstat-no" title="statement not covered" >      $("#menu-item-import-library-submenu").replaceWith(menu);</span>
+    });
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  cr</span>eateUI(options) {
+    var libraryData = <span class="cstat-no" title="statement not covered" >{};</span>
+    var selectedLibraryItem = <span class="cstat-no" title="statement not covered" >null;</span>
+    var libraryEditor = <span class="cstat-no" title="statement not covered" >null;</span>
+&nbsp;
+    // Orion editor has set/getText
+    // ACE editor has set/getValue
+    // normalise to set/getValue
+<span class="cstat-no" title="statement not covered" >    if (options.editor.setText) {</span>
+      // Orion doesn't like having pos passed in, so proxy the call to drop it
+<span class="cstat-no" title="statement not covered" >      options.editor.setValue = <span class="fstat-no" title="function not covered" >fu</span>nction (text, pos) {</span>
+<span class="cstat-no" title="statement not covered" >        options.editor.setText.call(options.editor, text);</span>
+      }
+    }
+<span class="cstat-no" title="statement not covered" >    if (options.editor.getText) {</span>
+<span class="cstat-no" title="statement not covered" >      options.editor.getValue = options.editor.getText;</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.ui = new LibraryUI(options)</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ex</span>portFlow() {
+    let ctx = <span class="cstat-no" title="statement not covered" >this.ctx</span>
+    //TODO: don't rely on the main dialog
+    var nns = <span class="cstat-no" title="statement not covered" >ctx.nodes.createExportableNodeSet(ctx.view.selection().nodes);</span>
+<span class="cstat-no" title="statement not covered" >    $("#node-input-library-filename").attr('nodes', JSON.stringify(nns));</span>
+<span class="cstat-no" title="statement not covered" >    this.exportToLibraryDialog.dialog("open");</span>
+  }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sat Nov 11 2017 18:55:58 GMT+0100 (CET)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

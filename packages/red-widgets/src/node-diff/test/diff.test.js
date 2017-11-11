@@ -1,7 +1,6 @@
-const nightmare = require('../nightmare')
 import {
   Diff
-} from './ui'
+} from './imports'
 const ctx = {}
 
 function create(ctx) {

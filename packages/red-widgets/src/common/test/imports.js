@@ -9,7 +9,3 @@ from '../controllers'
 beforeAll(done => {
   jest.addMatchers(matchers);
 });
-
-// export {
-// nightmare
-// }

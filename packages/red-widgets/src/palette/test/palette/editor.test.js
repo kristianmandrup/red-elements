@@ -1,6 +1,4 @@
 import {
-  test,
-  nightmare,
   Palette
 } from '../imports'
 

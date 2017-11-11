@@ -1,8 +1,6 @@
 import {
-  test,
-  nightmare,
   TypeSearch
-} from '../imports'
+} from './imports'
 const ctx = {}
 
 function create(ctx) {

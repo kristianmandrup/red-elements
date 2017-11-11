@@ -1,6 +1,4 @@
 import {
-  test,
-  nightmare,
   Tip,
   SidebarTabInfo
 } from '../imports'
