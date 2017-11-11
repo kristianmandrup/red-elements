@@ -97,6 +97,10 @@ toHaveDescendantWithText
 
 - [jest-codemods](https://github.com/skovhus/jest-codemods)
 
+`npm i -g jest-codemods`
+
+`jest-codemods`
+
 ## E2E testing with Karma
 
 An alternative...
