@@ -6,6 +6,8 @@ const {
   Stack
 } = controllers
 
+const clazz = Stack
+
 test('Stack: is a class', t => {
-  t.is(typeof Stack, 'function')
+  expect(typeof clazz).toBe('function')
 })

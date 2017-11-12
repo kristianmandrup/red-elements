@@ -6,6 +6,8 @@ const {
   Tabs
 } = controllers
 
+const clazz = Tabs
+
 test('Tabs: is a class', t => {
-  t.is(typeof Tabs, 'function')
+  expect(typeof clazz).toBe('function')
 })

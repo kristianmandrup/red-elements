@@ -6,6 +6,8 @@ const {
   CheckboxSet
 } = controllers
 
+const clazz = CheckboxSet
+
 test('CheckboxSet: is a class', t => {
-  t.is(typeof CheckboxSet, 'function')
+  expect(typeof clazz).toBe('function')
 })

@@ -6,6 +6,8 @@ const {
   Searchbox
 } = controllers
 
+const clazz = Searchbox
+
 test('Searchbox: is a class', t => {
-  t.is(typeof Searchbox, 'function')
+  expect(typeof clazz).toBe('function')
 })

@@ -6,6 +6,8 @@ const {
   EditableList
 } = controllers
 
+const clazz = EditableList
+
 test('EditableList: is a class', t => {
-  t.is(typeof EditableList, 'function')
+  expect(typeof clazz).toBe('function')
 })

@@ -4,11 +4,30 @@
 
 We use the following testing stack for headless browser testing (E2E) on Travic CI.
 
+`red-elements $ jest src/common/test/controllers/panels.test.js`
+
+## Syntax: Expectations & Globals
+
+- [Expectations](https://facebook.github.io/jest/docs/en/expect.html)
+- [Globals](https://facebook.github.io/jest/docs/en/api.html)
+
+```js
+test('the best flavor is grapefruit', () => {
+  expect(bestLaCroixFlavor()).toBe('grapefruit')
+})
+```
+
+## Jest tooling
+
+- [VS Code jest plugin](https://github.com/orta/vscode-jest) - just AWESOME!!!
+
 ## Jest stack
 
 - [Jest next generation testing](https://codeburst.io/jest-the-next-generation-testing-8a6ee7c14656)
 - [Jest JQuery tutorial](https://facebook.github.io/jest/docs/en/tutorial-jquery.html)
 - [Jest & jQuery for testing](https://www.phpied.com/jest-jquery-testing-vanilla-app/)
+- [Unit testing beginners guide](https://www.jstwister.com/post/unit-testing-beginners-guide-testing-functions/)
+- [UI testing with Jest and Puppeteer](https://www.valentinog.com/blog/ui-testing-jest-puppetteer/)
 - [Jest Egghead tutorial videos](https://egghead.io/playlists/testing-javascript-with-jest-a36c4074)
 - [Migrating to Jest](https://blog.kentcdodds.com/migrating-to-jest-881f75366e7e)
 

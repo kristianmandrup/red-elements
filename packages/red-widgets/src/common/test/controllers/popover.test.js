@@ -6,6 +6,8 @@ const {
   Popover
 } = controllers
 
+const clazz = Popover
+
 test('Popover: is a class', t => {
-  t.is(typeof Popover, 'function')
+  expect(typeof clazz).toBe('function')
 })

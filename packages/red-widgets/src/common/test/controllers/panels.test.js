@@ -6,6 +6,10 @@ const {
   Panel
 } = controllers
 
-test('Panel: is a class', t => {
-  t.is(typeof Panel, 'function')
+const clazz = Panel
+
+describe('Panel', () => {
+  test('is a class', t => {
+    expect(typeof clazz).toBe('function')
+  })
 })

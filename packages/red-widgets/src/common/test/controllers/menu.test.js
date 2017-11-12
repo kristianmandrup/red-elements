@@ -6,6 +6,8 @@ const {
   Menu
 } = controllers
 
+const clazz = Menu
+
 test('Menu: is a class', t => {
-  t.is(typeof Menu, 'function')
+  expect(typeof clazz).toBe('function')
 })

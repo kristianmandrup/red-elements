@@ -6,6 +6,8 @@ const {
   TypedInput
 } = controllers
 
+const clazz = TypedInput
+
 test('TypedInput: is a class', t => {
-  t.is(typeof TypedInput, 'function')
+  expect(typeof clazz).toBe('function')
 })
