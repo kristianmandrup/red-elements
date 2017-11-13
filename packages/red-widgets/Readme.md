@@ -11,7 +11,17 @@ We use the following testing stack for headless browser testing (E2E) on Travic 
 - [Expectations](https://facebook.github.io/jest/docs/en/expect.html)
 - [Globals](https://facebook.github.io/jest/docs/en/api.html)
 
+Note: You need `jest-cli` installed for the project.
+
 ```js
+describe('sum', () => {
+  it('adds 1 + 1 = 2', t => {
+    expect(1 + 1).toBe(2)
+  })
+})
+
+// or using test
+
 test('the best flavor is grapefruit', () => {
   expect(bestLaCroixFlavor()).toBe('grapefruit')
 })
