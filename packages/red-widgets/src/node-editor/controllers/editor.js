@@ -54,7 +54,7 @@ export class Editor extends Context {
   }
 
   getCredentialsURL(nodeType, nodeID) {
-    var dashedType = nodeType.replace(/\s+/g, '-');
+    const dashedType = nodeType.replace(/\s+/g, '-');
     return 'credentials/' + dashedType + "/" + nodeID;
   }
 
@@ -787,6 +787,11 @@ export class Editor extends Context {
   }
 
   showEditDialog(node) {
+    let {
+      editStack,
+      ctx
+    } = this
+
     var editing_node = node;
     editStack.push(node);
     ctx.view.state(ctx.state.EDITING);
@@ -1179,6 +1184,9 @@ export class Editor extends Context {
    * prefix - the input prefix of the parent property
    */
   showEditConfigNodeDialog(name, type, id, prefix) {
+    let {
+      ctx
+    } = this
     var adding = (id == "_ADD_");
     var node_def = ctx.nodes.getType(type);
     var editing_config_node = ctx.nodes.node(id);
@@ -1578,6 +1586,10 @@ export class Editor extends Context {
   }
 
   showEditSubflowDialog(subflow) {
+    let {
+      ctx,
+      editStack
+    } = this
     var editing_node = subflow;
     editStack.push(subflow);
     ctx.view.state(ctx.state.EDITING);

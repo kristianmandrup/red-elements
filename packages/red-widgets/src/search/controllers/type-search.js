@@ -254,6 +254,13 @@ export class TypeSearch extends Context {
   }
 
   hide(fast) {
+    let {
+      visible,
+      searchResultsDiv,
+      searchInput,
+      RED
+    } = this
+
     if (visible) {
       RED.keyboard.remove("escape");
       visible = false;
@@ -286,6 +293,15 @@ export class TypeSearch extends Context {
   }
 
   refreshTypeList() {
+    let {
+      visible,
+      searchResultsDiv,
+      searchResults,
+      searchInput,
+      selected,
+      RED
+    } = this
+
     var i;
     searchResults.editableList('empty');
     searchInput.searchBox('value', '');
@@ -362,6 +378,4 @@ export class TypeSearch extends Context {
       searchResults.children(":first").addClass('selected');
     }, 100);
   }
-
-
 }
