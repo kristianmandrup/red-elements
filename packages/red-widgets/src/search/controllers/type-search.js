@@ -1,6 +1,9 @@
 import {
   Context
 } from './context'
+import {
+  default as $
+} from 'jquery'
 
 export class TypeSearch extends Context {
   constructor(ctx = {}) {
@@ -61,11 +64,14 @@ export class TypeSearch extends Context {
       searchResults,
       selected,
       searchResultsDiv,
+      dialog,
+      confirm,
       RED
     } = this
+    confirm = confirm.bind(this)
 
     //shade = $('<div>',{class:"red-ui-type-search-shade"}).appendTo("#main-container");
-    const dialog = $("<div>", {
+    dialog = $("<div>", {
       id: "red-ui-type-search",
       class: "red-ui-search red-ui-type-search"
     }).appendTo("#main-container");
@@ -191,8 +197,11 @@ export class TypeSearch extends Context {
 
   confirm(def) {
     let {
-      typesUsed
+      typesUsed,
+      hide,
+      addCallback
     } = this
+    hide = hide.bind(this)
     hide();
     typesUsed[def.type] = Date.now();
     addCallback(def.type);
@@ -219,8 +228,12 @@ export class TypeSearch extends Context {
       visible,
       searchResultsDiv,
       searchInput,
+      dialog,
+      createDialog,
+      addCallback,
       RED
     } = this
+    createDialog = createDialog.bind(this)
     if (!visible) {
       RED.keyboard.add("*", "escape", () => {
         hide()

@@ -1,7 +1,13 @@
 import {
   TypeSearch
 } from './imports'
-const ctx = {}
+import {
+  default as i18n
+} from 'i18next'
+
+const ctx = {
+  _: i18n.t
+}
 
 function create(ctx) {
   return new TypeSearch(ctx)
@@ -42,11 +48,25 @@ test('TypeSearch: confirm', () => {
 
 test('TypeSearch: handleMouseActivity', () => {
   let def = {}
+  let evt = (ev) => {
+    console.log({
+      ev
+    })
+  }
   ts.handleMouseActivity(evt)
   // use nightmare
 })
 
 test('TypeSearch: show', () => {
+  let _ctx = Object.assign({
+    keyboard: {
+      add() {
+
+      }
+    }
+
+  }, ctx)
+  ts = create(_ctx)
   let opts = {}
   ts.show(opts)
   // use nightmare
