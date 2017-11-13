@@ -31,7 +31,7 @@ import {
 }
 from './editable-list'
 import {
-  default as SearchBox
+  default as Searchbox
 }
 from './search-box'
 
@@ -44,7 +44,7 @@ export const controllers = {
   CheckboxSet,
   TypedInput,
   EditableList,
-  SearchBox
+  Searchbox
 }
 
 export default controllers
@@ -58,5 +58,5 @@ export {
   CheckboxSet,
   TypedInput,
   EditableList,
-  SearchBox
+  Searchbox
 }

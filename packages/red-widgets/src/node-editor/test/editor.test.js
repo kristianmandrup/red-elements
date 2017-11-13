@@ -156,7 +156,7 @@ test('Editor: updateNodeCredentials', () => {
   // use nightmare
 })
 
-test.cb('Editor: prepareEditDialog', () => {
+test('Editor: prepareEditDialog', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -166,7 +166,6 @@ test.cb('Editor: prepareEditDialog', () => {
   editor.prepareEditDialog(node, definition, prefix, () => {
     // use nightmare
     // t.is()
-    t.end()
   })
 })
 
@@ -174,7 +173,7 @@ test('Editor: getEditStackTitle', () => {
   let editor = create(ctx)
   let expected = 'my-title'
   let title = editor.getEditStackTitle()
-  t.is(title, expected)
+  expect(title).toBe(expected)
 })
 
 test('Editor: buildEditForm', () => {

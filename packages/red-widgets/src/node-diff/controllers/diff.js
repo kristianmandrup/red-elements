@@ -2,7 +2,7 @@ import {
   Context
 } from './context'
 
-class Diff extends Context {
+export class Diff extends Context {
   constructor(ctx) {
     super(ctx)
     const RED = ctx
