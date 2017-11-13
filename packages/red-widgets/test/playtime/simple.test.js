@@ -1,6 +1,3 @@
-// var describe: jest.Describe(name: string, fn: jest.EmptyFunction) => void
-describe('sum', () => {
-  it('adds 1 + 1 = 2', t => {
-    expect(1 + 1).toBe(2)
-  })
+test('sum: 1+2 = 2', () => {
+  expect(1 + 1).toBe(2)
 })

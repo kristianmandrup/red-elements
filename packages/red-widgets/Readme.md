@@ -27,6 +27,22 @@ test('the best flavor is grapefruit', () => {
 })
 ```
 
+## Troubleshooting
+
+[Timeout - unresolved promise](https://facebook.github.io/jest/docs/en/troubleshooting.html#unresolved-promises)
+
+Try:
+
+```js
+global.Promise = require.requireActual('promise');
+```
+
+Run jest with debugger
+
+```bash
+$ node --inspect-brk node_modules/.bin/jest --runInBand test/playtime/simple.test.js
+```
+
 ## Jest tooling
 
 - [VS Code jest plugin](https://github.com/orta/vscode-jest) - just AWESOME!!!
@@ -147,4 +163,16 @@ An alternative...
   "karma-sourcemap-loader": "^0.3.7",
   "karma-webpack": "^2.0.6",
   "nightmare": "^2.10.0"
+```
+
+### Babel config
+
+In `package.json`
+
+```js
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  }
 ```
