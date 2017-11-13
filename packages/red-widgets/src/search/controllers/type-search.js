@@ -4,6 +4,9 @@ import {
 import {
   default as $
 } from 'jquery'
+const {
+  log
+} = console
 
 export class TypeSearch extends Context {
   constructor(ctx = {}) {
@@ -70,15 +73,39 @@ export class TypeSearch extends Context {
     } = this
     confirm = confirm.bind(this)
 
+    // debugging
+    let mainContainer = $('#main-container')
+    log({
+      body: document.body.innerHTML,
+      mainContainer
+    })
+
     //shade = $('<div>',{class:"red-ui-type-search-shade"}).appendTo("#main-container");
     dialog = $("<div>", {
       id: "red-ui-type-search",
       class: "red-ui-search red-ui-type-search"
-    }).appendTo("#main-container");
+    }).appendTo(mainContainer);
+
+    log({
+      dialog
+    })
+
     const searchDiv = $("<div>", {
       class: "red-ui-search-container"
     }).appendTo(dialog);
-    const searchInput = $('<input type="text">').attr("placeholder", RED._("search.addNode")).appendTo(searchDiv).searchBox({
+
+    log({
+      searchDiv
+    })
+
+    const caption = RED._("search.addNode")
+    const inputWPlaceholder = $('<input type="text">').attr("placeholder", caption)
+    let fullSearchDiv = inputWPlaceholder.appendTo(searchDiv)
+    log({
+      fullSearchDiv
+    })
+    // requires jQuery widget 'searchBox' is registered
+    const searchInput = fullSearchDiv.searchBox({
       delay: 50,
       change: () => {
         search($(this).val());

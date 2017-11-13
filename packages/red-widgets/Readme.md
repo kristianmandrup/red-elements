@@ -102,7 +102,19 @@ $ node --inspect-brk node_modules/.bin/jest --runInBand test/playtime/simple.tes
 
 ### jest jQuery testing
 
-File under test doing some jQuery ops:
+The thing about Jest is that it mocks everything. Which is priceless for unit testing. But it also means you need to declare when you don't want something mocked. Starting the new test with:
+
+```js
+jest
+  .dontMock('fs')
+  .dontMock('jquery');
+
+var $ = require('jquery');
+var html = require('fs')
+  .readFileSync('./app.html').toString();
+```
+
+Test doing some jQuery operations:
 
 ```js
 const $ = require('jquery');

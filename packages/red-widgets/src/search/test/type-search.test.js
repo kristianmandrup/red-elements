@@ -5,9 +5,23 @@ import {
   default as i18n
 } from 'i18next'
 
+const path = require('path');
+const $ = require('jquery');
+const fs = require('fs')
+const {
+  log
+} = console
+
+// const translate = i18n.t
+const translate = (label) => label
+
 const ctx = {
-  _: i18n.t
+  _: translate
 }
+
+jest
+  .dontMock('fs')
+  .dontMock('jquery')
 
 function create(ctx) {
   return new TypeSearch(ctx)
@@ -16,6 +30,18 @@ function create(ctx) {
 let ts
 beforeEach(() => {
   ts = new TypeSearch(ctx)
+})
+
+function readPage(name) {
+  const filePath = path.join(__dirname, `./app/${name}.html`)
+
+  return fs.readFileSync(filePath).toString();
+}
+
+const html = readPage('simple')
+
+beforeAll(() => {
+  document.documentElement.innerHTML = html
 })
 
 test('TypeSearch: create', () => {
@@ -35,7 +61,7 @@ test('TypeSearch: ensureSelectedIsVisible', () => {
   // use nightmare
 })
 
-test('TypeSearch: createDialog', () => {
+test.only('TypeSearch: createDialog', () => {
   ts.createDialog()
   // use nightmare
 })
