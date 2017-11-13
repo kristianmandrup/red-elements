@@ -150,10 +150,13 @@ export class TypeSearch extends Context {
     searchResultsDiv = $("<div>", {
       class: "red-ui-search-results-container"
     }).appendTo(dialog);
-    searchResults = $('<ol>', {
+
+    let withSearchResults = $('<ol>', {
       id: "search-result-list",
       style: "position: absolute;top: 0;bottom: 0;left: 0;right: 0;"
-    }).appendTo(searchResultsDiv).editableList({
+    }).appendTo(searchResultsDiv)
+
+    searchResults = withSearchResults.editableList({
       addButton: false,
       filter: (data) => {
         if (activeFilter === "") {

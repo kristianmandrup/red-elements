@@ -5,6 +5,15 @@ import {
   controllers
 } from '../controllers'
 
+import {
+  common
+} from '../../'
+
+const {
+  Searchbox,
+  EditableList
+} = common.controllers
+
 beforeAll(() => {
   jest.addMatchers(matchers);
 });
@@ -17,5 +26,7 @@ const {
 export {
   // nightmare,
   Search,
-  TypeSearch
+  TypeSearch,
+  Searchbox,
+  EditableList
 }

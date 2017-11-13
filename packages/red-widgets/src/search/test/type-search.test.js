@@ -1,13 +1,13 @@
 import {
-  TypeSearch
+  TypeSearch,
+  Searchbox,
+  EditableList
 } from './imports'
 import {
   default as i18n
 } from 'i18next'
 
 const path = require('path');
-const $ = require('jquery');
-const fs = require('fs')
 const {
   log
 } = console
@@ -22,6 +22,17 @@ const ctx = {
 jest
   .dontMock('fs')
   .dontMock('jquery')
+
+const $ = require('jquery');
+const fs = require('fs')
+
+global.$ = $
+// log({
+//   $: global.$
+// })
+
+global.jQuery = global.$
+require('jquery-ui-dist/jquery-ui')
 
 function create(ctx) {
   return new TypeSearch(ctx)
@@ -40,7 +51,14 @@ function readPage(name) {
 
 const html = readPage('simple')
 
+let RED = {
+
+}
+
 beforeAll(() => {
+  Searchbox(RED)
+  EditableList(RED)
+
   document.documentElement.innerHTML = html
 })
 

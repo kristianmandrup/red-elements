@@ -23,7 +23,9 @@ export default factory
 
 function factory(RED) {
   (function ($) {
-    log('creating searchBox widget')
+    log('creating searchBox widget: nodered.searchBox', {
+      $widget: $.widget
+    })
 
     $.widget("nodered.searchBox", {
       _create: function () {
