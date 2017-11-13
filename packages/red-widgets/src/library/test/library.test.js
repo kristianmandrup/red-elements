@@ -9,12 +9,12 @@ function create(ctx) {
   return new Library(ctx)
 }
 
-test('Library: create', t => {
+test('Library: create', () => {
   let library = create(ctx)
   t.is(typeof library.exportToLibraryDialog, 'object')
 })
 
-test('Library: loadFlowLibrary', t => {
+test('Library: loadFlowLibrary', () => {
   let library = create(ctx)
   library.loadFlowLibrary()
   // makes AJAX call to get JSON data
@@ -23,7 +23,7 @@ test('Library: loadFlowLibrary', t => {
   // use nightmare to test UI update
 })
 
-test('Library: createUI', t => {
+test('Library: createUI', () => {
   let library = create(ctx)
   let options = {}
   library.createUI(options)
@@ -32,7 +32,7 @@ test('Library: createUI', t => {
   // use nightmare to test UI update of editor
 })
 
-test('Library: exportFlow', t => {
+test('Library: exportFlow', () => {
   let library = create(ctx)
   let options = {}
   library.exportFlow()
@@ -45,12 +45,12 @@ function createUi(ctx) {
 }
 
 
-test('LibraryUI: create', t => {
+test('LibraryUI: create', () => {
   let ui = createUi(ctx)
   t.is(typeof ui, 'object')
 })
 
-test('LibraryUI: buildFileListItem', t => {
+test('LibraryUI: buildFileListItem', () => {
   let ui = createUi(ctx)
   let item = {
 
@@ -59,7 +59,7 @@ test('LibraryUI: buildFileListItem', t => {
   // use nightmare to test returned li element
 })
 
-test('LibraryUI: buildFileList', t => {
+test('LibraryUI: buildFileList', () => {
   let ui = createUi(ctx)
   let root = {} // document element?
   let data = {
@@ -69,7 +69,7 @@ test('LibraryUI: buildFileList', t => {
   // use nightmare to test returned ul element
 })
 
-test('LibraryUI: saveToLibrary', t => {
+test('LibraryUI: saveToLibrary', () => {
   let ui = createUi(ctx)
   let root = {} // document element?
   let overwrite = true

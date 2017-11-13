@@ -15,7 +15,7 @@ Note: You need `jest-cli` installed for the project.
 
 ```js
 describe('sum', () => {
-  it('adds 1 + 1 = 2', t => {
+  it('adds 1 + 1 = 2', () => {
     expect(1 + 1).toBe(2)
   })
 })

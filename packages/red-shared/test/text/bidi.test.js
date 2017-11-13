@@ -4,4 +4,4 @@ import {
   Bidi
 } from './text'
 
-test('Bidi: create', t => {})
+test('Bidi: create', () => {})

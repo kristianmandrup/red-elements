@@ -9,12 +9,12 @@ function create(ctx) {
   return new UserSettings(ctx)
 }
 
-test('UserSettings: create', t => {
+test('UserSettings: create', () => {
   let settings = create(ctx)
   t.deepEqual(settings.viewSettings, {})
 })
 
-test('UserSettings: addPane', t => {
+test('UserSettings: addPane', () => {
   let settings = create(ctx)
   let options = {
     id: 'x'
@@ -24,23 +24,23 @@ test('UserSettings: addPane', t => {
   t.deepEqual(pane, options)
 })
 
-test('UserSettings: show', t => {
+test('UserSettings: show', () => {
   let settings = create(ctx)
   let initialTab = {}
   settings.show(initialTab)
 })
 
-test('UserSettings: createViewPane', t => {
+test('UserSettings: createViewPane', () => {
   let settings = create(ctx)
   settings.createViewPane()
 })
 
-test('UserSettings: setSelected', t => {
+test('UserSettings: setSelected', () => {
   let settings = create(ctx)
   settings.setSelected(id, value)
 })
 
-test('UserSettings: toggle', t => {
+test('UserSettings: toggle', () => {
   let settings = create(ctx)
   let id = 'x'
   settings.toggle(id)

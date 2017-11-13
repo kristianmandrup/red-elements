@@ -9,12 +9,12 @@ function create(ctx) {
   return new Validators(ctx)
 }
 
-test('validators: create', t => {
+test('validators: create', () => {
   let v = create(ctx)
   t.is(typeof v, 'object')
 })
 
-test('validators: number', t => {
+test('validators: number', () => {
   let v = create(ctx)
   let withBlanks = v.number(true)
   t.true(withBlanks('2'))
@@ -25,7 +25,7 @@ test('validators: number', t => {
   t.false(noBlanks(' 5 '))
 })
 
-test('validators: regex', t => {
+test('validators: regex', () => {
   let v = create(ctx)
   let exp = /\d+/
   let re = v.regex(exp)
@@ -33,13 +33,13 @@ test('validators: regex', t => {
   t.false(re(' 5'))
 })
 
-test('validators: typedInput - number', t => {
+test('validators: typedInput - number', () => {
   let v = create(ctx)
   let num = v.typedInput('num', true)
   t.true(num('2'))
 })
 
-test('validators: typedInput - flow', t => {
+test('validators: typedInput - flow', () => {
   let v = create(ctx)
   let flow = v.typedInput('flow', false)
   t.false(flow('2'))

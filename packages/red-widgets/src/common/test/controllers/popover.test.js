@@ -8,6 +8,6 @@ const {
 
 const clazz = Popover
 
-test('Popover: is a class', t => {
+test('Popover: is a class', () => {
   expect(typeof clazz).toBe('function')
 })

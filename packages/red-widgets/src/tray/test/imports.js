@@ -1,5 +1,5 @@
 import * as matchers from 'jest-jquery-matchers'
-beforeAll(done => {
+beforeAll(() => {
   jest.addMatchers(matchers);
 });
 

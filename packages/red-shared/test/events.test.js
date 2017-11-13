@@ -14,19 +14,19 @@ function func(event) {
   return ':' + event
 }
 
-test('Events: create', t => {
+test('Events: create', () => {
   let events = create(ctx)
   t.deepEqual(handlers, {})
 })
 
-test('events: on', t => {
+test('events: on', () => {
   let events = create(ctx)
   events.on(evt, func)
 
   t.is(handlers[evt], func)
 })
 
-test('events: off', t => {
+test('events: off', () => {
   let events = create(ctx)
   events.on(evt, func)
   t.is(handlers[evt], func)
@@ -35,7 +35,7 @@ test('events: off', t => {
   t.is(handlers[evt], null)
 })
 
-test('events: emit', async t => {
+test('events: emit', async() => {
   let events = create(ctx)
   events.on(evt, func)
   let result = events.emit(evt)

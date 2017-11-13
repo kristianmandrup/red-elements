@@ -9,12 +9,12 @@ function create(ctx) {
   return new Search(ctx)
 }
 
-test('Search: create', t => {
+test('Search: create', () => {
   let search = create(ctx)
   t.falsy(search.disabled)
 })
 
-test('Search: indexNode', t => {
+test('Search: indexNode', () => {
   let search = create(ctx)
   let n = {
     id: 'x',
@@ -26,10 +26,10 @@ test('Search: indexNode', t => {
   t.is(indexed, n)
 })
 
-test('Search: indexWorkspace', t => {})
-test('Search: search', t => {})
-test('Search: ensureSelectedIsVisible', t => {})
-test('Search: createDialog', t => {})
-test('Search: reveal', t => {})
-test('Search: show', t => {})
-test('Search: hide', t => {})
+test('Search: indexWorkspace', () => {})
+test('Search: search', () => {})
+test('Search: ensureSelectedIsVisible', () => {})
+test('Search: createDialog', () => {})
+test('Search: reveal', () => {})
+test('Search: show', () => {})
+test('Search: hide', () => {})

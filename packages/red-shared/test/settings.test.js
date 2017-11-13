@@ -9,23 +9,23 @@ function create(ctx) {
   return new Settings(ctx)
 }
 
-test('settings: create', t => {
+test('settings: create', () => {
   const settings = create(ctx)
   t.is(typeof settings.loadedSettings, 'object')
 })
 
-test('settings: init', async t => {
+test('settings: init', async() => {
   const settings = create(ctx)
   // TODO: change done callback to async with promise
   await settings.init()
 })
 
-test('settings: localstorage', t => {
+test('settings: localstorage', () => {
   const settings = create(ctx)
   t.true(settings.hasLocalStorage())
 })
 
-test('settings: properties', t => {
+test('settings: properties', () => {
   const settings = create(ctx)
   const data = {
     x: 2
@@ -36,13 +36,13 @@ test('settings: properties', t => {
 })
 
 // called by init
-test('settings: load', async t => {
+test('settings: load', async() => {
   const settings = create(ctx)
   // TODO: change done callback to async with promise
   await settings.load()
 })
 
-test('settings: theme', t => {
+test('settings: theme', () => {
   const settings = create(ctx)
   let defaultValue = true
   // test real theme values

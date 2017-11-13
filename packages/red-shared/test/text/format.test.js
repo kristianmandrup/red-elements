@@ -4,4 +4,4 @@ import {
   TextFormat
 } from './text'
 
-test('TextFormat: create', t => {})
+test('TextFormat: create', () => {})

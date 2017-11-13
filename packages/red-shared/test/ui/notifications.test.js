@@ -9,13 +9,13 @@ function create(ctx) {
   return new Notifications(ctx)
 }
 
-test('Notifications: create', t => {
+test('Notifications: create', () => {
   let notifications = create(ctx)
   t.is(notifications.c, 0)
   t.deepEqual(notifications.currentNotifications, [])
 })
 
-test('Notifications: notify', t => {
+test('Notifications: notify', () => {
   let notifications = create(ctx)
   let msg = 'hello'
   let type = 'info'
@@ -24,7 +24,7 @@ test('Notifications: notify', t => {
   t.is(notified.className, 'notification')
 })
 
-test('Notifications: notify - fixed', t => {
+test('Notifications: notify - fixed', () => {
   let notifications = create(ctx)
   let msg = 'hello'
   let type = 'info'
@@ -33,7 +33,7 @@ test('Notifications: notify - fixed', t => {
   let elem = notifications.notify(msg, type, fixed, timeout)
 })
 
-test('Notifications: notify - timeout', t => {
+test('Notifications: notify - timeout', () => {
   let notifications = create(ctx)
   let msg = 'hello'
   let type = 'info'

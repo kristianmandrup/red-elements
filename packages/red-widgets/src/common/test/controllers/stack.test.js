@@ -8,6 +8,6 @@ const {
 
 const clazz = Stack
 
-test('Stack: is a class', t => {
+test('Stack: is a class', () => {
   expect(typeof clazz).toBe('function')
 })

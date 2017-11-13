@@ -9,7 +9,7 @@ function create(ctx) {
   return new View(ctx)
 }
 
-test('View: create', t => {
+test('View: create', () => {
   let diff = create(ctx)
   t.deepEqual(diff.currentDiff, {})
   t.falsy(diff.diffVisible)

@@ -9,13 +9,13 @@ function create(ctx) {
   return new History(ctx)
 }
 
-test('history: create', t => {
+test('history: create', () => {
   let history = create(ctx)
   t.deepEqual(history.undo_history, [])
 
 })
 
-test('history: peek', t => {
+test('history: peek', () => {
   let history = create(ctx)
   let ev = {
     id: 'a'
@@ -25,7 +25,7 @@ test('history: peek', t => {
   t.is(latest, ev)
 })
 
-test('history: push', t => {
+test('history: push', () => {
   let history = create(ctx)
   let ev = {
     id: 'a'
@@ -35,7 +35,7 @@ test('history: push', t => {
   t.is(latest, ev)
 })
 
-test('history: pop', t => {
+test('history: pop', () => {
   let history = create(ctx)
   let evA = {
     id: 'a'
@@ -56,7 +56,7 @@ test('history: pop', t => {
   t.is(latest, evA)
 })
 
-test('history: list', t => {
+test('history: list', () => {
   let history = create(ctx)
   let evA = {
     id: 'a'
@@ -71,7 +71,7 @@ test('history: list', t => {
   t.is(list[1], evB)
 })
 
-test('history: depth', t => {
+test('history: depth', () => {
   let history = create(ctx)
   let evA = {
     id: 'a'
@@ -85,7 +85,7 @@ test('history: depth', t => {
   t.is(depth, 2)
 })
 
-test('history: markAllDirty', t => {
+test('history: markAllDirty', () => {
   let history = create(ctx)
   let evA = {
     id: 'a'

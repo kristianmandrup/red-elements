@@ -10,7 +10,7 @@ function create(ctx) {
   return new Clipboard(ctx)
 }
 
-test('Clipboard: create', t => {
+test('Clipboard: create', () => {
   let clipboard = create(ctx)
   t.falsy(clipboard.disabled)
 
@@ -20,40 +20,40 @@ test('Clipboard: create', t => {
   // body
 })
 
-test('Clipboard: setupDialogs', t => {
+test('Clipboard: setupDialogs', () => {
   let clipboard = create(ctx)
   clipboard.setupDialogs()
 })
 
-test('Clipboard: validateImport', t => {
+test('Clipboard: validateImport', () => {
   let clipboard = create(ctx)
   clipboard.validateImport()
 
   // use nightmare
 })
 
-test('Clipboard: importNodes', t => {
+test('Clipboard: importNodes', () => {
   let clipboard = create(ctx)
   clipboard.importNodes()
 
   // use nightmare
 })
 
-test('Clipboard: exportNodes', t => {
+test('Clipboard: exportNodes', () => {
   let clipboard = create(ctx)
   clipboard.exportNodes()
 
   // use nightmare
 })
 
-test('Clipboard: hideDropTarget', t => {
+test('Clipboard: hideDropTarget', () => {
   let clipboard = create(ctx)
   clipboard.hideDropTarget()
 
   // use nightmare
 })
 
-test('Clipboard: copyText', t => {
+test('Clipboard: copyText', () => {
   let clipboard = create(ctx)
   let value = 'x'
   let element = $('#x')

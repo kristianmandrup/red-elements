@@ -9,19 +9,19 @@ function create(ctx) {
 
 const ctx = {}
 
-test('I18n: create', t => {
+test('I18n: create', () => {
   let inst = create(ctx)
   t.is(typeof inst, 'object')
   t.is(typeof inst.i18n, 'object')
 })
 
-test('i18n: init', async t => {
+test('i18n: init', async() => {
   let inst = create(ctx)
   await inst.init()
   t.is(typeof inst.i18n, 'object')
 })
 
-test('i18n: loadCatalog - no namespace', async t => {
+test('i18n: loadCatalog - no namespace', async() => {
   let inst = create(ctx)
   await inst.init()
   try {
@@ -32,7 +32,7 @@ test('i18n: loadCatalog - no namespace', async t => {
   }
 })
 
-test('i18n: loadCatalog - valid namespace', async t => {
+test('i18n: loadCatalog - valid namespace', async() => {
   let inst = create(ctx)
   await inst.init()
   try {
@@ -44,6 +44,6 @@ test('i18n: loadCatalog - valid namespace', async t => {
 })
 
 
-test('i18n: loadCatalogs', async t => {
+test('i18n: loadCatalogs', async() => {
 
 })

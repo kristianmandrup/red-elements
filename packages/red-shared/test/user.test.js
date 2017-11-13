@@ -9,12 +9,12 @@ function create(ctx) {
   return new User(ctx)
 }
 
-test('user: create', t => {
+test('user: create', () => {
   const user = create(ctx)
   t.is(typeof user, 'object')
 })
 
-test('user: login', async t => {
+test('user: login', async() => {
   // fix - should be async via promise, not done callback
   let opts = {}
   const user = create(ctx)
@@ -24,7 +24,7 @@ test('user: login', async t => {
   // TODO: use nightmare to test that screen is updated as expected
 })
 
-test('user: logout', t => {
+test('user: logout', () => {
   let opts = {}
   const user = create(ctx)
 
@@ -34,7 +34,7 @@ test('user: logout', t => {
   // TODO: use nightmare to test that screen is updated as expected
 })
 
-test('user: updateUserMenu', t => {
+test('user: updateUserMenu', () => {
   const user = create(ctx)
   user.updateUserMenu()
 

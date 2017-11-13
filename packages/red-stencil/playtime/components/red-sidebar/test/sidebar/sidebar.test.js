@@ -9,12 +9,12 @@ function create(ctx) {
   return new Sidebar(ctx)
 }
 
-test('Sidebar: create', t => {
+test('Sidebar: create', () => {
   let sidebar = create(ctx)
   t.deepEqual(sidebar.sidebarSeparator, {})
   t.deepEqual(sidebar.knownTabs, {})
 })
-test('Sidebar: addTab', t => {
+test('Sidebar: addTab', () => {
   let sidebar = create(ctx)
   let title = 'abc'
   let content = 'xyz'
@@ -23,7 +23,7 @@ test('Sidebar: addTab', t => {
   sidebar.addTab(title, content, closeable, visible)
 })
 
-test('Sidebar: removeTab', t => {
+test('Sidebar: removeTab', () => {
   let sidebar = create(ctx)
   let title = 'abc'
   let content = 'xyz'
@@ -34,19 +34,19 @@ test('Sidebar: removeTab', t => {
   sidebar.removeTab(id)
 })
 
-test('Sidebar: toggleSidebar', t => {
+test('Sidebar: toggleSidebar', () => {
   let sidebar = create(ctx)
   let state = {}
   sidebar.toggleSidebar(state)
 })
 
-test('Sidebar: showSidebar', t => {
+test('Sidebar: showSidebar', () => {
   let sidebar = create(ctx)
   let id = 'x'
   sidebar.showSidebar(id)
 })
 
-test('Sidebar: containsTab', t => {
+test('Sidebar: containsTab', () => {
   let sidebar = create(ctx)
   let id = 'x'
   sidebar.containsTab(id)

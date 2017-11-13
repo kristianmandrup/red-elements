@@ -9,13 +9,13 @@ function create(ctx) {
   return new Tray(ctx)
 }
 
-test('Tray: create', t => {
+test('Tray: create', () => {
   let tray = create(ctx)
   t.deepEqual(tray.stack, [])
   t.false(tray.openingTray)
 })
 
-test('Tray: show', t => {
+test('Tray: show', () => {
   let tray = create(ctx)
   let options = {
 
@@ -24,19 +24,19 @@ test('Tray: show', t => {
   // use nightmare
 })
 
-test('Tray: close', async t => {
+test('Tray: close', async() => {
   let tray = create(ctx)
   await tray.close()
   // use nightmare
 })
 
-test('Tray: resize', t => {
+test('Tray: resize', () => {
   let tray = create(ctx)
   tray.resize()
   // use nightmare
 })
 
-test('Tray: showTray', t => {
+test('Tray: showTray', () => {
   let tray = create(ctx)
   let options = {
 
@@ -45,7 +45,7 @@ test('Tray: showTray', t => {
   // use nightmare
 })
 
-test('Tray: handleWindowResize', t => {
+test('Tray: handleWindowResize', () => {
   let tray = create(ctx)
   tray.handleWindowResize()
   // use nightmare

@@ -12,18 +12,18 @@ function func(event) {
   return ':' + event
 }
 
-test('Communications: create', t => {
+test('Communications: create', () => {
   let comms = create(ctx)
   t.is(typeof comms, 'object')
 })
 
-test('communications: connect - makes active', t => {
+test('communications: connect - makes active', () => {
   let comms = create(ctx)
   comms.connect()
   t.true(comms.active)
 })
 
-test('communications: connect - opens Web socket', t => {
+test('communications: connect - opens Web socket', () => {
   let comms = create(ctx)
   comms.connect()
   t.true(typeof comms.ws, 'object')
@@ -34,13 +34,13 @@ test('communications: connect - opens Web socket', t => {
   t.true(typeof comms.onclose, 'function')
 })
 
-test('communications: subscribe - adds to subscriptions', t => {
+test('communications: subscribe - adds to subscriptions', () => {
   let comms = create(ctx)
   comms.subscribe('a', func)
   t.true(comms.subscriptions['a'], func)
 })
 
-test('communications: unsubscribe - removes from subscriptions', t => {
+test('communications: unsubscribe - removes from subscriptions', () => {
   let comms = create(ctx)
   comms.subscribe('a', func)
   t.true(comms.subscriptions['a'], func)

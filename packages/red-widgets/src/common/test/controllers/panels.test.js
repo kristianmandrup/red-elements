@@ -9,7 +9,7 @@ const {
 const clazz = Panel
 
 describe('Panel', () => {
-  test('is a class', t => {
+  test('is a class', () => {
     expect(typeof clazz).toBe('function')
   })
 })

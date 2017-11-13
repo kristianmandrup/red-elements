@@ -8,7 +8,7 @@ function create(ctx) {
   return new History(ctx)
 }
 
-test('history: undo', t => {
+test('history: undo', () => {
   let history = create(ctx)
   let ev = {
     id: 'a'

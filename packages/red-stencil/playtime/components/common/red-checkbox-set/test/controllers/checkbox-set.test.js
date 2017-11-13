@@ -7,4 +7,4 @@ const {
   CheckboxSet
 } = common
 
-test('CheckboxSet: create', t => {})
+test('CheckboxSet: create', () => {})

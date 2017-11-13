@@ -10,7 +10,7 @@ function create(ctx) {
   return new Search(ctx)
 }
 
-test('Subflow: create', t => {
+test('Subflow: create', () => {
   let subflows = create(ctx)
 
   // TODO: test
@@ -18,7 +18,7 @@ test('Subflow: create', t => {
   // subflow.ctx.actions
 })
 
-test('Subflow: getSubflow', t => {
+test('Subflow: getSubflow', () => {
   let subflows = create(ctx)
   // TODO: register subflows
 
@@ -26,7 +26,7 @@ test('Subflow: getSubflow', t => {
   t.truthy(found)
 })
 
-test('Subflow: findAvailableSubflowIOPosition', t => {
+test('Subflow: findAvailableSubflowIOPosition', () => {
   let subflows = create(ctx)
   // TODO: register subflows
   let subflow = {}
@@ -35,7 +35,7 @@ test('Subflow: findAvailableSubflowIOPosition', t => {
   t.truthy(found)
 })
 
-test('Subflow: addSubflowInput', t => {
+test('Subflow: addSubflowInput', () => {
   let subflows = create(ctx)
   subflows.addSubflowInput()
 
@@ -46,7 +46,7 @@ test('Subflow: addSubflowInput', t => {
   // $("#workspace-subflow-input-remove") // not class: active
 })
 
-test('Subflow: removeSubflowInput', t => {
+test('Subflow: removeSubflowInput', () => {
   let subflows = create(ctx)
   subflows.removeSubflowInput()
 
@@ -57,7 +57,7 @@ test('Subflow: removeSubflowInput', t => {
   // $("#workspace-subflow-input-remove") // class: active
 })
 
-test('Subflow: addSubflowOutput', t => {
+test('Subflow: addSubflowOutput', () => {
   let subflows = create(ctx)
   subflows.addSubflowOutput()
 
@@ -66,7 +66,7 @@ test('Subflow: addSubflowOutput', t => {
   // use nightmare to test UI
 })
 
-test('Subflow: removeSubflowOutput', t => {
+test('Subflow: removeSubflowOutput', () => {
   let subflows = create(ctx)
   subflows.removeSubflowOutput()
 
@@ -75,38 +75,38 @@ test('Subflow: removeSubflowOutput', t => {
   // use nightmare to test UI
 })
 
-test('Subflow: refresh', t => {
+test('Subflow: refresh', () => {
   let subflows = create(ctx)
   let markChange = false
   subflows.refresh(markChange)
 })
 
-test('Subflow: refreshToolbar', t => {
+test('Subflow: refreshToolbar', () => {
   let subflows = create(ctx)
   subflows.refreshToolbar(markChange)
   // use nightmare to test UI
 })
 
-test('Subflow: showWorkspaceToolbar', t => {
+test('Subflow: showWorkspaceToolbar', () => {
   let subflows = create(ctx)
   subflows.showWorkspaceToolbar(markChange)
   // use nightmare to test UI
 })
 
-test('Subflow: hideWorkspaceToolbar', t => {
+test('Subflow: hideWorkspaceToolbar', () => {
   let subflows = create(ctx)
   subflows.hideWorkspaceToolbar(markChange)
   // use nightmare to test UI
 })
 
-test('Subflow: createSubflow', t => {
+test('Subflow: createSubflow', () => {
   let subflows = create(ctx)
   let id = 'x'
   subflows.createSubflow()
   // use nightmare to test UI
 })
 
-test('Subflow: removeSubflow', t => {
+test('Subflow: removeSubflow', () => {
   let subflows = create(ctx)
   let id = 'x'
   subflows.createSubflow()
@@ -115,7 +115,7 @@ test('Subflow: removeSubflow', t => {
 
 })
 
-test('Subflow: convertToSubflow', t => {
+test('Subflow: convertToSubflow', () => {
   let subflows = create(ctx)
   let id = 'x'
   subflows.convertToSubflow()

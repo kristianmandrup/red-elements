@@ -8,17 +8,17 @@ function create(ctx) {
   return new Nodes(ctx)
 }
 
-test('nodes: create', t => {
+test('nodes: create', () => {
   let nodes = create(ctx)
   t.is(typeof nodes, 'object')
 })
 
-test('nodes: getID', t => {
+test('nodes: getID', () => {
   let nodes = create(ctx)
   t.is(typeof nodes.getID(), 'number')
 })
 
-test('nodes: addNode', t => {
+test('nodes: addNode', () => {
   let nodes = create(ctx)
   let node = {
     id: 'a'
@@ -27,10 +27,10 @@ test('nodes: addNode', t => {
   t.is(nodes.configNodes[node.id], node)
 })
 
-test('nodes: addLink', t => {
+test('nodes: addLink', () => {
 
 })
-test('nodes: getNode - finds it', t => {
+test('nodes: getNode - finds it', () => {
   let nodes = create(ctx)
   let found = nodes.getNode('b')
   t.falsy(found)
@@ -42,7 +42,7 @@ test('nodes: getNode - finds it', t => {
   t.is(found, node)
 })
 
-test('nodes: removeNode - removes it', t => {
+test('nodes: removeNode - removes it', () => {
   let nodes = create(ctx)
   let node = {
     id: 'a'
@@ -52,7 +52,7 @@ test('nodes: removeNode - removes it', t => {
   t.falsy(found)
 })
 
-test('nodes: removeLink - removes it', t => {
+test('nodes: removeLink - removes it', () => {
   let nodes = create(ctx)
   let link = {
     id: 'a'
@@ -62,7 +62,7 @@ test('nodes: removeLink - removes it', t => {
   t.falsy(found)
 })
 
-test('nodes: addWorkspace - adds it', t => {
+test('nodes: addWorkspace - adds it', () => {
   let nodes = create(ctx)
   let ws = {
     id: 'a'
@@ -72,7 +72,7 @@ test('nodes: addWorkspace - adds it', t => {
   t.truthy(found)
 })
 
-test('nodes: getWorkspace - finds it', t => {
+test('nodes: getWorkspace - finds it', () => {
   let nodes = create(ctx)
   let ws = {
     id: 'a'
@@ -82,7 +82,7 @@ test('nodes: getWorkspace - finds it', t => {
   t.truthy(found)
 })
 
-test('nodes: removeWorkspace - removes it', t => {
+test('nodes: removeWorkspace - removes it', () => {
   let nodes = create(ctx)
   let ws = {
     id: 'a'
@@ -93,7 +93,7 @@ test('nodes: removeWorkspace - removes it', t => {
   t.falsy(found)
 })
 
-test('nodes: addSubflow - adds it', t => {
+test('nodes: addSubflow - adds it', () => {
   let nodes = create(ctx)
   let subflow = {
     id: 'a'
@@ -103,7 +103,7 @@ test('nodes: addSubflow - adds it', t => {
   t.truthy(found)
 })
 
-test('nodes: getSubflow - finds it', t => {
+test('nodes: getSubflow - finds it', () => {
   let nodes = create(ctx)
   let subflow = {
     id: 'a'
@@ -113,7 +113,7 @@ test('nodes: getSubflow - finds it', t => {
   t.truthy(found)
 })
 
-test('nodes: removeSubflow - removes it', t => {
+test('nodes: removeSubflow - removes it', () => {
   let nodes = create(ctx)
   let subflow = {
     id: 'a'
@@ -124,7 +124,7 @@ test('nodes: removeSubflow - removes it', t => {
   t.falsy(found)
 })
 
-test('nodes: subflowContains', t => {
+test('nodes: subflowContains', () => {
   let nodes = create(ctx)
   let sfid = 'x'
   let nodeid = 'a'
@@ -137,7 +137,7 @@ test('nodes: subflowContains', t => {
   t.truthy(found)
 })
 
-test('nodes: getAllFlowNodes', t => {
+test('nodes: getAllFlowNodes', () => {
   let nodes = create(ctx)
 
   // todo: add flow nodes
@@ -147,7 +147,7 @@ test('nodes: getAllFlowNodes', t => {
 })
 
 // TODO: test conversion
-test('nodes: convertWorkspace', t => {
+test('nodes: convertWorkspace', () => {
   let nodes = create(ctx)
   let node = {
     id: 'a'
@@ -157,7 +157,7 @@ test('nodes: convertWorkspace', t => {
 })
 
 // TODO: test conversion
-test('nodes: convertNode', t => {
+test('nodes: convertNode', () => {
   let nodes = create(ctx)
   let node = {
     id: 'a'
@@ -168,7 +168,7 @@ test('nodes: convertNode', t => {
 })
 
 // TODO: test conversion
-test('nodes: convertSubflow', t => {
+test('nodes: convertSubflow', () => {
   let nodes = create(ctx)
   let node = {
     id: 'a'
@@ -177,7 +177,7 @@ test('nodes: convertSubflow', t => {
   t.truthy(convertedNode)
 })
 
-test('nodes: createExportableNodeSet', t => {
+test('nodes: createExportableNodeSet', () => {
   let nodes = create(ctx)
   let node = {
     id: 'a'
@@ -191,14 +191,14 @@ test('nodes: createExportableNodeSet', t => {
   t.truthy(convertedSet)
 })
 
-test('nodes: createExportableNodeSet', t => {
+test('nodes: createExportableNodeSet', () => {
   let nodes = create(ctx)
   let exportCredentials = {}
   let set = nodes.createCompleteNodeSet(exportCredentials)
   t.truthy(set)
 })
 
-test('nodes: checkForMatchingSubflow', t => {
+test('nodes: checkForMatchingSubflow', () => {
   let nodes = create(ctx)
   let node = {
     id: 'a'
@@ -209,7 +209,7 @@ test('nodes: checkForMatchingSubflow', t => {
   t.truthy(set)
 })
 
-test('nodes: compareNodes', t => {
+test('nodes: compareNodes', () => {
   let nodes = create(ctx)
   let nodeA = {
     id: 'a'
@@ -225,7 +225,7 @@ test('nodes: compareNodes', t => {
   t.truthy(result)
 })
 
-test('nodes: importNodes', t => {
+test('nodes: importNodes', () => {
   let nodes = create(ctx)
   let newNodesObj = {
     id: 'a'
@@ -239,7 +239,7 @@ test('nodes: importNodes', t => {
   t.is(result[0], newNodesObj)
 })
 
-test('nodes: filterNodes', t => {
+test('nodes: filterNodes', () => {
   let nodes = create(ctx)
   let filter = {
     type: 'x'
@@ -258,7 +258,7 @@ test('nodes: filterNodes', t => {
   t.is(filtered[0], nodeA)
 })
 
-test('nodes: filterLinks', t => {
+test('nodes: filterLinks', () => {
   let nodes = create(ctx)
   let filter = {
     type: 'x'
@@ -276,7 +276,7 @@ test('nodes: filterLinks', t => {
   t.is(filtered[0], linkA)
 })
 
-test('nodes: updateConfigNodeUsers', t => {
+test('nodes: updateConfigNodeUsers', () => {
   let nodes = create(ctx)
   let node = {
     id: 'a',
@@ -288,20 +288,20 @@ test('nodes: updateConfigNodeUsers', t => {
   t.deepEqual(user, expectedUser)
 })
 
-test('nodes: flowVersion', t => {
+test('nodes: flowVersion', () => {
   let nodes = create(ctx)
   let version = nodes.flowVersion()
   t.is(version, '1')
 })
 
-test('nodes: clear', t => {
+test('nodes: clear', () => {
   let nodes = create(ctx)
   nodes.clear()
   t.deepEqual(nodes.nodes, [])
   t.deepEqual(nodes.links, [])
 })
 
-test('nodes: getWorkspaceOrder', t => {
+test('nodes: getWorkspaceOrder', () => {
   let nodes = create(ctx)
 
   let expected = nodes.workspacesOrder
@@ -309,7 +309,7 @@ test('nodes: getWorkspaceOrder', t => {
   t.is(order, expected)
 })
 
-test('nodes: setWorkspaceOrder', t => {
+test('nodes: setWorkspaceOrder', () => {
   let nodes = create(ctx)
 
   let expected = 2
@@ -317,24 +317,24 @@ test('nodes: setWorkspaceOrder', t => {
   t.is(order, expected)
 })
 
-test('nodes: eachNode', t => {
+test('nodes: eachNode', () => {
 
 })
-test('nodes: eachLink', t => {
+test('nodes: eachLink', () => {
 
 })
-test('nodes: eachConfig', t => {
+test('nodes: eachConfig', () => {
 
 })
-test('nodes: eachSubflow', t => {
+test('nodes: eachSubflow', () => {
 
 })
-test('nodes: eachWorkspace', t => {
+test('nodes: eachWorkspace', () => {
 
 })
-test('nodes: originalFlow', t => {
+test('nodes: originalFlow', () => {
 
 })
-test('nodes: dirty', t => {
+test('nodes: dirty', () => {
 
 })

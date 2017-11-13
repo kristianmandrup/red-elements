@@ -6,6 +6,6 @@ export {
 }
 from '../controllers'
 
-beforeAll(done => {
+beforeAll(() => {
   jest.addMatchers(matchers);
 });

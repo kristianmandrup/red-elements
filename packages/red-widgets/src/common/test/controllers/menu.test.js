@@ -8,6 +8,6 @@ const {
 
 const clazz = Menu
 
-test('Menu: is a class', t => {
+test('Menu: is a class', () => {
   expect(typeof clazz).toBe('function')
 })

@@ -1,4 +1,5 @@
 import {
+
   controllers
 } from '../imports'
 
@@ -8,6 +9,6 @@ const {
 
 const clazz = TypedInput
 
-test('TypedInput: is a class', t => {
+test('TypedInput: is a class', () => {
   expect(typeof clazz).toBe('function')
 })

@@ -15,39 +15,39 @@ function func(event) {
   return ':'
 }
 
-test('Actions: create', t => {
+test('Actions: create', () => {
   let actions = create(ctx)
   t.is(typeof actions, 'object')
 })
 
-test('Actions: addAction', t => {
+test('Actions: addAction', () => {
   let actions = create(ctx)
   actions.addAction('a', func)
   t.is(actions.actions['a'], func)
 })
 
-test('Actions: removeAction', t => {
+test('Actions: removeAction', () => {
   let actions = create(ctx)
   actions.addAction('a', func)
   actions.removeAction('a')
   t.is(actions.length, 0)
 })
 
-test('Actions: getAction', t => {
+test('Actions: getAction', () => {
   let actions = create(ctx)
   actions.addAction('a', func)
   let action = actions.getAction('a')
   t.is(action, func)
 })
 
-test('Actions: invokeAction', t => {
+test('Actions: invokeAction', () => {
   let actions = create(ctx)
   actions.addAction('a', func)
   let result = actions.invokeAction('a')
   t.is(result, ':')
 })
 
-test('Actions: listActions', t => {
+test('Actions: listActions', () => {
   let actions = create(ctx)
   actions.addAction('a', func)
   let list = actions.listActions()

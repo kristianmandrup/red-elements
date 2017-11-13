@@ -8,18 +8,18 @@ function create(ctx) {
   return new Editor(ctx)
 }
 
-test('Editor: create', t => {
+test('Editor: create', () => {
   let editor = create(ctx)
   t.deepEqual(editor.editStack, [])
 })
 
-test('Editor: getCredentialsURL', t => {
+test('Editor: getCredentialsURL', () => {
   let editor = create(ctx)
   let url = editor.getCredentialsURL('a b', 'x')
   t.is(url, 'credentials/a-b/x')
 })
 
-test('Editor: validateNode', t => {
+test('Editor: validateNode', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -28,7 +28,7 @@ test('Editor: validateNode', t => {
   t.truthy(valid)
 })
 
-test('Editor: validateNodeProperties', t => {
+test('Editor: validateNodeProperties', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -39,7 +39,7 @@ test('Editor: validateNodeProperties', t => {
   t.truthy(valid)
 })
 
-test('Editor: validateNodeProperty', t => {
+test('Editor: validateNodeProperty', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -51,7 +51,7 @@ test('Editor: validateNodeProperty', t => {
   t.truthy(valid)
 })
 
-test('Editor: validateNodeEditor', t => {
+test('Editor: validateNodeEditor', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -61,7 +61,7 @@ test('Editor: validateNodeEditor', t => {
   t.truthy(valid)
 })
 
-test('Editor: validateNodeEditorProperty', t => {
+test('Editor: validateNodeEditorProperty', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -73,7 +73,7 @@ test('Editor: validateNodeEditorProperty', t => {
   t.truthy(valid)
 })
 
-test('Editor: updateNodeProperties', t => {
+test('Editor: updateNodeProperties', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -83,7 +83,7 @@ test('Editor: updateNodeProperties', t => {
   t.truthy(removedLinks)
 })
 
-test('Editor: prepareConfigNodeSelect', t => {
+test('Editor: prepareConfigNodeSelect', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -95,7 +95,7 @@ test('Editor: prepareConfigNodeSelect', t => {
   t.truthy(prepared)
 })
 
-test('Editor: prepareConfigNodeButton', t => {
+test('Editor: prepareConfigNodeButton', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -107,7 +107,7 @@ test('Editor: prepareConfigNodeButton', t => {
   t.truthy(prepared)
 })
 
-test('Editor: preparePropertyEditor', t => {
+test('Editor: preparePropertyEditor', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -119,7 +119,7 @@ test('Editor: preparePropertyEditor', t => {
   t.truthy(prepared)
 })
 
-test('Editor: attachPropertyChangeHandler', t => {
+test('Editor: attachPropertyChangeHandler', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -131,7 +131,7 @@ test('Editor: attachPropertyChangeHandler', t => {
   t.truthy(prepared)
 })
 
-test('Editor: populateCredentialsInputs', t => {
+test('Editor: populateCredentialsInputs', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -144,7 +144,7 @@ test('Editor: populateCredentialsInputs', t => {
   // use nightmare
 })
 
-test('Editor: updateNodeCredentials', t => {
+test('Editor: updateNodeCredentials', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -156,7 +156,7 @@ test('Editor: updateNodeCredentials', t => {
   // use nightmare
 })
 
-test.cb('Editor: prepareEditDialog', t => {
+test.cb('Editor: prepareEditDialog', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -170,14 +170,14 @@ test.cb('Editor: prepareEditDialog', t => {
   })
 })
 
-test('Editor: getEditStackTitle', t => {
+test('Editor: getEditStackTitle', () => {
   let editor = create(ctx)
   let expected = 'my-title'
   let title = editor.getEditStackTitle()
   t.is(title, expected)
 })
 
-test('Editor: buildEditForm', t => {
+test('Editor: buildEditForm', () => {
   let editor = create(ctx)
   let container = $('#container')
   let definition = {}
@@ -187,7 +187,7 @@ test('Editor: buildEditForm', t => {
   // use nightmare
 })
 
-test('Editor: refreshLabelForm', t => {
+test('Editor: refreshLabelForm', () => {
   let editor = create(ctx)
   let container = $('#container')
   let node = {
@@ -197,7 +197,7 @@ test('Editor: refreshLabelForm', t => {
   // use nightmare
 })
 
-test('Editor: buildLabelRow', t => {
+test('Editor: buildLabelRow', () => {
   let editor = create(ctx)
   let type = 'io'
   let index = 0
@@ -207,7 +207,7 @@ test('Editor: buildLabelRow', t => {
   // use nightmare
 })
 
-test('Editor: buildLabelForm', t => {
+test('Editor: buildLabelForm', () => {
   let editor = create(ctx)
   let container = $('#container')
   let node = {
@@ -217,7 +217,7 @@ test('Editor: buildLabelForm', t => {
   // use nightmare
 })
 
-test('Editor: showEditDialog', t => {
+test('Editor: showEditDialog', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -226,7 +226,7 @@ test('Editor: showEditDialog', t => {
   // use nightmare
 })
 
-test('Editor: showEditConfigNodeDialog', t => {
+test('Editor: showEditConfigNodeDialog', () => {
   let editor = create(ctx)
   let node = {
     id: 'x'
@@ -238,7 +238,7 @@ test('Editor: showEditConfigNodeDialog', t => {
   // use nightmare
 })
 
-test('Editor: defaultConfigNodeSort', t => {
+test('Editor: defaultConfigNodeSort', () => {
   let editor = create(ctx)
   let A = {
     id: 'a'
@@ -249,7 +249,7 @@ test('Editor: defaultConfigNodeSort', t => {
   editor.defaultConfigNodeSort(A, B)
 })
 
-test('Editor: updateConfigNodeSelect', t => {
+test('Editor: updateConfigNodeSelect', () => {
   let editor = create(ctx)
   let name = 'x'
   let type = 'io'
@@ -258,37 +258,37 @@ test('Editor: updateConfigNodeSelect', t => {
   editor.updateConfigNodeSelect(name, type, value, prefix)
 })
 
-test('Editor: showEditSubflowDialog', t => {
+test('Editor: showEditSubflowDialog', () => {
   let editor = create(ctx)
   let subflow = {}
   editor.showEditSubflowDialog(subflow)
 })
 
-test('Editor: editExpression', t => {
+test('Editor: editExpression', () => {
   let editor = create(ctx)
   let options = {}
   editor.editExpression(options)
 })
 
-test('Editor: editJSON', t => {
+test('Editor: editJSON', () => {
   let editor = create(ctx)
   let options = {}
   editor.editJSON(options)
 })
 
-test('Editor: stringToUTF8Array', t => {
+test('Editor: stringToUTF8Array', () => {
   let editor = create(ctx)
   let str = 'abc'
   editor.stringToUTF8Array(str)
 })
 
-test('Editor: editBuffer', t => {
+test('Editor: editBuffer', () => {
   let editor = create(ctx)
   let options = {}
   editor.editBuffer(options)
 })
 
-test('Editor: createEditor', t => {
+test('Editor: createEditor', () => {
   let editor = create(ctx)
   let options = {}
   editor.createEditor(options)

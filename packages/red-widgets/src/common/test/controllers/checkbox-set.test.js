@@ -8,6 +8,6 @@ const {
 
 const clazz = CheckboxSet
 
-test('CheckboxSet: is a class', t => {
+test('CheckboxSet: is a class', () => {
   expect(typeof clazz).toBe('function')
 })

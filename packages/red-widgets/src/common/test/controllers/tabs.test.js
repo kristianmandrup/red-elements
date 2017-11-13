@@ -8,6 +8,6 @@ const {
 
 const clazz = Tabs
 
-test('Tabs: is a class', t => {
+test('Tabs: is a class', () => {
   expect(typeof clazz).toBe('function')
 })

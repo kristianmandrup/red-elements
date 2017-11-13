@@ -10,13 +10,13 @@ function create(ctx) {
 }
 
 
-test('Sidebar TabConfig: create', t => {
+test('Sidebar TabConfig: create', () => {
   let tc = create(ctx)
   t.deepEqual(tc.categories, {})
 })
 
 // fix
-test('TabConfig: getOrCreateCategory', t => {
+test('TabConfig: getOrCreateCategory', () => {
   let tc = create(ctx)
   let name = 'abc',
     parent = {},
@@ -27,7 +27,7 @@ test('TabConfig: getOrCreateCategory', t => {
   t.deepEqual(category, expected)
 })
 
-test('TabConfig: createConfigNodeList', t => {
+test('TabConfig: createConfigNodeList', () => {
   let tc = create(ctx)
   let id = 'abc'
   let node = {
@@ -42,14 +42,14 @@ test('TabConfig: createConfigNodeList', t => {
   t.deepEqual(category, expected)
 })
 
-test('TabConfig: refreshConfigNodeList', t => {
+test('TabConfig: refreshConfigNodeList', () => {
   let tc = create(ctx)
   tc.refreshConfigNodeList()
   // TODO
   // t.is()
 })
 
-test('TabConfig: show', t => {
+test('TabConfig: show', () => {
   let tc = create(ctx)
   let id = 'x'
   tc.show(id)

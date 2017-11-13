@@ -8,6 +8,6 @@ const {
 
 const clazz = Searchbox
 
-test('Searchbox: is a class', t => {
+test('Searchbox: is a class', () => {
   expect(typeof clazz).toBe('function')
 })
