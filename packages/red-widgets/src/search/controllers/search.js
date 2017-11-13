@@ -15,7 +15,7 @@
  **/
 import {
   Context
-} from '../context'
+} from './context'
 import {
   default as $
 } from 'jquery';
