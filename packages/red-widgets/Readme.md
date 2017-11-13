@@ -1,5 +1,32 @@
 # Red widgets
 
+The goal is  update the widget tests and include as much test cases as we can for individual components.
+
+# Q & A
+
+Where is the code logic of all the components of which we are about to write jest tests? Like header’s path is `red-widget/src/header`
+
+Where is `Panel` and `Menu` etc.?
+
+- The most basic components can all be found under `src/common`. They are the basic building blocks.
+
+Most of the red-widgets components are in progress?
+
+- All are fully working components/widgets extracted from node-red project.
+
+We are first migrating test to jest of existing jQuery components.
+We will start developing new custom elements using StencilJs once we achieve good enough code coverage using jest.
+
+- Yes, exactly
+
+Where can I see all the existing jQuery custom elements which we are planning to upgrade?
+
+See the [node-red](https://nodered.org/) intro video to get an idea of interface.
+
+Run the [node-red project from github](https://github.com/node-red/node-red)
+
+See [1.0 Roadmap](https://nodered.org/blog/2017/07/17/roadmap-to-1-dot-0) to get a detailed overview of current status and where project is going...
+
 ## Testing
 
 We use the following testing stack for headless browser testing (E2E) on Travic CI.
@@ -27,11 +54,19 @@ test('the best flavor is grapefruit', () => {
 })
 ```
 
+Warning: Please note that jest seems to break if you put any arguments in the test function, ie. such as `done` cb here
+
+```js
+test('sum: 1+2 = 2', done => {
+  expect(1 + 1).toBe(2)
+})
+```
+
 ## Troubleshooting
 
 [Timeout - unresolved promise](https://facebook.github.io/jest/docs/en/troubleshooting.html#unresolved-promises)
 
-Try:
+If you have problem with jest and `Promise`, try:
 
 ```js
 global.Promise = require.requireActual('promise');
@@ -58,6 +93,8 @@ $ node --inspect-brk node_modules/.bin/jest --runInBand test/playtime/simple.tes
 - [Migrating to Jest](https://blog.kentcdodds.com/migrating-to-jest-881f75366e7e)
 
 `npm i -D jest babel-jest enzyme-to-json identity-obj-proxy jest-jquery-matchers`
+
+### jest jQuery testing
 
 File under test doing some jQuery ops:
 
@@ -111,7 +148,6 @@ expect(el).toHaveText('Johnny Cash - Logged In');
 
 A little nicer on the eye :)
 
-
 ```bash
 toExist
 toHaveLength
@@ -136,8 +172,6 @@ toBeMatchedBy
 toHaveDescendant
 toHaveDescendantWithText
 ```
-
-
 ## Migrating old (Ava) tests
 
 - [jest-codemods](https://github.com/skovhus/jest-codemods)

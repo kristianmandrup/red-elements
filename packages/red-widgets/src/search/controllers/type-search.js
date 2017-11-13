@@ -3,8 +3,9 @@ import {
 } from './context'
 
 export class TypeSearch extends Context {
-  constructor(ctx) {
+  constructor(ctx = {}) {
     super(ctx)
+    this.RED = ctx
     this.disabled = false;
     this.dialog = null;
     //  searchInput;
@@ -18,7 +19,11 @@ export class TypeSearch extends Context {
   }
 
   search(val) {
-    activeFilter = val.toLowerCase();
+    let {
+      searchResults,
+      selected
+    } = this
+    const activeFilter = val.toLowerCase();
     var visible = searchResults.editableList('filter');
     setTimeout(() => {
       selected = 0;
@@ -28,13 +33,17 @@ export class TypeSearch extends Context {
   }
 
   ensureSelectedIsVisible() {
-    var selectedEntry = searchResults.find("li.selected");
+    let {
+      searchResults
+    } = this
+
+    const selectedEntry = searchResults.find("li.selected");
     if (selectedEntry.length === 1) {
-      var scrollWindow = searchResults.parent();
-      var scrollHeight = scrollWindow.height();
-      var scrollOffset = scrollWindow.scrollTop();
-      var y = selectedEntry.position().top;
-      var h = selectedEntry.height();
+      const scrollWindow = searchResults.parent();
+      const scrollHeight = scrollWindow.height();
+      const scrollOffset = scrollWindow.scrollTop();
+      const y = selectedEntry.position().top;
+      const h = selectedEntry.height();
       if (y + h > scrollHeight) {
         scrollWindow.animate({
           scrollTop: '-=' + (scrollHeight - (y + h) - 10)
@@ -48,22 +57,29 @@ export class TypeSearch extends Context {
   }
 
   createDialog() {
+    let {
+      searchResults,
+      selected,
+      searchResultsDiv,
+      RED
+    } = this
+
     //shade = $('<div>',{class:"red-ui-type-search-shade"}).appendTo("#main-container");
-    dialog = $("<div>", {
+    const dialog = $("<div>", {
       id: "red-ui-type-search",
       class: "red-ui-search red-ui-type-search"
     }).appendTo("#main-container");
-    var searchDiv = $("<div>", {
+    const searchDiv = $("<div>", {
       class: "red-ui-search-container"
     }).appendTo(dialog);
-    searchInput = $('<input type="text">').attr("placeholder", RED._("search.addNode")).appendTo(searchDiv).searchBox({
+    const searchInput = $('<input type="text">').attr("placeholder", RED._("search.addNode")).appendTo(searchDiv).searchBox({
       delay: 50,
       change: () => {
         search($(this).val());
       }
     });
     searchInput.on('keydown', (evt) => {
-      var children = searchResults.children(":visible");
+      const children = searchResults.children(":visible");
       if (children.length > 0) {
         if (evt.keyCode === 40) {
           // Down
@@ -174,12 +190,18 @@ export class TypeSearch extends Context {
   }
 
   confirm(def) {
+    let {
+      typesUsed
+    } = this
     hide();
     typesUsed[def.type] = Date.now();
     addCallback(def.type);
   }
 
   handleMouseActivity(evt) {
+    let {
+      visible
+    } = this
     if (visible) {
       var t = $(evt.target);
       while (t.prop('nodeName').toLowerCase() !== 'body') {
@@ -193,6 +215,12 @@ export class TypeSearch extends Context {
   }
 
   show(opts) {
+    let {
+      visible,
+      searchResultsDiv,
+      searchInput,
+      RED
+    } = this
     if (!visible) {
       RED.keyboard.add("*", "escape", () => {
         hide()
