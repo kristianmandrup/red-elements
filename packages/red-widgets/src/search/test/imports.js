@@ -1,9 +1,16 @@
 // const Nightmare = require('nightmare')
 // const nightmare = new Nightmare()
-import * as matchers from 'jest-jquery-matchers'
+
 import {
   controllers
 } from '../controllers'
+
+export {
+  RED,
+  readPage,
+  ctx
+}
+from '../../test/setup'
 
 import {
   common
@@ -13,10 +20,6 @@ const {
   Searchbox,
   EditableList
 } = common.controllers
-
-beforeAll(() => {
-  jest.addMatchers(matchers);
-});
 
 const {
   Search,

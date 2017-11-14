@@ -1,38 +1,12 @@
 import {
+  readPage,
+  ctx,
+  RED,
   TypeSearch,
   Searchbox,
   EditableList
 } from './imports'
-import {
-  default as i18n
-} from 'i18next'
 
-const path = require('path');
-const {
-  log
-} = console
-
-// const translate = i18n.t
-const translate = (label) => label
-
-const ctx = {
-  _: translate
-}
-
-jest
-  .dontMock('fs')
-  .dontMock('jquery')
-
-const $ = require('jquery');
-const fs = require('fs')
-
-global.$ = $
-// log({
-//   $: global.$
-// })
-
-global.jQuery = global.$
-require('jquery-ui-dist/jquery-ui')
 
 function create(ctx) {
   return new TypeSearch(ctx)
@@ -43,23 +17,11 @@ beforeEach(() => {
   ts = new TypeSearch(ctx)
 })
 
-function readPage(name) {
-  const filePath = path.join(__dirname, `./app/${name}.html`)
-
-  return fs.readFileSync(filePath).toString();
-}
-
-const html = readPage('simple')
-
-let RED = {
-
-}
-
 beforeAll(() => {
   Searchbox(RED)
   EditableList(RED)
 
-  document.documentElement.innerHTML = html
+  document.documentElement.innerHTML = readPage('simple')
 })
 
 test('TypeSearch: create', () => {
