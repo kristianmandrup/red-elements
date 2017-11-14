@@ -31,11 +31,14 @@ export class Menu {
       topMenu.insertAfter(menuParent);
     }
 
+    // default: menu with no options?
+    options.options = options.options || []
+
     var lastAddedSeparator = false;
     for (var i = 0; i < options.options.length; i++) {
       var opt = options.options[i];
       if (opt !== null || !lastAddedSeparator) {
-        var li = createMenuItem(opt);
+        var li = this.createMenuItem(opt);
         if (li) {
           li.appendTo(topMenu);
           lastAddedSeparator = (opt === null);
@@ -47,6 +50,11 @@ export class Menu {
   }
 
   createMenuItem(opt) {
+    const {
+      RED,
+      menuItems
+    } = this
+
     var item;
 
     if (opt !== null && opt.id) {

@@ -25,15 +25,13 @@ import {
   jQuery
 } from './jquery-ui'
 
-const log = console.log
+const {
+  log
+} = console
+
 export default factory
 
 function factory(RED) {
-  // https://stackoverflow.com/questions/31013221/typeerror-console-log-is-not-a-function
-  log('create checkboxSet widget', {
-    RED
-  });
-
   (function ($) {
     $.widget("nodered.checkboxSet", {
       _create: function () {

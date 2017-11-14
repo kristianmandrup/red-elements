@@ -22,13 +22,9 @@ const log = console.log
 export default factory
 
 function factory(RED) {
-  // https://stackoverflow.com/questions/31013221/typeerror-console-log-is-not-a-function
-  console.log({
-    RED
-  });
-  console.log('create editableList widget', {
-    RED
-  });
+  // console.log('create editableList widget', {
+  //   RED
+  // });
 
   (function ($) {
 
