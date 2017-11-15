@@ -17,19 +17,93 @@ beforeAll(() => {
 test('Editor: semVerCompare', () => {
   expect(editor).toBeDefined()
 })
-test('Editor: delayCallback', () => {})
-test('Editor: changeNodeState', () => {})
-test('Editor: installNodeModule', () => {})
-test('Editor: removeNodeModule', () => {})
-test('Editor: refreshNodeModuleList', () => {})
-test('Editor: refreshNodeModule', () => {})
+test('Editor: delayCallback(start, callback)', () => {
+  const start = 100
+  editor.delayCallback(start, () => {
+    expect(1).toBeDefined()
+  })
+})
+test('Editor: changeNodeState(id, state, shade, callback)', () => {
+  const id = 'x'
+  const state = true
+  const shadeEl = document.createElement('div')
+  const shade = $(shadeEl)
 
-test('Editor: getContrastingBorder', () => {})
-test('Editor: formatUpdatedAt', () => {})
-test('Editor: _refreshNodeModule', () => {})
-test('Editor: filterChange', () => {})
-test('Editor: handleCatalogResponse', () => {})
-test('Editor: initInstallTab', () => {})
+  function callback() {
+    expect(1).toBeDefined()
+  }
+  // Note: uses delayCallback
+  editor.changeNodeState(id, state, shade, callback)
+
+})
+test('Editor: installNodeModule(id, version, shade, callback)', () => {
+  const id = 'marked'
+  const version = '1.0'
+  const shadeEl = document.createElement('div')
+  const shade = $(shadeEl)
+
+  function callback() {
+    expect(1).toBeDefined()
+  }
+  // Note: uses delayCallback
+  editor.installNodeModule(id, version, shade, callback)
+})
+test('Editor: removeNodeModule(id, callback)', () => {
+  const id = 'marked'
+
+  function callback() {
+    expect(1).toBeDefined()
+  }
+  // Note: uses delayCallback
+  editor.installNodeModule(id, callback)
+})
+test('Editor: refreshNodeModuleList()', () => {
+  let refreshed = editor.refreshNodeModuleList()
+  expect(refreshed).toBeDefined()
+})
+test('Editor: refreshNodeModule(module)', () => {
+  let module = {}
+  let refreshed = editor.refreshNodeModule(module)
+  expect(refreshed).toBeDefined()
+})
+
+test('Editor: getContrastingBorder(rgbColor)', () => {
+  let rgbColor = `rgba(234,129,283)`
+  let border = editor.getContrastingBorder(rgbColor)
+  expect(border).toBeDefined()
+})
+test('Editor: formatUpdatedAt', () => {
+  let dateString = '11/11/2017'
+  let updated = editor.formatUpdatedAt(dateString)
+  expect(updated).toBeDefined()
+
+})
+test('Editor: _refreshNodeModule(module)', () => {
+  let module = {}
+  let refreshed = editor._refreshNodeModule(module)
+  expect(refreshed).toBeDefined()
+})
+test('Editor: filterChange(val)', () => {
+  let val = 'Active'
+  let filtered = editor.filterChange(val)
+  expect(filtered).toBeDefined()
+
+})
+test('Editor: handleCatalogResponse(err, catalog, index, v)', () => {
+  let err
+  let catalog
+  let index
+  let v
+
+  let handled = editor.handleCatalogResponse(err, catalog, index, v)
+  expect(handled).toBeDefined()
+
+})
+test('Editor: initInstallTab()', () => {
+  let initialized = editor.initInstallTab()
+  expect(initialized).toBeDefined()
+})
+
 test('Editor: refreshFilteredItems', () => {})
 test('Editor: sortModulesAZ', () => {})
 test('Editor: sortModulesRecent', () => {})

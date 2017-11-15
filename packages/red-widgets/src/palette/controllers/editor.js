@@ -239,16 +239,16 @@ export class PaletteEditor extends Context {
   refreshNodeModuleList() {
     for (var id in nodeEntries) {
       if (nodeEntries.hasOwnProperty(id)) {
-        _refreshNodeModule(id);
+        this._refreshNodeModule(id);
       }
     }
   }
 
   refreshNodeModule(module) {
     if (!eventTimers.hasOwnProperty(module)) {
-      eventTimers[module] = setTimeout(function () {
+      eventTimers[module] = setTimeout(() => {
         delete eventTimers[module];
-        _refreshNodeModule(module);
+        this._refreshNodeModule(module);
       }, 100);
     }
   }
@@ -509,6 +509,16 @@ export class PaletteEditor extends Context {
   }
 
   initInstallTab() {
+    let {
+      loadedList,
+      loadedIndex,
+      packageList,
+      catalogueLoadStatus,
+      catalogueLoadErrors,
+      catalogueLoadStart,
+      catalogueCount
+    } = this
+
     if (loadedList.length === 0) {
       loadedList = [];
       loadedIndex = {};
@@ -541,6 +551,7 @@ export class PaletteEditor extends Context {
         })
       });
     }
+    return this
   }
 
   refreshFilteredItems() {
