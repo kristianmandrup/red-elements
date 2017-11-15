@@ -18,7 +18,11 @@ import {
 } from 'jquery';
 
 export class Stack {
-  constructor(options) {
+  constructor(options = {}) {
+    if (!options.container) {
+      throw new Error(`Stack must take a container: option that is a jQuery element`)
+    }
+
     this.container = options.container;
 
     this.entries = [];
@@ -27,6 +31,19 @@ export class Stack {
   }
 
   add(entry) {
+    if (typeof entry !== 'object') {
+      const msg = 'Stack entry to add must be an Object'
+      console.error(msg, {
+        entry
+      })
+      throw new Error(msg)
+    }
+    let {
+      entries,
+      container,
+      visible
+    } = this
+
     entries.push(entry);
     entry.container = $('<div class="palette-category">').appendTo(container);
     if (!visible) {

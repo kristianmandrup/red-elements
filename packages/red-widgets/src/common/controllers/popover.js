@@ -46,7 +46,7 @@ export class Popover {
    */
   constructor(options) {
     if (!options.target) {
-      throw new Error('Popover must take a target option with element')
+      throw new Error('Popover must take a target: option that is a jQuery element')
     }
 
     this.target = options.target;
