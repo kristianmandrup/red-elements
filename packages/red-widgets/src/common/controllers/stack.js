@@ -17,10 +17,17 @@ import {
   default as $
 } from 'jquery';
 
-export class Stack {
+import {
+  Context
+} from './context'
+
+export class Stack extends Context {
   constructor(options = {}) {
+    super(optins)
     if (!options.container) {
-      throw new Error(`Stack must take a container: option that is a jQuery element`)
+      this.handleError(`Stack must take a container: option that is a jQuery element`, {
+        options
+      })
     }
 
     this.container = options.container;

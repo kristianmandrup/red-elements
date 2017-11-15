@@ -17,12 +17,35 @@ import {
   default as $
 } from 'jquery'
 
+import {
+  Context
+} from './context'
+
 // import 'jquery-ui-dist/jquery-ui'
 
-export class Tabs {
+function rebind(varNames, ctx) {
+  return varNames.reduce((acc, name) => {
+    ctx[name] = ctx[name].bind(ctx)
+    acc[name] = ctx[name]
+    return acc
+  }, {})
+}
+
+export class Tabs extends Context {
 
   constructor(options) {
-    this.options = options
+    super(options)
+    if (typeof options !== 'object') {
+      this.handleError('Tabs must take an options object', {
+        options
+      })
+    }
+    if (!options.id) {
+      this.handleError('Tabs must take an id: option for target element', {
+        id: options.id,
+        options
+      })
+    }
 
     var tabs = {};
     var currentTabWidth;
@@ -32,17 +55,30 @@ export class Tabs {
     var wrapper = ul.wrap("<div>").parent();
     var scrollContainer = ul.wrap("<div>").parent();
 
-    this.tabs = tabs
-    this.currentActiveTabWidth = currentActiveTabWidth
-    this.ul = ul
-    this.wrapper = wrapper
-    this.scrollContainer = scrollContainer
+    const instVars = {
+      tabs,
+      currentTabWidth,
+      currentActiveTabWidth,
+      ul,
+      wrapper,
+      scrollContainer
+    }
 
-    // configure aliases
-    let onTabClick = this.onTabClick.bind(this)
-    let onTabDblClick = this.onTabDblClick.bind(this)
-    let updateTabWidths = this.updateTabWidths.bind(this)
-    let updateScroll = this.updateScroll.bind(this)
+    Object.keys(instVars).map(key => {
+      this[key] = instVars[key]
+    })
+
+    let {
+      onTabClick,
+      onTabDblClick,
+      updateTabWidths,
+      updateScroll
+    } = rebind([
+      'onTabClick',
+      'onTabDblClick',
+      'updateTabWidths',
+      'updateScroll'
+    ], this)
 
     wrapper.addClass("red-ui-tabs");
     if (options.vertical) {
@@ -116,6 +152,11 @@ export class Tabs {
 
 
   onTabClick() {
+    const {
+      activateTab,
+      tabs
+    } = this
+
     let options = this.options
 
     if (options.onclick) {
