@@ -32,78 +32,111 @@ var deltaSizes = {
 
 export class Popover {
 
+  /**
+   *
+   * @param {Object} options
+   *
+   * - target: element to target
+   * - direction (default: 'right')
+   * - trigger: trigger event type (hover, onmouseover, ...)
+   * - content: what to display
+   * - delay: delay time in ms
+   * - width
+   * - size (default or small)
+   */
   constructor(options) {
-    var target = options.target;
-    var direction = options.direction || "right";
-    var trigger = options.trigger;
-    var content = options.content;
-    var delay = options.delay;
-    var width = options.width || "auto";
+    if (!options.target) {
+      throw new Error('Popover must take a target option with element')
+    }
+
+    this.target = options.target;
+    this.direction = options.direction || "right";
+    this.trigger = options.trigger;
+    this.content = options.content;
+    this.delay = options.delay;
+    this.width = options.width || "auto";
     var size = options.size || "default";
     if (!deltaSizes[size]) {
       throw new Error("Invalid RED.popover size value:", size);
     }
+    this.size = size
 
-    var timer = null;
-    var active;
-    var div;
+    this.timer = null;
+  }
 
-    var openPopup = function () {
-      if (active) {
-        div = $('<div class="red-ui-popover red-ui-popover-' + direction + '"></div>').appendTo("body");
-        if (size !== "default") {
-          div.addClass("red-ui-popover-size-" + size);
-        }
-        if (typeof content === 'function') {
-          content.call(res).appendTo(div);
-        } else {
-          div.html(content);
-        }
-        if (width !== "auto") {
-          div.width(width);
-        }
-
-
-        var targetPos = target.offset();
-        var targetWidth = target.width();
-        var targetHeight = target.height();
-
-        var divHeight = div.height();
-        var divWidth = div.width();
-        if (direction === 'right') {
-          div.css({
-            top: targetPos.top + targetHeight / 2 - divHeight / 2 - deltaSizes[size].top,
-            left: targetPos.left + targetWidth + deltaSizes[size].leftRight
-          });
-        } else if (direction === 'left') {
-          div.css({
-            top: targetPos.top + targetHeight / 2 - divHeight / 2 - deltaSizes[size].top,
-            left: targetPos.left - deltaSizes[size].leftLeft - divWidth
-          });
-        }
-
-        div.fadeIn("fast");
+  openPopup() {
+    let {
+      active,
+      target,
+      direction,
+      size,
+      content,
+      width,
+      div
+    } = this
+    if (active) {
+      div = $('<div class="red-ui-popover red-ui-popover-' + direction + '"></div>').appendTo("body");
+      if (size !== "default") {
+        div.addClass("red-ui-popover-size-" + size);
       }
+      if (typeof content === 'function') {
+        content.call(res).appendTo(div);
+      } else {
+        div.html(content);
+      }
+      if (width !== "auto") {
+        div.width(width);
+      }
+
+
+      var targetPos = target.offset();
+      var targetWidth = target.width();
+      var targetHeight = target.height();
+
+      var divHeight = div.height();
+      var divWidth = div.width();
+      if (direction === 'right') {
+        div.css({
+          top: targetPos.top + targetHeight / 2 - divHeight / 2 - deltaSizes[size].top,
+          left: targetPos.left + targetWidth + deltaSizes[size].leftRight
+        });
+      } else if (direction === 'left') {
+        div.css({
+          top: targetPos.top + targetHeight / 2 - divHeight / 2 - deltaSizes[size].top,
+          left: targetPos.left - deltaSizes[size].leftLeft - divWidth
+        });
+      }
+
+      div.fadeIn("fast");
     }
-    var closePopup = function () {
-      if (!active) {
-        if (div) {
-          div.fadeOut("fast", function () {
-            $(this).remove();
-          });
-          div = null;
-        }
+    return this
+  }
+
+  closePopup() {
+    let {
+      trigger,
+      active,
+      timer,
+      div
+    } = this
+
+    if (!active) {
+      if (div) {
+        div.fadeOut("fast", function () {
+          $(this).remove();
+        });
+        div = null;
       }
     }
 
     if (trigger === 'hover') {
 
-      target.on('mouseenter', function (e) {
+      target.on('mouseenter', (e) => {
         clearTimeout(timer);
         active = true;
         timer = setTimeout(openPopup, delay.show);
       });
-      target.on('mouseleave', function (e) {
+      target.on('mouseleave', (e) => {
         if (timer) {
           clearTimeout(timer);
         }
@@ -111,30 +144,34 @@ export class Popover {
         setTimeout(closePopup, delay.hide);
       });
     } else if (trigger === 'click') {
-      target.click(function (e) {
+      target.click((e) => {
         e.preventDefault();
         e.stopPropagation();
         active = !active;
         if (!active) {
-          closePopup();
+          this.closePopup();
         } else {
-          openPopup();
+          this.openPopup();
         }
       });
     }
-    var res = {
-      setContent: function (_content) {
-        content = _content;
-      },
-      open: function () {
-        active = true;
-        openPopup();
-      },
-      close: function () {
-        active = false;
-        closePopup();
-      }
-    }
-    return res;
+    return this
+  }
+
+  setContent(_content) {
+    this.content = _content;
+    return this
+  }
+
+  open() {
+    this.active = true;
+    this.openPopup();
+    return this
+  }
+
+  close() {
+    this.active = false;
+    this.closePopup();
+    return this
   }
 }
