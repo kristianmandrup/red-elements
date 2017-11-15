@@ -1,28 +1,86 @@
 import {
-  Diff
+  RED,
+  readPage,
+  ctx as baseCtx,
+  Diff,
+  EditableList
 } from './imports'
-const ctx = {}
+
+const {
+  log
+} = console
+
+// TODO:
+// investigate legacy Library
+// to figure out which class to use in each case
+// set to real instance for each!
+// See red-runtime
+let actions = {
+  add() {}
+}
+let keyboard = {
+  add() {}
+}
+
+let utils = {
+  getNodeIcon() {
+    // url to icon
+    return 'node/icon.png'
+  }
+}
+
+let nodes = {
+  getType() {}
+}
+
+
+let ctx = Object.assign({
+  actions,
+  keyboard,
+  utils,
+  // events,
+  // settings,
+  nodes,
+  // view
+}, baseCtx)
+
 
 function create(ctx) {
   return new Diff(ctx)
 }
 
+let diff
+beforeEach(() => {
+  diff = create(ctx)
+})
+
+beforeAll(() => {
+  EditableList(RED)
+
+  // load document with placeholder elements to create widgets (for testing)
+  document.documentElement.innerHTML = readPage('diff', __dirname)
+})
+
+
 test('Diff: create', () => {
-  let diff = create(ctx)
   expect(diff.currentDiff).toEqual({})
   expect(diff.diffVisible).toBeFalsy()
 })
 
 test('Diff: buildDiffPanel', () => {
-  let diff = create(ctx)
   let container = $('#container')
-  diff.buildDiffPanel(container)
+  if (container) {
+    let panel = diff.buildDiffPanel(container)
+    log({
+      panel
+    })
+  }
+
 
   // use nightmare
 })
 
 test('Diff: formatWireProperty', () => {
-  let diff = create(ctx)
   let container = $('#container')
 
   // TODO: real data
@@ -34,7 +92,6 @@ test('Diff: formatWireProperty', () => {
 })
 
 test('Diff: createNodeIcon', () => {
-  let diff = create(ctx)
   // TODO: real data
   let node = {}
   let def = {}
@@ -44,7 +101,6 @@ test('Diff: createNodeIcon', () => {
 })
 
 test('Diff: createNode', () => {
-  let diff = create(ctx)
   // TODO: real data
   let node = {}
   let def = {}
@@ -52,17 +108,28 @@ test('Diff: createNode', () => {
 
   // use nightmare
 })
-test('Diff: createNodeDiffRow', () => {
-  let diff = create(ctx)
+
+function Stat() {
+  return {
+    addedCount: 0,
+    deletedCount: 0,
+    changedCount: 0
+  }
+}
+
+test.only('Diff: createNodeDiffRow', () => {
   // TODO: real data
   let node = {}
-  let stats = {}
+  let stats = {
+    local: new Stat(),
+    remote: new Stat()
+  }
   diff.createNodeDiffRow(node, stats)
 
   // use nightmare
 })
+
 test('Diff: createNodePropertiesTable', () => {
-  let diff = create(ctx)
   // TODO: real data
   let node = {}
   let def = {}
@@ -74,7 +141,6 @@ test('Diff: createNodePropertiesTable', () => {
 })
 
 test('Diff: createNodeConflictRadioBoxes', () => {
-  let diff = create(ctx)
   // TODO: real data
   let node = {}
   let row = {}
@@ -89,14 +155,12 @@ test('Diff: createNodeConflictRadioBoxes', () => {
 })
 
 test('Diff: refreshConflictHeader', () => {
-  let diff = create(ctx)
   diff.refreshConflictHeader()
 
   // use nightmare
 })
 
 test('Diff: getRemoteDiff', () => {
-  let diff = create(ctx)
   let cb = function () {
     return 'x'
   }
@@ -105,14 +169,12 @@ test('Diff: getRemoteDiff', () => {
 })
 
 test('Diff: showRemoteDiff', () => {
-  let diff = create(ctx)
   let difference = {}
   diff.showRemoteDiff(difference)
   // use nightmare
 })
 
 test('Diff: parseNodes', () => {
-  let diff = create(ctx)
   let node = {
     id: 'x'
   }
@@ -124,7 +186,6 @@ test('Diff: parseNodes', () => {
 })
 
 test('Diff: generateDiff', () => {
-  let diff = create(ctx)
   let node = {
     id: 'x'
   }
@@ -135,7 +196,6 @@ test('Diff: generateDiff', () => {
 })
 
 test('Diff: resolveDiffs', () => {
-  let diff = create(ctx)
   let localDiff = {}
   let remoteDiff = {}
   diff.resolveDiffs(localDiff, remoteDiff)
@@ -143,14 +203,12 @@ test('Diff: resolveDiffs', () => {
 })
 
 test('Diff: showDiff', () => {
-  let diff = create(ctx)
   let difference = {}
   diff.showDiff(difference)
   // use nightmare
 })
 
 test('Diff: mergeDiff', () => {
-  let diff = create(ctx)
   let difference = {}
   diff.mergeDiff(difference)
   // use nightmare

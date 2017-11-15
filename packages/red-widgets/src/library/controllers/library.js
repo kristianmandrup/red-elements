@@ -21,13 +21,35 @@ import {
   default as $
 } from 'jquery'
 
+function rebind(varNames, ctx) {
+  return varNames.reduce((acc, name) => {
+    ctx[name] = ctx[name].bind(ctx)
+    acc[name] = ctx[name]
+    return acc
+  }, {})
+}
+
 export class Library extends Context {
   constructor(ctx) {
     super(ctx)
 
+    const required = ['actions', 'events', 'settings']
+    required.map(name => {
+      if (ctx[name]) return
+      this.handleError(`Library: Missing ${name} object`, {
+        ctx
+      })
+    })
+
+    let {
+      exportFlow,
+    } = rebind([
+      'exportFlow',
+    ], this)
+
     ctx.actions.add("core:library-export", exportFlow);
 
-    ctx.events.on("view:selection-changed", function (selection) {
+    ctx.events.on("view:selection-changed", (selection) => {
       if (!selection.nodes) {
         ctx.menu.setDisabled("menu-item-export", true);
         ctx.menu.setDisabled("menu-item-export-clipboard", true);
@@ -40,7 +62,7 @@ export class Library extends Context {
     });
 
     if (ctx.settings.theme("menu.menu-item-import-library") !== false) {
-      loadFlowLibrary();
+      this.loadFlowLibrary();
     }
 
     this.exportToLibraryDialog = $('<div id="library-dialog" class="hide"><form class="dialog-form form-horizontal"></form></div>')
@@ -62,7 +84,7 @@ export class Library extends Context {
             id: "library-dialog-ok",
             class: "primary",
             text: ctx._("common.label.export"),
-            click: function () {
+            click: () => {
               //TODO: move this to ctx.library
               var flowName = $("#node-input-library-filename").val();
               if (!/^\s*$/.test(flowName)) {
@@ -71,10 +93,10 @@ export class Library extends Context {
                   type: "POST",
                   data: $("#node-input-library-filename").attr('nodes'),
                   contentType: "application/json; charset=utf-8"
-                }).done(function () {
+                }).done(() => {
                   ctx.library.loadFlowLibrary();
                   ctx.notify(ctx._("library.savedNodes"), "success");
-                }).fail(function (xhr, textStatus, err) {
+                }).fail((xhr, textStatus, err) => {
                   if (xhr.status === 401) {
                     ctx.notify(ctx._("library.saveFailed", {
                       message: ctx._("user.notAuthorized")
@@ -90,11 +112,12 @@ export class Library extends Context {
             }
           }
         ],
-        open: function (e) {
+        open: (e) => {
           $(this).parent().find(".ui-dialog-titlebar-close").hide();
         },
-        close: function (e) {}
+        close: (e) => {}
       });
+
     this.exportToLibraryDialog.children(".dialog-form").append($(
       '<div class="form-row">' +
       '<label for="node-input-library-filename" data-i18n="[append]editor:library.filename"><i class="fa fa-file"></i> </label>' +
@@ -104,11 +127,15 @@ export class Library extends Context {
     ));
   }
 
-  loadFlowLibrary() {
-    $.getJSON("library/flows", function (data) {
+  /**
+   * Takes a done cb function to be called when done loading
+   * @param {done} done cb function
+   */
+  loadFlowLibrary(done) {
+    $.getJSON("library/flows", (data) => {
       //console.log(data);
 
-      var buildMenu = function (data, root) {
+      var buildMenu = (data, root) => {
         var i;
         var li;
         var a;
@@ -169,25 +196,43 @@ export class Library extends Context {
       }
       //TODO: need an api in ctx.menu for this
       $("#menu-item-import-library-submenu").replaceWith(menu);
+      if (!done) {
+        this.logWarning('async:loadFlowLibrary must take a cb function')
+      }
+      done(null, {
+        loaded: true
+      })
     });
   }
 
-  createUI(options) {
+  createUI(options = {}) {
     var libraryData = {};
     var selectedLibraryItem = null;
     var libraryEditor = null;
 
+    if (!options.editor) {
+      this.handleError('createUI: missing editor: option', {
+        options
+      })
+    }
+    let editor = options.editor
+    if (!(editor.setText || editor.getText || editor.setValue || editor.getValue)) {
+      this.handleError('createUI: invalid editor', {
+        editor
+      })
+    }
+
     // Orion editor has set/getText
     // ACE editor has set/getValue
     // normalise to set/getValue
-    if (options.editor.setText) {
+    if (editor.setText) {
       // Orion doesn't like having pos passed in, so proxy the call to drop it
-      options.editor.setValue = function (text, pos) {
-        options.editor.setText.call(options.editor, text);
+      editor.setValue = function (text, pos) {
+        editor.setText.call(editor, text);
       }
     }
-    if (options.editor.getText) {
-      options.editor.getValue = options.editor.getText;
+    if (editor.getText) {
+      editor.getValue = editor.getText;
     }
 
     this.ui = new LibraryUI(options)
@@ -195,6 +240,13 @@ export class Library extends Context {
 
   exportFlow() {
     let ctx = this.ctx
+
+    if (typeof ctx.nodes !== 'object') {
+      this.handleError('exportFlow: ctx bad or missing .nodes property', {
+        ctx,
+        nodes: ctx.nodes
+      })
+    }
     //TODO: don't rely on the main dialog
     var nns = ctx.nodes.createExportableNodeSet(ctx.view.selection().nodes);
     $("#node-input-library-filename").attr('nodes', JSON.stringify(nns));

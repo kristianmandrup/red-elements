@@ -29,17 +29,17 @@ export default factory
 
 export function factory(RED) {
   // https://stackoverflow.com/questions/31013221/typeerror-console-log-is-not-a-function
-  console.log({
-    RED,
-    Validators
-  });
+  // console.log({
+  //   RED,
+  //   Validators
+  // });
   new Validators(RED);
-  console.log('create typedInput widget', {
-    RED
-  });
+  // console.log('create typedInput widget', {
+  //   RED
+  // });
 
   (function ($) {
-    console.log('creating typedInput widget...', RED)
+    // console.log('creating typedInput widget...', RED)
 
     var allOptions = {
       msg: {
@@ -151,9 +151,9 @@ export function factory(RED) {
         }
       }
     };
-    log({
-      allOptions
-    })
+    // log({
+    //   allOptions
+    // })
 
     var nlsd = false;
 

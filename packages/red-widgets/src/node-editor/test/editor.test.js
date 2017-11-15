@@ -1,46 +1,70 @@
 import {
+  RED,
+  readPage,
+  ctx as baseCtx,
   Editor
 } from './imports'
 
-const ctx = {}
+let nodes = {}
+let events = {}
+
+let ctx = Object.assign({
+  // actions,
+  // keyboard,
+  // utils,
+  events,
+  // settings,
+  nodes,
+  // view
+}, baseCtx)
+
 
 function create(ctx) {
   return new Editor(ctx)
 }
 
+
+let editor
+beforeEach(() => {
+  editor = create(ctx)
+})
+
+beforeAll(() => {
+  // widgets that need to be available
+  // EditableList(RED)
+
+  // load document with placeholder elements to create widgets (for testing)
+  document.documentElement.innerHTML = readPage('editor', __dirname)
+})
+
 test('Editor: create', () => {
-  let editor = create(ctx)
-  t.deepEqual(editor.editStack, [])
+  expect(editor.editStack).toBe([])
 })
 
 test('Editor: getCredentialsURL', () => {
-  let editor = create(ctx)
   let url = editor.getCredentialsURL('a b', 'x')
-  t.is(url, 'credentials/a-b/x')
+  expect(url).toBe('credentials/a-b/x')
 })
 
 test('Editor: validateNode', () => {
-  let editor = create(ctx)
   let node = {
     id: 'x'
   }
   let valid = editor.validateNode(node)
-  t.truthy(valid)
+  expect(valid).toBeTruthy()
 })
 
 test('Editor: validateNodeProperties', () => {
-  let editor = create(ctx)
   let node = {
     id: 'x'
   }
   let definition = {}
   let properties = {}
   let valid = editor.validateNodeProperties(node, definition, properties)
-  t.truthy(valid)
+  expect(valid).toBeTruthy()
 })
 
 test('Editor: validateNodeProperty', () => {
-  let editor = create(ctx)
   let node = {
     id: 'x'
   }
@@ -48,21 +72,19 @@ test('Editor: validateNodeProperty', () => {
   let properties = {}
   let value = 'a'
   let valid = editor.validateNodeProperty(node, definition, property, value)
-  t.truthy(valid)
+  expect(valid).toBeTruthy()
 })
 
 test('Editor: validateNodeEditor', () => {
-  let editor = create(ctx)
   let node = {
     id: 'x'
   }
   let prefix = 'a'
   let valid = editor.validateNodeEditor(node, prefix)
-  t.truthy(valid)
+  expect(valid).toBeTruthy()
 })
 
 test('Editor: validateNodeEditorProperty', () => {
-  let editor = create(ctx)
   let node = {
     id: 'x'
   }
@@ -70,21 +92,19 @@ test('Editor: validateNodeEditorProperty', () => {
   let property = {}
   let prefix = 'a'
   let valid = editor.validateNodeEditorProperty(node, defaults, property, prefix)
-  t.truthy(valid)
+  expect(valid).toBeTruthy()
 })
 
 test('Editor: updateNodeProperties', () => {
-  let editor = create(ctx)
   let node = {
     id: 'x'
   }
   let output = {}
   let removedLinks = editor.updateNodeProperties(node, outputMap)
-  t.truthy(removedLinks)
+  expect(removedLinks).toBeTruthy()
 })
 
 test('Editor: prepareConfigNodeSelect', () => {
-  let editor = create(ctx)
   let node = {
     id: 'x'
   }
@@ -92,11 +112,11 @@ test('Editor: prepareConfigNodeSelect', () => {
   let property = {}
   let prefix = 'a'
   let prepared = editor.prepareConfigNodeSelect(node, property, type, prefix)
-  t.truthy(prepared)
+  expect(prepared).toBeTruthy()
 })
 
 test('Editor: prepareConfigNodeButton', () => {
-  let editor = create(ctx)
+
   let node = {
     id: 'x'
   }
@@ -104,11 +124,11 @@ test('Editor: prepareConfigNodeButton', () => {
   let property = {}
   let prefix = 'a'
   let prepared = editor.prepareConfigNodeButton(node, property, type, prefix)
-  t.truthy(prepared)
+  expect(prepared).toBeTruthy()
 })
 
 test('Editor: preparePropertyEditor', () => {
-  let editor = create(ctx)
+
   let node = {
     id: 'x'
   }
@@ -116,11 +136,11 @@ test('Editor: preparePropertyEditor', () => {
   let property = {}
   let prefix = 'a'
   let prepared = editor.preparePropertyEditor(node, property, prefix, definition)
-  t.truthy(prepared)
+  expect(prepared).toBeTruthy()
 })
 
 test('Editor: attachPropertyChangeHandler', () => {
-  let editor = create(ctx)
+
   let node = {
     id: 'x'
   }
@@ -128,11 +148,11 @@ test('Editor: attachPropertyChangeHandler', () => {
   let property = {}
   let prefix = 'a'
   let prepared = editor.attachPropertyChangeHandler(node, definition, property, prefix)
-  t.truthy(prepared)
+  expect(prepared).toBeTruthy()
 })
 
 test('Editor: populateCredentialsInputs', () => {
-  let editor = create(ctx)
+
   let node = {
     id: 'x'
   }
@@ -145,7 +165,7 @@ test('Editor: populateCredentialsInputs', () => {
 })
 
 test('Editor: updateNodeCredentials', () => {
-  let editor = create(ctx)
+
   let node = {
     id: 'x'
   }
@@ -157,7 +177,7 @@ test('Editor: updateNodeCredentials', () => {
 })
 
 test('Editor: prepareEditDialog', () => {
-  let editor = create(ctx)
+
   let node = {
     id: 'x'
   }
@@ -170,14 +190,14 @@ test('Editor: prepareEditDialog', () => {
 })
 
 test('Editor: getEditStackTitle', () => {
-  let editor = create(ctx)
+
   let expected = 'my-title'
   let title = editor.getEditStackTitle()
   expect(title).toBe(expected)
 })
 
 test('Editor: buildEditForm', () => {
-  let editor = create(ctx)
+
   let container = $('#container')
   let definition = {}
   let formId = 'a'
@@ -187,7 +207,7 @@ test('Editor: buildEditForm', () => {
 })
 
 test('Editor: refreshLabelForm', () => {
-  let editor = create(ctx)
+
   let container = $('#container')
   let node = {
     id: 'x'
@@ -197,7 +217,7 @@ test('Editor: refreshLabelForm', () => {
 })
 
 test('Editor: buildLabelRow', () => {
-  let editor = create(ctx)
+
   let type = 'io'
   let index = 0
   let value = 'hello'
@@ -207,7 +227,7 @@ test('Editor: buildLabelRow', () => {
 })
 
 test('Editor: buildLabelForm', () => {
-  let editor = create(ctx)
+
   let container = $('#container')
   let node = {
     id: 'x'
@@ -217,7 +237,7 @@ test('Editor: buildLabelForm', () => {
 })
 
 test('Editor: showEditDialog', () => {
-  let editor = create(ctx)
+
   let node = {
     id: 'x'
   }
@@ -226,7 +246,7 @@ test('Editor: showEditDialog', () => {
 })
 
 test('Editor: showEditConfigNodeDialog', () => {
-  let editor = create(ctx)
+
   let node = {
     id: 'x'
   }
@@ -238,7 +258,7 @@ test('Editor: showEditConfigNodeDialog', () => {
 })
 
 test('Editor: defaultConfigNodeSort', () => {
-  let editor = create(ctx)
+
   let A = {
     id: 'a'
   }
@@ -249,7 +269,7 @@ test('Editor: defaultConfigNodeSort', () => {
 })
 
 test('Editor: updateConfigNodeSelect', () => {
-  let editor = create(ctx)
+
   let name = 'x'
   let type = 'io'
   let value = '2'
@@ -258,37 +278,37 @@ test('Editor: updateConfigNodeSelect', () => {
 })
 
 test('Editor: showEditSubflowDialog', () => {
-  let editor = create(ctx)
+
   let subflow = {}
   editor.showEditSubflowDialog(subflow)
 })
 
 test('Editor: editExpression', () => {
-  let editor = create(ctx)
+
   let options = {}
   editor.editExpression(options)
 })
 
 test('Editor: editJSON', () => {
-  let editor = create(ctx)
+
   let options = {}
   editor.editJSON(options)
 })
 
 test('Editor: stringToUTF8Array', () => {
-  let editor = create(ctx)
+
   let str = 'abc'
   editor.stringToUTF8Array(str)
 })
 
 test('Editor: editBuffer', () => {
-  let editor = create(ctx)
+
   let options = {}
   editor.editBuffer(options)
 })
 
 test('Editor: createEditor', () => {
-  let editor = create(ctx)
+
   let options = {}
   editor.createEditor(options)
 })

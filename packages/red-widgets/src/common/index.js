@@ -3,6 +3,11 @@ import {
 }
 from './controllers'
 
+export {
+  BaseContext
+}
+from './base/context'
+
 export const common = {
   controllers
 }

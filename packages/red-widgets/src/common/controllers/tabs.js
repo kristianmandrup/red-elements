@@ -33,8 +33,11 @@ function rebind(varNames, ctx) {
 
 export class Tabs extends Context {
 
-  constructor(options) {
+  // TODO: use dependency injection of RED instead
+  constructor(options = {}, RED = {}) {
     super(options)
+    this.options = options || {}
+    this.RED = RED
     if (typeof options !== 'object') {
       this.handleError('Tabs must take an options object', {
         options
@@ -126,19 +129,23 @@ export class Tabs extends Context {
   }
 
   scrollEventHandler(evt, dir) {
+    const {
+      scrollContainer
+    } = this
+
     evt.preventDefault();
     if ($(this).hasClass('disabled')) {
-      return;
+      return this;
     }
     var currentScrollLeft = scrollContainer.scrollLeft();
     scrollContainer.animate({
       scrollLeft: dir
     }, 100);
-    var interval = setInterval(function () {
+    var interval = setInterval(() => {
       var newScrollLeft = scrollContainer.scrollLeft()
       if (newScrollLeft === currentScrollLeft) {
         clearInterval(interval);
-        return;
+        return this;
       }
       currentScrollLeft = newScrollLeft;
       scrollContainer.animate({
@@ -148,6 +155,7 @@ export class Tabs extends Context {
     $(this).one('mouseup', function () {
       clearInterval(interval);
     })
+    return this
   }
 
 
@@ -162,11 +170,18 @@ export class Tabs extends Context {
     if (options.onclick) {
       options.onclick(tabs[$(this).attr('href').slice(1)]);
     }
-    activateTab($(this));
+    this.activateTab($(this));
     return false;
   }
 
   updateScroll() {
+    const {
+      ul,
+      scrollContainer,
+      scrollLeft,
+      scrollRight
+    } = this
+
     if (ul.children().length !== 0) {
       var sl = scrollContainer.scrollLeft();
       var scWidth = scrollContainer.width();
@@ -182,10 +197,14 @@ export class Tabs extends Context {
         scrollRight.show();
       }
     }
+    return this
   }
 
   onTabDblClick() {
-    let options = this.options
+    const {
+      options,
+      tabs
+    } = this
 
     if (options.ondblclick) {
       options.ondblclick(tabs[$(this).attr('href').slice(1)]);
@@ -194,15 +213,18 @@ export class Tabs extends Context {
   }
 
   activateTab(link) {
-    let updateTabWidths = this.updateTabWidths
-    let ul = this.ul
-    let options = this.options
+    const {
+      updateTabWidths,
+      ul,
+      options,
+      scrollContainer
+    } = this
 
     if (typeof link === "string") {
       link = ul.find("a[href='#" + link + "']");
     }
     if (link.length === 0) {
-      return;
+      return this;
     }
     if (!link.parent().hasClass("active")) {
       ul.children().removeClass("active");
@@ -225,33 +247,46 @@ export class Tabs extends Context {
       if (options.onchange) {
         options.onchange(tabs[link.attr('href').slice(1)]);
       }
-      updateTabWidths();
+      this.updateTabWidths();
       setTimeout(function () {
         ul.children().css({
           "transition": ""
         });
       }, 100);
     }
+    return this
   }
 
   activatePreviousTab() {
+    const {
+      ul
+    } = this
+
     var previous = ul.find("li.active").prev();
     if (previous.length > 0) {
-      activateTab(previous.find("a"));
+      this.activateTab(previous.find("a"));
     }
+    return this
   }
 
   activateNextTab() {
+    const {
+      ul
+    } = this
+
     var next = ul.find("li.active").next();
     if (next.length > 0) {
-      activateTab(next.find("a"));
+      this.activateTab(next.find("a"));
     }
+    return this
   }
 
   updateTabWidths() {
-    let options = this.options
-    let ul = this.ul
-    let wrapper = this.wrapper
+    const {
+      ul,
+      options,
+      wrapper
+    } = this
 
     // FIX: directly reference instance vars below?
     let currentTabWidth = this.currentTabWidth
@@ -264,9 +299,6 @@ export class Tabs extends Context {
     if (!tabs) {
       throw new Error("Missing tabs: li.red-ui-tab")
     }
-    console.log({
-      tabs
-    })
     var width = wrapper.width();
     var tabCount = tabs.length;
 
@@ -316,10 +348,17 @@ export class Tabs extends Context {
         paddingLeft: ""
       })
     }
-
+    return this
   }
 
   removeTab(id) {
+    const {
+      ul,
+      tabs,
+      options,
+      updateTabWidths
+    } = this
+
     var li = ul.find("a[href='#" + id + "']").parent();
     if (li.hasClass("active")) {
       var tab = li.prev();
@@ -333,11 +372,27 @@ export class Tabs extends Context {
       options.onremove(tabs[id]);
     }
     delete tabs[id];
-    updateTabWidths();
+    this.updateTabWidths()
+    return this
   }
 
   addTab(tab) {
-    let updateTabWidths = this.updateTabWidths
+    const {
+      ul,
+      tabs,
+      options,
+      updateTabWidths,
+      RED
+    } = this
+
+    let {
+      onTabClick,
+      onTabDblClick,
+    } = rebind([
+      'onTabClick',
+      'onTabDblClick',
+    ], this)
+
 
     tabs[tab.id] = tab;
     var li = $("<li/>", {
@@ -368,16 +423,17 @@ export class Tabs extends Context {
 
       closeLink.on("click", function (event) {
         event.preventDefault();
-        removeTab(tab.id);
+        this.removeTab(tab.id);
       });
     }
-    updateTabWidths();
+
+    this.updateTabWidths();
     if (options.onadd) {
       options.onadd(tab);
     }
     link.attr("title", tab.label);
-    if (ul.find("li.red-ui-tab").size() == 1) {
-      activateTab(link);
+    if (ul.find("li.red-ui-tab").length == 1) {
+      this.activateTab(link);
     }
     if (options.onreorder) {
       var originalTabOrder;
@@ -388,7 +444,7 @@ export class Tabs extends Context {
       li.draggable({
         axis: "x",
         distance: 20,
-        start: function (event, ui) {
+        start: (event, ui) => {
           originalTabOrder = [];
           tabElements = [];
           ul.children().each(function (i) {
@@ -421,7 +477,7 @@ export class Tabs extends Context {
             });
           }
         },
-        drag: function (event, ui) {
+        drag: (event, ui) => {
           ui.position.left += tabElements[tabDragIndex].left + scrollContainer.scrollLeft();
           var tabCenter = ui.position.left + tabElements[tabDragIndex].width / 2 - scrollContainer.scrollLeft();
           for (var i = 0; i < tabElements.length; i++) {
@@ -447,7 +503,7 @@ export class Tabs extends Context {
             }
           }
         },
-        stop: function (event, ui) {
+        stop: (event, ui) => {
           ul.children().css({
             position: "relative",
             left: "",
@@ -458,36 +514,68 @@ export class Tabs extends Context {
               zIndex: ""
             });
           }
-          updateTabWidths();
+          this.updateTabWidths();
           if (startDragIndex !== tabDragIndex) {
             options.onreorder(originalTabOrder, $.makeArray(ul.children().map(function () {
               return $(this).data('tabId');
             })));
           }
-          activateTab(tabElements[tabDragIndex].el.data('tabId'));
+          this.activateTab(tabElements[tabDragIndex].el.data('tabId'));
         }
       })
     }
+    return this
   }
+
   count() {
-    return ul.find("li.red-ui-tab").size();
+    const {
+      ul
+    } = this
+    const tabElems = ul.find("li.red-ui-tab")
+    return tabElems.length;
   }
+
   contains(id) {
-    return ul.find("a[href='#" + id + "']").length > 0;
+    const {
+      ul
+    } = this
+    const tabLinksToId = ul.find("a[href='#" + id + "']")
+    return tabLinksToId.length > 0;
   }
+
   renameTab(id, label) {
+    const {
+      ul,
+      tabs,
+      RED
+    } = this
+
+    if (!tabs[id]) {
+      this.logWarning(`renameTab: No tab for id: ${id}`, {
+        tabs,
+        id
+      })
+      return this
+    }
+
     tabs[id].label = label;
     var tab = ul.find("a[href='#" + id + "']");
     tab.attr("title", label);
     tab.find("span.bidiAware").text(label).attr('dir', RED.text.bidi.resolveBaseTextDir(label));
-    updateTabWidths();
+    this.updateTabWidths();
+    return this
   }
+
   order(order) {
-    var existingTabOrder = $.makeArray(ul.children().map(function () {
+    const {
+      ul
+    } = this
+
+    var existingTabOrder = $.makeArray(ul.children().map(() => {
       return $(this).data('tabId');
     }));
     if (existingTabOrder.length !== order.length) {
-      return
+      return this
     }
     var i;
     var match = true;
@@ -498,7 +586,7 @@ export class Tabs extends Context {
       }
     }
     if (match) {
-      return;
+      return this;
     }
     var existingTabMap = {};
     var existingTabs = ul.children().detach().each(function () {
@@ -507,5 +595,6 @@ export class Tabs extends Context {
     for (i = 0; i < order.length; i++) {
       existingTabMap[order[i]].appendTo(ul);
     }
+    return this
   }
 }

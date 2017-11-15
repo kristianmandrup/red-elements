@@ -27,6 +27,15 @@ let widgetElem
 beforeEach(() => {
   widgetElem = new Tabs({
     id: 'tabs'
+  }, {
+    text: {
+      bidi: {
+        // for renameTab
+        resolveBaseTextDir(label) {
+          return label
+        }
+      }
+    }
   })
 })
 test('Tabs: is a class', () => {
@@ -47,7 +56,9 @@ test('Tabs: widget can be created from target elem', () => {
 })
 
 function mockEvent(opts) {
-  return {}
+  return {
+    preventDefault: () => {}
+  }
 }
 
 test('Tabs: scrollEventHandler', () => {
@@ -59,7 +70,7 @@ test('Tabs: scrollEventHandler', () => {
 
 test('Tabs: onTabClick', () => {
   let clicked = widgetElem.onTabClick()
-  expect(clicked).toBe(widgetElem)
+  expect(clicked).toBe(false)
 })
 
 test('Tabs: updateScroll', () => {
@@ -69,7 +80,7 @@ test('Tabs: updateScroll', () => {
 
 test('Tabs: onTabDblClick', () => {
   let updated = widgetElem.onTabDblClick()
-  expect(updated).toBe(widgetElem)
+  expect(updated).toBe(false)
 })
 
 test('Tabs: activateTab', () => {
@@ -100,28 +111,54 @@ test('Tabs: removeTab', () => {
 })
 
 test('Tabs: addTab(tab)', () => {
-  let tab = 'xtraTab'
+  let tab = {
+    id: 'xtraTab'
+  }
   let added = widgetElem.addTab(tab)
   expect(added).toBe(widgetElem)
 })
 
 test('Tabs: count', () => {
   let count = widgetElem.count()
-  expect(count).toBe(2)
+  expect(count).toBe(1)
 })
 
-test('Tabs: count', () => {
+test('Tabs: contains - no such tab: false', () => {
+  let id = 'first'
+  let contained = widgetElem.contains(id)
+  expect(contained).toBe(false)
+})
+
+test.skip('Tabs: contains - has tab with id: true', () => {
   let id = 'first'
   let contained = widgetElem.contains(id)
   expect(contained).toBeTruthy()
 })
 
-test('Tabs: renameTab(id, label)', () => {
+test('Tabs: renameTab(id, label) - no such tab', () => {
   let id = 'first'
   let label = 'hello'
   let renamed = widgetElem.renameTab(id, label)
   expect(renamed).toBe(widgetElem)
   // is this correct?
+  let renamedTab = renamed.tabs[id]
+  expect(renamedTab).not.toBeDefined()
+})
+
+// TODO: Add actual tabs for one to be removed
+test.skip('Tabs: renameTab(id, label) - has such a tab', () => {
+  const tab1 = {
+    id: 'tab1'
+  }
+  const tab2 = {
+    id: 'tab2'
+  }
+
+  widgetElem
+    .addTab(tab1)
+    .addTab(tab2)
+
+  let renamed = widgetElem.renameTab(tab1.id, label)
   let renamedTab = renamed.tabs[id]
   expect(renamedTab.label).toBe(label)
 })

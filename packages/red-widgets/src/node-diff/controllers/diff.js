@@ -6,8 +6,15 @@ export class Diff extends Context {
   constructor(ctx) {
     super(ctx)
     const RED = ctx
+    this.RED = RED
     this.currentDiff = {};
     this.diffVisible = false;
+
+    let {
+      showRemoteDiff
+    } = this.rebind([
+      'showRemoteDiff'
+    ])
     // var diffList;
     // RED.actions.add("core:show-current-diff",showLocalDiff);
     RED.actions.add("core:show-remote-diff", showRemoteDiff);
@@ -24,6 +31,14 @@ export class Diff extends Context {
 
 
   buildDiffPanel(container) {
+    let {
+      diffList
+    } = this
+
+    if (!container) {
+      this.handleError('buildDiffPanel: missing argument container, the element to build panel on')
+    }
+
     var diffPanel = $('<div id="node-dialog-view-diff"><div id="node-dialog-view-diff-headers"></div><ol id="node-dialog-view-diff-diff"></ol></div>').appendTo(container);
 
     var toolbar = $('<div class="node-diff-toolbar">' +
@@ -359,6 +374,10 @@ export class Diff extends Context {
   }
 
   createNodeIcon(node, def) {
+    const {
+      RED
+    } = this
+
     var nodeDiv = $("<div>", {
       class: "node-diff-node-entry-node"
     });
@@ -384,7 +403,7 @@ export class Diff extends Context {
     var nodeTitleDiv = $("<div>", {
       class: "node-diff-node-entry-title"
     })
-    createNodeIcon(node, def).appendTo(nodeTitleDiv);
+    this.createNodeIcon(node, def).appendTo(nodeTitleDiv);
     var contentDiv = $('<div>', {
       class: "node-diff-node-description"
     }).appendTo(nodeTitleDiv);
@@ -396,8 +415,29 @@ export class Diff extends Context {
   }
 
   createNodeDiffRow(node, stats) {
-    var localDiff = currentDiff.localDiff;
-    var remoteDiff = currentDiff.remoteDiff;
+    let {
+      currentDiff,
+      RED,
+      createNode
+    } = this
+
+    createNode = createNode.bind(this)
+
+    var localDiff = currentDiff.localDiff || {};
+    var remoteDiff = currentDiff.remoteDiff || {};
+
+    // FIX: ensure doesn't break if not defined (empty)
+    currentDiff.conflicts = currentDiff.conflicts || {}
+
+    // TODO: generalize to avoid duplication!
+    localDiff.added = localDiff.added || {}
+    localDiff.deleted = localDiff.deleted || {}
+    localDiff.changed = localDiff.changed || {}
+
+    remoteDiff.added = remoteDiff.added || {}
+    remoteDiff.deleted = remoteDiff.deleted || {}
+    remoteDiff.changed = remoteDiff.changed || {}
+
     var conflicted = currentDiff.conflicts[node.id];
 
     var hasChanges = false; // exists in original and local/remote but with changes

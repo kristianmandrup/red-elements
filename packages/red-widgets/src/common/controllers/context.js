@@ -1,10 +1,9 @@
-export class Context {
-  constructor(ctx) {
-    this.ctx = ctx;
-  }
+import {
+  BaseContext
+} from '../'
 
-  handleError(msg, data) {
-    console.error(msg, data)
-    throw new Error(msg)
+export class Context extends BaseContext {
+  constructor(ctx) {
+    super(ctx)
   }
 }

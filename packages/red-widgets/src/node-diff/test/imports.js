@@ -11,11 +11,20 @@ export {
 }
 from '../../test/setup'
 
+import {
+  common
+} from '../../'
+
+const {
+  EditableList
+} = common.controllers
+
 const {
   Diff
 } = controllers
 
 export {
   // nightmare,
-  Diff
+  Diff,
+  EditableList
 }
