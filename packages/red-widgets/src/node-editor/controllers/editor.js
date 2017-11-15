@@ -24,8 +24,11 @@ import {
 } from '../../tray/controllers'
 
 export class Editor extends Context {
+  // TODO: inject RED instead?
   constructor(ctx) {
     super(ctx)
+    const RED = ctx
+    this.RED = RED
 
     this.editStack = [];
     this.editing_node = null;
@@ -36,7 +39,7 @@ export class Editor extends Context {
     this.editTrayWidthCache = {};
 
     // fix: use class
-    ctx.tray = new Tray();
+    ctx.tray = new Tray(ctx);
 
     if (!typeof ctx.actions === 'object') {
       throw new Error('ctx.actions must be an Actions object')
@@ -50,7 +53,6 @@ export class Editor extends Context {
       $("#node-dialog-cancel").click();
       $("#node-config-dialog-cancel").click();
     });
-
   }
 
   getCredentialsURL(nodeType, nodeID) {
@@ -64,12 +66,18 @@ export class Editor extends Context {
    * @returns {boolean} whether the node is valid. Sets node.dirty if needed
    */
   validateNode(node) {
+    const {
+      ctx
+    } = this
+
     var oldValue = node.valid;
     var oldChanged = node.changed;
     node.valid = true;
+
     var subflow;
     var isValid;
     var hasChanged;
+
     if (node.type.indexOf("subflow:") === 0) {
       subflow = ctx.nodes.subflow(node.type.substring(8));
       isValid = subflow.valid;
@@ -134,6 +142,11 @@ export class Editor extends Context {
    * @returns {boolean} whether the node's properties are valid
    */
   validateNodeProperties(node, definition, properties) {
+    let {
+      validateNodeProperty
+    } = this
+    validateNodeProperty = validateNodeProperty.bind(this)
+
     var isValid = true;
     for (var prop in definition) {
       if (definition.hasOwnProperty(prop)) {
@@ -181,6 +194,11 @@ export class Editor extends Context {
 
 
   validateNodeEditor(node, prefix) {
+    let {
+      validateNodeEditorProperty
+    } = this
+    validateNodeEditorProperty = validateNodeEditorProperty.bind(this)
+
     for (var prop in node._def.defaults) {
       if (node._def.defaults.hasOwnProperty(prop)) {
         validateNodeEditorProperty(node, node._def.defaults, prop, prefix);
@@ -196,6 +214,11 @@ export class Editor extends Context {
   }
 
   validateNodeEditorProperty(node, defaults, property, prefix) {
+    let {
+      validateNodeProperty
+    } = this
+    validateNodeProperty = validateNodeProperty.bind(this)
+
     var input = $("#" + prefix + "-" + property);
     if (input.length > 0) {
       var value = input.val();

@@ -5,11 +5,18 @@ import {
   Editor
 } from './imports'
 
+// use instances from red-runtime
+// inject RED singleton instead
 let nodes = {}
-let events = {}
+let events = {
+  on() {}
+}
+let actions = {
+  add() {}
+}
 
 let ctx = Object.assign({
-  // actions,
+  actions,
   // keyboard,
   // utils,
   events,
@@ -38,7 +45,7 @@ beforeAll(() => {
 })
 
 test('Editor: create', () => {
-  expect(editor.editStack).toBe([])
+  expect(editor.editStack).toEqual([])
 })
 
 test('Editor: getCredentialsURL', () => {
@@ -46,7 +53,8 @@ test('Editor: getCredentialsURL', () => {
   expect(url).toBe('credentials/a-b/x')
 })
 
-test('Editor: validateNode', () => {
+test.only('Editor: validateNode', () => {
+  // TODO: use real (or better mock) node
   let node = {
     id: 'x'
   }

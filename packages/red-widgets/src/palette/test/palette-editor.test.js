@@ -1,6 +1,14 @@
 import {
-  Palette
-} from '../imports'
+  palette,
+  readPage
+} from './_palette'
+
+beforeAll(() => {
+  // widgets that need to be available
+
+  // load document with placeholder elements to create widgets (for testing)
+  document.documentElement.innerHTML = readPage('palette-editor', __dirname)
+})
 
 test('Editor: semVerCompare', () => {})
 test('Editor: delayCallback', () => {})

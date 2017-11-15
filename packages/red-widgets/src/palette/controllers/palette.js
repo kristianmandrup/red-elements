@@ -96,8 +96,8 @@ export class Palette extends Context {
     if (!Array.isArray(categoryList)) {
       categoryList = coreCategories
     }
-    categoryList.forEach(function (category) {
-      createCategoryContainer(category, RED._("palette.label." + category, {
+    categoryList.forEach((category) => {
+      this.createCategoryContainer(category, RED._("palette.label." + category, {
         defaultValue: category
       }));
     });
@@ -122,6 +122,10 @@ export class Palette extends Context {
 
 
   createCategoryContainer(category, label) {
+    const {
+      categoryContainers
+    } = this
+
     label = (label || category).replace(/_/g, " ");
     var catDiv = $('<div id="palette-container-' + category + '" class="palette-category palette-close hide">' +
       '<div id="palette-header-' + category + '" class="palette-header"><i class="expanded fa fa-angle-down"></i><span>' + label + '</span></div>' +
