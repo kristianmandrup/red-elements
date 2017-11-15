@@ -1,16 +1,22 @@
 import {
   palette,
+  editor,
+  RED,
+  Searchbox,
   readPage
 } from './_palette'
 
 beforeAll(() => {
   // widgets that need to be available
+  Searchbox(RED)
 
   // load document with placeholder elements to create widgets (for testing)
   document.documentElement.innerHTML = readPage('palette-editor', __dirname)
 })
 
-test('Editor: semVerCompare', () => {})
+test('Editor: semVerCompare', () => {
+  expect(editor).toBeDefined()
+})
 test('Editor: delayCallback', () => {})
 test('Editor: changeNodeState', () => {})
 test('Editor: installNodeModule', () => {})

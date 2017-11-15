@@ -39,6 +39,11 @@ Popover.create = (ctx) => {
   return new Popover(ctx)
 }
 
+Tabs.create = (ctx) => {
+  return new Tabs(ctx)
+}
+
+
 export const controllers = {
   Menu,
   Panel,

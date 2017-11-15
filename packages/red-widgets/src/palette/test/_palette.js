@@ -2,7 +2,8 @@ import {
   RED,
   readPage,
   ctx as baseCtx,
-  Palette
+  Palette,
+  PaletteEditor
 } from './imports'
 
 // use instances from red-runtime
@@ -54,6 +55,7 @@ import {
 
 const {
   Popover,
+  Tabs,
   Searchbox
 } = common.controllers
 
@@ -64,9 +66,16 @@ let popover = {
   }
 }
 
+let tabs = {
+  create(ctx) {
+    return Tabs.create(ctx)
+  }
+}
+
 let ctx = Object.assign({
   actions,
   popover,
+  tabs,
   text,
   events,
   settings,
@@ -75,13 +84,18 @@ let ctx = Object.assign({
 }, baseCtx)
 
 
-function create(ctx) {
+function createPalette(ctx) {
   return new Palette(ctx)
+}
+
+function createEditor(ctx) {
+  return new PaletteEditor(ctx)
 }
 
 let palette
 beforeEach(() => {
-  palette = create(ctx)
+  palette = createPalette(ctx)
+  editor = createEditor(ctx)
 })
 
 export {

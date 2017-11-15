@@ -25,6 +25,7 @@ export class PaletteEditor extends Context {
   constructor(ctx) {
     super(ctx)
     var RED = ctx
+    this.RED = RED
     this.disabled = false;
 
     // editorTabs;
@@ -576,12 +577,22 @@ export class PaletteEditor extends Context {
   }
 
   getSettingsPane() {
+    let {
+      settingsPane,
+      editorTabs
+    } = this
+
     initInstallTab();
     editorTabs.activateTab('nodes');
     return settingsPane;
   }
 
   createSettingsPane() {
+    let {
+      settingsPane,
+      RED
+    } = this
+
     settingsPane = $('<div id="user-settings-tab-palette"></div>');
     var content = $('<div id="palette-editor">' +
       '<ul id="palette-editor-tabs"></ul>' +
