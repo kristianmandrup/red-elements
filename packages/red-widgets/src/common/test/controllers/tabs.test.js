@@ -88,16 +88,54 @@ test('Tabs: activateNextTab', () => {
   expect(activated).toBe(widgetElem)
 })
 
-// updateTabWidths
+test('Tabs: updateTabWidths', () => {
+  let updated = widgetElem.updateTabWidths()
+  expect(updated).toBe(widgetElem)
+})
 
-// removeTab(id)
+test('Tabs: removeTab', () => {
+  let id = 'first'
+  let updated = widgetElem.removeTab(id)
+  expect(updated).toBe(widgetElem)
+})
 
-// addTab(tab)
+test('Tabs: addTab(tab)', () => {
+  let tab = 'xtraTab'
+  let added = widgetElem.addTab(tab)
+  expect(added).toBe(widgetElem)
+})
 
-// count()
+test('Tabs: count', () => {
+  let count = widgetElem.count()
+  expect(count).toBe(2)
+})
 
-// contains(id)
+test('Tabs: count', () => {
+  let id = 'first'
+  let contained = widgetElem.contains(id)
+  expect(contained).toBeTruthy()
+})
 
-// renameTab(id, label)
+test('Tabs: renameTab(id, label)', () => {
+  let id = 'first'
+  let label = 'hello'
+  let renamed = widgetElem.renameTab(id, label)
+  expect(renamed).toBe(widgetElem)
+  // is this correct?
+  let renamedTab = renamed.tabs[id]
+  expect(renamedTab.label).toBe(label)
+})
 
-// order(order)
+test('Tabs: count', () => {
+  // TODO: set to real tabs in Tabs
+  let firstTab = {}
+  let secondTab = {}
+
+  let order = [
+    firstTab,
+    secondTab
+  ]
+  let ordered = widgetElem.order(order)
+  expect(ordered).toBe(widgetElem)
+  // test new order was set
+})
