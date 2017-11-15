@@ -7,7 +7,22 @@ import {
 
 // use instances from red-runtime
 // inject RED singleton instead
-let nodes = {}
+let nodes = {
+  eachSubflow(iterator) {
+    let sf = {
+      id: 'hello',
+      name: 'Hello',
+      in: [
+
+      ],
+      out: [
+
+      ],
+      info: false
+    }
+    iterator(sf)
+  }
+}
 let events = {
   on() {}
 }
@@ -19,19 +34,18 @@ let settings = {
   theme() {}
 }
 
-let ctx = Object.assign({
-  actions,
-  // keyboard,
-  // utils,
-  events,
-  settings,
-  nodes,
-  // view
-}, baseCtx)
+let view = {
+  calculateTextWidth() {
+    return 100
+  }
+}
 
-
-function create(ctx) {
-  return new Palette(ctx)
+let text = {
+  bidi: {
+    resolveBaseTextDir() {
+      return 'my/text/dir'
+    }
+  }
 }
 
 import {
@@ -39,9 +53,31 @@ import {
 } from '../../'
 
 const {
+  Popover,
   Searchbox
 } = common.controllers
 
+
+let popover = {
+  create(ctx) {
+    return Popover.create(ctx)
+  }
+}
+
+let ctx = Object.assign({
+  actions,
+  popover,
+  text,
+  events,
+  settings,
+  nodes,
+  view
+}, baseCtx)
+
+
+function create(ctx) {
+  return new Palette(ctx)
+}
 
 let palette
 beforeEach(() => {

@@ -35,6 +35,10 @@ import {
 }
 from './search-box'
 
+Popover.create = (ctx) => {
+  return new Popover(ctx)
+}
+
 export const controllers = {
   Menu,
   Panel,

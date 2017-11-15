@@ -17,6 +17,10 @@
 var exclusion = ['config', 'unknown', 'deprecated'];
 var coreCategories = ['subflows', 'input', 'output', 'function', 'social', 'mobile', 'storage', 'analysis', 'advanced'];
 
+import {
+  default as marked
+} from 'marked'
+
 export {
   PaletteEditor
 }
@@ -35,6 +39,7 @@ export class Palette extends Context {
     super(ctx)
     this.categoryContainers = {};
     var RED = ctx;
+    this.RED = RED
 
     RED.events.on('registry:node-type-added', function (nodeType) {
       var def = RED.nodes.getType(nodeType);
@@ -125,8 +130,23 @@ export class Palette extends Context {
     const {
       categoryContainers
     } = this
+    let labelOrCat = label || category
+    if (!labelOrCat) {
+      this.handleError('createCategoryContainer: Must take a category and an optional label', {
+        label,
+        category
+      })
+    }
 
-    label = (label || category).replace(/_/g, " ");
+    // replace underscores with spaces
+    label = labelOrCat.replace(/_/g, " ");
+
+    const container = $('#palette-container')
+    if (!container) {
+      this.handleError('Page must have a #palette-container element to attach palette to')
+    }
+
+    // append palette to #palette-container
     var catDiv = $('<div id="palette-container-' + category + '" class="palette-category palette-close hide">' +
       '<div id="palette-header-' + category + '" class="palette-header"><i class="expanded fa fa-angle-down"></i><span>' + label + '</span></div>' +
       '<div class="palette-content" id="palette-base-category-' + category + '">' +
@@ -134,23 +154,23 @@ export class Palette extends Context {
       '<div id="palette-' + category + '-output"></div>' +
       '<div id="palette-' + category + '-function"></div>' +
       '</div>' +
-      '</div>').appendTo("#palette-container");
+      '</div>').appendTo(container);
 
     categoryContainers[category] = {
       container: catDiv,
-      close: function () {
+      close: () => {
         catDiv.removeClass("palette-open");
         catDiv.addClass("palette-closed");
         $("#palette-base-category-" + category).slideUp();
         $("#palette-header-" + category + " i").removeClass("expanded");
       },
-      open: function () {
+      open: () => {
         catDiv.addClass("palette-open");
         catDiv.removeClass("palette-closed");
         $("#palette-base-category-" + category).slideDown();
         $("#palette-header-" + category + " i").addClass("expanded");
       },
-      toggle: function () {
+      toggle: () => {
         if (catDiv.hasClass("palette-open")) {
           categoryContainers[category].close();
         } else {
@@ -161,10 +181,15 @@ export class Palette extends Context {
 
     $("#palette-header-" + category).on('click', function (e) {
       categoryContainers[category].toggle();
-    });
+    })
+    return this
   }
 
   setLabel(type, el, label, info) {
+    const {
+      RED
+    } = this
+
     var nodeWidth = 82;
     var nodeHeight = 25;
     var lineHeight = 20;
@@ -221,7 +246,18 @@ export class Palette extends Context {
       popOverContent = "<p><b>" + label + "</b></p><p>" + RED._("palette.noInfo") + "</p>";
     }
 
-    el.data('popover').setContent(popOverContent);
+    // const popover = el.data('popover')
+    // if (!popover) {
+    //   this.handleError('setLabel: element el missing a data-popover property')
+    // }
+
+    el.data('popover', popOverContent)
+    // popover.setContent(popOverContent);
+    return this
+  }
+
+  marked(content) {
+    return marked(content)
   }
 
   escapeNodeType(nt) {
@@ -229,6 +265,20 @@ export class Palette extends Context {
   }
 
   addNodeType(nt, def) {
+    const {
+      RED,
+      categoryContainers,
+      marked
+    } = this
+
+    let {
+      escapeNodeType,
+      createCategoryContainer
+    } = this.rebind([
+      'escapeNodeType',
+      'createCategoryContainer'
+    ])
+
     var nodeTypeId = escapeNodeType(nt);
     if ($("#palette_node_" + nodeTypeId).length) {
       return;
@@ -435,7 +485,7 @@ export class Palette extends Context {
         });
         nodeInfo = marked(def.info || "");
       }
-      setLabel(nt, $(d), label, nodeInfo);
+      this.setLabel(nt, $(d), label, nodeInfo);
 
       var categoryNode = $("#palette-container-" + category);
       if (categoryNode.find(".palette_node").length === 1) {
@@ -443,10 +493,11 @@ export class Palette extends Context {
       }
 
     }
+    return this
   }
 
   removeNodeType(nt) {
-    var nodeTypeId = escapeNodeType(nt);
+    var nodeTypeId = this.escapeNodeType(nt);
     var paletteNode = $("#palette_node_" + nodeTypeId);
     var categoryNode = paletteNode.closest(".palette-category");
     paletteNode.remove();
@@ -456,44 +507,78 @@ export class Palette extends Context {
         categoryNode.find("i").toggleClass("expanded");
       }
     }
+    return this
   }
 
   hideNodeType(nt) {
-    var nodeTypeId = escapeNodeType(nt);
+    var nodeTypeId = this.escapeNodeType(nt);
     $("#palette_node_" + nodeTypeId).hide();
+    return this
   }
 
   showNodeType(nt) {
-    var nodeTypeId = escapeNodeType(nt);
+    var nodeTypeId = this.escapeNodeType(nt);
     $("#palette_node_" + nodeTypeId).show();
+    return this
   }
 
   refreshNodeTypes() {
-    RED.nodes.eachSubflow(function (sf) {
+    const {
+      RED,
+      marked
+    } = this
+
+    RED.nodes.eachSubflow((sf) => {
       var paletteNode = $("#palette_node_subflow_" + sf.id.replace(".", "_"));
+
+      if (!paletteNode) {
+        this.handleError('refreshNodeTypes: No palette node for subflow ${sf.id} could be found on page', {
+          sf
+        })
+      }
+
       var portInput = paletteNode.find(".palette_port_input");
       var portOutput = paletteNode.find(".palette_port_output");
 
-      if (portInput.length === 0 && sf.in.length > 0) {
+      if (!portInput) {
+        this.handleError('refreshNodeTypes: no port input element could be found .palette_port_input', {
+          paletteNode
+        })
+      }
+      if (!portOutput) {
+        this.handleError('refreshNodeTypes: no port output element could be found .palette_port_output', {
+          paletteNode
+        })
+      }
+
+      const inPort = sf.in
+      const outPort = sf.out
+
+      if (portInput.length === 0 && inPort.length > 0) {
         var portIn = document.createElement("div");
         portIn.className = "palette_port palette_port_input";
         paletteNode.append(portIn);
-      } else if (portInput.length !== 0 && sf.in.length === 0) {
+      } else if (portInput.length !== 0 && inPort.length === 0) {
         portInput.remove();
       }
 
-      if (portOutput.length === 0 && sf.out.length > 0) {
+      if (portOutput.length === 0 && outPort.length > 0) {
         var portOut = document.createElement("div");
         portOut.className = "palette_port palette_port_output";
         paletteNode.append(portOut);
-      } else if (portOutput.length !== 0 && sf.out.length === 0) {
+      } else if (portOutput.length !== 0 && outPort.length === 0) {
         portOutput.remove();
       }
-      setLabel(sf.type + ":" + sf.id, paletteNode, sf.name, marked(sf.info || ""));
+      this.setLabel(sf.type + ":" + sf.id, paletteNode, sf.name, marked(sf.info || ""));
     });
+    return this
   }
 
   filterChange(val) {
+    const {
+      categoryContainers
+    } = this
+
     var re = new RegExp(val.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
     $("#palette-container .palette_node").each(function (i, el) {
       var currentLabel = $(el).find(".palette_label").text();
@@ -517,5 +602,6 @@ export class Palette extends Context {
         }
       }
     }
+    return this
   }
 }
