@@ -53,7 +53,7 @@ test('Editor: getCredentialsURL', () => {
   expect(url).toBe('credentials/a-b/x')
 })
 
-test.only('Editor: validateNode', () => {
+test('Editor: validateNode', () => {
   // TODO: use real (or better mock) node
   let node = {
     id: 'x'

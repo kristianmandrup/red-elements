@@ -33,15 +33,42 @@ export class Search extends Context {
     this.index = {};
     this.keys = [];
     this.results = [];
+    const required = [
+      'actions',
+      'events'
+    ]
 
-    var disable = () => {
-      this.disabled = true;
-    }
-    var enable = () => {
-      this.disabled = false;
+    let {
+      show,
+      enable,
+      disable
+    } = this.rebind([
+      'show',
+      'enable',
+      'disable'
+    ])
+
+    required.map(name => {
+      if (!ctx[name]) {
+        this.handleError(`Search: missing ${name} property on ctx`, {
+          ctx
+        })
+      }
+    })
+
+    if (!ctx.actions.add) {
+      this.handleError('Search: actions missing add method', {
+        actions: ctx.actions
+      })
     }
 
     ctx.actions.add("core:search", show);
+
+    if (!ctx.events.on) {
+      this.handleError('Search: events missing on method', {
+        events: ctx.events
+      })
+    }
 
     ctx.events.on("editor:open", disable);
     ctx.events.on("editor:close", enable);
@@ -55,9 +82,24 @@ export class Search extends Context {
 
   }
 
+  disable() {
+    this.disabled = true;
+  }
+  enable() {
+    this.disabled = false;
+  }
+
   indexNode(n) {
-    let ctx = this.ctx
-    let index = this.index
+    const {
+      ctx,
+      index
+    } = this
+
+    if (!ctx.utils) {
+      this.handleError('indexNode: ctx missing utils object', {
+        ctx
+      })
+    }
 
     var l = ctx.utils.getNodeLabel(n);
     if (l) {
@@ -91,9 +133,19 @@ export class Search extends Context {
   }
 
   indexWorkspace() {
-    let ctx = this.ctx
-    let keys = this.keys
-    this.index = {};
+    let {
+      ctx,
+      keys,
+      index,
+      indexNode
+    } = this
+
+    index = {};
+    if (!ctx.nodes) {
+      this.handleError('indexWorkspace: ctx missing nodes object', {
+        ctx
+      })
+    }
 
     ctx.nodes.eachWorkspace(indexNode);
     ctx.nodes.eachSubflow(indexNode);
@@ -106,12 +158,26 @@ export class Search extends Context {
         return index[key][id];
       })
     })
+    this.index = index
+    return this
   }
 
   search(val) {
-    this.searchResults.editableList('empty');
-    this.selected = -1;
-    this.results = [];
+    let {
+      searchResults,
+      selected,
+      results
+    } = this
+
+    if (!searchResults.editableList) {
+      this.handleError('search: searchResults missing editableList. Call createDialog to init searchResults', {
+        searchResults
+      })
+    }
+
+    searchResults.editableList('empty');
+    selected = -1;
+    results = [];
     if (val.length > 0) {
       val = val.toLowerCase();
       var i;
@@ -146,6 +212,7 @@ export class Search extends Context {
         this.searchResults.editableList('addItem', {});
       }
     }
+    return this
   }
 
   ensureSelectedIsVisible() {
@@ -169,7 +236,13 @@ export class Search extends Context {
   }
 
   createDialog() {
-    this.dialog = $("<div>", {
+    let {
+      dialog,
+      searchInput,
+      searchResults
+    } = this
+
+    dialog = $("<div>", {
       id: "red-ui-search",
       class: "red-ui-search"
     }).appendTo("#main-container");
@@ -177,14 +250,14 @@ export class Search extends Context {
       class: "red-ui-search-container"
     }).appendTo(dialog);
 
-    this.searchInput = $('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv).searchBox({
+    searchInput = $('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv).searchBox({
       delay: 200,
       change: function () {
         search($(this).val());
       }
     });
 
-    this.searchInput.on('keydown', function (evt) {
+    searchInput.on('keydown', (evt) => {
       var children;
       if (results.length > 0) {
         if (evt.keyCode === 40) {
@@ -220,18 +293,18 @@ export class Search extends Context {
       }
     });
 
-    this.searchInput.i18n();
+    searchInput.i18n();
 
     var searchResultsDiv = $("<div>", {
       class: "red-ui-search-results-container"
     }).appendTo(dialog);
 
-    this.searchResults = $('<ol>', {
+    searchResults = $('<ol>', {
       id: "search-result-list",
       style: "position: absolute;top: 5px;bottom: 5px;left: 5px;right: 5px;"
     }).appendTo(searchResultsDiv).editableList({
       addButton: false,
-      addItem: function (container, i, object) {
+      addItem: (container, i, object) => {
         var node = object.node;
         if (node === undefined) {
           $('<div>', {
@@ -297,7 +370,7 @@ export class Search extends Context {
       },
       scrollOnAdd: false
     });
-
+    return this
   }
 
   reveal(node) {
