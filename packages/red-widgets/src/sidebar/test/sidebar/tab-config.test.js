@@ -1,33 +1,61 @@
 import {
+  RED,
+  readPage,
+  ctx as baseCtx,
+  Menu,
+  Sidebar,
   SidebarTabConfig
 } from '../imports'
-
-const ctx = {}
 
 function create(ctx) {
   return new SidebarTabConfig(ctx)
 }
 
+let menu = new Menu(ctx)
+let sidebar = new Sidebar(ctx)
+
+const ctx = Object.assign({
+  menu,
+  sidebar
+
+  // events,
+  // actions,
+  // view,
+  // tray
+}, baseCtx)
+
+let tc
+beforeEach(() => {
+  tc = create(ctx)
+})
+
+beforeAll(() => {
+  // Searchbox(RED)
+  // EditableList(RED)
+  document.documentElement.innerHTML = readPage('simple')
+})
 
 test('Sidebar TabConfig: create', () => {
-  let tc = create(ctx)
-  t.deepEqual(tc.categories, {})
+  expect(tc).toBeDefined()
+})
+
+
+test('Sidebar TabConfig: categories', () => {
+  expect(tc.categories).toEqual({})
 })
 
 // fix
 test('TabConfig: getOrCreateCategory', () => {
-  let tc = create(ctx)
   let name = 'abc',
     parent = {},
     label = 'xyz'
 
   let expected = {}
   let category = tc.getOrCreateCategory(name, parent, label)
-  t.deepEqual(category, expected)
+  expect(category).toBe(expected)
 })
 
 test('TabConfig: createConfigNodeList', () => {
-  let tc = create(ctx)
   let id = 'abc'
   let node = {
     id: 'x'
@@ -35,17 +63,14 @@ test('TabConfig: createConfigNodeList', () => {
   let nodes = [
     node
   ]
-
   let expected = {}
   tc.createConfigNodeList(id, nodes)
-  t.deepEqual(category, expected)
+  expect(category).toBe(expected)
 })
 
 test('TabConfig: refreshConfigNodeList', () => {
-  let tc = create(ctx)
   tc.refreshConfigNodeList()
-  // TODO
-  // t.is()
+  expect(tc).toBe(expected)
 })
 
 test('TabConfig: show', () => {

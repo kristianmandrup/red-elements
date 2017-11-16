@@ -9,7 +9,14 @@ function create(ctx) {
   return new Sidebar(ctx)
 }
 
+let menu = {
+  isSelected() {},
+
+  setSelected(id) {}
+}
+
 const ctx = Object.assign({
+  menu
   // events,
   // actions,
   // view,
@@ -90,6 +97,7 @@ test('Sidebar: toggleSidebar', () => {
 test('Sidebar: showSidebar', () => {
   let id = 'x'
   sidebar.showSidebar(id)
+  expect(sidebar.sidebar_tabs.isActivated(id)).toBeTruthy()
 })
 
 test('Sidebar: containsTab', () => {

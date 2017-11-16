@@ -11,6 +11,14 @@ export {
 }
 from '../../test/setup'
 
+import {
+  common
+} from '../../common'
+
+const {
+  Menu
+} = common.controllers
+
 const {
   Sidebar,
   TabConfig,
@@ -20,6 +28,7 @@ const {
 
 export {
   // nightmare,
+  Menu,
   Sidebar,
   TabConfig,
   TabInfo,

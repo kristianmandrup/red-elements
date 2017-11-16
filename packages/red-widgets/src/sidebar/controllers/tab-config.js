@@ -28,11 +28,6 @@ export class SidebarTabConfig extends Context {
   constructor(ctx) {
     super(ctx)
     let RED = ctx
-
-    console.log('SidebarTabConfig', {
-      RED
-    })
-
     var content = document.createElement("div");
     this.content = content
     content.className = "sidebar-node-config";
@@ -64,7 +59,12 @@ export class SidebarTabConfig extends Context {
 
   // only called after i18n is initialized
   init() {
-    let RED = this.ctx
+    let {
+      RED,
+      categories
+    } = this
+
+    let refreshConfigNodeList = this.refreshConfigNodeList.bind(this)
 
     RED.sidebar.addTab({
       id: "config",
@@ -273,9 +273,11 @@ export class SidebarTabConfig extends Context {
   }
 
   refreshConfigNodeList() {
-    let categories = this.categories
-    let globalCategories = this.globalCategories
-    let RED = this.ctx
+    let {
+      categories,
+      globalCategories,
+      RED
+    } = this
 
     var validList = {
       "global": true

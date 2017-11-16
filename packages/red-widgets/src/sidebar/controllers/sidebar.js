@@ -264,8 +264,10 @@ export class Sidebar extends Context {
   }
 
   showSidebar(id) {
-    let sidebar_tabs = this.sidebar_tabs
-    let ctx = this.ctx
+    let {
+      sidebar_tabs,
+      ctx
+    } = this
     if (id) {
       if (!containsTab(id)) {
         sidebar_tabs.addTab(knownTabs[id]);
