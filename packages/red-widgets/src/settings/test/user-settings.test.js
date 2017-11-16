@@ -10,11 +10,40 @@ function create(ctx) {
   return new UserSettings(ctx)
 }
 
+let events = {
+  on() {}
+}
+let actions = {
+  add() {},
+  get() {}
+}
+
+function Settings() {
+  return {
+    theme() {},
+    get(setting) {
+      return this[setting]
+    },
+    set(setting, value) {
+      this[setting] = value
+    }
+  }
+}
+
+let view = {
+  gridSize: 20
+}
+
+let tray = {
+  show() {}
+}
+
 const ctx = Object.assign({
-  // events,
-  // actions,
-  // utils,
-  // nodes
+  events,
+  actions,
+  settings: new Settings(),
+  view,
+  tray
 }, baseCtx)
 
 let settings
@@ -30,7 +59,12 @@ beforeAll(() => {
 })
 
 test('UserSettings: create', () => {
-  expect(settings.viewSettings).toEqual({})
+  expect(settings).toBeDefined()
+})
+
+test('UserSettings: has viewSettings', () => {
+  expect(settings.viewSettings.length).toBeGreaterThan(2)
+  expect(settings.viewSettings[0].title).toBe('menu.label.view.grid')
 })
 
 test('UserSettings: addPane', () => {
@@ -39,27 +73,39 @@ test('UserSettings: addPane', () => {
   }
   settings.addPane(options)
   let pane = settings.panes[0]
-  expect(pane).toEqual(options)
+  expect(pane.id).toEqual('view')
 })
 
 test('UserSettings: show', () => {
   let initialTab = {}
   settings.show(initialTab)
-  expect(settings.visible).toBeTruthy()
+  expect(settings.settingsVisible).toBeTruthy()
 })
 
 test('UserSettings: createViewPane', () => {
-  settings.createViewPane()
-  expect(settings.viewPane).toBeDefined()
+  let viewPane = settings.createViewPane()
+  expect(viewPane).toBeDefined()
 })
 
+function settingsFor(settings) {
+  return function (id) {
+    return settings.RED.settings.get(id)
+  }
+}
+
 test('UserSettings: setSelected', () => {
+  // RED.settings.set(opt.setting, value);
+  let id = 'view-grid-size'
+  let value = 30
   settings.setSelected(id, value)
-  expect(settings[id]).toEqual(value)
+  let setting = settingsFor(settings)
+  expect(setting(id)).toEqual(30)
 })
 
 test('UserSettings: toggle', () => {
-  let id = 'x'
+  let id = 'view-snap-grid'
+  let setting = settingsFor(settings)
+  expect(setting(id)).toEqual(true)
   settings.toggle(id)
-  expect(settings[id].active).toEqual(true)
+  expect(setting(id)).toEqual(false)
 })

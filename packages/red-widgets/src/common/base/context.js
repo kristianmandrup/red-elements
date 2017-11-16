@@ -12,6 +12,12 @@ export class BaseContext {
     throw new Error(msg)
   }
 
+  setInstanceVars(instMap) {
+    Object.keys(instMap).map(name => {
+      this[name] = instMap[name]
+    })
+  }
+
   rebind(varNames, ctx = this) {
     return varNames.reduce((acc, name) => {
       ctx[name] = ctx[name].bind(ctx)

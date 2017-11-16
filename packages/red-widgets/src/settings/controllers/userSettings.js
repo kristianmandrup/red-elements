@@ -20,10 +20,110 @@ import {
   Context
 } from './context'
 
+const {
+  log
+} = console
+
 export class UserSettings extends Context {
+  constructor(ctx) {
+    // TODO: inject RED global singleton instead
+    super(ctx)
+    // TODO: inject RED global singleton instead
+    let RED = ctx
+    this.RED = RED
+
+    let viewSettings = this.viewSettings
+
+    this.allSettings = {}
+    let allSettings = this.allSettings
+
+    // log({
+    //   RED
+    // })
+
+    let {
+      show,
+      createViewPane
+    } = this.rebind([
+      'show',
+      'createViewPane'
+    ])
+
+    var trayWidth = 700;
+    var settingsVisible = false;
+    var panes = [];
+
+    // Set instance variables
+    // TODO: reuse this mechanism in other widgets
+    this.setInstanceVars({
+      trayWidth,
+      settingsVisible,
+      panes
+    })
+
+    if (!RED.actions) {
+      this.handleError('UserSettings: missing actions', {
+        RED
+      })
+    }
+
+    RED.actions.add("core:show-user-settings", show);
+    RED.actions.add("core:show-help", () => {
+      show('keyboard')
+    });
+
+    this.addPane({
+      id: 'view',
+      title: RED._("menu.label.view.view"),
+      get: createViewPane,
+      close: () => {
+        viewSettings.forEach((section) => {
+          section.options.forEach((opt) => {
+            var input = $("#user-settings-" + opt.setting);
+            if (opt.toggle) {
+              setSelected(opt.setting, input.prop('checked'));
+            } else {
+              setSelected(opt.setting, input.val());
+            }
+          });
+        })
+      }
+    })
+
+    viewSettings.forEach((section) => {
+      section.options.forEach((opt) => {
+        if (opt.oldSetting) {
+          var oldValue = RED.settings.get(opt.oldSetting);
+          if (oldValue !== undefined && oldValue !== null) {
+            RED.settings.set(opt.setting, oldValue);
+            RED.settings.remove(opt.oldSetting);
+          }
+        }
+        allSettings[opt.setting] = opt;
+        if (opt.onchange) {
+          var value = RED.settings.get(opt.setting);
+          if (value === null && opt.hasOwnProperty('default')) {
+            value = opt.default;
+            RED.settings.set(opt.setting, value);
+          }
+
+          var callback = opt.onchange;
+          if (typeof callback === 'string') {
+            callback = RED.actions.get(callback);
+          }
+          if (typeof callback === 'function') {
+            callback.call(opt, value);
+          }
+        }
+      });
+    });
+  }
+
 
   get viewSettings() {
-    let RED = this.ctx
+    const {
+      RED
+    } = this
     return [{
         title: "menu.label.view.grid",
         options: [{
@@ -74,78 +174,19 @@ export class UserSettings extends Context {
     ];
   }
 
-  constructor(ctx) {
-    super(ctx)
-    let viewSettings = this.viewSettings
-
-    this.allSettings = {}
-    let allSettings = this.allSettings
-    let RED = ctx
-
-    RED.actions.add("core:show-user-settings", show);
-    RED.actions.add("core:show-help", function () {
-      show('keyboard')
-    });
-
-    this.addPane({
-      id: 'view',
-      title: RED._("menu.label.view.view"),
-      get: this.createViewPane,
-      close: () => {
-        viewSettings.forEach((section) => {
-          section.options.forEach((opt) => {
-            var input = $("#user-settings-" + opt.setting);
-            if (opt.toggle) {
-              setSelected(opt.setting, input.prop('checked'));
-            } else {
-              setSelected(opt.setting, input.val());
-            }
-          });
-        })
-      }
-    })
-
-    viewSettings.forEach((section) => {
-      section.options.forEach((opt) => {
-        if (opt.oldSetting) {
-          var oldValue = RED.settings.get(opt.oldSetting);
-          if (oldValue !== undefined && oldValue !== null) {
-            RED.settings.set(opt.setting, oldValue);
-            RED.settings.remove(opt.oldSetting);
-          }
-        }
-        allSettings[opt.setting] = opt;
-        if (opt.onchange) {
-          var value = RED.settings.get(opt.setting);
-          if (value === null && opt.hasOwnProperty('default')) {
-            value = opt.default;
-            RED.settings.set(opt.setting, value);
-          }
-
-          var callback = opt.onchange;
-          if (typeof callback === 'string') {
-            callback = RED.actions.get(callback);
-          }
-          if (callback) {
-            callback.call(opt, value);
-          }
-        }
-      });
-    });
-    var trayWidth = 700;
-    var settingsVisible = false;
-
-    var panes = [];
-  }
-
-
   addPane(options) {
     this.panes.push(options);
   }
 
   show(initialTab) {
-    if (this.settingsVisible) {
-      return;
+    let {
+      RED,
+      settingsVisible,
+      trayWidth,
+    } = this
+
+    if (settingsVisible) {
+      return this
     }
     this.settingsVisible = true;
     var tabContainer;
@@ -160,10 +201,10 @@ export class UserSettings extends Context {
           RED.tray.close();
         }
       }],
-      resize: function (dimensions) {
+      resize: (dimensions) => {
         trayWidth = dimensions.width;
       },
-      open: function (tray) {
+      open: (tray) => {
         var trayBody = tray.find('.editor-tray-body');
         var settingsContent = $('<div></div>').appendTo(trayBody);
         var tabContainer = $('<div></div>', {
@@ -176,8 +217,8 @@ export class UserSettings extends Context {
         var settingsTabs = RED.tabs.create({
           id: "user-settings-tabs",
           vertical: true,
-          onchange: function (tab) {
-            setTimeout(function () {
+          onchange: (tab) => {
+            setTimeout(() => {
               $("#user-settings-tabs-content").children().hide();
               $("#" + tab.id).show();
               if (tab.pane.focus) {
@@ -190,7 +231,7 @@ export class UserSettings extends Context {
           id: "user-settings-tabs-content"
         }).appendTo(settingsContent);
 
-        panes.forEach(function (pane) {
+        panes.forEach((pane) => {
           settingsTabs.addTab({
             id: "user-settings-tab-" + pane.id,
             label: pane.title,
@@ -202,9 +243,9 @@ export class UserSettings extends Context {
         settingsTabs.activateTab("user-settings-tab-" + (initialTab || 'view'))
         $("#sidebar-shade").show();
       },
-      close: function () {
+      close: () => {
         settingsVisible = false;
-        panes.forEach(function (pane) {
+        panes.forEach((pane) => {
           if (pane.close) {
             pane.close();
           }
@@ -212,7 +253,7 @@ export class UserSettings extends Context {
         $("#sidebar-shade").hide();
 
       },
-      show: function () {}
+      show: () => {}
     }
     if (trayWidth !== null) {
       trayOptions.width = trayWidth;
@@ -221,6 +262,11 @@ export class UserSettings extends Context {
   }
 
   createViewPane() {
+    const {
+      viewSettings,
+      RED
+    } = this
+
     var pane = $('<div id="user-settings-tab-view" class="node-help"></div>');
 
     viewSettings.forEach(function (section) {
@@ -242,20 +288,41 @@ export class UserSettings extends Context {
   }
 
   setSelected(id, value) {
+    const {
+      RED,
+      allSettings
+    } = this
     var opt = allSettings[id];
+    if (!opt) {
+      this.handleError(`setSelected: No setting for ${id}`, {
+        allSettings,
+        id
+      })
+    }
+
     RED.settings.set(opt.setting, value);
     var callback = opt.onchange;
     if (typeof callback === 'string') {
       callback = RED.actions.get(callback);
     }
-    if (callback) {
+    if (typeof callback === 'function') {
       callback.call(opt, value);
     }
   }
 
   toggle(id) {
+    const {
+      RED,
+      allSettings
+    } = this
     var opt = allSettings[id];
+    if (!opt) {
+      this.handleError(`toggle: No setting for ${id}`, {
+        allSettings,
+        id
+      })
+    }
     var state = RED.settings.get(opt.setting);
-    setSelected(id, !state);
+    this.setSelected(id, !state);
   }
 }
