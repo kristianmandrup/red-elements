@@ -1,4 +1,7 @@
 import {
+  RED,
+  readPage,
+  ctx,
   Workspaces
 } from './imports'
 const ctx = {}
@@ -7,81 +10,94 @@ function create(ctx) {
   return new Workspaces(ctx)
 }
 
+const ctx = Object.assign({
+  // menu
+}, baseCtx)
+
+let ws
+beforeEach(() => {
+  ws = create(ctx)
+})
+
+beforeAll(() => {
+  // Searchbox(RED)
+  // EditableList(RED)
+  document.documentElement.innerHTML = readPage('simple')
+})
 test('Workspaces: create', () => {
-  let ws = create(ctx)
-  t.is(ws.activeWorkspace, 0)
+  expect(ws.activeWorkspace).toBe(0)
 })
 
 test('Workspaces: addWorkspace', () => {
-  let ws = create(ctx)
   let wsTab = {}
   let skipHistoryEntry = false
   ws.addWorkspace(wsTab, skipHistoryEntry)
-  // t.is(ws.workspace_tabs ...)
+  expect(ws.workspace_tabs).toBe(0)
 })
 
 test('Workspaces: deleteWorkspace', () => {
-  let ws = create(ctx)
   let wsTab = {}
   ws.deleteWorkspace(wsTab)
+  expect(ws.workspace_tabs).toBe(0)
 })
 
 test('Workspaces: showRenameWorkspaceDialog', () => {
-  let ws = create(ctx)
   let id = 'x'
   ws.showRenameWorkspaceDialog(id)
+  // expect
 })
 
 test('Workspaces: createWorkspaceTabs', () => {
-  let ws = create(ctx)
   ws.createWorkspaceTabs()
+  expect(ws.workspace_tabs).toBe(0)
 })
 
 test('Workspaces: editWorkspace', () => {
-  let ws = create(ctx)
   let id = 'x'
   ws.editWorkspace(id)
+  expect(ws.workspace_tabs).toBe(0)
 })
 
 test('Workspaces: removeWorkspace', () => {
-  let ws = create(ctx)
   let wsTab = {}
   ws.removeWorkspace(wsTab)
+  expect(ws.workspace_tabs).toBe(0)
 })
 
 test('Workspaces: setWorkspaceOrder', () => {
-  let ws = create(ctx)
   let order = {}
   ws.setWorkspaceOrder(order)
+  expect(ws.workspace_tabs).toBe(0)
 })
 
-test('Workspaces: contains', () => {
-  let ws = create(ctx)
-  let id = 'x'
-  ws.contains(id)
+test('Workspaces: contains - true when exists', () => {
+  let id = 'tab1'
+  let contained = ws.contains(id)
+  expect(contained).toBeTruthy()
+})
+
+test('Workspaces: contains - false when not', () => {
+  let id = 'unknown'
+  let contained = ws.contains(id)
+  expect(contained).toBeFalsy()
 })
 
 test('Workspaces: count', () => {
-  let ws = create(ctx)
   ws.count()
 })
 
 test('Workspaces: active', () => {
-  let ws = create(ctx)
   ws.active()
 })
 
 test('Workspaces: show', () => {
-  let ws = create(ctx)
   ws.show(id)
 })
 
 test('Workspaces: refresh', () => {
-  let ws = create(ctx)
   ws.refresh()
 })
 
 test('Workspaces: resize', () => {
-  let ws = create(ctx)
   ws.resize()
 })

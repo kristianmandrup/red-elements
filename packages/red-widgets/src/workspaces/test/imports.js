@@ -9,6 +9,13 @@ beforeAll(() => {
   jest.addMatchers(matchers);
 });
 
+export {
+  RED,
+  readPage,
+  ctx,
+}
+from '../../test/setup'
+
 const {
   Workspaces
 } = controllers
