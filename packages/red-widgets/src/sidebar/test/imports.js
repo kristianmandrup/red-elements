@@ -7,7 +7,7 @@ import {
 export {
   RED,
   readPage,
-  ctx
+  ctx,
 }
 from '../../test/setup'
 
