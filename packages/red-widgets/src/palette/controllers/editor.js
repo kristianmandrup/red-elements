@@ -57,7 +57,20 @@ export class PaletteEditor extends Context {
       return;
     }
 
-    this.createSettingsPane();
+    let {
+      createSettingsPane,
+      getSettingsPane
+    } = this.rebind([
+      'createSettingsPane',
+      'getSettingsPane'
+    ])
+
+    let {
+      settingsPane,
+      editorTabs
+    } = this
+
+    createSettingsPane();
 
     RED.userSettings.add({
       id: 'palette',
@@ -472,8 +485,22 @@ export class PaletteEditor extends Context {
 
 
   handleCatalogResponse(err, catalog, index, v) {
+    let {
+      catalogueLoadStatus,
+      catalogueCount,
+      catalogueLoadErrors,
+      loadedIndex,
+      loadedList,
+      searchInput
+    } = this
     catalogueLoadStatus.push(err || v);
     if (!err) {
+      if (!v.modules) {
+        this.handleError('handleCatalogResponse: v missing modules property', {
+          v
+        })
+      }
+
       if (v.modules) {
         v.modules.forEach((m) => {
           loadedIndex[m.id] = m;
@@ -519,12 +546,27 @@ export class PaletteEditor extends Context {
       catalogueLoadStatus,
       catalogueLoadErrors,
       catalogueLoadStart,
-      catalogueCount
+      catalogueCount,
+      RED
     } = this
 
     if (loadedList.length === 0) {
       loadedList = [];
       loadedIndex = {};
+      if (!packageList) {
+        // TODO: perhaps call createSettingsPane if packageList is not defined
+
+        this.handleError('initInstallTab: packageList missing. Created in createSettingsPane', {
+          instance: this
+        })
+      }
+
+      if (!packageList.editableList) {
+        this.handleError('initInstallTab: packageList missing editableList', {
+          packageList
+        })
+      }
+
       packageList.editableList('empty');
 
       $(".palette-module-shade-status").html(RED._('palette.editor.loading'));
@@ -558,7 +600,21 @@ export class PaletteEditor extends Context {
   }
 
   refreshFilteredItems() {
+    const {
+      packageList,
+      loadedList,
+      filteredList,
+      searchInput
+    } = this
+
     packageList.editableList('empty');
+
+    if (!(searchInput && searchInput.searchBox)) {
+      this.handleError('refreshFilteredItems: missing searchInput.searchBox', {
+        searchInput
+      })
+    }
+
     var currentFilter = searchInput.searchBox('value').trim();
     if (currentFilter === "") {
       packageList.editableList('addItem', {
@@ -580,6 +636,7 @@ export class PaletteEditor extends Context {
         more: filteredList.length - 10
       })
     }
+    return this
   }
 
   sortModulesAZ(A, B) {
@@ -593,8 +650,10 @@ export class PaletteEditor extends Context {
   getSettingsPane() {
     let {
       settingsPane,
-      editorTabs
+      editorTabs,
+      initInstallTab
     } = this
+    initInstallTab = initInstallTab.bind(this)
 
     initInstallTab();
     editorTabs.activateTab('nodes');
@@ -606,13 +665,21 @@ export class PaletteEditor extends Context {
       settingsPane,
       editorTabs,
       filterInput,
+      searchInput,
+      nodeList,
+      packageList,
+      initInstallTab,
       RED
     } = this
+
+    initInstallTab = initInstallTab.bind(this)
 
     settingsPane = $('<div id="user-settings-tab-palette"></div>');
     var content = $('<div id="palette-editor">' +
       '<ul id="palette-editor-tabs"></ul>' +
       '</div>').appendTo(settingsPane);
+
+    this.settingsPane = settingsPane
 
     let options = {
       element: settingsPane.find('#palette-editor-tabs'),
@@ -637,11 +704,8 @@ export class PaletteEditor extends Context {
       },
       minimumActiveTabWidth: 110
     }
-    // log('createSettingsPane', {
-    //   options,
-    //   RED
-    // })
     editorTabs = RED.tabs.create(options, RED);
+    this.editorTabs = editorTabs
 
     var modulesTab = $('<div>', {
       class: "palette-editor-tab"
@@ -664,7 +728,7 @@ export class PaletteEditor extends Context {
           filterChange($(this).val());
         }
       });
-
+    this.filterInput = filterInput
 
     nodeList = $('<ol>', {
       id: "palette-module-list",
@@ -850,7 +914,7 @@ export class PaletteEditor extends Context {
       }
     });
 
-
+    this.nodeList = nodeList
 
     var installTab = $('<div>', {
       class: "palette-editor-tab hide"
@@ -1029,6 +1093,8 @@ export class PaletteEditor extends Context {
       }
     });
 
+    this.packageList = packageList
+
     $('<div id="palette-module-install-shade" class="palette-module-shade hide"><div class="palette-module-shade-status"></div><img src="red/images/spin.svg" class="palette-spinner"/></div>').appendTo(installTab);
 
     $('<div id="palette-module-install-confirm" class="hide"><form class="form-horizontal"><div id="palette-module-install-confirm-body" class="node-dialog-confirm-row"></div></form></div>').appendTo(document.body);
@@ -1117,5 +1183,6 @@ export class PaletteEditor extends Context {
         }
       ]
     })
+    return this
   }
 }

@@ -3,11 +3,17 @@ import {
   editor,
   RED,
   Searchbox,
+  EditableList,
   readPage
 } from './_palette'
 
+const {
+  log
+} = console
+
 beforeAll(() => {
   // widgets that need to be available
+  EditableList(RED)
   Searchbox(RED)
 
   // load document with placeholder elements to create widgets (for testing)
@@ -89,11 +95,15 @@ test('Editor: filterChange(val)', () => {
   expect(filtered).toBeDefined()
 
 })
-test('Editor: handleCatalogResponse(err, catalog, index, v)', () => {
+test.only('Editor: handleCatalogResponse(err, catalog, index, v)', () => {
   let err
   let catalog
   let index
-  let v
+  let v = {
+    modules: [{
+      id: 'my-module'
+    }]
+  }
 
   let handled = editor.handleCatalogResponse(err, catalog, index, v)
   expect(handled).toBeDefined()
@@ -112,30 +122,43 @@ test('Editor: refreshFilteredItems', () => {
 let modules = {
   A: {
     info: {
-      id: 'a'
+      id: 'a',
+      timestamp: new Date()
     }
   },
   B: {
     info: {
-      id: 'b'
+      id: 'b',
+      timestamp: new Date() - 100
     }
   }
 }
 
 test('Editor: sortModulesAZ(A, B)', () => {
   let sortResult = editor.sortModulesAZ(modules.A, modules.B)
-  expect(sortResult).toEqual(1)
+  expect(sortResult).toEqual(-1)
 })
 
 test('Editor: sortModulesRecent(A, B)', () => {
   let sortResult = editor.sortModulesRecent(modules.A, modules.B)
-  expect(sortResult).toEqual(-1)
+  expect(sortResult).toBeLessThan(0)
 })
-test('Editor: getSettingsPane()', () => {
+test('Editor: getSettingsPane() - fails without createSettingsPane', () => {
+  expect(() => editor.getSettingsPane()).toThrowError()
+})
+
+test('Editor: getSettingsPane() - works after createSettingsPane', () => {
+  editor.createSettingsPane()
   let pane = editor.getSettingsPane()
   expect(pane).toBeDefined()
 })
+
+
 test('Editor: createSettingsPane', () => {
-  let pane = editor.createSettingsPane()
-  expect(pane).toBeDefined()
+  editor.createSettingsPane()
+  const props = ['settingsPane', 'packageList', 'editorTabs', 'filterInput', 'nodeList']
+  props.map(prop => {
+    log('check', prop)
+    expect(editor[prop]).toBeDefined()
+  })
 })

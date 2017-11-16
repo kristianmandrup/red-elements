@@ -49,6 +49,10 @@ let text = {
   }
 }
 
+let userSettings = {
+  add() {}
+}
+
 import {
   common
 } from '../../'
@@ -56,7 +60,8 @@ import {
 const {
   Popover,
   Tabs,
-  Searchbox
+  Searchbox,
+  EditableList
 } = common.controllers
 
 let popover = {
@@ -78,6 +83,7 @@ let ctx = Object.assign({
   text,
   events,
   settings,
+  userSettings,
   nodes,
   view
 }, baseCtx)
@@ -102,5 +108,6 @@ export {
   palette,
   editor,
   readPage,
-  Searchbox
+  Searchbox,
+  EditableList
 }
