@@ -35,12 +35,12 @@ import {
 }
 from './search-box'
 
-Popover.create = (ctx) => {
-  return new Popover(ctx)
+Popover.create = (ctx, RED) => {
+  return new Popover(ctx, RED)
 }
 
-Tabs.create = (ctx) => {
-  return new Tabs(ctx)
+Tabs.create = (ctx, RED) => {
+  return new Tabs(ctx, RED)
 }
 
 

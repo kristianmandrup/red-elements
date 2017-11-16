@@ -42,7 +42,7 @@ test('Tabs: is a class', () => {
   expect(typeof clazz).toBe('function')
 })
 
-test('Tabs: widget can NOT be created without id: option', () => {
+test('Tabs: widget can NOT be created without id: or element: option', () => {
   try {
     let badElem = new Tabs({})
     expect(badElem).not.toBeDefined()
@@ -50,6 +50,32 @@ test('Tabs: widget can NOT be created without id: option', () => {
     expect(err).toBeDefined()
   }
 })
+
+test('Tabs: widget can be created with element: option', () => {
+  let el = document.createElement('div')
+  let element = $(el)
+  let tabs = new Tabs({
+    element
+  })
+  expect(tabs).toBeDefined()
+})
+
+test('Tabs: widget can set RED as 2nd option', () => {
+  let el = document.createElement('div')
+  let element = $(el)
+  let RED = {
+    text: {
+      bidi: {
+
+      }
+    }
+  }
+  let tabs = new Tabs({
+    element
+  }, RED)
+  expect(tabs.RED).toBe(RED)
+})
+
 
 test('Tabs: widget can be created from target elem', () => {
   expect(widgetElem).toBeDefined()

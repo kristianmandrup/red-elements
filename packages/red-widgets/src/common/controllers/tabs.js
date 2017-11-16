@@ -31,21 +31,23 @@ function rebind(varNames, ctx) {
   }, {})
 }
 
+const {
+  log
+} = console
+
 export class Tabs extends Context {
 
   // TODO: use dependency injection of RED instead
-  constructor(options = {}, RED = {}) {
+  constructor(options = {}, RED) {
     super(options)
+    // log('create Tabs', {
+    //   options,
+    //   RED
+    // })
     this.options = options || {}
-    this.RED = RED
+    this.RED = RED || options
     if (typeof options !== 'object') {
       this.handleError('Tabs must take an options object', {
-        options
-      })
-    }
-    if (!options.id) {
-      this.handleError('Tabs must take an id: option for target element', {
-        id: options.id,
         options
       })
     }
@@ -53,6 +55,14 @@ export class Tabs extends Context {
     var tabs = {};
     var currentTabWidth;
     var currentActiveTabWidth = 0;
+
+    if (!(options.id || options.element)) {
+      this.handleError('Tabs must take an id: or element: option for target element', {
+        id: options.id,
+        element: options.element,
+        options
+      })
+    }
 
     var ul = options.element || $("#" + options.id);
     var wrapper = ul.wrap("<div>").parent();
@@ -217,7 +227,8 @@ export class Tabs extends Context {
       updateTabWidths,
       ul,
       options,
-      scrollContainer
+      scrollContainer,
+      tabs
     } = this
 
     if (typeof link === "string") {
@@ -410,6 +421,14 @@ export class Tabs extends Context {
     var span = $('<span/>', {
       class: "bidiAware"
     }).text(tab.label).appendTo(link);
+
+    if (!(RED.text && RED.text.bidi && RED.text.bidi.resolveBaseTextDir)) {
+      this.handleError('addTab: mising RED.text.bidi.resolveBaseTextDir', {
+        text: RED.text,
+        RED
+      })
+    }
+
     span.attr('dir', RED.text.bidi.resolveBaseTextDir(tab.label));
 
     link.on("click", onTabClick);

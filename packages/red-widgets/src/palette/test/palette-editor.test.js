@@ -104,8 +104,38 @@ test('Editor: initInstallTab()', () => {
   expect(initialized).toBeDefined()
 })
 
-test('Editor: refreshFilteredItems', () => {})
-test('Editor: sortModulesAZ', () => {})
-test('Editor: sortModulesRecent', () => {})
-test('Editor: getSettingsPane', () => {})
-test('Editor: createSettingsPane', () => {})
+test('Editor: refreshFilteredItems', () => {
+  let refreshed = editor.refreshFilteredItems()
+  expect(refreshed).toBeDefined()
+})
+
+let modules = {
+  A: {
+    info: {
+      id: 'a'
+    }
+  },
+  B: {
+    info: {
+      id: 'b'
+    }
+  }
+}
+
+test('Editor: sortModulesAZ(A, B)', () => {
+  let sortResult = editor.sortModulesAZ(modules.A, modules.B)
+  expect(sortResult).toEqual(1)
+})
+
+test('Editor: sortModulesRecent(A, B)', () => {
+  let sortResult = editor.sortModulesRecent(modules.A, modules.B)
+  expect(sortResult).toEqual(-1)
+})
+test('Editor: getSettingsPane()', () => {
+  let pane = editor.getSettingsPane()
+  expect(pane).toBeDefined()
+})
+test('Editor: createSettingsPane', () => {
+  let pane = editor.createSettingsPane()
+  expect(pane).toBeDefined()
+})

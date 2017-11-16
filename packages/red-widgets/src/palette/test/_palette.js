@@ -59,7 +59,6 @@ const {
   Searchbox
 } = common.controllers
 
-
 let popover = {
   create(ctx) {
     return Popover.create(ctx)
@@ -67,8 +66,8 @@ let popover = {
 }
 
 let tabs = {
-  create(ctx) {
-    return Tabs.create(ctx)
+  create(ctx, RED) {
+    return Tabs.create(ctx, RED)
   }
 }
 
@@ -92,7 +91,7 @@ function createEditor(ctx) {
   return new PaletteEditor(ctx)
 }
 
-let palette
+let palette, editor
 beforeEach(() => {
   palette = createPalette(ctx)
   editor = createEditor(ctx)
@@ -101,6 +100,7 @@ beforeEach(() => {
 export {
   RED,
   palette,
+  editor,
   readPage,
   Searchbox
 }
