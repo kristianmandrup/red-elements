@@ -250,11 +250,16 @@ export class Search extends Context {
       class: "red-ui-search-container"
     }).appendTo(dialog);
 
-    searchInput = $('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv).searchBox({
+    const searchInputElem = $('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv)
+    searchInput = searchInputElem.searchBox({
       delay: 200,
       change: function () {
         search($(this).val());
-      }
+      },
+      // Fix: trying to add i18n support (better to do directly on widget)
+      // i18n: function () {
+      //   console.log('i18n not implemented')
+      // }
     });
 
     searchInput.on('keydown', (evt) => {
@@ -293,6 +298,13 @@ export class Search extends Context {
       }
     });
 
+    if (!searchInput.i18n) {
+      this.handleError('searchInput (searchBox widget) missing i18n function', {
+        searchInput
+      })
+    }
+
+    // let i18n = new I18n(RED)
     searchInput.i18n();
 
     var searchResultsDiv = $("<div>", {

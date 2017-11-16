@@ -1,45 +1,65 @@
 import {
+  RED,
+  readPage,
+  ctx as baseCtx,
   UserSettings
 } from './imports'
-const ctx = {}
+
 
 function create(ctx) {
   return new UserSettings(ctx)
 }
 
+const ctx = Object.assign({
+  // events,
+  // actions,
+  // utils,
+  // nodes
+}, baseCtx)
+
+let settings
+beforeEach(() => {
+  settings = create(ctx)
+})
+
+beforeAll(() => {
+  // Searchbox(RED)
+  // EditableList(RED)
+
+  document.documentElement.innerHTML = readPage('simple')
+})
+
 test('UserSettings: create', () => {
-  let settings = create(ctx)
-  t.deepEqual(settings.viewSettings, {})
+  expect(settings.viewSettings).toEqual({})
 })
 
 test('UserSettings: addPane', () => {
-  let settings = create(ctx)
   let options = {
     id: 'x'
   }
   settings.addPane(options)
   let pane = settings.panes[0]
-  t.deepEqual(pane, options)
+  expect(pane).toEqual(options)
 })
 
 test('UserSettings: show', () => {
-  let settings = create(ctx)
   let initialTab = {}
   settings.show(initialTab)
+  expect(settings.visible).toBeTruthy()
 })
 
 test('UserSettings: createViewPane', () => {
-  let settings = create(ctx)
   settings.createViewPane()
+  expect(settings.viewPane).toBeDefined()
 })
 
 test('UserSettings: setSelected', () => {
-  let settings = create(ctx)
   settings.setSelected(id, value)
+  expect(settings[id]).toEqual(value)
 })
 
 test('UserSettings: toggle', () => {
-  let settings = create(ctx)
   let id = 'x'
   settings.toggle(id)
+  expect(settings[id].active).toEqual(true)
 })
