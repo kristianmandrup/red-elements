@@ -1,51 +1,70 @@
 import {
+  RED,
+  readPage,
+  ctx,
   Tray
 } from './imports'
-
-const ctx = {}
 
 function create(ctx) {
   return new Tray(ctx)
 }
 
+const ctx = Object.assign({
+  // menu
+}, baseCtx)
+
+let tray
+beforeEach(() => {
+  tray = create(ctx)
+})
+
+beforeAll(() => {
+  // Searchbox(RED)
+  // EditableList(RED)
+  document.documentElement.innerHTML = readPage('simple')
+})
+
 test('Tray: create', () => {
-  let tray = create(ctx)
-  t.deepEqual(tray.stack, [])
-  t.false(tray.openingTray)
+  expect(tray).toBeDefined()
+})
+
+
+test('Tray: create has stack', () => {
+  expect(tray.stack).toEqual([])
+})
+
+
+test('Tray: create has openingTray', () => {
+  expect(tray.openingTray).toEqual([])
 })
 
 test('Tray: show', () => {
-  let tray = create(ctx)
   let options = {
 
   }
   tray.show(options)
-  // use nightmare
+  expect(tray).toBeDefined()
 })
 
 test('Tray: close', async() => {
-  let tray = create(ctx)
   await tray.close()
-  // use nightmare
+  expect(tray).toBeDefined()
 })
 
 test('Tray: resize', () => {
-  let tray = create(ctx)
   tray.resize()
-  // use nightmare
+  expect(tray).toBeDefined()
 })
 
 test('Tray: showTray', () => {
-  let tray = create(ctx)
   let options = {
 
   }
   tray.showTray(options)
-  // use nightmare
+  expect(tray).toBeDefined()
 })
 
 test('Tray: handleWindowResize', () => {
-  let tray = create(ctx)
   tray.handleWindowResize()
-  // use nightmare
+  expect(tray).toBeDefined()
 })
