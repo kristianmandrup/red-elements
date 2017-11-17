@@ -1,5 +1,4 @@
 import {
-  palette,
   editor,
   RED,
   Searchbox,

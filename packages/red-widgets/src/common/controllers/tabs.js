@@ -40,10 +40,6 @@ export class Tabs extends Context {
   // TODO: use dependency injection of RED instead
   constructor(options = {}, RED) {
     super(options)
-    // log('create Tabs', {
-    //   options,
-    //   RED
-    // })
     this.options = options || {}
     this.RED = RED || options
     if (typeof options !== 'object') {

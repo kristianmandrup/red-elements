@@ -1,4 +1,4 @@
-# Editor
+# Node editor
 
 ## Testing
 

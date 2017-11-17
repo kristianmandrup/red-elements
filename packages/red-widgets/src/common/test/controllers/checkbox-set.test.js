@@ -16,7 +16,7 @@ const {
 } = console
 
 beforeAll(() => {
-  // create jquery UI widget via factory (ie. make available on jQuery elements)
+  // registers jquery UI widget via factory (ie. make available on jQuery elements)
   CheckboxSet(RED)
 
   // load document with placeholder elements to create widgets (for testing)

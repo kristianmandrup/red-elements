@@ -1,12 +1,12 @@
-# Search
+# UserSettings
 
-Is used to search for specific nodes in a workspace.
+`UserSettings` is used to display and manage user settings
 
 ## Development
 
 ### structure
 
-- `/controllers` contains the search logic, as a class `Search`.
+- `/controllers` contains user settings logic as a class `UserSettings`
 - `/test` contains the tests
 
 Currently the constructor expect a context object (`RED`) as the single argument.
@@ -17,32 +17,25 @@ We should instead use Dependency Injection of a `RED` singleton object using eit
 
 Alternatively (even better), use [TypeScript](typescriptlang.org) and use a decorator to inject it.
 
-## Requirements
-
-Search requires the use of the common widgets:
-
-- `Searchbox`
-- `EditableList`
-
 ### testing
 
-The `search` variable is available for all tests and is assigned a fresh `Search` instance before each test is run via:
+The `settings` variable is available for all tests and is assigned a fresh `UserSettings` instance before each test is run via:
 
 ```js
 beforeEach(() => {
-  search = create(ctx)
+  settings = create(ctx)
 })
 ```
 
 The `beforeAll` is run once before all the tests. It loads a DOM document into memmory via `readPage('simple')`. See `src/test/setup.js`.
 You can override the `simple` page and provide your own:
 
-`readPage('search', __dirname)`
+`readPage('settings', __dirname)`
 
-Which will try to load the page from `./app/search.html` relative to the test file.
+Which will try to load the page from `./app/settings.html` relative to the test file.
 
 ## Run test
 
-`jest src/search/test/search.test.js`
+`jest src/settings/test/user-settings.test.js`
 
 Ensure coverage is at least 85%

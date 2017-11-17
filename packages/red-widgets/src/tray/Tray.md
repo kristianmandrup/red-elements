@@ -1,13 +1,15 @@
-# Search
+# Tray
 
-Is used to search for specific nodes in a workspace.
+The `Tray` is a tray in the editor that can be used to show a slading panel to the left of the right sidebar.
+
+The Tray is used to display the Node diff and the Node editor (dynamic form) used to edit node configurations (ie. the nodes on the canvas).
 
 ## Development
 
 ### structure
 
-- `/controllers` contains the search logic, as a class `Search`.
-- `/test` contains the tests
+- `/controllers` folder contains the tray logic, converted to a class.
+- `/test` folder contains the tests
 
 Currently the constructor expect a context object (`RED`) as the single argument.
 We should instead use Dependency Injection of a `RED` singleton object using either:
@@ -17,32 +19,25 @@ We should instead use Dependency Injection of a `RED` singleton object using eit
 
 Alternatively (even better), use [TypeScript](typescriptlang.org) and use a decorator to inject it.
 
-## Requirements
-
-Search requires the use of the common widgets:
-
-- `Searchbox`
-- `EditableList`
-
 ### testing
 
-The `search` variable is available for all tests and is assigned a fresh `Search` instance before each test is run via:
+The `tray` variable is available for all tests and is assigned a fresh `Tray` instance before each test is run via:
 
 ```js
 beforeEach(() => {
-  search = create(ctx)
+  tray = create(ctx)
 })
 ```
 
 The `beforeAll` is run once before all the tests. It loads a DOM document into memmory via `readPage('simple')`. See `src/test/setup.js`.
 You can override the `simple` page and provide your own:
 
-`readPage('search', __dirname)`
+`readPage('tray', __dirname)`
 
-Which will try to load the page from `./app/search.html` relative to the test file.
+Which will try to load the page from `./app/tray.html` relative to the test file.
 
 ## Run test
 
-`jest src/search/test/search.test.js`
+`jest src/tray/test/tray.test.js`
 
 Ensure coverage is at least 85%

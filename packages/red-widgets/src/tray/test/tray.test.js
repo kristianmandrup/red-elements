@@ -42,7 +42,6 @@ let options = {
   }
 }
 
-
 test('Tray: create', () => {
   expect(tray).toBeDefined()
 })

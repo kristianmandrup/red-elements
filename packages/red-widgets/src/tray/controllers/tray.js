@@ -139,8 +139,8 @@ export class Tray extends Context {
           b.html(button.text);
         }
         if (button.click) {
-          b.click((function (action) {
-            return function (evt) {
+          b.click(((action) => {
+            return (evt) => {
               if (!$(this).hasClass('disabled')) {
                 action(evt);
               }
