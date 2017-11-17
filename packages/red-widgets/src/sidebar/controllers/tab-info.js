@@ -33,7 +33,6 @@ import {
 
 import marked from 'marked'
 
-
 export class SidebarTabInfo extends Context {
   createStack(options) {
     // legacy: ctx.stack.create
@@ -45,6 +44,7 @@ export class SidebarTabInfo extends Context {
     let RED = ctx
     // FIX: ensure that _ is set to i18n translate (ie. key lookup) function
     let i18n = new I18n(RED)
+    this.tips = new Tips(ctx)
     console.log('SidebarTabInfo', {
       RED
     })
@@ -54,9 +54,13 @@ export class SidebarTabInfo extends Context {
   }
 
   init(i18n) {
+    let {
+      RED,
+      show
+    } = this
+
     // configure aliases
-    let show = this.show.bind(this)
-    this.tips = new Tips(ctx);
+    show = show.bind(this)
 
     marked.setOptions({
       renderer: new marked.Renderer(),
@@ -83,6 +87,15 @@ export class SidebarTabInfo extends Context {
 
     content = document.createElement("div");
     content.className = "sidebar-node-info"
+
+    const required = ['actions', 'sidebar', 'events']
+    required.map(name => {
+      if (!RED[name]) {
+        this.handleError(`init: RED missing ${name}`, {
+          RED
+        })
+      }
+    })
 
     RED.actions.add("core:show-info-tab", show);
 
@@ -164,9 +177,12 @@ export class SidebarTabInfo extends Context {
     });
   }
 
+  get sidebar() {
+    return this.RED.sidebar
+  }
+
   show() {
-    let RED = this.ctx
-    RED.sidebar.show("info");
+    this.sidebar.show("info");
   }
 
   jsonFilter(key, value) {
@@ -337,6 +353,7 @@ export class SidebarTabInfo extends Context {
       $(this).toggleClass("expanded", expandedSections["property"]);
       $(".node-info-property-row").toggle(expandedSections["property"]);
     });
+    return this
   }
 
   setInfoText(infoText) {
@@ -356,18 +373,29 @@ export class SidebarTabInfo extends Context {
         }
         $(this).toggleClass('expanded', !isExpanded);
       })
+    return this
   }
 
   clear() {
     this.sections.hide();
+    return this
   }
 
   set(html) {
+    let {
+      sections,
+      nodeSection,
+      infoSection,
+      setInfoText
+    } = this
+    setInfoText = setInfoText.bind(this)
+
     // tips.stop();
     sections.show();
     nodeSection.container.hide();
     $(infoSection.content).empty();
     setInfoText(html);
     $(".sidebar-node-info-stack").scrollTop(0);
+    return this
   }
 }

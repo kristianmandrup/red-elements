@@ -93,7 +93,7 @@ export class Tray extends Context {
               }
             }, 0);
           }
-          resolve();
+          resolve(true)
 
           if (stack.length === 0) {
             $("#header-shade").hide();

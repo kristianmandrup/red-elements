@@ -24,31 +24,51 @@ beforeAll(() => {
   document.documentElement.innerHTML = readPage('simple')
 })
 
+let button = {
+  id: 'my-button',
+  text: 'click me',
+  class: 'red',
+  click() {}
+}
+
+let options = {
+  basic: {
+    title: 'my-title',
+    width: 200,
+    maximized: false,
+    buttons: [
+      button
+    ]
+  }
+}
+
+
 test('Tray: create', () => {
   expect(tray).toBeDefined()
 })
 
 
-test('Tray: create has stack', () => {
+test('Tray: has stack', () => {
   expect(tray.stack).toEqual([])
 })
 
-
-test('Tray: create has openingTray', () => {
-  expect(tray.openingTray).toEqual([])
+test('Tray: has editorStack', () => {
+  expect(tray.editorStack).toBeDefined()
 })
 
-test('Tray: show', () => {
-  let options = {
+test('Tray: create has openingTray', () => {
+  expect(tray.openingTray).toBeFalsy()
+})
 
-  }
-  tray.show(options)
+// calls showTray
+test('Tray: show', () => {
+  tray.show(options.basic)
   expect(tray).toBeDefined()
 })
 
 test('Tray: close', async() => {
-  await tray.close()
-  expect(tray).toBeDefined()
+  let closed = await tray.close()
+  expect(closed).toBeTruthy()
 })
 
 test('Tray: resize', () => {
@@ -57,10 +77,7 @@ test('Tray: resize', () => {
 })
 
 test('Tray: showTray', () => {
-  let options = {
-
-  }
-  tray.showTray(options)
+  tray.showTray(options.basic)
   expect(tray).toBeDefined()
 })
 

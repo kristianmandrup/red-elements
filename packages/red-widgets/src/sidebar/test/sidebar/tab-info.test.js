@@ -1,4 +1,7 @@
 import {
+  RED,
+  readPage,
+  ctx as baseCtx,
   Tip,
   SidebarTabInfo
 } from '../imports'
@@ -13,83 +16,77 @@ function create(ctx) {
   return new SidebarTabInfo(ctx)
 }
 
-test('Tip: create', () => {
-  let tip = createTip(ctx)
-  t.truthy(tip.enabled)
+const ctx = Object.assign({
+  menu,
+  sidebar
+
+  // events,
+  // actions,
+  // view,
+  // tray
+}, baseCtx)
+
+let tabInfo
+beforeEach(() => {
+  tabInfo = create(ctx)
 })
 
-test('Tip: setTip', () => {
-  let tip = createTip(ctx)
-  tip.setTip()
-  // use nightmare to test UI
-})
-
-test('Tip: cycleTips', () => {
-  let tip = createTip(ctx)
-  tip.cycleTips()
-  // use nightmare to test UI
-})
-
-test('Tip: startTips', () => {
-  let tip = createTip(ctx)
-  tip.startTips()
-  // use nightmare to test UI
-})
-
-test('Tip: stopTips', () => {
-  let tip = createTip(ctx)
-  tip.stopTips()
-  // use nightmare to test UI
-})
-
-test('Tip: nextTip', () => {
-  let tip = createTip(ctx)
-  tip.nextTip()
-  // use nightmare to test UI
+beforeAll(() => {
+  // Searchbox(RED)
+  // EditableList(RED)
+  document.documentElement.innerHTML = readPage('simple')
 })
 
 test('Sidebar TabInfo: create', () => {
-  let tabInfo = create(ctx)
-  t.is(typeof tabInfo.tips, 'object')
-  // use nightmare to test UI
+  expect(typeof tabInfo.tips).toBe('object')
 })
 
 test('TabInfo: show', () => {
-  let tabInfo = create(ctx)
   tabInfo.show()
-  // use nightmare to test UI
+  // TODO: test sidebar is shown
+  expect(tabInfo.sidebar).toBeDefined()
+})
+
+test('TabInfo: jsonFilter - empty key', () => {
+  let value = 29
+  let filterValue = tabInfo.jsonFilter('', value)
+  expect(filterValue).toBe(value)
 })
 
 test('TabInfo: jsonFilter', () => {
-  let tabInfo = create(ctx)
-  tabInfo.jsonFilter(key, value)
+  let key = 'x'
+  let value = {
+    a: 2
+  }
+  let filterValue = tabInfo.jsonFilter(key, value)
+  expect(filterValue).toEqual(`[object]`)
 })
 
 test('TabInfo: addTargetToExternalLinks', () => {
-  let tabInfo = create(ctx)
   let element = $('#target')
-  tabInfo.addTargetToExternalLinks(element)
+  let el = tabInfo.addTargetToExternalLinks(element)
+  expect(el).toBeDefined()
 })
 
 test('TabInfo: refresh', () => {
-  let tabInfo = create(ctx)
   let node = {}
-  tabInfo.refresh(node)
+  let refreshed = tabInfo.refresh(node)
+  expect(refreshed).toBe(tabInfo)
 })
 
 test('TabInfo: setInfoText', () => {
-  let tabInfo = create(ctx)
-  let node = {}
-  tabInfo.setInfoText(infoText)
+  let infoText = 'hello'
+  let updated = tabInfo.setInfoText(infoText)
+  expect(updated).toBe(tabInfo)
 })
 
 test('TabInfo: clear', () => {
-  let tabInfo = create(ctx)
-  tabInfo.clear()
+  let cleared = tabInfo.clear()
+  expect(cleared).toBe(tabInfo)
 })
 
 test('TabInfo: set', () => {
-  let tabInfo = create(ctx)
   let html = '<b>hello</b>'
-  tabInfo.set(html)
+  let set = tabInfo.set(html)
+  expect(set).toBe(tabInfo)
 })
