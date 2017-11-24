@@ -23,7 +23,7 @@ import {
 
 export class Stack extends Context {
   constructor(options = {}) {
-    super(optins)
+    super(options)
     if (!options.container) {
       this.handleError(`Stack must take a container: option that is a jQuery element`, {
         options
@@ -40,9 +40,6 @@ export class Stack extends Context {
   add(entry) {
     if (typeof entry !== 'object') {
       const msg = 'Stack entry to add must be an Object'
-      console.error(msg, {
-        entry
-      })
       throw new Error(msg)
     }
     let {

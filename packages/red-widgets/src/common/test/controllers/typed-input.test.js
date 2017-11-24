@@ -45,3 +45,26 @@ test('TypedInput: widget can be created', () => {
   // })
   expect(widgetElem).toBeDefined()
 })
+
+test('TypedInput: widget can be resize', () => {
+  let elem = $('#typed-input')
+  let resize = elem.typedInput('types', [ 'msg',
+  'flow',
+  'global',
+  'str',
+  'num',
+  'bool',
+  'json',
+  're',
+  'date',
+  'jsonata',
+  'bin' ]);
+  expect(resize).toBeDefined()
+})
+test('TypedInput: option can be clicked', () => {
+  let elem = $('#typeOpt')
+ 
+  let click = elem.click();
+  
+  expect(typeof click).toBe('object')
+})

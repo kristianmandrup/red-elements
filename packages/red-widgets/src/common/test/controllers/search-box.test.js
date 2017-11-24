@@ -38,3 +38,10 @@ test('Searchbox: widget can be created', () => {
   // })
   expect(widgetElem).toBeDefined()
 })
+
+test('Seachbox: can clear search input box',()=>{
+  let elem=$('#btnClear');
+
+  let clickEvent=elem.click();
+  expect(typeof elem.click).toBe('function')
+});

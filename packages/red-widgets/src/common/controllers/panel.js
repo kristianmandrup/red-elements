@@ -55,7 +55,7 @@ export class Panel {
         panelRatio = newHeights[0] / height;
       },
       stop: function (event, ui) {
-        modifiedHeights = true;
+        return modifiedHeights = true;
       }
     });
 

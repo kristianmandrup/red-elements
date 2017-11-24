@@ -46,12 +46,12 @@ export class Menu {
       }
     }
 
-    return topMenu;
+   // return topMenu;
+   return this;
   }
 
   createMenuItem(opt) {
     const {
-      RED,
       menuItems
     } = this
 

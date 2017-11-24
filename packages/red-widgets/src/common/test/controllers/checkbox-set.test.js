@@ -36,6 +36,37 @@ test('CheckboxSet: widget can be created', () => {
   // log({
   //   widgetElem
   // })
-
   expect(widgetElem).toBeDefined()
+})
+
+test('CheckboxSet: can change', () => {
+  let elem = $('#checkbox-set')
+  let changes = elem.change();
+  expect(typeof elem.change).toBe('function')
+})
+
+test('CheckboxSet: can add child', () => {
+  let addChild = $('#checkbox-set').checkboxSet('addChild');
+  expect(addChild).toBeDefined();
+})
+
+test('CheckboxSet: can add remove child', () => {
+  let removeChild = $('#checkbox-set').checkboxSet('removeChild');
+  expect(removeChild).toBeDefined();
+})
+
+
+test('CheckboxSet: can update child', () => {
+  let updateChild = $('#checkbox-set').checkboxSet('updateChild');
+  expect(updateChild).toBeDefined();
+})
+
+test('CheckboxSet: can disable child', () => {
+  let disable = $('#checkbox-set').checkboxSet('disable');
+  expect(disable).toBeDefined();
+})
+
+test('CheckboxSet: can state child', () => {
+  let state = $('#checkbox-set').checkboxSet('state');
+  expect(state).toBeDefined();
 })

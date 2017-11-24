@@ -41,7 +41,7 @@ test('Menu: can be created from id with NO options', () => {
 })
 
 
-test('Menu: can be created from id with NO options', () => {
+test('Menu: can be created from id with options', () => {
   let widgetElem = new Menu({
     id: 'menu',
     options: [
@@ -50,4 +50,9 @@ test('Menu: can be created from id with NO options', () => {
     ]
   })
   expect(widgetElem).toBeDefined()
+})
+test('Menu: can be created from id with options', () => {
+  let widgetElem = new Menu({})
+  var menuItem=widgetElem.createMenuItem({id:null});
+  expect(menuItem).toBeDefined()
 })

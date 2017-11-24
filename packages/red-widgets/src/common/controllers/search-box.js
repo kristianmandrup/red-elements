@@ -38,7 +38,7 @@ function factory(RED) {
         this.uiContainer.addClass("red-ui-searchBox-container");
 
         $('<i class="fa fa-search"></i>').prependTo(this.uiContainer);
-        this.clearButton = $('<a href="#"><i class="fa fa-times"></i></a>').appendTo(this.uiContainer);
+        this.clearButton = $('<a id="btnClear" href="#"><i class="fa fa-times"></i></a>').appendTo(this.uiContainer);
         this.clearButton.on("click", function (e) {
           e.preventDefault();
           that.element.val("");

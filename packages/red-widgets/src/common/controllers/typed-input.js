@@ -300,7 +300,7 @@ export function factory(RED) {
               label: opt
             };
           }
-          var op = $('<a href="#"></a>').attr("value", opt.value).appendTo(menu);
+          var op = $('<a id="typeOpt" href="#"></a>').attr("value", opt.value).appendTo(menu);
           if (opt.label) {
             op.text(opt.label);
           }
@@ -418,6 +418,7 @@ export function factory(RED) {
         var that = this;
         var currentType = this.type();
         this.typeMap = {};
+        console.log(types)
         this.typeList = types.map(function (opt) {
           var result;
           if (typeof opt === 'string') {
