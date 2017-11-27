@@ -96,13 +96,13 @@ test('Stack: add(entry) if entry is not object', () => {
   }
 })
 
-test('Stack: hide()', () => {
+test('Stack: show()', () => {
   let shown = widgetElem.show()
   expect(shown).toBeDefined()
   expect(shown.visible).toBeTruthy()
 })
 
-test('Stack: show()', () => {
+test('Stack: hide()', () => {
   let hidden = widgetElem.hide()
   expect(hidden).toBeDefined()
   expect(hidden.visible).toBeFalsy()

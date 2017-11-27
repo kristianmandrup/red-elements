@@ -758,6 +758,6 @@ export default (function () {
     normalisePropertyExpression: normalisePropertyExpression,
     validatePropertyExpression: validatePropertyExpression,
     getNodeIcon: getNodeIcon,
-    getNodeLabel: getNodeLabel,
+    getNodeLabel: getNodeLabel
   }
 })();

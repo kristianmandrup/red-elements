@@ -34,9 +34,9 @@ export function factory(RED) {
   //   Validators
   // });
   new Validators(RED);
-  // console.log('create typedInput widget', {
-  //   RED
-  // });
+  //  console.log('create typedInput widget', {
+  //    RED
+  //  });
 
   (function ($) {
     // console.log('creating typedInput widget...', RED)
@@ -194,7 +194,7 @@ export function factory(RED) {
 
         this.options.types = this.options.types || Object.keys(allOptions);
 
-        this.selectTrigger = $('<button tabindex="0"></button>').prependTo(this.uiSelect);
+        this.selectTrigger = $('<button id="btnSelectTrigger" tabindex="0"></button>').prependTo(this.uiSelect);
         $('<i class="fa fa-sort-desc"></i>').appendTo(this.selectTrigger);
         this.selectLabel = $('<span></span>').appendTo(this.selectTrigger);
 
@@ -445,6 +445,7 @@ export function factory(RED) {
         this._resize();
       },
       value: function (value) {
+        console.log('value called: ' + value);
         if (!arguments.length) {
           return this.element.val();
         } else {

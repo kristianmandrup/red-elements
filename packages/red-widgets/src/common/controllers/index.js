@@ -34,7 +34,10 @@ import {
   default as Searchbox
 }
 from './search-box'
-
+import {
+  Validators
+}
+from './utils/validators'
 Popover.create = (ctx, RED) => {
   return new Popover(ctx, RED)
 }
@@ -53,7 +56,8 @@ export const controllers = {
   CheckboxSet,
   TypedInput,
   EditableList,
-  Searchbox
+  Searchbox,
+  Validators
 }
 
 export default controllers
@@ -67,5 +71,6 @@ export {
   CheckboxSet,
   TypedInput,
   EditableList,
-  Searchbox
+  Searchbox,
+  Validators
 }

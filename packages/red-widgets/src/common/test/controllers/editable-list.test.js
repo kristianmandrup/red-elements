@@ -65,3 +65,35 @@ test('EditableList: widget can be created', () => {
 // *   - filter(filter)
 // *   - sort(sort)
 // *   - length()
+test('EditableList: widget header created', () => {
+  let elem = $('#editable-list')
+  var options = {
+    header: '<div></div>',
+    class: '',
+    addButton: 'Add Button',
+    height:100
+  }
+  let widgetElem = elem.editableList(options);
+  // log({
+  //   widgetElem
+  // })
+
+  expect(widgetElem).toBeDefined()
+})
+
+test('EditableList: widget addItem()', () => {
+  let elem = $('#editable-list')
+  // var options = {
+  //   header: '<div></div>',
+  //   class: '',
+  //   addButton: 'Add Button',
+  //   height:100
+  // }
+  let addItem = elem.editableList('addItem', {});
+  //let addItem = elem.addItem(0, {});
+  // log({
+  //   widgetElem
+  // })
+
+  expect(addItem).toBeDefined();
+})

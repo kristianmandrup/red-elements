@@ -33,7 +33,7 @@ export class PaletteEditor extends Context {
 
     // editorTabs;
     // filterInput;
-    // searchInput;
+    //searchInput;
     // nodeList;
     // packageList;
     this.loadedList = [];
