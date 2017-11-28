@@ -20,7 +20,7 @@ import {
 import {
   default as $
 } from 'jquery'
-import { LibraryUI } from '../test/imports'
+import { LibraryUI } from '../controllers/library-ui'
 function rebind(varNames, ctx) {
   return varNames.reduce((acc, name) => {
     ctx[name] = ctx[name].bind(ctx)
