@@ -205,10 +205,10 @@ export class Menu {
   }
 
   setSelected(id, state) {
-    if (isSelected(id) == state) {
+    if (this.isSelected(id) == state) {
       return;
     }
-    var opt = menuItems[id];
+    var opt = this.menuItems[id];
     if (state) {
       $("#" + id).addClass("active");
     } else {
@@ -221,7 +221,7 @@ export class Menu {
   }
 
   toggleSelected(id) {
-    setSelected(id, !isSelected(id));
+    this.setSelected(id, !this.isSelected(id));
   }
 
   setDisabled(id, state) {
@@ -233,7 +233,7 @@ export class Menu {
   }
 
   addItem(id, opt) {
-    var item = createMenuItem(opt);
+    var item = this.createMenuItem(opt);
     if (opt.group) {
       var groupItems = $("#" + id + "-submenu").children(".menu-group-" + opt.group);
       if (groupItems.length === 0) {
@@ -260,7 +260,7 @@ export class Menu {
   }
 
   setAction(id, action) {
-    var opt = menuItems[id];
+    var opt = this.menuItems[id];
     if (opt) {
       opt.onselect = action;
     }

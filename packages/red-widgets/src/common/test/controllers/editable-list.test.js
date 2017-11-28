@@ -29,18 +29,21 @@ test('EditableList: is a class', () => {
 })
 
 test('EditableList: widget can be created', () => {
-  let elem = $('#editable-list')
-  // log({
-  //   elem
-  // })
-  let widgetElem = elem.editableList()
+  let elem = $('<div></div>');
+  var options = {
+    header: $('<div></div>'),
+    class: 'editable',
+    addButton: true,
+    height: 100,
+    sortable: "sortable"
+  }
+  let widgetElem = elem.editableList(options)
   // log({
   //   widgetElem
   // })
 
   expect(widgetElem).toBeDefined()
 })
-
 // * options:
 // *   - addButton : boolean|string - text for add label, default 'add'
 // *   - height : number|'auto'
@@ -66,17 +69,36 @@ test('EditableList: widget can be created', () => {
 // *   - sort(sort)
 // *   - length()
 test('EditableList: widget header created', () => {
-  let elem = $('#editable-list')
+  let elem = $('<div></div>')
   var options = {
-    header: '<div></div>',
-    class: '',
-    addButton: 'Add Button',
-    height:100
+    header: $('<div></div>'),
+    class: 'editable',
+    addButton: "Add Button",
+    height: 100,
+    sortable: true,
+    connectWith: 100,
+    resize: () => { }
   }
   let widgetElem = elem.editableList(options);
   // log({
   //   widgetElem
   // })
+
+  expect(widgetElem).toBeDefined()
+})
+
+/*
+test('EditableList: widget without header', () => {
+  let elem = $('#editable-list')
+  var options = {
+    class: '',
+    addButton: 'Add Button',
+    height: 100
+  }
+  let widgetElem = elem.editableList(options);
+  log({
+    widgetElem
+  })
 
   expect(widgetElem).toBeDefined()
 })
@@ -96,4 +118,4 @@ test('EditableList: widget addItem()', () => {
   // })
 
   expect(addItem).toBeDefined();
-})
+})*/
