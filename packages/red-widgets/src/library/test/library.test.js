@@ -42,6 +42,7 @@ let ctx = Object.assign({
 }, baseCtx)
 
 function create(ctx) {
+  document.body.innerHTML =readPage('library',__dirname);
   return new Library(ctx)
 }
 
@@ -69,7 +70,7 @@ test('Library: loadFlowLibrary', () => {
 })
 
 test('Library: createUI', () => {
-  let options = {}
+  let options = {editor:{setText:{}},ctx:ctx}
   library.createUI(options)
 
   expect(typeof library.ui).toBe('object')

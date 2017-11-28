@@ -20,7 +20,7 @@ import {
 import {
   default as $
 } from 'jquery'
-
+import { LibraryUI } from '../test/imports'
 function rebind(varNames, ctx) {
   return varNames.reduce((acc, name) => {
     ctx[name] = ctx[name].bind(ctx)
@@ -44,8 +44,8 @@ export class Library extends Context {
     let {
       exportFlow,
     } = rebind([
-      'exportFlow',
-    ], this)
+        'exportFlow',
+      ], this)
 
     ctx.actions.add("core:library-export", exportFlow);
 
@@ -74,48 +74,48 @@ export class Library extends Context {
         resizable: false,
         title: ctx._("library.exportToLibrary"),
         buttons: [{
-            id: "library-dialog-cancel",
-            text: ctx._("common.label.cancel"),
-            click: function () {
-              $(this).dialog("close");
-            }
-          },
-          {
-            id: "library-dialog-ok",
-            class: "primary",
-            text: ctx._("common.label.export"),
-            click: () => {
-              //TODO: move this to ctx.library
-              var flowName = $("#node-input-library-filename").val();
-              if (!/^\s*$/.test(flowName)) {
-                $.ajax({
-                  url: 'library/flows/' + flowName,
-                  type: "POST",
-                  data: $("#node-input-library-filename").attr('nodes'),
-                  contentType: "application/json; charset=utf-8"
-                }).done(() => {
-                  ctx.library.loadFlowLibrary();
-                  ctx.notify(ctx._("library.savedNodes"), "success");
-                }).fail((xhr, textStatus, err) => {
-                  if (xhr.status === 401) {
-                    ctx.notify(ctx._("library.saveFailed", {
-                      message: ctx._("user.notAuthorized")
-                    }), "error");
-                  } else {
-                    ctx.notify(ctx._("library.saveFailed", {
-                      message: xhr.responseText
-                    }), "error");
-                  }
-                });
-              }
-              $(this).dialog("close");
-            }
+          id: "library-dialog-cancel",
+          text: ctx._("common.label.cancel"),
+          click: function () {
+            $(this).dialog("close");
           }
+        },
+        {
+          id: "library-dialog-ok",
+          class: "primary",
+          text: ctx._("common.label.export"),
+          click: () => {
+            //TODO: move this to ctx.library
+            var flowName = $("#node-input-library-filename").val();
+            if (!/^\s*$/.test(flowName)) {
+              $.ajax({
+                url: 'library/flows/' + flowName,
+                type: "POST",
+                data: $("#node-input-library-filename").attr('nodes'),
+                contentType: "application/json; charset=utf-8"
+              }).done(() => {
+                ctx.library.loadFlowLibrary();
+                ctx.notify(ctx._("library.savedNodes"), "success");
+              }).fail((xhr, textStatus, err) => {
+                if (xhr.status === 401) {
+                  ctx.notify(ctx._("library.saveFailed", {
+                    message: ctx._("user.notAuthorized")
+                  }), "error");
+                } else {
+                  ctx.notify(ctx._("library.saveFailed", {
+                    message: xhr.responseText
+                  }), "error");
+                }
+              });
+            }
+            $(this).dialog("close");
+          }
+        }
         ],
         open: (e) => {
           $(this).parent().find(".ui-dialog-titlebar-close").hide();
         },
-        close: (e) => {}
+        close: (e) => { }
       });
 
     this.exportToLibraryDialog.children(".dialog-form").append($(

@@ -6,10 +6,15 @@ import {
   default as $
 } from 'jquery'
 
-export class LibraryUI {
-  constructor(options) {
-    const ctx = {}
+var ace = require('brace');
+require('brace/mode/javascript');
+require('brace/theme/monokai');
 
+export class LibraryUI extends Context {
+  constructor(options) {
+    super(options.ctx)
+    const ctx = options.ctx || options
+    var libraryEditor;
     $('#node-input-name').css("width", "66%").after(
       '<div class="btn-group" style="margin-left: 5px;">' +
       '<a id="node-input-' + options.type + '-lookup" class="editor-button" data-toggle="dropdown"><i class="fa fa-book"></i> <i class="fa fa-caret-down"></i></a>' +
@@ -18,7 +23,6 @@ export class LibraryUI {
       '<li><a id="node-input-' + options.type + '-menu-save-library" tabindex="-1" href="#">' + ctx._("library.saveToLibrary") + '</a></li>' +
       '</ul></div>'
     );
-
     $('#node-input-' + options.type + '-menu-open-library').click(function (e) {
       $("#node-select-library").children().remove();
       var bc = $("#node-dialog-library-breadcrumbs");
@@ -83,7 +87,6 @@ export class LibraryUI {
       $("#node-dialog-library-save").dialog("open");
       e.preventDefault();
     });
-
     libraryEditor = ace.edit('node-select-library-text');
     libraryEditor.setTheme("ace/theme/tomorrow");
     if (options.mode) {
@@ -204,7 +207,7 @@ export class LibraryUI {
       var v = data[i];
       if (typeof v === "string") {
         // directory
-        li = buildFileListItem(v);
+        li = this.buildFileListItem(v);
         li.onclick = (function () {
           var dirName = v;
           return function (e) {
@@ -228,7 +231,7 @@ export class LibraryUI {
         ul.appendChild(li);
       } else {
         // file
-        li = buildFileListItem(v);
+        li = this.buildFileListItem(v);
         li.innerHTML = v.name;
         li.onclick = (function () {
           var item = v;
@@ -247,8 +250,9 @@ export class LibraryUI {
     return ul;
   }
 
-  saveToLibrary(overwrite) {
+  saveToLibrary(overwrite,options) {
     var name = $("#node-input-name").val().replace(/(^\s*)|(\s*$)/g, "");
+    var ctx=options.ctx;
     if (name === "") {
       name = ctx._("library.unnamedType", {
         type: options.type
@@ -314,9 +318,9 @@ export class LibraryUI {
           message: ctx._("user.notAuthorized")
         }), "error");
       } else {
-        ctx.notify(ctx._("library.saveFailed", {
-          message: xhr.responseText
-        }), "error");
+        // ctx.notify(ctx._("library.saveFailed", {
+        //   message: xhr.responseText
+        // }), "error");
       }
     });
   }
