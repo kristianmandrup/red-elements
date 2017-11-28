@@ -318,9 +318,9 @@ export class LibraryUI extends Context {
           message: ctx._("user.notAuthorized")
         }), "error");
       } else {
-        // ctx.notify(ctx._("library.saveFailed", {
-        //   message: xhr.responseText
-        // }), "error");
+        ctx.notify(ctx._("library.saveFailed", {
+          message: xhr.responseText
+        }), "error");
       }
     });
   }
