@@ -1,16 +1,28 @@
 import {
   RED,
   readPage,
-  ctx,
+  ctx as baseCtx,
   Tray
 } from './imports'
 
 function create(ctx) {
   return new Tray(ctx)
 }
-
-const ctx = Object.assign({
-  // menu
+let events = {
+  on(property, callback) { },
+  emit(property) { }
+}
+let view = {
+  focus() {}
+}
+let ctx = Object.assign({
+  //actions,
+  //keyboard,
+  //utils,
+  events,
+  // settings,
+  //nodes,
+  view
 }, baseCtx)
 
 let tray
@@ -21,7 +33,7 @@ beforeEach(() => {
 beforeAll(() => {
   // Searchbox(RED)
   // EditableList(RED)
-  document.documentElement.innerHTML = readPage('simple')
+  document.documentElement.innerHTML = readPage('tray',__dirname)
 })
 
 let button = {
@@ -61,17 +73,8 @@ test('Tray: create has openingTray', () => {
 
 // calls showTray
 test('Tray: show', () => {
+  var tray = create(ctx);
   tray.show(options.basic)
-  expect(tray).toBeDefined()
-})
-
-test('Tray: close', async() => {
-  let closed = await tray.close()
-  expect(closed).toBeTruthy()
-})
-
-test('Tray: resize', () => {
-  tray.resize()
   expect(tray).toBeDefined()
 })
 
@@ -80,7 +83,56 @@ test('Tray: showTray', () => {
   expect(tray).toBeDefined()
 })
 
+test('Tray: close', async() => {
+   tray.show(options.basic)
+   tray.show(options.basic)
+  let closed = await tray.close()
+  expect(closed).toBeTruthy()
+})
+
+test('Tray: close', async() => {
+  tray.show(options.basic)
+ let closed = await tray.close()
+ expect(closed).toBeTruthy()
+})
+
+
+test('Tray: resize', () => {
+  tray.resize()
+  expect(typeof tray.resize).toBe('function')
+})
+
 test('Tray: handleWindowResize', () => {
   tray.handleWindowResize()
-  expect(tray).toBeDefined()
+  expect(typeof tray.handleWindowResize).toBe('function')
+})
+
+test('Tray: append element can be start dragging', () => {
+  tray.showTray(options.basic)
+  var elements=$(tray.editorStack).children();
+  var ele=$(elements[0]).data('ui-draggable');
+  ele.options.start(null, {
+    position: { top: 50 }
+  });
+  expect(typeof ele.options.start).toBe('function');
+})
+
+test('Tray: append element can be draggable', () => {
+  tray.showTray(options.basic)
+  var elements=$(tray.editorStack).children();
+  var ele=$(elements[0]).data('ui-draggable');
+  ele.options.drag(null, {
+    position: { top: 50, left:52 }
+  });
+  expect(typeof ele.options.start).toBe('function');
+})
+
+test('Tray: append element can be stop dragging', () => {
+  tray.showTray(options.basic)
+  var elements=$(tray.editorStack).children();
+  var ele=$(elements[0]).data('ui-draggable');
+  ele.options.stop(null, {
+    position: { top: 50, left:52 }
+  });
+  expect(typeof ele.options.stop).toBe('function');
 })

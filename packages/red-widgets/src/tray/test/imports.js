@@ -13,6 +13,17 @@ const {
   Tray
 } = controllers
 
+import {
+  common
+} from '../../'
+
+export {
+  RED,
+  readPage,
+  ctx
+}
+  from '../../test/setup'
+
 export {
   // nightmare,
   Tray

@@ -24,7 +24,8 @@ import {
 export class Tray extends Context {
   constructor(ctx) {
     super(ctx)
-    let RED = ctx
+    const RED = ctx
+    this.RED = RED
     this.stack = [];
     this.editorStack = $("#editor-stack");
     this.openingTray = false;
@@ -56,11 +57,11 @@ export class Tray extends Context {
       });
       setTimeout(() => {
         oldTray.tray.detach();
-        showTray(options);
+        this.showTray(options);
       }, 250)
     } else {
-      RED.events.emit("editor:open");
-      showTray(options);
+      this.RED.events.emit("editor:open");
+      this.showTray(options);
     }
 
   }
@@ -68,7 +69,6 @@ export class Tray extends Context {
   async close() {
     // fix
     let stack = this.stack
-
     if (stack.length > 0) {
       var tray = stack.pop();
       tray.tray.css({
@@ -111,6 +111,7 @@ export class Tray extends Context {
   resize() {}
 
   showTray(options) {
+    var editor;
     var el = $('<div class="editor-tray"></div>');
     var header = $('<div class="editor-tray-header"></div>').appendTo(el);
     var bodyWrapper = $('<div class="editor-tray-body-wrapper"></div>').appendTo(el);
@@ -155,7 +156,7 @@ export class Tray extends Context {
         }
       }
     }
-    el.appendTo(editorStack);
+    el.appendTo(this.editorStack);
     var tray = {
       tray: el,
       header: header,
@@ -165,8 +166,10 @@ export class Tray extends Context {
       primaryButton: primaryButton
     };
     this.stack.push(tray);
-
+    let handleWindowResize=this.handleWindowResize.bind(this);
+    let openingTray=this.openingTray;
     if (!options.maximized) {
+      let editorStack=this.editorStack;
       el.draggable({
         handle: resizer,
         axis: "x",
@@ -206,8 +209,7 @@ export class Tray extends Context {
 
     function finishBuild() {
       // fix
-      let tray = this.tray
-
+      // let tray = tray
       $("#header-shade").show();
       $("#editor-shade").show();
       $("#palette-shade").show();
@@ -283,7 +285,6 @@ export class Tray extends Context {
   handleWindowResize() {
     // fix
     let stack = this.stack
-
     if (stack.length > 0) {
       var tray = stack[stack.length - 1];
       var trayHeight = tray.tray.height() - tray.header.outerHeight() - tray.footer.outerHeight();
