@@ -29,7 +29,7 @@ test('EditableList: is a class', () => {
 })
 
 test('EditableList: widget can be created', () => {
-  let elem = $('<div></div>');
+  let elem = $('<div style="position:absolute;top:0;width:20%"></div>');
   var options = {
     header: $('<div></div>'),
     class: 'editable',
@@ -37,12 +37,8 @@ test('EditableList: widget can be created', () => {
     height: 100,
     sortable: "sortable"
   }
-  let widgetElem = elem.editableList(options)
-  // log({
-  //   widgetElem
-  // })
-
-  expect(widgetElem).toBeDefined()
+  let widgetElem = elem.editableList(options);
+  expect(widgetElem).toBeDefined();
 })
 // * options:
 // *   - addButton : boolean|string - text for add label, default 'add'
@@ -80,42 +76,126 @@ test('EditableList: widget header created', () => {
     resize: () => { }
   }
   let widgetElem = elem.editableList(options);
-  // log({
-  //   widgetElem
-  // })
-
   expect(widgetElem).toBeDefined()
 })
 
-/*
-test('EditableList: widget without header', () => {
-  let elem = $('#editable-list')
+test('EditableList: widget addItem with empty object', () => {
+  let elem = $('<div><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
   var options = {
-    class: '',
-    addButton: 'Add Button',
-    height: 100
+    header: $('<div></div>'),
+    class: 'editable',
+    addButton: true,
+    height: 100,
+    sortable: true,
+    sort: function (data, item) { return -1; }
   }
-  let widgetElem = elem.editableList(options);
-  log({
-    widgetElem
-  })
-
-  expect(widgetElem).toBeDefined()
+  let addItem = elem.editableList(options);
+  addItem.editableList('items');
+  addItem.editableList('addItem', {});
+  expect(addItem).toBeDefined();
 })
 
-test('EditableList: widget addItem()', () => {
-  let elem = $('#editable-list')
-  // var options = {
-  //   header: '<div></div>',
-  //   class: '',
-  //   addButton: 'Add Button',
-  //   height:100
-  // }
-  let addItem = elem.editableList('addItem', {});
-  //let addItem = elem.addItem(0, {});
-  // log({
-  //   widgetElem
-  // })
-
+jest.useFakeTimers();
+test('EditableList: widget addItem without data', () => {
+  let elem = $('<div></div>');
+  var options = {
+    header: $('<div></div>'),
+    class: 'editable',
+    addButton: true,
+    height: 100,
+    sortable: "sortable",
+    removable: true,
+    addItem: function (row, index, data) { },
+    scrollOnAdd: true
+  }
+  let addItem = elem.editableList(options).editableList('addItem');
+  expect(setTimeout.mock.calls.length).toBe(1);
   expect(addItem).toBeDefined();
-})*/
+});
+
+
+test('EditableList: widget addItems', () => {
+  let elem = $('<div></div>');
+  var options = {
+    header: $('<div></div>'),
+    class: 'editable',
+    addButton: true,
+    height: 100,
+    sortable: "sortable",
+    removable: true,
+    addItem: function (row, index, data) { },
+    scrollOnAdd: true
+  };
+  let items = [];
+  items.push($("<div data-id='item1' data-class='item'>"));
+  items.push($("<div data-id='item2' data-class='item'>"));
+  items.push($("<div data-id='item3' data-class='item'>"));
+  let addItem = elem.editableList(options).editableList('addItems', items);
+  expect(addItem).toBeDefined();
+});
+
+
+test('EditableList: widget removeItems', () => {
+  let elem = $('<div><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
+  var options = {
+    header: $('<div></div>'),
+    class: 'editable',
+    addButton: true,
+    height: 100,
+    sortable: "sortable",
+    removable: true,
+    addItem: function (row, index, data) { },
+    scrollOnAdd: true,
+    removeItem: function (data) { }
+  };
+  let addItem = elem.editableList(options).editableList('removeItem');
+  expect(addItem).toBeDefined();
+});
+
+test('EditableList: widget get Items', () => {
+  let elem = $('<div><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
+  var options = {
+    header: $('<div></div>'),
+    class: 'editable',
+    addButton: true,
+    height: 100,
+    sortable: "sortable",
+    removable: true,
+    addItem: function (row, index, data) { },
+    scrollOnAdd: true,
+    removeItem: function (data) { }
+  };
+  let addItem = elem.editableList(options).editableList('items');
+  expect(addItem).toBeDefined();
+});
+
+test('EditableList: empty element', () => {
+  let elem = $('<div><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
+  let addItem = elem.editableList().editableList('empty');
+  expect(addItem).toBeDefined();
+});
+
+
+test('EditableList: get element length', () => {
+  let elem = $('<div><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
+  let length = elem.editableList().editableList('length');
+  expect(length).toBeGreaterThanOrEqual(0);
+});
+
+test('EditableList: set element height', () => {
+  let elem = $('<div><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
+  var options = {
+    resizeItem: function (element, size) { }
+  };
+  elem.editableList(options).editableList('height', 150);
+});
+
+test('EditableList: sort elements', () => {
+  let elem = $('<div><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
+  elem.editableList().editableList('sort', function (A, B) { });
+});
+
+test('EditableList: sort elements without function', () => {
+  let elem = $('<div><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
+  elem.editableList().editableList('sort');
+});
