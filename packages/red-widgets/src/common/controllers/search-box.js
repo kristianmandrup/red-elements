@@ -60,8 +60,9 @@ function factory(RED) {
           that._change($(this).val());
         });
 
-        this.element.on("focus", function () {
-          $("body").one("mousedown", function () {
+        this.element.bind("focus", function () {
+          console.log("CALLED");
+          $("body").on("mousedown", function () {
             that.element.blur();
           });
         });
