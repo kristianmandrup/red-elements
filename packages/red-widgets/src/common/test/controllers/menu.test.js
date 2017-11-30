@@ -14,7 +14,9 @@ const clazz = Menu
 const {
   log
 } = console
-
+function createMenu(option) {
+  return new Menu(option);
+}
 beforeAll(() => {
   // Menu has no widget factory, just a class
 
@@ -32,7 +34,7 @@ test('Menu: can be created from id with NO options', () => {
   // note: inside Menu constructor
   //  var menuParent = $("#" + options.id);
 
-  let widgetElem = new Menu({
+  let widgetElem = createMenu({
     id: 'menu',
     options: []
   })
@@ -42,7 +44,7 @@ test('Menu: can be created from id with NO options', () => {
 
 
 test('Menu: can be created from id with options', () => {
-  let widgetElem = new Menu({
+  let widgetElem = createMenu({
     id: 'menu',
     options: [
       'a',
@@ -52,30 +54,31 @@ test('Menu: can be created from id with options', () => {
   expect(widgetElem).toBeDefined()
 })
 test('Menu: can be created from id with options', () => {
-  let widgetElem = new Menu({})
-  var menuItem = widgetElem.createMenuItem({ id: null });
+  let widgetElem = createMenu({})
+  var menuItem = widgetElem.createMenuItem({ id: 12 });
   expect(menuItem).toBeDefined()
 })
 
 test('Menu: set selected with selected item', () => {
-  let widgetElem = new Menu({});  
+  let widgetElem = createMenu({});
   var result = widgetElem.setSelected("selection-active", true);
   expect(result).not.toBeDefined();
 });
 
 test('Menu: set item selected', () => {
-  let widgetElem = new Menu({});
+  let widgetElem = createMenu({});
   var result = widgetElem.setSelected("selection-not-active", true);
 });
 
 test('Menu: remove item to selected', () => {
-  let widgetElem = new Menu({});  
+  let widgetElem = createMenu({});
+  var menuItem = widgetElem.createMenuItem({ id: 12 });
   var result = widgetElem.setSelected("selection-active", false);
   expect(result).not.toBeDefined();
 });
 
 test('Menu: set element disable and enable', () => {
-  let widgetElem = new Menu({});
+  let widgetElem = createMenu({ id: null });
   widgetElem.setDisabled("selection-active", true);
   let result = $("#selection-active").parent().hasClass("disabled");
   expect(result).toBe(true);
@@ -85,19 +88,19 @@ test('Menu: set element disable and enable', () => {
 });
 
 test('Menu: set element enable', () => {
-  let widgetElem = new Menu({});
+  let widgetElem = createMenu({});
   widgetElem.setDisabled("selection-active", false);
   let result = $("#selection-active").parent().hasClass("disabled");
   expect(result).toBe(false);
 });
 
 test('Menu: add item with empty options', () => {
-  let widgetElem = new Menu({});
+  let widgetElem = createMenu({});
   widgetElem.addItem("menu", {});
 });
 
 test('Menu: add item with options', () => {
-  let widgetElem = new Menu({});
+  let widgetElem = createMenu({});
   let id = "add-item";
   let options = {
     group: "opt-group",
@@ -114,7 +117,7 @@ test('Menu: add item with options', () => {
 });
 
 test('Menu: add item with options', () => {
-  let widgetElem = new Menu({});
+  let widgetElem = createMenu({});
   let id = "add-empty-item";
   let options = {
     group: "opt-group",
@@ -125,13 +128,13 @@ test('Menu: add item with options', () => {
 });
 
 test('Menu: removeItem', () => {
-  let widgetElem = new Menu({});
+  let widgetElem = createMenu({});
   widgetElem.removeItem("menu");
   expect($("#menu").length).toBe(0);
 });
 
 test('Menu: setAction', () => {
-  let widgetElem = new Menu({});
+  let widgetElem = createMenu({});
   widgetElem.menuItems["menu-item"] = { "key": "value" };
   widgetElem.setAction("menu-item", function action() { });
 });

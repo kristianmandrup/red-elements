@@ -16,12 +16,12 @@
 import {
   default as $
 } from 'jquery'
-
+import { bottle } from "../index";
 export class Menu {
   constructor(options) {
     this.menuItems = {};
     var menuParent = $("#" + options.id);
-
+    this.RED = bottle.container.RED;
     var topMenu = $("<ul/>", {
       id: options.id + "-submenu",
       class: "dropdown-menu pull-right"
@@ -46,8 +46,8 @@ export class Menu {
       }
     }
 
-   // return topMenu;
-   return this;
+    // return topMenu;
+    return this;
   }
 
   createMenuItem(opt) {
@@ -58,22 +58,22 @@ export class Menu {
     var item;
 
     if (opt !== null && opt.id) {
-      var themeSetting = RED.settings.theme("menu." + opt.id);
+      var themeSetting = this.RED.settings.theme("menu." + opt.id);
       if (themeSetting === false) {
         return null;
       }
     }
 
     function setInitialState() {
-      var savedStateActive = RED.settings.get("menu-" + opt.id);
+      var savedStateActive = this.RED.settings.get("menu-" + opt.id);
       if (opt.setting) {
         // May need to migrate pre-0.17 setting
 
         if (savedStateActive !== null) {
-          RED.settings.set(opt.setting, savedStateActive);
-          RED.settings.remove("menu-" + opt.id);
+          this.RED.settings.set(opt.setting, savedStateActive);
+          this.RED.settings.remove("menu-" + opt.id);
         } else {
-          savedStateActive = RED.settings.get(opt.setting);
+          savedStateActive = this.RED.settings.get(opt.setting);
         }
       }
       if (savedStateActive) {
@@ -191,7 +191,7 @@ export class Menu {
     var opt = menuItems[id];
     var callback = opt.onselect;
     if (typeof opt.onselect === 'string') {
-      callback = RED.actions.get(opt.onselect);
+      callback = this.RED.actions.get(opt.onselect);
     }
     if (callback) {
       callback.call(opt, args);
@@ -217,7 +217,7 @@ export class Menu {
     if (opt && opt.onselect) {
       triggerAction(opt.id, state);
     }
-    RED.settings.set(opt.setting || ("menu-" + opt.id), state);
+    this.RED.settings.set(opt.setting || ("menu-" + opt.id), state);
   }
 
   toggleSelected(id) {
