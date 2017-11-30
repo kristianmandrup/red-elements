@@ -36,26 +36,26 @@ function factory(RED) {
         this.element.val("");
         this.uiContainer = this.element.wrap("<div>").parent();
         this.uiContainer.addClass("red-ui-searchBox-container");
-
-        $('<i class="fa fa-search"></i>').prependTo(this.uiContainer);
-        this.clearButton = $('<a id="btnClear" href="#"><i class="fa fa-times"></i></a>').appendTo(this.uiContainer);
-        this.clearButton.on("click", function (e) {
+        
+        // create handler in same scope
+        this.clearButtonClick = function (e) {
           e.preventDefault();
           that.element.val("");
           that._change("", true);
           that.element.focus();
-        });
+        }
+
+        $('<i class="fa fa-search"></i>').prependTo(this.uiContainer);
+        this.clearButton = $('<a id="btnClear" href="#"><i class="fa fa-times"></i></a>').appendTo(this.uiContainer);
+        this.clearButton.on("click", this.clearButtonClick);
 
         this.resultCount = $('<span>', {
           class: "red-ui-searchBox-resultCount hide"
         }).appendTo(this.uiContainer);
 
         this.element.val("");
-        this.element.on("keydown", function (evt) {
-          if (evt.keyCode === 27) {
-            that.element.val("");
-          }
-        })
+        // create handler out of scope and passed current state
+        this.element.on("keydown", (evt) => this.handleKeyDown(evt, that));
         this.element.on("keyup", function (evt) {
           that._change($(this).val());
         });
@@ -66,7 +66,6 @@ function factory(RED) {
             that.element.blur();
           });
         });
-
       },
       _change: function (val, instant) {
         var fireEvent = false;
@@ -109,6 +108,11 @@ function factory(RED) {
       },
       change: function () {
         this._trigger("change");
+      },
+      handleKeyDown: function (evt, $this) {
+        if (evt.keyCode === 27) {
+          $this.element.val("");
+        }
       }
     });
   })(jQuery);
