@@ -16,7 +16,7 @@
 import {
   default as $
 } from 'jquery'
-import { bottle } from "../index";
+import { bottle } from "../../setup/setup";
 export class Menu {
   constructor(options) {
     this.menuItems = {};
