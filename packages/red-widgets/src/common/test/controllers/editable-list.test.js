@@ -18,7 +18,6 @@ const {
 beforeAll(() => {
   // create jquery UI widget via factory (ie. make available on jQuery elements)
   EditableList(RED)
-
   // load document with placeholder elements to create widgets (for testing)
   document.documentElement.innerHTML = readPage('simple')
 })
@@ -237,18 +236,35 @@ test('EditableList: create element with auto height', () => {
 });
 
 test('EditableList: create element with minHeight to 0', () => {
-  let elem = $('<div style="min-hight:0px"><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
+  let elem = getElement();
   options.height = 'auto';
   let editableList = elem.editableList();
   expect(editableList).toBeDefined();
 });
 
 test('EditableList: create element with add button to false', () => {
-  let elem = $('<div style="min-height:0px"><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
+  let elem = getElement();
   options.addButton = false;
   let editableList = elem.editableList();
   expect(editableList).toBeDefined();
 });
+test('EditableList: with RED null', () => {
+  EditableList(null);
+  let elem = getElement();
+  options.addButton = true;
+  let editableList = elem.editableList();
+  expect(editableList).toBeDefined();
+});
+
+test('EditableList: with RED null', () => {
+  let elem = getElement();
+  options.addButton = true;
+  let editableList = elem.editableList();
+  let deleteButton=$(".red-ui-editableList-item-remove");
+  
+  expect(editableList).toBeDefined();
+});
+
   // * options:
   // *   - addButton : boolean|string - text for add label, default 'add'
   // *   - height : number|'auto'

@@ -107,3 +107,9 @@ test('Stack: hide()', () => {
   expect(hidden).toBeDefined()
   expect(hidden.visible).toBeFalsy()
 })
+test('Stack: header click()', () => {
+  let entry = {expanded:true}
+  let addedEntry = widgetElem.add(entry)
+$("#palette-header").click();
+
+})

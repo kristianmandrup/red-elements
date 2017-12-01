@@ -64,34 +64,6 @@ export class Menu {
       }
     }
 
-    function setInitialState() {
-      var savedStateActive = this.RED.settings.get("menu-" + opt.id);
-      if (opt.setting) {
-        // May need to migrate pre-0.17 setting
-
-        if (savedStateActive !== null) {
-          this.RED.settings.set(opt.setting, savedStateActive);
-          this.RED.settings.remove("menu-" + opt.id);
-        } else {
-          savedStateActive = this.RED.settings.get(opt.setting);
-        }
-      }
-      if (savedStateActive) {
-        link.addClass("active");
-        triggerAction(opt.id, true);
-      } else if (savedStateActive === false) {
-        link.removeClass("active");
-        triggerAction(opt.id, false);
-      } else if (opt.hasOwnProperty("selected")) {
-        if (opt.selected) {
-          link.addClass("active");
-        } else {
-          link.removeClass("active");
-        }
-        triggerAction(opt.id, opt.selected);
-      }
-    }
-
     if (opt === null) {
       item = $('<li class="divider"></li>');
     } else {
@@ -127,7 +99,7 @@ export class Menu {
       var link = $(linkContent).appendTo(item);
 
       menuItems[opt.id] = opt;
-
+      let that  = this;
       if (opt.onselect) {
         link.click(function (e) {
           e.preventDefault();
@@ -135,7 +107,7 @@ export class Menu {
             return;
           }
           if (opt.toggle) {
-            var selected = isSelected(opt.id);
+            var selected = that.isSelected(opt.id);
             if (typeof opt.toggle === "string") {
               if (!selected) {
                 for (var m in menuItems) {
@@ -146,17 +118,17 @@ export class Menu {
                     }
                   }
                 }
-                setSelected(opt.id, true);
+                that.setSelected(opt.id, true);
               }
             } else {
-              setSelected(opt.id, !selected);
+              that.setSelected(opt.id, !selected);
             }
           } else {
-            triggerAction(opt.id);
+            that.triggerAction(opt.id);
           }
         });
         if (opt.toggle) {
-          setInitialState();
+          this.setInitialState(opt, link);
         }
       } else if (opt.href) {
         link.attr("target", "_blank").attr("href", opt.href);
@@ -171,7 +143,7 @@ export class Menu {
         var submenu = $('<ul id="' + opt.id + '-submenu" class="dropdown-menu"></ul>').appendTo(item);
 
         for (var i = 0; i < opt.options.length; i++) {
-          var li = createMenuItem(opt.options[i]);
+          var li = this.createMenuItem(opt.options[i]);
           if (li) {
             li.appendTo(submenu);
           }
@@ -187,8 +159,36 @@ export class Menu {
 
   }
 
+  setInitialState(opt, link) {
+    var savedStateActive = this.RED.settings.get("menu-" + opt.id);
+    if (opt.setting) {
+      // May need to migrate pre-0.17 setting
+
+      if (savedStateActive !== null) {
+        this.RED.settings.set(opt.setting, savedStateActive);
+        this.RED.settings.remove("menu-" + opt.id);
+      } else {
+        savedStateActive = this.RED.settings.get(opt.setting);
+      }
+    }
+    if (savedStateActive) {
+      link.addClass("active");
+      this.triggerAction(opt.id, true);
+    } else if (savedStateActive === false) {
+      link.removeClass("active");
+      this.triggerAction(opt.id, false);
+    } else if (opt.hasOwnProperty("selected")) {
+      if (opt.selected) {
+        link.addClass("active");
+      } else {
+        link.removeClass("active");
+      }
+      this.triggerAction(opt.id, opt.selected);
+    }
+  }
+
   triggerAction(id, args) {
-    var opt = menuItems[id];
+    var opt = this.menuItems[id];
     var callback = opt.onselect;
     if (typeof opt.onselect === 'string') {
       callback = this.RED.actions.get(opt.onselect);
@@ -215,7 +215,7 @@ export class Menu {
       $("#" + id).removeClass("active");
     }
     if (opt && opt.onselect) {
-      triggerAction(opt.id, state);
+      this.triggerAction(opt.id, state);
     }
     this.RED.settings.set(opt.setting || ("menu-" + opt.id), state);
   }

@@ -6,7 +6,7 @@ import {
 } from './imports'
 
 function create(ctx) {
-  document.body.innerHTML = document.body.innerHTML =readPage('library',__dirname);;
+  document.body.innerHTML = document.body.innerHTML = readPage('library', __dirname);;
   return new LibraryUI(ctx)
 }
 
@@ -38,7 +38,8 @@ test('LibraryUI: create', () => {
 test('LibraryUI: saveToLibrary', () => {
   let root = {} // document element?
   let overwrite = true;
-  ui.saveToLibrary(overwrite, { ctx: RED, types: {}, editor: { getValue: function () { } }, fields: ['name', 'asdf', 'eert'] })
+  RED.notify=function(callback,text){}
+  ui.saveToLibrary(overwrite, { ctx: RED, types: {}, editor: { getValue: function () { } }, fields: ['name', 'asdf', 'eert']})
 })
 test('LibraryUI: buildFileList', () => {
   var ul = ui.buildFileList('testRoot', ['test1', 'test2', 'test3', 1, 2]);

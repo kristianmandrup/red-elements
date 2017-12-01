@@ -47,7 +47,6 @@ export class Tabs extends Context {
         options
       })
     }
-
     var tabs = {};
     var currentTabWidth;
     var currentActiveTabWidth = 0;
@@ -63,19 +62,9 @@ export class Tabs extends Context {
     var ul = options.element || $("#" + options.id);
     var wrapper = ul.wrap("<div>").parent();
     var scrollContainer = ul.wrap("<div>").parent();
+    var scrollLeft;
+    var scrollRight;
 
-    const instVars = {
-      tabs,
-      currentTabWidth,
-      currentActiveTabWidth,
-      ul,
-      wrapper,
-      scrollContainer
-    }
-
-    Object.keys(instVars).map(key => {
-      this[key] = instVars[key]
-    })
 
     let {
       onTabClick,
@@ -83,11 +72,11 @@ export class Tabs extends Context {
       updateTabWidths,
       updateScroll
     } = rebind([
-      'onTabClick',
-      'onTabDblClick',
-      'updateTabWidths',
-      'updateScroll'
-    ], this)
+        'onTabClick',
+        'onTabDblClick',
+        'updateTabWidths',
+        'updateScroll'
+      ], this)
 
     wrapper.addClass("red-ui-tabs");
     if (options.vertical) {
@@ -97,33 +86,34 @@ export class Tabs extends Context {
     if (options.addButton && typeof options.addButton === 'function') {
       wrapper.addClass("red-ui-tabs-add");
       var addButton = $('<div class="red-ui-tab-button"><a href="#"><i class="fa fa-plus"></i></a></div>').appendTo(wrapper);
-      addButton.find('a').click(function (evt) {
-        evt.preventDefault();
-        options.addButton();
-      })
-
+      addButton.find('a').click((evt) => this.handleAddButtonClickedEvent(evt, options));
     }
-    var scrollLeft;
-    var scrollRight;
 
     if (options.scrollable) {
       wrapper.addClass("red-ui-tabs-scrollable");
       scrollContainer.addClass("red-ui-tabs-scroll-container");
       scrollContainer.scroll(updateScroll);
       scrollLeft = $('<div class="red-ui-tab-button red-ui-tab-scroll red-ui-tab-scroll-left"><a href="#" style="display:none;"><i class="fa fa-caret-left"></i></a></div>').appendTo(wrapper).find("a");
-      scrollLeft.on('mousedown', function (evt) {
-        scrollEventHandler(evt, '-=150')
-      }).on('click', function (evt) {
-        evt.preventDefault();
-      });
+      scrollLeft.on('mousedown', (evt) => this.scrollEventHandler(evt, '-=150'))
+        .on('click', this.handleScrollMoveMouseClickEvent);
       scrollRight = $('<div class="red-ui-tab-button red-ui-tab-scroll red-ui-tab-scroll-right"><a href="#" style="display:none;"><i class="fa fa-caret-right"></i></a></div>').appendTo(wrapper).find("a");
-      scrollRight.on('mousedown', function (evt) {
-        scrollEventHandler(evt, '+=150')
-      }).on('click', function (evt) {
-        evt.preventDefault();
-      });
+      scrollRight.on('mousedown', (evt) => scrollEventHandler(evt, '+=150'))
+        .on('click', this.handleScrollMoveMouseClickEvent);
+    }
+    const instVars = {
+      tabs,
+      currentTabWidth,
+      currentActiveTabWidth,
+      ul,
+      wrapper,
+      scrollContainer,
+      scrollLeft,
+      scrollRight
     }
 
+    Object.keys(instVars).map(key => {
+      this[key] = instVars[key]
+    })
     ul.children().first().addClass("active");
     ul.children().addClass("red-ui-tab");
 
@@ -187,7 +177,6 @@ export class Tabs extends Context {
       scrollLeft,
       scrollRight
     } = this
-
     if (ul.children().length !== 0) {
       var sl = scrollContainer.scrollLeft();
       var scWidth = scrollContainer.width();
@@ -396,9 +385,9 @@ export class Tabs extends Context {
       onTabClick,
       onTabDblClick,
     } = rebind([
-      'onTabClick',
-      'onTabDblClick',
-    ], this)
+        'onTabClick',
+        'onTabDblClick',
+      ], this)
 
 
     tabs[tab.id] = tab;
@@ -611,5 +600,18 @@ export class Tabs extends Context {
       existingTabMap[order[i]].appendTo(ul);
     }
     return this
+  }
+
+  handleAddButtonClickedEvent(evt, options) {
+    evt.preventDefault();
+    if (options && options.addButton && (typeof options.addButton === 'function')) {
+      options.addButton();
+    } else {
+      return false;
+    }
+  }
+
+  handleScrollMoveMouseClickEvent(evt) {
+    evt.preventDefault();
   }
 }

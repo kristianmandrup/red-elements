@@ -16,6 +16,7 @@
 import {
   default as $
 } from 'jquery';
+import { config } from 'bottlejs';
 
 export class Panel {
   constructor(options) {
@@ -30,7 +31,7 @@ export class Panel {
     var separator = $('<div class="red-ui-panels-separator"></div>').insertAfter(children[0]);
     var startPosition;
     var panelHeights = [];
-    var modifiedHeights = false;
+    this.modifiedHeights = false;
     var panelRatio;
 
     separator.draggable({
@@ -55,7 +56,7 @@ export class Panel {
         panelRatio = newHeights[0] / height;
       },
       stop: function (event, ui) {
-        return modifiedHeights = true;
+        return this.modifiedHeights = true;
       }
     });
 
@@ -63,7 +64,7 @@ export class Panel {
       resize: function (height) {
         var panelHeights = [$(children[0]).height(), $(children[1]).height()];
         container.height(height);
-        if (modifiedHeights) {
+        if (this.modifiedHeights) {
           var topPanelHeight = panelRatio * height;
           var bottomPanelHeight = height - topPanelHeight - 48;
           panelHeights = [topPanelHeight, bottomPanelHeight];

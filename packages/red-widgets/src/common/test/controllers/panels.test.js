@@ -30,10 +30,7 @@ describe('Panel', () => {
 
 function makePanel(opts) {
   try {
-    return widgetElem = new Panel({
-      id: 'invalid-panel-1',
-    })
-    true
+    return new Panel(opts)
   } catch (err) {
     return {
       invalid: true,
@@ -45,19 +42,21 @@ function makePanel(opts) {
 
 test('Panel: can NOT be created from id unless has 2 child elements', () => {
   let elems = ['invalid-panel-1', 'invalid-panel-2'].map(id => {
-    return makePanel({
-      id
-    })
+    return makePanel({ id })
   })
   elems.map(elem => expect(elem.invalid).toBe(true))
 })
 
 
 test('Panel: can be created from id when has 2 child elements', () => {
-  let widgetElem = new Panel({
+  let widgetElem = makePanel({
     id: 'valid-panel',
+    resize(newHeights1, newHeights2){}
   })
+  widgetElem.modifiedHeights=true;
   widgetElem.resize(20);
+  widgetElem.modifiedHeights=false;
+  widgetElem.resize(30);
   expect(widgetElem).toBeDefined()
   expect(typeof widgetElem.resize).toBe('function')
 })
