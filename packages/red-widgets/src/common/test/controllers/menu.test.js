@@ -1,3 +1,4 @@
+import { bottle } from "../../../setup/setup"
 import {
   readPage,
   ctx,
@@ -15,7 +16,8 @@ const {
   log
 } = console
 function createMenu(option) {
-  return new Menu(option);
+  var factory = bottle.container.Menu;
+  return factory.init(option);
 }
 
 function getLink() {

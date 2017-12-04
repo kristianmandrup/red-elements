@@ -18,10 +18,10 @@ import {
 } from 'jquery'
 import { bottle } from "../../setup/setup";
 export class Menu {
-  constructor(options) {
+  constructor(options, RED) {
     this.menuItems = {};
     var menuParent = $("#" + options.id);
-    this.RED = bottle.container.RED;
+    this.RED = RED;
     var topMenu = $("<ul/>", {
       id: options.id + "-submenu",
       class: "dropdown-menu pull-right"
@@ -99,7 +99,7 @@ export class Menu {
       var link = $(linkContent).appendTo(item);
 
       menuItems[opt.id] = opt;
-      let that  = this;
+      let that = this;
       if (opt.onselect) {
         link.click(function (e) {
           e.preventDefault();
