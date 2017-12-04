@@ -35,7 +35,6 @@ function factory(RED) {
   (function ($) {
     $.widget("nodered.checkboxSet", {
       _create: function () {
-        var that = this;
         this.uiElement = this.element.wrap("<span>").parent();
         this.uiElement.addClass("red-ui-checkboxSet");
         if (this.options.parent) {
@@ -57,26 +56,26 @@ function factory(RED) {
           this.options[0].show();
         }
 
-        this.element.change(function () {
+        this.element.change(()=> {
           if (this.checked) {
-            that.options[0].hide();
-            that.options[1].show();
-            that.options[2].hide();
+            this.options[0].hide();
+            this.options[1].show();
+            this.options[2].hide();
           } else {
-            that.options[1].hide();
-            that.options[0].show();
-            that.options[2].hide();
+            this.options[1].hide();
+            this.options[0].show();
+            this.options[2].hide();
           }
           var isChecked = this.checked;
-          that.children.forEach(function (child) {
+          this.children.forEach(function (child) {
             child.checkboxSet('state', isChecked, false, true);
           })
         })
-        this.uiElement.click(function (e) {
+        this.uiElement.click((e)=> {
           e.stopPropagation();
           // state returns null for a partial state. Clicking on that should
           // result in false.
-          that.state((that.state() === false) ? true : false);
+          this.state((this.state() === false) ? true : false);
         })
         if (this.parent) {
           this.parent.checkboxSet('updateChild', this);
@@ -88,7 +87,6 @@ function factory(RED) {
         }
       },
       addChild: function (child) {
-        var that = this;
         this.children.push(child);
       },
       removeChild: function (child) {

@@ -87,19 +87,18 @@ export function factory(RED) {
           }
         },
         expand: function () {
-          var that = this;
           var value = this.value();
           try {
             value = JSON.stringify(JSON.parse(value), null, 4);
-          } catch (err) {}
+          } catch (err) { }
           RED.editor.editJSON({
             value: value,
-            complete: function (v) {
+            complete: (v) => {
               var value = v;
               try {
                 value = JSON.stringify(JSON.parse(v));
-              } catch (err) {}
-              that.value(value);
+              } catch (err) { }
+              this.value(value);
             }
           })
         }
@@ -127,11 +126,10 @@ export function factory(RED) {
           }
         },
         expand: function () {
-          var that = this;
           RED.editor.editExpression({
             value: this.value().replace(/\t/g, '\n'),
-            complete: function (v) {
-              that.value(v.replace(/\n/g, '\t'));
+            complete: (v) => {
+              this.value(v.replace(/\n/g, '\t'));
             }
           })
         }
@@ -141,11 +139,10 @@ export function factory(RED) {
         label: 'buffer',
         icon: icon('bin'),
         expand: function () {
-          var that = this;
           RED.editor.editBuffer({
             value: this.value(),
-            complete: function (v) {
-              that.value(v);
+            complete: (v) => {
+              this.value(v);
             }
           })
         }
@@ -169,7 +166,6 @@ export function factory(RED) {
           }
         }
         nlsd = true;
-        var that = this;
 
         this.disarmClick = false;
         this.element.addClass('red-ui-typedInput');
@@ -185,10 +181,10 @@ export function factory(RED) {
         } else {
           this.uiSelect.width(this.uiWidth);
         }
-        ["Right", "Left"].forEach(function (d) {
-          var m = that.element.css("margin" + d);
-          that.uiSelect.css("margin" + d, m);
-          that.element.css("margin" + d, 0);
+        ["Right", "Left"].forEach((d) => {
+          var m = this.element.css("margin" + d);
+          this.uiSelect.css("margin" + d, m);
+          this.element.css("margin" + d, 0);
         });
         this.uiSelect.addClass("red-ui-typedInput-container");
 
@@ -212,43 +208,43 @@ export function factory(RED) {
           }).appendTo(this.uiSelect);
         }
 
-        this.element.on('focus', function () {
-          that.uiSelect.addClass('red-ui-typedInput-focus');
+        this.element.on('focus', () => {
+          this.uiSelect.addClass('red-ui-typedInput-focus');
         });
-        this.element.on('blur', function () {
-          that.uiSelect.removeClass('red-ui-typedInput-focus');
+        this.element.on('blur', () => {
+          this.uiSelect.removeClass('red-ui-typedInput-focus');
         });
-        this.element.on('change', function () {
-          that.validate();
+        this.element.on('change', () => {
+          this.validate();
         })
-        this.selectTrigger.click(function (event) {
+        this.selectTrigger.click((event) => {
           event.preventDefault();
-          that._showTypeMenu();
+          this._showTypeMenu();
         });
-        this.selectTrigger.on('keydown', function (evt) {
+        this.selectTrigger.on('keydown', (evt) => {
           if (evt.keyCode === 40) {
             // Down
-            that._showTypeMenu();
+            this._showTypeMenu();
           }
-        }).on('focus', function () {
-          that.uiSelect.addClass('red-ui-typedInput-focus');
+        }).on('focus', () => {
+          this.uiSelect.addClass('red-ui-typedInput-focus');
         })
 
         // explicitly set optionSelectTrigger display to inline-block otherwise jQ sets it to 'inline'
         this.optionSelectTrigger = $('<button tabindex="0" class="red-ui-typedInput-option-trigger" style="display:inline-block"><span class="red-ui-typedInput-option-caret"><i class="fa fa-sort-desc"></i></span></button>').appendTo(this.uiSelect);
         this.optionSelectLabel = $('<span class="red-ui-typedInput-option-label"></span>').prependTo(this.optionSelectTrigger);
-        this.optionSelectTrigger.click(function (event) {
+        this.optionSelectTrigger.click((event) => {
           event.preventDefault();
-          that._showOptionSelectMenu();
-        }).on('keydown', function (evt) {
+          this._showOptionSelectMenu();
+        }).on('keydown', (evt) => {
           if (evt.keyCode === 40) {
             // Down
-            that._showOptionSelectMenu();
+            this._showOptionSelectMenu();
           }
-        }).on('blur', function () {
-          that.uiSelect.removeClass('red-ui-typedInput-focus');
-        }).on('focus', function () {
-          that.uiSelect.addClass('red-ui-typedInput-focus');
+        }).on('blur', () => {
+          this.uiSelect.removeClass('red-ui-typedInput-focus');
+        }).on('focus', () => {
+          this.uiSelect.addClass('red-ui-typedInput-focus');
         });
 
         this.optionExpandButton = $('<button tabindex="0" class="red-ui-typedInput-option-expand" style="display:inline-block"><i class="fa fa-ellipsis-h"></i></button>').appendTo(this.uiSelect);
@@ -291,9 +287,8 @@ export function factory(RED) {
         }
       },
       _createMenu: function (opts, callback) {
-        var that = this;
         var menu = $("<div>").addClass("red-ui-typedInput-options");
-        opts.forEach(function (opt) {
+        opts.forEach((opt) => {
           if (typeof opt === 'string') {
             opt = {
               value: opt,
@@ -315,10 +310,10 @@ export function factory(RED) {
             });
           }
 
-          op.click(function (event) {
+          op.click((event) => {
             event.preventDefault();
             callback(opt.value);
-            that._hideMenu(menu);
+            this._hideMenu(menu);
           });
         });
         menu.css({
@@ -326,7 +321,7 @@ export function factory(RED) {
         });
         menu.appendTo(document.body);
 
-        menu.on('keydown', function (evt) {
+        menu.on('keydown', (evt) => {
           if (evt.keyCode === 40) {
             // DOWN
             $(this).children(":focus").next().focus();
@@ -334,7 +329,7 @@ export function factory(RED) {
             // UP
             $(this).children(":focus").prev().focus();
           } else if (evt.keyCode === 27) {
-            that._hideMenu(menu);
+            this._hideMenu(menu);
           }
         })
 
@@ -348,7 +343,6 @@ export function factory(RED) {
           this.disarmClick = false;
           return
         }
-        var that = this;
         var pos = relativeTo.offset();
         var height = relativeTo.height();
         var menuHeight = menu.height();
@@ -361,14 +355,14 @@ export function factory(RED) {
           left: (2 + pos.left) + "px",
         });
         menu.slideDown(100);
-        this._delay(function () {
-          that.uiSelect.addClass('red-ui-typedInput-focus');
+        this._delay(() => {
+          this.uiSelect.addClass('red-ui-typedInput-focus');
           $(document).on("mousedown.close-property-select", function (event) {
             if (!$(event.target).closest(menu).length) {
-              that._hideMenu(menu);
+              this._hideMenu(menu);
             }
             if ($(event.target).closest(relativeTo).length) {
-              that.disarmClick = true;
+              this.disarmClick = true;
               event.preventDefault();
             }
           })
@@ -415,26 +409,25 @@ export function factory(RED) {
         this.menu.remove();
       },
       types: function (types) {
-        var that = this;
         var currentType = this.type();
         this.typeMap = {};
         console.log(types)
-        this.typeList = types.map(function (opt) {
+        this.typeList = types.map((opt) => {
           var result;
           if (typeof opt === 'string') {
             result = allOptions[opt];
           } else {
             result = opt;
           }
-          that.typeMap[result.value] = result;
+          this.typeMap[result.value] = result;
           return result;
         });
         this.selectTrigger.toggleClass("disabled", this.typeList.length === 1);
         if (this.menu) {
           this.menu.remove();
         }
-        this.menu = this._createMenu(this.typeList, function (v) {
-          that.type(v)
+        this.menu = this._createMenu(this.typeList, (v) => {
+          this.type(v)
         });
         if (currentType && !this.typeMap.hasOwnProperty(currentType)) {
           this.type(this.typeList[0].value);
@@ -463,7 +456,6 @@ export function factory(RED) {
         if (!arguments.length) {
           return this.propertyType;
         } else {
-          var that = this;
           var opt = this.typeMap[type];
           if (opt && this.propertyType !== type) {
             this.propertyType = type;
@@ -488,9 +480,9 @@ export function factory(RED) {
               if (this.optionSelectTrigger) {
                 this.optionSelectTrigger.show();
                 this.elementDiv.hide();
-                this.optionMenu = this._createMenu(opt.options, function (v) {
-                  that.optionSelectLabel.text(v);
-                  that.value(v);
+                this.optionMenu = this._createMenu(opt.options, (v) => {
+                  this.optionSelectLabel.text(v);
+                  this.value(v);
                 });
                 var currentVal = this.element.val();
                 if (opt.options.indexOf(currentVal) !== -1) {
@@ -523,7 +515,7 @@ export function factory(RED) {
                 this.optionExpandButton.off('click');
                 this.optionExpandButton.on('click', function (evt) {
                   evt.preventDefault();
-                  opt.expand.call(that);
+                  opt.expand.call(this);
                 })
               } else {
                 this.optionExpandButton.hide();
@@ -531,11 +523,11 @@ export function factory(RED) {
               this.element.trigger('change', this.propertyType, this.value());
             }
             if (image) {
-              image.onload = function () {
-                that._resize();
+              image.onload = () => {
+                this._resize();
               }
-              image.onerror = function () {
-                that._resize();
+              image.onerror = () => {
+                this._resize();
               }
             } else {
               this._resize();

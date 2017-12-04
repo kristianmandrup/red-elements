@@ -99,15 +99,14 @@ export class Menu {
       var link = $(linkContent).appendTo(item);
 
       menuItems[opt.id] = opt;
-      let that = this;
       if (opt.onselect) {
-        link.click(function (e) {
+        link.click((e) => {
           e.preventDefault();
           if ($(this).parent().hasClass("disabled")) {
             return;
           }
           if (opt.toggle) {
-            var selected = that.isSelected(opt.id);
+            var selected = this.isSelected(opt.id);
             if (typeof opt.toggle === "string") {
               if (!selected) {
                 for (var m in menuItems) {
@@ -118,13 +117,13 @@ export class Menu {
                     }
                   }
                 }
-                that.setSelected(opt.id, true);
+                this.setSelected(opt.id, true);
               }
             } else {
-              that.setSelected(opt.id, !selected);
+              this.setSelected(opt.id, !selected);
             }
           } else {
-            that.triggerAction(opt.id);
+            this.triggerAction(opt.id);
           }
         });
         if (opt.toggle) {

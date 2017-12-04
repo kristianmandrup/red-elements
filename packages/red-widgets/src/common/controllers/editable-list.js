@@ -56,8 +56,6 @@ function factory(RED) {
      */
     $.widget("nodered.editableList", {
       _create: function () {
-        var that = this;
-
         this.element.addClass('red-ui-editableList-list');
         this.uiWidth = this.element.width();
         this.uiContainer = this.element
@@ -90,18 +88,18 @@ function factory(RED) {
           }
           $('<a href="#" class="editor-button editor-button-small" style="margin-top: 4px;"><i class="fa fa-plus"></i> ' + addLabel + '</a>')
             .appendTo(this.topContainer)
-            .click(function (evt) {
+            .click((evt) => {
               evt.preventDefault();
-              that.addItem({});
+              this.addItem({});
             });
         }
         if (this.element.css("position") === "absolute") {
-          ["top", "left", "bottom", "right"].forEach(function (s) {
-            var v = that.element.css(s);
+          ["top", "left", "bottom", "right"].forEach((s) => {
+            var v = this.element.css(s);
             if (v !== "auto" && v !== "") {
-              that.topContainer.css(s, v);
-              that.uiContainer.css(s, "0");
-              that.element.css(s, 'auto');
+              this.topContainer.css(s, v);
+              this.uiContainer.css(s, "0");
+              this.element.css(s, 'auto');
             }
           })
           this.element.css("position", "static");
@@ -149,9 +147,9 @@ function factory(RED) {
             ".red-ui-editableList-item-handle";
           var sortOptions = {
             axis: "y",
-            update: function (event, ui) {
-              if (that.options.sortItems) {
-                that.options.sortItems(that.items());
+            update: (event, ui)=> {
+              if (this.options.sortItems) {
+                this.options.sortItems(this.items());
               }
             },
             handle: handle,
@@ -186,24 +184,22 @@ function factory(RED) {
           this.options.resize();
         }
         if (this.options.resizeItem) {
-          var that = this;
-          this.element.children().each(function (i) {
-            that.options.resizeItem($(this).find(".red-ui-editableList-item-content"), i);
+          this.element.children().each((i) => {
+            this.options.resizeItem($(this).find(".red-ui-editableList-item-content"), i);
           });
         }
       },
       _destroy: function () {},
       _refreshFilter: function () {
-        var that = this;
         var count = 0;
         if (!this.activeFilter) {
           return this.element.children().show();
         }
         var items = this.items();
-        items.each(function (i, el) {
+        items.each((i, el)=> {
           var data = el.data('data');
           try {
-            if (that.activeFilter(data)) {
+            if (this.activeFilter(data)) {
               el.parent().show();
               count++;
             } else {
@@ -220,12 +216,11 @@ function factory(RED) {
       _refreshSort: function () {
         if (this.activeSort) {
           var items = this.element.children();
-          var that = this;
-          items.sort(function (A, B) {
-            return that.activeSort($(A).find(".red-ui-editableList-item-content").data('data'), $(B).find(".red-ui-editableList-item-content").data('data'));
+          items.sort((A, B) => {
+            return this.activeSort($(A).find(".red-ui-editableList-item-content").data('data'), $(B).find(".red-ui-editableList-item-content").data('data'));
           });
-          $.each(items, function (idx, li) {
-            that.element.append(li);
+          $.each(items, (idx, li) => {
+            this.element.append(li);
           })
         }
       },
@@ -238,19 +233,18 @@ function factory(RED) {
         this._resize();
       },
       addItem: function (data) {
-        var that = this;
         data = data || {};
         var li = $('<li>');
         var added = false;
         if (this.activeSort) {
           var items = this.items();
           var skip = false;
-          items.each(function (i, el) {
+          items.each((i, el) => {
             if (added) {
               return
             }
             var itemData = el.data('data');
-            if (that.activeSort(data, itemData) < 0) {
+            if (this.activeSort(data, itemData) < 0) {
               li.insertBefore(el.closest("li"));
               added = true;
             }
@@ -274,33 +268,33 @@ function factory(RED) {
             class: "fa fa-remove"
           }).appendTo(deleteButton);
           li.addClass("red-ui-editableList-item-removable");
-          deleteButton.click(function (evt) {
+          deleteButton.click((evt) => {
             evt.preventDefault();
             var data = row.data('data');
             li.addClass("red-ui-editableList-item-deleting")
-            li.fadeOut(300, function () {
+            li.fadeOut(300, ()=> {
               $(this).remove();
-              if (that.options.removeItem) {
-                that.options.removeItem(data);
+              if (this.options.removeItem) {
+                this.options.removeItem(data);
               }
             });
           });
         }
         if (this.options.addItem) {
-          var index = that.element.children().length - 1;
-          setTimeout(function () {
-            that.options.addItem(row, index, data);
-            if (that.activeFilter) {
+          var index = this.element.children().length - 1;
+          setTimeout(() => {
+            this.options.addItem(row, index, data);
+            if (this.activeFilter) {
               try {
-                if (!that.activeFilter(data)) {
+                if (!this.activeFilter(data)) {
                   li.hide();
                 }
               } catch (err) {}
             }
 
-            if (!that.activeSort && that.scrollOnAdd) {
-              setTimeout(function () {
-                that.uiContainer.scrollTop(that.element.height());
+            if (!this.activeSort && this.scrollOnAdd) {
+              setTimeout(() => {
+                this.uiContainer.scrollTop(this.element.height());
               }, 0);
             }
           }, 0);

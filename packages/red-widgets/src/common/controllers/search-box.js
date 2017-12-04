@@ -61,7 +61,6 @@ function factory(RED) {
         });
 
         this.element.bind("focus", function () {
-          console.log("CALLED");
           $("body").on("mousedown", function () {
             that.element.blur();
           });
@@ -81,10 +80,9 @@ function factory(RED) {
         if (fireEvent) {
           if (!instant && this.options.delay > 0) {
             clearTimeout(this.currentTimeout);
-            var that = this;
-            this.currentTimeout = setTimeout(function () {
-              that.lastSent = that.element.val();
-              that._trigger("change");
+            this.currentTimeout = setTimeout( () => {
+              this.lastSent = this.element.val();
+              this._trigger("change");
             }, this.options.delay);
           } else {
             this._trigger("change");
