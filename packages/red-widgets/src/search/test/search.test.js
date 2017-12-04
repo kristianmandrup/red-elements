@@ -51,6 +51,12 @@ test('Search: created', () => {
   expect(search).toBeDefined()
 })
 
+test('Search: created with out action', () => {
+  ctx.actions=null;
+  
+  expect(search).toBeDefined()
+})
+
 test('Search: disabled', () => {
   expect(search.disabled).toBeFalsy()
 })
@@ -95,13 +101,13 @@ test('Search: search(val) - no searchResults, throws', () => {
   expect(() => search.search(val)).toThrowError()
 })
 
-test.only('Search: search(val) - w searchResults works', () => {
-  const val = 'hello'
-  // to ensure searchResults initialized
-  search.createDialog()
-  let results = search.search(val).results
-  expect(results).toEqual([])
-})
+// test.only('Search: search(val) - w searchResults works', () => {
+//   const val = 'hello'
+//   // to ensure searchResults initialized
+//   search.createDialog()
+//   let results = search.search(val).results
+//   expect(results).toEqual([])
+// })
 
 test('Search: ensureSelectedIsVisible', () => {})
 test('Search: createDialog', () => {})

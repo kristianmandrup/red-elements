@@ -4,6 +4,7 @@ import {
 import {
   default as $
 } from 'jquery'
+import { config } from 'bottlejs';
 const {
   log
 } = console
@@ -75,10 +76,6 @@ export class TypeSearch extends Context {
 
     // debugging
     let mainContainer = $('#main-container')
-    log({
-      body: document.body.innerHTML,
-      mainContainer
-    })
 
     //shade = $('<div>',{class:"red-ui-type-search-shade"}).appendTo("#main-container");
     dialog = $("<div>", {
@@ -86,24 +83,16 @@ export class TypeSearch extends Context {
       class: "red-ui-search red-ui-type-search"
     }).appendTo(mainContainer);
 
-    log({
-      dialog
-    })
-
+    
     const searchDiv = $("<div>", {
       class: "red-ui-search-container"
     }).appendTo(dialog);
 
-    log({
-      searchDiv
-    })
 
     const caption = RED._("search.addNode")
     const inputWPlaceholder = $('<input type="text">').attr("placeholder", caption)
     let fullSearchDiv = inputWPlaceholder.appendTo(searchDiv)
-    log({
-      fullSearchDiv
-    })
+
     // requires jQuery widget 'searchBox' is registered
     const searchInput = fullSearchDiv.searchBox({
       delay: 50,
@@ -113,6 +102,7 @@ export class TypeSearch extends Context {
     });
     searchInput.on('keydown', (evt) => {
       const children = searchResults.children(":visible");
+      // console.log(searchResults.children());
       if (children.length > 0) {
         if (evt.keyCode === 40) {
           // Down
@@ -231,7 +221,7 @@ export class TypeSearch extends Context {
       hide,
       addCallback
     } = this
-    hide = hide.bind(this)
+    hide = this.hide.bind(this)
     hide();
     typesUsed[def.type] = Date.now();
     addCallback(def.type);
@@ -249,7 +239,7 @@ export class TypeSearch extends Context {
         }
         t = t.parent();
       }
-      hide(true);
+      this.hide(true);
     }
   }
 
@@ -266,7 +256,7 @@ export class TypeSearch extends Context {
     createDialog = createDialog.bind(this)
     if (!visible) {
       RED.keyboard.add("*", "escape", () => {
-        hide()
+        this.hide()
       });
       if (dialog === null) {
         createDialog();
@@ -281,7 +271,7 @@ export class TypeSearch extends Context {
       dialog.hide();
       searchResultsDiv.hide();
     }
-    refreshTypeList();
+    this.refreshTypeList();
     addCallback = opts.add;
     RED.events.emit("type-search:open");
     //shade.show();
@@ -307,9 +297,9 @@ export class TypeSearch extends Context {
     if (visible) {
       RED.keyboard.remove("escape");
       visible = false;
-      if (dialog !== null) {
+      if (this.dialog !== null) {
         searchResultsDiv.slideUp(fast ? 50 : 200, () => {
-          dialog.hide();
+          this.dialog.hide();
           searchInput.searchBox('value', '');
         });
         //shade.hide();
@@ -353,9 +343,9 @@ export class TypeSearch extends Context {
       'inject', 'debug', '', 'change', 'switch'
     ];
 
-    var recentlyUsed = Object.keys(typesUsed);
+    var recentlyUsed = Object.keys(this.typesUsed);
     recentlyUsed.sort((a, b) => {
-      return typesUsed[b] - typesUsed[a];
+      return this.typesUsed[b] - this.typesUsed[a];
     });
     recentlyUsed = recentlyUsed.filter((t) => {
       return common.indexOf(t) === -1;
@@ -368,7 +358,7 @@ export class TypeSearch extends Context {
         items.push({
           type: t,
           def: def,
-          label: getTypeLabel(t, def)
+          label: this.getTypeLabel(t, def)
         });
       }
     });
@@ -394,7 +384,7 @@ export class TypeSearch extends Context {
           common: true,
           def: itemDef
         };
-        item.label = getTypeLabel(item.type, item.def);
+        item.label = this.getTypeLabel(item.type, item.def);
         if (i === common.length - 1) {
           item.separator = true;
         }
