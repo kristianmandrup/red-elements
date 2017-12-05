@@ -16,12 +16,16 @@
 import {
   default as $
 } from 'jquery'
-import { bottle } from "../../setup/setup";
+import { IRED, TYPES, container } from "../../setup/setup";
+import getDecorators from "inversify-inject-decorators";
+import { Container, injectable, tagged, named } from "inversify";
+let { lazyInject } = getDecorators(container);
 export class Menu {
-  constructor(options, RED) {
+  menuItems: any;
+  @lazyInject(TYPES.RED) RED: IRED;
+  constructor(options) {
     this.menuItems = {};
     var menuParent = $("#" + options.id);
-    this.RED = RED;
     var topMenu = $("<ul/>", {
       id: options.id + "-submenu",
       class: "dropdown-menu pull-right"
@@ -113,7 +117,7 @@ export class Menu {
                   if (menuItems.hasOwnProperty(m)) {
                     var mi = menuItems[m];
                     if (mi.id != opt.id && opt.toggle == mi.toggle) {
-                      setSelected(mi.id, false);
+                      this.setSelected(mi.id, false);
                     }
                   }
                 }
@@ -186,7 +190,7 @@ export class Menu {
     }
   }
 
-  triggerAction(id, args) {
+  triggerAction(id, args?) {
     var opt = this.menuItems[id];
     var callback = opt.onselect;
     if (typeof opt.onselect === 'string') {

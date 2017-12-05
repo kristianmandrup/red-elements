@@ -19,12 +19,15 @@
     "d3": "^4.10.2",
     "font-awesome": "^4.7.0",
     "i18next": "^9.0.1",
+    "inversify": "^4.5.2",
+    "inversify-inject-decorators": "^3.0.2",
     "jquery": "^3.2.1",
     "jquery-ui-dist": "^1.12.1",
     "jsonata": "^1.3.1",
     "marked": "^0.3.6",
     "normalize.css": "^7.0.0",
-    "promise-polyfill": "^6.0.2"
+    "promise-polyfill": "^6.0.2",
+    "reflect-metadata": "^0.1.10"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
