@@ -54,8 +54,8 @@ export default (function () {
 
   function makeExpandable(el, onbuild, ontoggle, expand) {
     el.addClass("debug-message-expandable");
-    el.prop('toggle', function () {
-      return function (state) {
+    el.prop('toggle', () => {
+      return (state) => {
         var parent = el.parent();
         if (parent.hasClass('collapsed')) {
           if (state) {
@@ -75,7 +75,7 @@ export default (function () {
         return false;
       }
     });
-    el.click(function (e) {
+    el.click((e) => {
       var parent = $(this).parent();
       var currentState = !parent.hasClass('collapsed');
       if ($(this).prop('toggle')(!currentState)) {
@@ -273,7 +273,7 @@ export default (function () {
                 if (res !== undefined) {
                   expandPaths.push(pinnedPath);
                 }
-              } catch (err) {}
+              } catch (err) { }
             }
           }
           expandPaths.sort();
@@ -385,92 +385,92 @@ export default (function () {
       if (originalLength > 0) {
 
         makeExpandable(header, function () {
-            if (!key) {
-              headerHead = $('<span class="debug-message-type-meta debug-message-object-type-header"></span>').html(typeHint || (type + '[' + originalLength + ']')).appendTo(header);
+          if (!key) {
+            headerHead = $('<span class="debug-message-type-meta debug-message-object-type-header"></span>').html(typeHint || (type + '[' + originalLength + ']')).appendTo(header);
+          }
+          if (type === 'buffer') {
+            var stringRow = $('<div class="debug-message-string-rows"></div>').appendTo(element);
+            var sr = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(stringRow);
+            var stringEncoding = "";
+            try {
+              stringEncoding = String.fromCharCode.apply(null, new Uint16Array(data))
+            } catch (err) {
+              console.log(err);
             }
-            if (type === 'buffer') {
-              var stringRow = $('<div class="debug-message-string-rows"></div>').appendTo(element);
-              var sr = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(stringRow);
-              var stringEncoding = "";
-              try {
-                stringEncoding = String.fromCharCode.apply(null, new Uint16Array(data))
-              } catch (err) {
-                console.log(err);
-              }
-              $('<pre class="debug-message-type-string"></pre>').text(stringEncoding).appendTo(sr);
-              var bufferOpts = $('<span class="debug-message-buffer-opts"></span>').appendTo(headerHead);
-              var switchFormat = $('<a href="#"></a>').addClass('selected').html('raw').appendTo(bufferOpts).click(function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                formatBuffer(element, $(this), sourceId, path, true);
-              });
-              formatBuffer(element, switchFormat, sourceId, path, false);
+            $('<pre class="debug-message-type-string"></pre>').text(stringEncoding).appendTo(sr);
+            var bufferOpts = $('<span class="debug-message-buffer-opts"></span>').appendTo(headerHead);
+            var switchFormat = $('<a href="#"></a>').addClass('selected').html('raw').appendTo(bufferOpts).click(function (e) {
+              e.preventDefault();
+              e.stopPropagation();
+              formatBuffer(element, $(this), sourceId, path, true);
+            });
+            formatBuffer(element, switchFormat, sourceId, path, false);
 
+          }
+          var row;
+          if (fullLength <= 10) {
+            for (i = 0; i < fullLength; i++) {
+              row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(arrayRows);
+              subElements[path + "[" + i + "]"] = buildMessageElement(
+                data[i], {
+                  key: "" + i,
+                  typeHint: type === 'buffer' ? 'hex' : false,
+                  hideKey: false,
+                  path: path + "[" + i + "]",
+                  sourceId: sourceId,
+                  rootPath: rootPath,
+                  expandPaths: expandPaths,
+                  ontoggle: ontoggle,
+                  exposeApi: exposeApi
+                }
+              ).appendTo(row);
             }
-            var row;
-            if (fullLength <= 10) {
-              for (i = 0; i < fullLength; i++) {
-                row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(arrayRows);
-                subElements[path + "[" + i + "]"] = buildMessageElement(
-                  data[i], {
-                    key: "" + i,
-                    typeHint: type === 'buffer' ? 'hex' : false,
-                    hideKey: false,
-                    path: path + "[" + i + "]",
-                    sourceId: sourceId,
-                    rootPath: rootPath,
-                    expandPaths: expandPaths,
-                    ontoggle: ontoggle,
-                    exposeApi: exposeApi
+          } else {
+            for (i = 0; i < fullLength; i += 10) {
+              var minRange = i;
+              row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(arrayRows);
+              header = $('<span></span>').appendTo(row);
+              $('<i class="fa fa-caret-right debug-message-object-handle"></i> ').appendTo(header);
+              makeExpandable(header, (function () {
+                var min = minRange;
+                var max = Math.min(fullLength - 1, (minRange + 9));
+                var parent = row;
+                return function () {
+                  for (var i = min; i <= max; i++) {
+                    var row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(parent);
+                    subElements[path + "[" + i + "]"] = buildMessageElement(
+                      data[i], {
+                        key: "" + i,
+                        typeHint: type === 'buffer' ? 'hex' : false,
+                        hideKey: false,
+                        path: path + "[" + i + "]",
+                        sourceId: sourceId,
+                        rootPath: rootPath,
+                        expandPaths: expandPaths,
+                        ontoggle: ontoggle,
+                        exposeApi: exposeApi
+
+                      }
+                    ).appendTo(row);
                   }
-                ).appendTo(row);
-              }
-            } else {
-              for (i = 0; i < fullLength; i += 10) {
-                var minRange = i;
-                row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(arrayRows);
-                header = $('<span></span>').appendTo(row);
-                $('<i class="fa fa-caret-right debug-message-object-handle"></i> ').appendTo(header);
-                makeExpandable(header, (function () {
-                    var min = minRange;
-                    var max = Math.min(fullLength - 1, (minRange + 9));
-                    var parent = row;
-                    return function () {
-                      for (var i = min; i <= max; i++) {
-                        var row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(parent);
-                        subElements[path + "[" + i + "]"] = buildMessageElement(
-                          data[i], {
-                            key: "" + i,
-                            typeHint: type === 'buffer' ? 'hex' : false,
-                            hideKey: false,
-                            path: path + "[" + i + "]",
-                            sourceId: sourceId,
-                            rootPath: rootPath,
-                            expandPaths: expandPaths,
-                            ontoggle: ontoggle,
-                            exposeApi: exposeApi
-
-                          }
-                        ).appendTo(row);
-                      }
+                }
+              })(),
+                (function () {
+                  var path = path + "[" + i + "]";
+                  return function (state) {
+                    if (ontoggle) {
+                      ontoggle(path, state);
                     }
-                  })(),
-                  (function () {
-                    var path = path + "[" + i + "]";
-                    return function (state) {
-                      if (ontoggle) {
-                        ontoggle(path, state);
-                      }
-                    }
-                  })(),
-                  checkExpanded(strippedKey, expandPaths, minRange, Math.min(fullLength - 1, (minRange + 9))));
-                $('<span class="debug-message-object-key"></span>').html("[" + minRange + " &hellip; " + Math.min(fullLength - 1, (minRange + 9)) + "]").appendTo(header);
-              }
-              if (fullLength < originalLength) {
-                $('<div class="debug-message-object-entry collapsed"><span class="debug-message-object-key">[' + fullLength + ' &hellip; ' + originalLength + ']</span></div>').appendTo(arrayRows);
-              }
+                  }
+                })(),
+                checkExpanded(strippedKey, expandPaths, minRange, Math.min(fullLength - 1, (minRange + 9))));
+              $('<span class="debug-message-object-key"></span>').html("[" + minRange + " &hellip; " + Math.min(fullLength - 1, (minRange + 9)) + "]").appendTo(header);
             }
-          },
+            if (fullLength < originalLength) {
+              $('<div class="debug-message-object-entry collapsed"><span class="debug-message-object-key">[' + fullLength + ' &hellip; ' + originalLength + ']</span></div>').appendTo(arrayRows);
+            }
+          }
+        },
           function (state) {
             if (ontoggle) {
               ontoggle(path, state);
@@ -484,38 +484,38 @@ export default (function () {
       if (key || keys.length > 0) {
         $('<i class="fa fa-caret-right debug-message-object-handle"></i> ').prependTo(header);
         makeExpandable(header, function () {
-            if (!key) {
-              $('<span class="debug-message-type-meta debug-message-object-type-header"></span>').html('object').appendTo(header);
-            }
-            for (i = 0; i < keys.length; i++) {
-              var row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(element);
-              var newPath = path;
-              if (newPath) {
-                if (/^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(keys[i])) {
-                  newPath += (newPath.length > 0 ? "." : "") + keys[i];
-                } else {
-                  newPath += "[\"" + keys[i].replace(/"/, "\\\"") + "\"]"
-                }
+          if (!key) {
+            $('<span class="debug-message-type-meta debug-message-object-type-header"></span>').html('object').appendTo(header);
+          }
+          for (i = 0; i < keys.length; i++) {
+            var row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(element);
+            var newPath = path;
+            if (newPath) {
+              if (/^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(keys[i])) {
+                newPath += (newPath.length > 0 ? "." : "") + keys[i];
+              } else {
+                newPath += "[\"" + keys[i].replace(/"/, "\\\"") + "\"]"
               }
-              subElements[newPath] = buildMessageElement(
-                obj[keys[i]], {
-                  key: keys[i],
-                  typeHint: false,
-                  hideKey: false,
-                  path: newPath,
-                  sourceId: sourceId,
-                  rootPath: rootPath,
-                  expandPaths: expandPaths,
-                  ontoggle: ontoggle,
-                  exposeApi: exposeApi
+            }
+            subElements[newPath] = buildMessageElement(
+              obj[keys[i]], {
+                key: keys[i],
+                typeHint: false,
+                hideKey: false,
+                path: newPath,
+                sourceId: sourceId,
+                rootPath: rootPath,
+                expandPaths: expandPaths,
+                ontoggle: ontoggle,
+                exposeApi: exposeApi
 
-                }
-              ).appendTo(row);
-            }
-            if (keys.length === 0) {
-              $('<div class="debug-message-object-entry debug-message-type-meta collapsed"></div>').text("empty").appendTo(element);
-            }
-          },
+              }
+            ).appendTo(row);
+          }
+          if (keys.length === 0) {
+            $('<div class="debug-message-object-entry debug-message-type-meta collapsed"></div>').text("empty").appendTo(element);
+          }
+        },
           function (state) {
             if (ontoggle) {
               ontoggle(path, state);

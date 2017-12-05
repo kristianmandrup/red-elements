@@ -43,10 +43,10 @@ export class Search extends Context {
       enable,
       disable
     } = this.rebind([
-      'show',
-      'enable',
-      'disable'
-    ])
+        'show',
+        'enable',
+        'disable'
+      ])
 
     required.map(name => {
       if (!ctx[name]) {
@@ -253,13 +253,13 @@ export class Search extends Context {
     const searchInputElem = $('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv)
     searchInput = searchInputElem.searchBox({
       delay: 200,
-      change: function () {
+      change: ()=> {
         search($(this).val());
       },
       // Fix: trying to add i18n support (better to do directly on widget)
-      // i18n: function () {
-      //   console.log('i18n not implemented')
-      // }
+      i18n: ()=> {
+        // console.log('i18n not implemented')
+      }
     });
 
     searchInput.on('keydown', (evt) => {
@@ -275,7 +275,7 @@ export class Search extends Context {
             selected++;
           }
           $(children[selected]).addClass('selected');
-          ensureSelectedIsVisible();
+          this.ensureSelectedIsVisible();
           evt.preventDefault();
         } else if (evt.keyCode === 38) {
           // Up
@@ -287,7 +287,7 @@ export class Search extends Context {
             selected--;
           }
           $(children[selected]).addClass('selected');
-          ensureSelectedIsVisible();
+          this.ensureSelectedIsVisible();
           evt.preventDefault();
         } else if (evt.keyCode === 13) {
           // Enter
@@ -297,14 +297,13 @@ export class Search extends Context {
         }
       }
     });
-
     if (!searchInput.i18n) {
       this.handleError('searchInput (searchBox widget) missing i18n function', {
         searchInput
       })
     }
 
-    // let i18n = new I18n(RED)
+    let i18n = new I18n(RED)
     searchInput.i18n();
 
     var searchResultsDiv = $("<div>", {
@@ -403,9 +402,9 @@ export class Search extends Context {
       $("#palette-shade").show();
       $("#sidebar-shade").show();
       $("#sidebar-separator").hide();
-      indexWorkspace();
-      if (dialog === null) {
-        createDialog();
+      this.indexWorkspace();
+      if (this.dialog === null) {
+        this.createDialog();
       }
       this.dialog.slideDown(300);
       this.ctx.events.emit("search:open");

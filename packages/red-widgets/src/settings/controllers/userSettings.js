@@ -45,9 +45,9 @@ export class UserSettings extends Context {
       show,
       createViewPane
     } = this.rebind([
-      'show',
-      'createViewPane'
-    ])
+        'show',
+        'createViewPane'
+      ])
 
     var trayWidth = 700;
     var settingsVisible = false;
@@ -125,52 +125,52 @@ export class UserSettings extends Context {
       RED
     } = this
     return [{
-        title: "menu.label.view.grid",
-        options: [{
-            setting: "view-show-grid",
-            oldSetting: "menu-menu-item-view-show-grid",
-            label: "menu.label.view.showGrid",
-            toggle: true,
-            onchange: "core:toggle-show-grid"
-          },
-          {
-            setting: "view-snap-grid",
-            oldSetting: "menu-menu-item-view-snap-grid",
-            label: "menu.label.view.snapGrid",
-            toggle: true,
-            onchange: "core:toggle-snap-grid"
-          },
-          {
-            setting: "view-grid-size",
-            label: "menu.label.view.gridSize",
-            type: "number",
-            default: 20,
-            onchange: RED.view.gridSize
-          }
-        ]
+      title: "menu.label.view.grid",
+      options: [{
+        setting: "view-show-grid",
+        oldSetting: "menu-menu-item-view-show-grid",
+        label: "menu.label.view.showGrid",
+        toggle: true,
+        onchange: "core:toggle-show-grid"
       },
       {
-        title: "menu.label.nodes",
-        options: [{
-          setting: "view-node-status",
-          oldSetting: "menu-menu-item-status",
-          label: "menu.label.displayStatus",
-          default: true,
-          toggle: true,
-          onchange: "core:toggle-status"
-        }]
+        setting: "view-snap-grid",
+        oldSetting: "menu-menu-item-view-snap-grid",
+        label: "menu.label.view.snapGrid",
+        toggle: true,
+        onchange: "core:toggle-snap-grid"
       },
       {
-        title: "menu.label.other",
-        options: [{
-          setting: "view-show-tips",
-          oldSettings: "menu-menu-item-show-tips",
-          label: "menu.label.showTips",
-          toggle: true,
-          default: true,
-          onchange: "core:toggle-show-tips"
-        }]
+        setting: "view-grid-size",
+        label: "menu.label.view.gridSize",
+        type: "number",
+        default: 20,
+        onchange: RED.view.gridSize
       }
+      ]
+    },
+    {
+      title: "menu.label.nodes",
+      options: [{
+        setting: "view-node-status",
+        oldSetting: "menu-menu-item-status",
+        label: "menu.label.displayStatus",
+        default: true,
+        toggle: true,
+        onchange: "core:toggle-status"
+      }]
+    },
+    {
+      title: "menu.label.other",
+      options: [{
+        setting: "view-show-tips",
+        oldSettings: "menu-menu-item-show-tips",
+        label: "menu.label.showTips",
+        toggle: true,
+        default: true,
+        onchange: "core:toggle-show-tips"
+      }]
+    }
     ];
   }
 
@@ -253,7 +253,7 @@ export class UserSettings extends Context {
         $("#sidebar-shade").hide();
 
       },
-      show: () => {}
+      show: () => { }
     }
     if (trayWidth !== null) {
       trayOptions.width = trayWidth;

@@ -40,7 +40,7 @@ export class Validators extends Context {
 
   typedInput(ptypeName, isConfig) {
     const ctx = this.ctx;
-    return function (v) {
+    return (v) => {
       var ptype = $('#node-' + (isConfig ? 'config-' : '') + 'input-' + ptypeName).val() || this[ptypeName];
       if (ptype === 'json') {
         try {

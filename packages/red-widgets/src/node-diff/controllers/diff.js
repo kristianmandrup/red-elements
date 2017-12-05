@@ -13,8 +13,8 @@ export class Diff extends Context {
     let {
       showRemoteDiff
     } = this.rebind([
-      'showRemoteDiff'
-    ])
+        'showRemoteDiff'
+      ])
     // var diffList;
     // RED.actions.add("core:show-current-diff",showLocalDiff);
     RED.actions.add("core:show-remote-diff", showRemoteDiff);
@@ -181,7 +181,7 @@ export class Diff extends Context {
               $(this).parent().toggleClass('collapsed');
             });
 
-            createNodePropertiesTable(def, tab, localTabNode, remoteTabNode, conflicts).appendTo(div);
+            this.createNodePropertiesTable(def, tab, localTabNode, remoteTabNode, conflicts).appendTo(div);
             selectState = "";
             if (conflicts[tab.id]) {
               flowStats.conflicts++;
@@ -197,7 +197,7 @@ export class Diff extends Context {
               selectState = currentDiff.resolutions[tab.id];
             }
             // Tab properties row
-            createNodeConflictRadioBoxes(tab, div, localNodeDiv, remoteNodeDiv, true, !conflicts[tab.id], selectState);
+            this.createNodeConflictRadioBoxes(tab, div, localNodeDiv, remoteNodeDiv, true, !conflicts[tab.id], selectState);
           }
         }
         // var stats = $('<span>',{class:"node-diff-tab-stats"}).appendTo(titleRow);
@@ -326,7 +326,7 @@ export class Diff extends Context {
           if (tab.id) {
             var hide = !(flowStats.conflicts > 0 && (localDiff.deleted[tab.id] || remoteDiff.deleted[tab.id]));
             // Tab parent row
-            createNodeConflictRadioBoxes(tab, titleRow, localCell, remoteCell, false, hide, selectState);
+            this.createNodeConflictRadioBoxes(tab, titleRow, localCell, remoteCell, false, hide, selectState);
           }
         }
 
@@ -420,7 +420,6 @@ export class Diff extends Context {
       RED,
       createNode
     } = this
-
     createNode = createNode.bind(this)
 
     var localDiff = currentDiff.localDiff || {};
@@ -634,7 +633,7 @@ export class Diff extends Context {
         diff: remoteDiff
       }
     }
-    createNodePropertiesTable(def, node, localNode, remoteNode).appendTo(div);
+    this.createNodePropertiesTable(def, node, localNode, remoteNode).appendTo(div);
 
     var selectState = "";
 
@@ -651,7 +650,7 @@ export class Diff extends Context {
       selectState = currentDiff.resolutions[node.id];
     }
     // Node row
-    createNodeConflictRadioBoxes(node, div, localNodeDiv, remoteNodeDiv, false, !conflicted, selectState);
+    this.createNodeConflictRadioBoxes(node, div, localNodeDiv, remoteNodeDiv, false, !conflicted, selectState);
     row.click((evt) => {
       $(this).parent().toggleClass('collapsed');
     });
@@ -752,14 +751,14 @@ export class Diff extends Context {
           x: localNode.x,
           y: localNode.y
         }, {
-          path: "position",
-          exposeApi: true,
-          ontoggle: (path, state) => {
-            if (propertyElements['remote.' + path]) {
-              propertyElements['remote.' + path].prop('expand')(path, state)
+            path: "position",
+            exposeApi: true,
+            ontoggle: (path, state) => {
+              if (propertyElements['remote.' + path]) {
+                propertyElements['remote.' + path].prop('expand')(path, state)
+              }
             }
-          }
-        }).appendTo(element);
+          }).appendTo(element);
       } else {
         localCell.addClass("node-diff-empty");
       }
@@ -776,14 +775,14 @@ export class Diff extends Context {
             x: remoteNode.x,
             y: remoteNode.y
           }, {
-            path: "position",
-            exposeApi: true,
-            ontoggle: (path, state) => {
-              if (propertyElements['local.' + path]) {
-                propertyElements['local.' + path].prop('expand')(path, state);
+              path: "position",
+              exposeApi: true,
+              ontoggle: (path, state) => {
+                if (propertyElements['local.' + path]) {
+                  propertyElements['local.' + path].prop('expand')(path, state);
+                }
               }
-            }
-          }).appendTo(element);
+            }).appendTo(element);
         } else {
           remoteCell.addClass("node-diff-empty");
         }
@@ -1074,9 +1073,9 @@ export class Diff extends Context {
   // }
   showRemoteDiff(diff) {
     if (diff === undefined) {
-      getRemoteDiff(showRemoteDiff);
+      this.getRemoteDiff(showRemoteDiff);
     } else {
-      showDiff(diff);
+      this.showDiff(diff);
     }
   }
 
@@ -1125,8 +1124,8 @@ export class Diff extends Context {
   }
 
   generateDiff(currentNodes, newNodes) {
-    var currentConfig = parseNodes(currentNodes);
-    var newConfig = parseNodes(newNodes);
+    var currentConfig = this.parseNodes(currentNodes);
+    var newConfig = this.parseNodes(newNodes);
     var added = {};
     var deleted = {};
     var changed = {};
@@ -1223,36 +1222,36 @@ export class Diff extends Context {
   }
 
   showDiff(diff) {
-    if (diffVisible) {
+    if (this.diffVisible) {
       return;
     }
 
     var localDiff = diff.localDiff;
     var remoteDiff = diff.remoteDiff;
     var conflicts = diff.conflicts;
-    currentDiff = diff;
+    this.currentDiff = diff;
 
     var trayOptions = {
       title: "Review Changes", //TODO: nls
       width: Infinity,
       buttons: [{
-          text: RED._("common.label.cancel"),
-          click: () => {
-            RED.tray.close();
-          }
-        },
-        {
-          id: "node-diff-view-diff-merge",
-          text: RED._("deploy.confirm.button.merge"),
-          class: "primary disabled",
-          click: () => {
-            if (!$("#node-diff-view-diff-merge").hasClass('disabled')) {
-              refreshConflictHeader();
-              mergeDiff(currentDiff);
-              RED.tray.close();
-            }
+        text: this.RED._("common.label.cancel"),
+        click: () => {
+          this.RED.tray.close();
+        }
+      },
+      {
+        id: "node-diff-view-diff-merge",
+        text: this.RED._("deploy.confirm.button.merge"),
+        class: "primary disabled",
+        click: () => {
+          if (!$("#node-diff-view-diff-merge").hasClass('disabled')) {
+            refreshConflictHeader();
+            mergeDiff(currentDiff);
+            this.RED.tray.close();
           }
         }
+      }
       ],
       resize: (dimensions) => {
         // trayWidth = dimensions.width;
@@ -1270,7 +1269,7 @@ export class Diff extends Context {
         } else {
           $("#node-diff-view-diff-merge").hide();
         }
-        refreshConflictHeader();
+        this.refreshConflictHeader();
 
         $("#node-dialog-view-diff-headers").empty();
         // console.log("--------------");
@@ -1436,7 +1435,7 @@ export class Diff extends Context {
 
       }
     }
-    RED.tray.show(trayOptions);
+    this.RED.tray.show(trayOptions);
   }
 
   mergeDiff(diff) {
@@ -1462,7 +1461,7 @@ export class Diff extends Context {
     var localChangedStates = {};
     for (id in localDiff.newConfig.all) {
       if (localDiff.newConfig.all.hasOwnProperty(id)) {
-        node = RED.nodes.node(id);
+        node = this.RED.nodes.node(id);
         if (resolutions[id] === 'local') {
           if (node) {
             nodeChangedStates[id] = node.changed;
@@ -1495,27 +1494,27 @@ export class Diff extends Context {
     }
     var historyEvent = {
       t: "replace",
-      config: RED.nodes.createCompleteNodeSet(),
+      config: this.RED.nodes.createCompleteNodeSet(),
       changed: nodeChangedStates,
-      dirty: RED.nodes.dirty(),
-      rev: RED.nodes.version()
+      dirty: this.RED.nodes.dirty(),
+      rev: this.RED.nodes.version()
     }
 
-    RED.history.push(historyEvent);
+    this.RED.history.push(historyEvent);
 
-    RED.nodes.clear();
-    var imported = RED.nodes.import(newConfig);
+    this.RED.nodes.clear();
+    var imported = this.RED.nodes.import(newConfig);
     imported[0].forEach((n) => {
       if (nodeChangedStates[n.id] || localChangedStates[n.id]) {
         n.changed = true;
       }
     })
 
-    RED.nodes.version(remoteDiff.rev);
+    this.RED.nodes.version(remoteDiff.rev);
 
-    RED.view.redraw(true);
-    RED.palette.refresh();
-    RED.workspaces.refresh();
-    RED.sidebar.config.refresh();
+    this.RED.view.redraw(true);
+    this.RED.palette.refresh();
+    this.RED.workspaces.refresh();
+    this.RED.sidebar.config.refresh();
   }
 }

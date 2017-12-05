@@ -11,28 +11,43 @@ function create(ctx) {
 }
 
 let events = {
-  on() {}
+  on() { },
+  emit(id) { }
 }
 let actions = {
-  add() {}
+  add() { }
+}
+let view = {
+  reveal(id) { }
 }
 let utils = {
-  getNodeLabel() {
-    return 'my-label'
+  getNodeLabel(n) {
+    if (n.label === 'abc') {
+      return 'my-label'
+    }
+    else if (n.label === '') {
+      return null;
+    }
   }
 }
 let nodes = {
-  eachWorkspace() {},
-  eachSubflow() {},
-  eachConfig() {},
-  eachNode() {}
+  eachWorkspace() { },
+  eachSubflow() { },
+  eachConfig() { },
+  eachNode() { }
+}
+let keyboard = {
+  add(char, escape, func) { },
+  remove(escape) { }
 }
 
 const ctx = Object.assign({
   events,
   actions,
   utils,
-  nodes
+  nodes,
+  view,
+  keyboard
 }, baseCtx)
 
 let search
@@ -43,17 +58,10 @@ beforeEach(() => {
 beforeAll(() => {
   Searchbox(RED)
   // EditableList(RED)
-
-  document.documentElement.innerHTML = readPage('simple')
+  document.documentElement.innerHTML = readPage('search', __dirname);
 })
 
 test('Search: created', () => {
-  expect(search).toBeDefined()
-})
-
-test('Search: created with out action', () => {
-  ctx.actions=null;
-  
   expect(search).toBeDefined()
 })
 
@@ -109,8 +117,104 @@ test('Search: search(val) - no searchResults, throws', () => {
 //   expect(results).toEqual([])
 // })
 
-test('Search: ensureSelectedIsVisible', () => {})
-test('Search: createDialog', () => {})
-test('Search: reveal', () => {})
-test('Search: show', () => {})
-test('Search: hide', () => {})
+test('Search: ensureSelectedIsVisible', () => {
+  search.searchResults = $('#searchResult1');
+  search.ensureSelectedIsVisible();
+  expect(typeof search.ensureSelectedIsVisible).toBe('function');
+})
+
+// test('Search: createDialog', () => {
+//   search.searchResults = $('#searchResult1');
+//   search.createDialog();
+//   console.log("SEACH",search.searchInput.change);
+//   expect(typeof search.createDialog).toBe('function');
+// })
+
+test('Search: reveal', () => {
+  search.reveal({ id: 102 });
+})
+test('Search: hide', () => {
+  search.dialog = null;
+  search.hide();
+})
+test('Search: show', () => {
+  search.dialog = {
+    slideDown(int) { }
+  }
+  search.show();
+})
+test('Search: show', () => {
+  search.disabled = true;
+  search.show();
+})
+test('Search: show', () => {
+  search.visible = true;
+  search.show();
+})
+
+test('Search: hide', () => {
+  search.visible = true;
+  search.dialog = {
+    slideUp(int) { }
+  }
+  search.hide();
+})
+
+// test('Search: events.on null', () => {
+//   try {
+//     ctx.actions = { add() { } };
+//     ctx.events = { on: null };
+//   }
+//   catch (e) {
+//   }
+// })
+// test('Search: action.add null', () => {
+//   try {
+//     ctx.actions = { add: null };
+//     ctx.events = { on() { } };
+//     search = create(ctx)
+//   }
+//   catch (e) {
+//   }
+// })
+// test('Search: actions null', () => {
+//   try {
+//     ctx.actions = null;
+//     search = create(ctx)
+//   }
+//   catch (e) {
+//   }
+// })
+
+
+// test('Search: indexNode with null utils', () => {
+//   let n = {
+//     id: 'x',
+//     label: 'abc'
+//   }
+//   search.ctx.utils = null;
+//   try {
+//     search.indexNode(n)
+//   }
+//   catch (e) { }
+// })
+// test('Search: indexWorkspace with null nodes', () => {
+//   search.ctx.nodes = null;
+//   try {
+//     search.indexWorkspace()
+//   }
+//   catch (e) { }
+// })
+
+
+// test('Search: reveal', () => {})
+// test('Search: show', () => {})
+// test('Search: hide', () => {})
+
+// test('Search: created with out action', () => {
+//   try {
+//     ctx.actions = null;
+//     expect(search).toBeDefined()
+//   }
+//   catch (e) { }
+// })

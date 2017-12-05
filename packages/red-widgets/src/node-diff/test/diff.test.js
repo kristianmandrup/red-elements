@@ -16,10 +16,10 @@ const {
 // set to real instance for each!
 // See red-runtime
 let actions = {
-  add() {}
+  add() { }
 }
 let keyboard = {
-  add() {}
+  add() { }
 }
 
 let utils = {
@@ -30,9 +30,35 @@ let utils = {
 }
 
 let nodes = {
-  getType() {}
+  getType() { },
+  node() { },
+  import() { return [[]] },
+  createCompleteNodeSet() { },
+  dirty() { },
+  version() { },
+  clear() { }
 }
-
+let tray = {
+  close() { },
+  show(id) { }
+}
+let history = {
+  push(evt) { }
+}
+let view = {
+  redraw() { }
+}
+let palette = {
+  refresh() { }
+}
+let workspaces = {
+  refresh() { }
+}
+let sidebar = {
+  config: {
+    refresh() { }
+  }
+}
 
 let ctx = Object.assign({
   actions,
@@ -41,7 +67,12 @@ let ctx = Object.assign({
   // events,
   // settings,
   nodes,
-  // view
+  tray,
+  history,
+  view,
+  palette,
+  sidebar,
+  workspaces
 }, baseCtx)
 
 
@@ -117,12 +148,28 @@ function Stat() {
   }
 }
 
-test.only('Diff: createNodeDiffRow', () => {
+test('Diff: createNodeDiffRow', () => {
   // TODO: real data
-  let node = {}
+  var diff = create(ctx);
+  let node = {
+    id: '25test.stt'
+  }
   let stats = {
     local: new Stat(),
     remote: new Stat()
+  }
+  diff.currentDiff = {
+    localDiff: {
+      newConfig: {
+        all: ['a', 'b']
+      }
+    },
+    remoteDiff: {
+      newConfig: {
+        all: ['a', 'b']
+      }
+    },
+    resolutions: []
   }
   diff.createNodeDiffRow(node, stats)
 
@@ -140,25 +187,27 @@ test('Diff: createNodePropertiesTable', () => {
   // use nightmare
 })
 
-test('Diff: createNodeConflictRadioBoxes', () => {
-  // TODO: real data
-  let node = {}
-  let row = {}
-  let localDiv = {}
-  let remoteDiv = {}
-  let propertiesTable = {}
-  let hide = true
-  let state = {}
-  diff.createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state)
+// test('Diff: createNodeConflictRadioBoxes', () => {
+//   // TODO: real data
+//   let node = {
+//     id: 'test.str22trrr'
+//   }
+//   let row = {}
+//   let localDiv = {}
+//   let remoteDiv = {}
+//   let propertiesTable = {}
+//   let hide = true
+//   let state = {}
+//   diff.createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state)
 
-  // use nightmare
-})
+//   // use nightmare
+// })
 
-test('Diff: refreshConflictHeader', () => {
-  diff.refreshConflictHeader()
+// test('Diff: refreshConflictHeader', () => {
+//   diff.refreshConflictHeader()
 
-  // use nightmare
-})
+//   // use nightmare
+// })
 
 test('Diff: getRemoteDiff', () => {
   let cb = function () {
@@ -196,8 +245,22 @@ test('Diff: generateDiff', () => {
 })
 
 test('Diff: resolveDiffs', () => {
-  let localDiff = {}
-  let remoteDiff = {}
+  let localDiff = {
+    currentConfig: {
+      all: ['a', 'b', 'c'],
+      added: ['d', 'e']
+    },
+    newConfig: {
+      all: ['a', 'b']
+    },
+    changed: ['t', 'u'],
+    deleted: ['trre', 'eer']
+  }
+  let remoteDiff = {
+    deleted: ['x', 'y'],
+    changed: ['t', 'u'],
+    added: []
+  }
   diff.resolveDiffs(localDiff, remoteDiff)
   // use nightmare
 })
@@ -209,7 +272,26 @@ test('Diff: showDiff', () => {
 })
 
 test('Diff: mergeDiff', () => {
-  let difference = {}
+  let difference = {
+    localDiff: {
+      currentConfig: {
+        all: ['a', 'b', 'c'],
+        added: ['d', 'e']
+      },
+      newConfig: {
+        all: ['a', 'b']
+      },
+      changed: ['t', 'u'],
+      deleted: ['trre', 'eer']
+    },
+    remoteDiff: {
+      deleted: ['x', 'y'],
+      changed: ['t', 'u'],
+      added: []
+    },
+    conflicts: [],
+    resolutions: []
+  }
   diff.mergeDiff(difference)
   // use nightmare
 })
