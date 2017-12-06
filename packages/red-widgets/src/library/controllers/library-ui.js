@@ -12,7 +12,7 @@ require('brace/theme/monokai');
 
 export class LibraryUI extends Context {
   constructor(options) {
-    super(options.ctx)
+    super(options.ctx || options)
     const ctx = options.ctx || options
     var libraryEditor;
     $('#node-input-name').css("width", "66%").after(
@@ -109,25 +109,25 @@ export class LibraryUI extends Context {
       width: 800,
       height: 450,
       buttons: [{
-          text: ctx._("common.label.cancel"),
-          click: function () {
-            $(this).dialog("close");
-          }
-        },
-        {
-          text: ctx._("common.label.load"),
-          class: "primary",
-          click: function () {
-            if (selectedLibraryItem) {
-              for (var i = 0; i < options.fields.length; i++) {
-                var field = options.fields[i];
-                $("#node-input-" + field).val(selectedLibraryItem[field]);
-              }
-              options.editor.setValue(libraryEditor.getValue(), -1);
-            }
-            $(this).dialog("close");
-          }
+        text: ctx._("common.label.cancel"),
+        click: function () {
+          $(this).dialog("close");
         }
+      },
+      {
+        text: ctx._("common.label.load"),
+        class: "primary",
+        click: function () {
+          if (selectedLibraryItem) {
+            for (var i = 0; i < options.fields.length; i++) {
+              var field = options.fields[i];
+              $("#node-input-" + field).val(selectedLibraryItem[field]);
+            }
+            options.editor.setValue(libraryEditor.getValue(), -1);
+          }
+          $(this).dialog("close");
+        }
+      }
       ],
       open: function (e) {
         var form = $("form", this);
@@ -150,19 +150,19 @@ export class LibraryUI extends Context {
       width: 530,
       height: 230,
       buttons: [{
-          text: ctx._("common.label.cancel"),
-          click: function () {
-            $(this).dialog("close");
-          }
-        },
-        {
-          text: ctx._("common.label.save"),
-          class: "primary",
-          click: function () {
-            saveToLibrary(true);
-            $(this).dialog("close");
-          }
+        text: ctx._("common.label.cancel"),
+        click: function () {
+          $(this).dialog("close");
         }
+      },
+      {
+        text: ctx._("common.label.save"),
+        class: "primary",
+        click: function () {
+          saveToLibrary(true);
+          $(this).dialog("close");
+        }
+      }
       ]
     });
     $("#node-dialog-library-save").dialog({
@@ -172,19 +172,19 @@ export class LibraryUI extends Context {
       width: 530,
       height: 230,
       buttons: [{
-          text: ctx._("common.label.cancel"),
-          click: function () {
-            $(this).dialog("close");
-          }
-        },
-        {
-          text: ctx._("common.label.save"),
-          class: "primary",
-          click: function () {
-            saveToLibrary(false);
-            $(this).dialog("close");
-          }
+        text: ctx._("common.label.cancel"),
+        click: function () {
+          $(this).dialog("close");
         }
+      },
+      {
+        text: ctx._("common.label.save"),
+        class: "primary",
+        click: function () {
+          saveToLibrary(false);
+          $(this).dialog("close");
+        }
+      }
       ]
     });
   }
@@ -250,9 +250,9 @@ export class LibraryUI extends Context {
     return ul;
   }
 
-  saveToLibrary(overwrite,options) {
+  saveToLibrary(overwrite, options) {
     var name = $("#node-input-name").val().replace(/(^\s*)|(\s*$)/g, "");
-    var ctx=options.ctx;
+    var ctx = options.ctx;
     if (name === "") {
       name = ctx._("library.unnamedType", {
         type: options.type

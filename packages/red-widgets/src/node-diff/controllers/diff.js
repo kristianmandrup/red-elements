@@ -1,6 +1,8 @@
 import {
   Context
 } from './context'
+import { log } from 'util';
+import { config } from 'bottlejs';
 
 export class Diff extends Context {
   constructor(ctx) {
@@ -45,7 +47,7 @@ export class Diff extends Context {
       '<span><span id="node-diff-toolbar-resolved-conflicts"></span></span> ' +
       '</div>').prependTo(diffPanel);
 
-    diffList = diffPanel.find("#node-dialog-view-diff-diff").editableList({
+    this.diffList = diffPanel.find("#node-dialog-view-diff-diff").editableList({
       addButton: false,
       scrollOnAdd: false,
       addItem: (container, i, object) => {
@@ -944,7 +946,6 @@ export class Diff extends Context {
     });
     return nodePropertiesDiv;
   }
-
   createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state) {
     var safeNodeId = "node-diff-selectbox-" + node.id.replace(/\./g, '-') + (propertiesTable ? "-props" : "");
     var className = "";
@@ -952,7 +953,8 @@ export class Diff extends Context {
       className = "node-diff-selectbox-tab-" + (propertiesTable ? node.id : node.z).replace(/\./g, '-');
     }
     var titleRow = !propertiesTable && (node.type === 'tab' || node.type === 'subflow');
-    var changeHandler = (evt) => {
+    var that = this;
+    var changeHandler = function (evt) {
       var className;
       if (node.type === undefined) {
         // TODO: handle globals
@@ -982,7 +984,7 @@ export class Diff extends Context {
         row.addClass("node-diff-select-remote");
         row.removeClass("node-diff-select-local");
       }
-      refreshConflictHeader();
+      that.refreshConflictHeader();
     }
 
     var localSelectDiv = $('<label>', {
@@ -1025,19 +1027,20 @@ export class Diff extends Context {
 
   refreshConflictHeader() {
     var resolutionCount = 0;
-    $(".node-diff-selectbox>input:checked").each(() => {
-      if (currentDiff.conflicts[$(this).data('node-id')]) {
+    var that = this;
+    $(".node-diff-selectbox>input:checked").each(function () {
+      if (that.currentDiff.conflicts[$(this).data('node-id')]) {
         resolutionCount++;
       }
-      currentDiff.resolutions[$(this).data('node-id')] = $(this).val();
+      that.currentDiff.resolutions[$(this).data('node-id')] = $(this).val();
     })
-    var conflictCount = Object.keys(currentDiff.conflicts).length;
+    var conflictCount = Object.keys(this.currentDiff.conflicts).length;
     if (conflictCount - resolutionCount === 0) {
-      $("#node-diff-toolbar-resolved-conflicts").html('<span class="node-diff-node-added"><span class="node-diff-status"><i class="fa fa-check"></i></span></span> ' + RED._("diff.unresolvedCount", {
+      $("#node-diff-toolbar-resolved-conflicts").html('<span class="node-diff-node-added"><span class="node-diff-status"><i class="fa fa-check"></i></span></span> ' + this.RED._("diff.unresolvedCount", {
         count: conflictCount - resolutionCount
       }));
     } else {
-      $("#node-diff-toolbar-resolved-conflicts").html('<span class="node-diff-node-conflict"><span class="node-diff-status"><i class="fa fa-exclamation"></i></span></span> ' + RED._("diff.unresolvedCount", {
+      $("#node-diff-toolbar-resolved-conflicts").html('<span class="node-diff-node-conflict"><span class="node-diff-status"><i class="fa fa-exclamation"></i></span></span> ' + this.RED._("diff.unresolvedCount", {
         count: conflictCount - resolutionCount
       }));
     }
@@ -1073,7 +1076,7 @@ export class Diff extends Context {
   // }
   showRemoteDiff(diff) {
     if (diff === undefined) {
-      this.getRemoteDiff(showRemoteDiff);
+      this.getRemoteDiff(this.showRemoteDiff);
     } else {
       this.showDiff(diff);
     }
@@ -1101,7 +1104,6 @@ export class Diff extends Context {
         };
       }
     });
-
     nodeList.forEach((node) => {
       if (node.type !== 'tab' && node.type !== 'subflow') {
         if (tabs[node.z]) {
@@ -1132,7 +1134,7 @@ export class Diff extends Context {
     var moved = {};
 
     Object.keys(currentConfig.all).forEach((id) => {
-      var node = RED.nodes.workspace(id) || RED.nodes.subflow(id) || RED.nodes.node(id);
+      var node = this.RED.nodes.workspace(id) || this.RED.nodes.subflow(id) || this.RED.nodes.node(id);
       if (!newConfig.all.hasOwnProperty(id)) {
         deleted[id] = true;
       } else if (JSON.stringify(currentConfig.all[id]) !== JSON.stringify(newConfig.all[id])) {
@@ -1246,8 +1248,8 @@ export class Diff extends Context {
         class: "primary disabled",
         click: () => {
           if (!$("#node-diff-view-diff-merge").hasClass('disabled')) {
-            refreshConflictHeader();
-            mergeDiff(currentDiff);
+            this.refreshConflictHeader();
+            this.mergeDiff(this.currentDiff);
             this.RED.tray.close();
           }
         }
@@ -1258,8 +1260,8 @@ export class Diff extends Context {
       },
       open: (tray) => {
         var trayBody = tray.find('.editor-tray-body');
-        var diffPanel = buildDiffPanel(trayBody);
-        if (remoteDiff) {
+        var diffPanel = this.buildDiffPanel(trayBody);
+        if (this.currentDiff.remoteDiff) {
           $("#node-diff-view-diff-merge").show();
           if (Object.keys(conflicts).length === 0) {
             $("#node-diff-view-diff-merge").removeClass('disabled');
@@ -1275,9 +1277,9 @@ export class Diff extends Context {
         // console.log("--------------");
         // console.log(localDiff);
         // console.log(remoteDiff);
-        var currentConfig = localDiff.currentConfig;
-        var newConfig = localDiff.newConfig;
-        conflicts = conflicts || {};
+        var currentConfig = this.currentDiff.localDiff.currentConfig;
+        var newConfig = this.currentDiff.localDiff.newConfig;
+        conflicts = this.currentDiff.conflicts || {};
 
         var el = {
           diff: localDiff,
@@ -1308,7 +1310,7 @@ export class Diff extends Context {
           diffPanel.removeClass('node-diff-three-way');
         }
 
-        diffList.editableList('addItem', el);
+        this.diffList.editableList('addItem', el);
 
         var seenTabs = {};
 
@@ -1316,7 +1318,7 @@ export class Diff extends Context {
           var tab = currentConfig.tabs[tabId];
           var el = {
             diff: localDiff,
-            def: RED.nodes.getType('tab'),
+            def: this.RED.nodes.getType('tab'),
             tab: tab
           };
           if (newConfig.tabs.hasOwnProperty(tabId)) {
@@ -1327,7 +1329,7 @@ export class Diff extends Context {
             el.remoteDiff = remoteDiff;
           }
           seenTabs[tabId] = true;
-          diffList.editableList('addItem', el)
+          this.diffList.editableList('addItem', el)
         });
         newConfig.tabOrder.forEach((tabId) => {
           if (!seenTabs[tabId]) {
@@ -1335,14 +1337,14 @@ export class Diff extends Context {
             var tab = newConfig.tabs[tabId];
             var el = {
               diff: localDiff,
-              def: RED.nodes.getType('tab'),
+              def: this.RED.nodes.getType('tab'),
               tab: tab,
               newTab: tab
             };
             if (remoteDiff !== undefined) {
               el.remoteDiff = remoteDiff;
             }
-            diffList.editableList('addItem', el)
+            this.diffList.editableList('addItem', el)
           }
         });
         if (remoteDiff !== undefined) {
@@ -1427,7 +1429,7 @@ export class Diff extends Context {
         $("#sidebar-shade").show();
       },
       close: () => {
-        diffVisible = false;
+        this.diffVisible = false;
         $("#sidebar-shade").hide();
 
       },
@@ -1482,7 +1484,7 @@ export class Diff extends Context {
     }
     for (id in remoteDiff.added) {
       if (remoteDiff.added.hasOwnProperty(id)) {
-        node = RED.nodes.node(id);
+        node = this.RED.nodes.node(id);
         if (node) {
           nodeChangedStates[id] = node.changed;
         }

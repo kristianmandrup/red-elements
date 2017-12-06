@@ -6,7 +6,7 @@ import {
 } from './imports'
 
 function create(ctx) {
-  document.body.innerHTML = document.body.innerHTML = readPage('library', __dirname);;
+  document.body.innerHTML = document.body.innerHTML = readPage('library', __dirname);
   return new LibraryUI(ctx)
 }
 
@@ -19,29 +19,97 @@ test('LibraryUI: create', () => {
   expect(typeof ui).toBe('object')
 })
 
-// test('LibraryUI: buildFileListItem', () => {
-//   let item = {
-//   }
-//   let li = ui.buildFileListItem(item)
-//   // use jest to test returned li element
-// })
+test('LibraryUI: buildFileListItem', () => {
+  let item = {
+  }
+  let li = ui.buildFileListItem(item);
+  li.onmouseover(null);
+  li.onmouseout(null);
+  // use jest to test returned li element
+});
 
-// test('LibraryUI: buildFileList', () => {
-//   let root = {} // document element?
-//   let data = {
+test('LibraryUI: buildFileList', () => {
+  let root = {} // document element?
+  let data = ['111', 'add']
+  let ul = ui.buildFileList(root, data)
+  var li = $(ul).children();
+  li[0].onclick();
+  // use jest to test returned ul element
+});
 
-//   }
-//   let ul = ui.buildFileList(root, data)
-//   // use jest to test returned ul element
-// })
+test('LibraryUI: buildFileList', () => {
+  let root = {} // document element?
+  let data = [1, 2]
+  let ul = ui.buildFileList(root, data)
+  var li = $(ul).children();
+  li[0].onclick();
+  // use jest to test returned ul element
+});
 
 test('LibraryUI: saveToLibrary', () => {
   let root = {} // document element?
   let overwrite = true;
-  RED.notify=function(callback,text){}
-  ui.saveToLibrary(overwrite, { ctx: RED, types: {}, editor: { getValue: function () { } }, fields: ['name', 'asdf', 'eert']})
+  RED.notify = function (callback, text) { }
+  ui.saveToLibrary(overwrite, { ctx: RED, types: {}, editor: { getValue: function () { } }, fields: ['name', 'asdf', 'eert'] })
+})
+
+test('LibraryUI: saveToLibrary', () => {
+  let root = {} // document element?
+  let overwrite = false;
+  RED.notify = function (callback, text) { }
+  ui.saveToLibrary(overwrite, { ctx: RED, types: {}, editor: { getValue: function () { } }, fields: ['name', 'asdf', 'eert'] })
+})
+test('LibraryUI: saveToLibrary', () => {
+  let root = {} // document element?
+  let overwrite = true;
+  RED.notify = function (callback, text) { }
+  $("#node-input-name").val('');
+  $("#node-dialog-library-save-filename").val('');
+  ui.saveToLibrary(overwrite, { ctx: RED, types: {}, editor: { getValue: function () { } }, fields: ['name', 'asdf', 'eert'] })
 })
 test('LibraryUI: buildFileList', () => {
   var ul = ui.buildFileList('testRoot', ['test1', 'test2', 'test3', 1, 2]);
   expect(typeof ul).toBe('object')
+})
+
+test('LibraryUI: menu open click', () => {
+  var option = {
+    ctx: ctx,
+    type: "test"
+
+  }
+  var lib = create(option);
+  $("#node-input-test-menu-open-library").click();
+  //expect(typeof ul).toBe('object')
+})
+test('LibraryUI: menu save click', () => {
+  var option = {
+    ctx: ctx,
+    type: "test"
+
+  }
+  var lib = create(option);
+  $('#node-input-test-menu-save-library').click();
+  $("#node-input-name").val('');
+  $('#node-input-test-menu-save-library').click();
+  //expect(typeof ul).toBe('object')
+})
+test('LibraryUI: library-lookup dialog open', () => {
+  $("#node-dialog-library-lookup").dialog('open');
+})
+
+test('LibraryUI: library-lookup dialog resize', () => {
+  let libLookup = $("#node-dialog-library-lookup").data('ui-dialog');
+  libLookup.options.resize(null);
+  expect(typeof libLookup.options.resize).toBe('function')
+})
+test('LibraryUI: library-lookup dialog button click', () => {
+  let libLookup = $("#node-dialog-library-lookup").data('ui-dialog');
+  libLookup.options.buttons[0].click();
+  // libLookup.options.buttons[1].click();
+})
+test('LibraryUI: library-lookup dialog button click', () => {
+  let libLookup = $("#node-dialog-library-lookup").data('ui-dialog');
+  libLookup.options.buttons[1].click();
+  // libLookup.options.buttons[1].click();
 })

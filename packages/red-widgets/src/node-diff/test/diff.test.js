@@ -5,11 +5,12 @@ import {
   Diff,
   EditableList
 } from './imports'
+import { setTimeout } from 'timers';
 
 const {
   log
 } = console
-
+let trayOptions;
 // TODO:
 // investigate legacy Library
 // to figure out which class to use in each case
@@ -31,16 +32,25 @@ let utils = {
 
 let nodes = {
   getType() { },
-  node() { },
+  node(id) {
+    if (id === 'test1') {
+      return { changed: {} }
+    }
+  },
   import() { return [[]] },
   createCompleteNodeSet() { },
   dirty() { },
   version() { },
-  clear() { }
+  clear() { },
+  workspace(id) { return { id: 'a' } },
+  subflow() { },
+  node() { }
 }
 let tray = {
   close() { },
-  show(id) { }
+  show(trayOpt) {
+    trayOptions = trayOpt;
+  }
 }
 let history = {
   push(evt) { }
@@ -82,12 +92,11 @@ function create(ctx) {
 
 let diff
 beforeEach(() => {
-  diff = create(ctx)
 })
 
 beforeAll(() => {
   EditableList(RED)
-
+  diff = create(ctx)
   // load document with placeholder elements to create widgets (for testing)
   document.documentElement.innerHTML = readPage('diff', __dirname)
 })
@@ -102,18 +111,45 @@ test('Diff: buildDiffPanel', () => {
   let container = $('#container')
   if (container) {
     let panel = diff.buildDiffPanel(container)
-    log({
-      panel
-    })
   }
+})
 
-
-  // use nightmare
+test('Diff: buildDiffPanel', () => {
+  let container = $('#container')
+  if (container) {
+    let panel = diff.buildDiffPanel(container);
+    let localDiff = {
+      currentConfig: {
+        all: ['a', 'b', 'c'],
+        added: ['d', 'e']
+      },
+      newConfig: {
+        all: ['a', 'b']
+      },
+      changed: ['t', 'u'],
+      deleted: ['trre', 'eer']
+    }
+    let remoteDiff = {
+      deleted: ['x', 'y'],
+      changed: ['t', 'u'],
+      added: []
+    }
+    let object = {
+      diff: localDiff,
+      remoteDiff: remoteDiff,
+      tab: {
+        n: {}
+      },
+      def: {},
+      conflicts: ['a'],
+      resolutions: []
+    }
+    //    diffList.editableList('addItem')
+  }
 })
 
 test('Diff: formatWireProperty', () => {
   let container = $('#container')
-
   // TODO: real data
   let wires = []
   let allNodes = []
@@ -187,21 +223,7 @@ test('Diff: createNodePropertiesTable', () => {
   // use nightmare
 })
 
-// test('Diff: createNodeConflictRadioBoxes', () => {
-//   // TODO: real data
-//   let node = {
-//     id: 'test.str22trrr'
-//   }
-//   let row = {}
-//   let localDiv = {}
-//   let remoteDiv = {}
-//   let propertiesTable = {}
-//   let hide = true
-//   let state = {}
-//   diff.createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state)
 
-//   // use nightmare
-// })
 
 // test('Diff: refreshConflictHeader', () => {
 //   diff.refreshConflictHeader()
@@ -223,23 +245,79 @@ test('Diff: showRemoteDiff', () => {
   // use nightmare
 })
 
+test('Diff: showRemoteDiff', () => {
+  let difference = {}
+  diff.showRemoteDiff(difference)
+  // use nightmare
+})
+
 test('Diff: parseNodes', () => {
   let node = {
-    id: 'x'
+    id: 'x',
+    type: 'tab'
+  }
+  let node1 = {
+    id: 'x2',
+    type: 'subflow'
+  }
+  let node2 = {
+    id: 'x3',
+    type: '',
+    z: 'x'
+  }
+  let node3 = {
+    id: 'x2',
+    type: '',
+    z: 'x2'
+  }
+  let node4 = {
+    id: 'xss',
+    type: '',
   }
   let nodeList = [
-    node
+    node,
+    node1,
+    node2,
+    node3,
+    node4
   ]
-  diff.parseNodes(nodeList)
+  var parseNode = diff.parseNodes(nodeList)
+  expect(typeof parseNode).toBe('object')
   // use nightmare
 })
 
 test('Diff: generateDiff', () => {
   let node = {
-    id: 'x'
+    id: 'x',
+    type: 'tab'
   }
-  let currentNodes = []
-  let newNodes = []
+  let node1 = {
+    id: 'x2',
+    type: 'subflow'
+  }
+  let node2 = {
+    id: 'x3',
+    type: '',
+    z: 'x'
+  }
+  let node3 = {
+    id: 'x2',
+    type: '',
+    z: 'x2'
+  }
+  let node4 = {
+    id: 'xss',
+    type: '',
+  }
+  let nodeList = [
+    node,
+    node1,
+    node2,
+    node3,
+    node4
+  ]
+  let currentNodes = nodeList
+  let newNodes = nodeList
   diff.generateDiff(currentNodes, newNodes)
   // use nightmare
 })
@@ -266,7 +344,28 @@ test('Diff: resolveDiffs', () => {
 })
 
 test('Diff: showDiff', () => {
-  let difference = {}
+  let difference = {
+    localDiff: {
+      currentConfig: {
+        all: ['a', 'b', 'c'],
+        added: ['d', 'e'],
+        tabOrder: ['aaa', 'bbb'],
+        globals: {},
+        tabs: ['aaa', 'bb']
+      },
+      newConfig: {
+        all: ['a', 'b'],
+        globals: {},
+        tabs: ['aa', 'b'],
+        tabOrder: ['aa1', 'bb2'],
+      },
+      changed: ['t', 'u'],
+      deleted: ['trre', 'eer']
+    },
+    remoteDiff: undefined,
+    conflicts: [],
+    resolutions: []
+  }
   diff.showDiff(difference)
   // use nightmare
 })
@@ -294,4 +393,151 @@ test('Diff: mergeDiff', () => {
   }
   diff.mergeDiff(difference)
   // use nightmare
+})
+test('Diff: buildDiffPanel with out contanier can not create panel', () => {
+  let panel;
+  let container = null
+  try {
+    panel = diff.buildDiffPanel(container);
+  }
+  catch (e) {
+    expect(panel).not.toBeDefined();
+  }
+});
+
+test('Diff: Tray options open', () => {
+  if (trayOptions) {
+    jQuery.data($("#rad1"), "node-id", 'a');
+    trayOptions.open($('#mainTray'));
+  }
+});
+test('Diff: Tray options close', () => {
+  if (trayOptions) {
+    trayOptions.close();
+  }
+});
+test('Diff: Tray options show', () => {
+  if (trayOptions) {
+    trayOptions.show();
+  }
+});
+test('Diff: Tray options resize', () => {
+  if (trayOptions) {
+    trayOptions.resize();
+  }
+});
+test('Diff: Tray options button cancle', () => {
+  if (trayOptions) {
+    trayOptions.buttons[0].click();
+  }
+});
+
+test('Diff: showDiff', () => {
+  let difference = {
+    localDiff: {
+      currentConfig: {
+        all: ['a', 'b', 'c'],
+        added: ['d', 'e'],
+        tabOrder: ['aaa', 'bbb'],
+        globals: {},
+        tabs: ['aaa', 'bb']
+      },
+      newConfig: {
+        all: ['a', 'b'],
+        globals: {},
+        tabs: ['aa', 'b'],
+        tabOrder: ['aa1', 'bb2'],
+      },
+      changed: ['t', 'u'],
+      deleted: ['trre', 'eer']
+    },
+    remoteDiff: {
+      deleted: ['x', 'y'],
+      changed: ['t', 'u'],
+      added: []
+    },
+    conflicts: [],
+    resolutions: []
+  }
+  diff.showDiff(difference)
+  // use nightmare
+})
+test('Diff: Tray options button merge', () => {
+  if (trayOptions) {
+    trayOptions.buttons[1].click();
+  }
+});
+test('Diff: mergeDiff', () => {
+  let difference = {
+    localDiff: {
+      currentConfig: {
+        all: ['a', 'b', 'c'],
+        added: ['d', 'e']
+      },
+      newConfig: {
+        all: ['a', 'b']
+      },
+      changed: ['t', 'u'],
+      deleted: ['trre', 'eer']
+    },
+    remoteDiff: {
+      deleted: ['x', 'y'],
+      changed: ['t', 'u'],
+      added: [{ id: 'a' }]
+    },
+    conflicts: ['1', '2', '3', ''],
+    resolutions: ['1', '3']
+  }
+  diff.mergeDiff(difference)
+  // use nightmare
+})
+test('Diff: createNodeConflictRadioBoxes', () => {
+  let node = {
+    id: 'test.str22trrr',
+    type: undefined
+  }
+  let row = $("#diffRow");
+  let localDiv = $("#mainTray");
+  let remoteDiv = $("#remoteDiv");
+  let propertiesTable = {}
+  let hide = true
+  let state = {}
+  diff.createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state)
+  $("#node-diff-selectbox-test-str22trrr-props-remote").change();
+  $("#node-diff-selectbox-test-str22trrr-props-local").change();
+})
+test('Diff: createNodeConflictRadioBoxes', () => {
+  let node = {
+    id: 'test.str',
+    type: 'tab'
+  }
+  let row = $("#diffRow");
+  let localDiv = $("#mainTray");
+  let remoteDiv = $("#remoteDiv");
+  let propertiesTable = false;
+  let hide = true
+  let state = {}
+  diff.createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state)
+  $("#node-diff-selectbox-test-str-remote").change();
+})
+
+test('Diff: createNodeConflictRadioBoxes', () => {
+  let node = {
+    id: 'test.str.CHK',
+    type: 'ta222b'
+  }
+  let row = $("#diffRow");
+  let localDiv = $("#mainTray");
+  let remoteDiv = $("#remoteDiv");
+  let propertiesTable = true;
+  let hide = true
+  let state = {}
+  diff.createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state)
+  $("#node-diff-selectbox-test-str-CHK-props-remote").change();
+})
+test('node-diff-selectbox', () => {
+  $('.node-diff-selectbox').click()
+})
+test('Diff:showRemoteDiff', () => {
+  diff.showRemoteDiff(undefined);
 })
