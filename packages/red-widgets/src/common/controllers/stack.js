@@ -56,20 +56,7 @@ export class Stack extends Context {
     var header = $('<div class="palette-header"></div>').appendTo(entry.container);
     entry.content = $('<div></div>').appendTo(entry.container);
     if (entry.collapsible !== false) {
-      header.click(function () {
-        if (options.singleExpanded) {
-          if (!entry.isExpanded()) {
-            for (var i = 0; i < entries.length; i++) {
-              if (entries[i].isExpanded()) {
-                entries[i].collapse();
-              }
-            }
-            entry.expand();
-          }
-        } else {
-          entry.toggle();
-        }
-      });
+      header.click(this.handleHeaderClickedEvent(this.options, entry, entries));
       var icon = $('<i class="fa fa-angle-down"></i>').appendTo(header);
 
       if (entry.expanded) {
@@ -134,5 +121,22 @@ export class Stack extends Context {
       entry.container.show();
     });
     return this;
+  }
+
+  handleHeaderClickedEvent(options, entry, entries) {
+    if (options && options.singleExpanded) {
+      if (!entry.isExpanded()) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isExpanded()) {
+            entries[i].collapse();
+          }
+        }
+        entry.expand();
+      }
+    } else {
+      if (entry.toggle !== undefined) {
+        entry.toggle();
+      }
+    }
   }
 }

@@ -30,8 +30,8 @@ function rebind(varNames, ctx) {
 export class View extends Context {
   constructor(ctx) {
     super(ctx)
-    let RED = ctx
-
+    this.RED = ctx
+    // console.log(ctx)  
     // TODO: properties (ie. instance vars)
     var space_width = 5000,
       space_height = 5000,
@@ -122,10 +122,10 @@ export class View extends Context {
       canvasMouseDown,
       canvasMouseUp
     } = rebind([
-      'canvasMouseMove',
-      'canvasMouseDown',
-      'canvasMouseUp'
-    ], this)
+        'canvasMouseMove',
+        'canvasMouseDown',
+        'canvasMouseUp'
+      ], this)
 
     this.clipboard = "";
 
@@ -146,9 +146,7 @@ export class View extends Context {
       .attr("height", space_height)
       .attr("pointer-events", "all")
       .style("cursor", "crosshair")
-      .on("mousedown", function () {
-        focusView();
-      });
+      .on("mousedown", this.handleD3MouseDownEvent);
 
     var vis = outer
       .append("svg:g")
@@ -158,115 +156,10 @@ export class View extends Context {
       .on("mousemove", canvasMouseMove)
       .on("mousedown", canvasMouseDown)
       .on("mouseup", canvasMouseUp)
-      .on("touchend", function () {
-        clearTimeout(touchStartTime);
-        touchStartTime = null;
-        if (RED.touch.radialMenu.active()) {
-          return;
-        }
-        if (lasso) {
-          outer_background.attr("fill", "#fff");
-        }
-        canvasMouseUp.call(this);
-      })
+      .on("touchend", this.handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp))
       .on("touchcancel", canvasMouseUp)
-      .on("touchstart", function () {
-        var touch0;
-        if (d3.event.touches.length > 1) {
-          clearTimeout(touchStartTime);
-          touchStartTime = null;
-          d3.event.preventDefault();
-          touch0 = d3.event.touches.item(0);
-          var touch1 = d3.event.touches.item(1);
-          var a = touch0["pageY"] - touch1["pageY"];
-          var b = touch0["pageX"] - touch1["pageX"];
-
-          var offset = $("#chart").offset();
-          var scrollPos = [$("#chart").scrollLeft(), $("#chart").scrollTop()];
-          startTouchCenter = [
-            (touch1["pageX"] + (b / 2) - offset.left + scrollPos[0]) / scaleFactor,
-            (touch1["pageY"] + (a / 2) - offset.top + scrollPos[1]) / scaleFactor
-          ];
-          moveTouchCenter = [
-            touch1["pageX"] + (b / 2),
-            touch1["pageY"] + (a / 2)
-          ]
-          startTouchDistance = Math.sqrt((a * a) + (b * b));
-        } else {
-          var obj = d3.select(document.body);
-          touch0 = d3.event.touches.item(0);
-          var pos = [touch0.pageX, touch0.pageY];
-          startTouchCenter = [touch0.pageX, touch0.pageY];
-          startTouchDistance = 0;
-          var point = d3.touches(this)[0];
-          touchStartTime = setTimeout(function () {
-            touchStartTime = null;
-            showTouchMenu(obj, pos);
-            //lasso = vis.append("rect")
-            //    .attr("ox",point[0])
-            //    .attr("oy",point[1])
-            //    .attr("rx",2)
-            //    .attr("ry",2)
-            //    .attr("x",point[0])
-            //    .attr("y",point[1])
-            //    .attr("width",0)
-            //    .attr("height",0)
-            //    .attr("class","lasso");
-            //outer_background.attr("fill","#e3e3f3");
-          }, touchLongPressTimeout);
-        }
-      })
-      .on("touchmove", function () {
-        if (RED.touch.radialMenu.active()) {
-          d3.event.preventDefault();
-          return;
-        }
-        var touch0;
-        if (d3.event.touches.length < 2) {
-          if (touchStartTime) {
-            touch0 = d3.event.touches.item(0);
-            var dx = (touch0.pageX - startTouchCenter[0]);
-            var dy = (touch0.pageY - startTouchCenter[1]);
-            var d = Math.abs(dx * dx + dy * dy);
-            if (d > 64) {
-              clearTimeout(touchStartTime);
-              touchStartTime = null;
-            }
-          } else if (lasso) {
-            d3.event.preventDefault();
-          }
-          canvasMouseMove.call(this);
-        } else {
-          touch0 = d3.event.touches.item(0);
-          var touch1 = d3.event.touches.item(1);
-          var a = touch0["pageY"] - touch1["pageY"];
-          var b = touch0["pageX"] - touch1["pageX"];
-          var offset = $("#chart").offset();
-          var scrollPos = [$("#chart").scrollLeft(), $("#chart").scrollTop()];
-          var moveTouchDistance = Math.sqrt((a * a) + (b * b));
-          var touchCenter = [
-            touch1["pageX"] + (b / 2),
-            touch1["pageY"] + (a / 2)
-          ];
-
-          if (!isNaN(moveTouchDistance)) {
-            oldScaleFactor = scaleFactor;
-            scaleFactor = Math.min(2, Math.max(0.3, scaleFactor + (Math.floor(((moveTouchDistance * 100) - (startTouchDistance * 100))) / 10000)));
-
-            var deltaTouchCenter = [ // Try to pan whilst zooming - not 100%
-              startTouchCenter[0] * (scaleFactor - oldScaleFactor), //-(touchCenter[0]-moveTouchCenter[0]),
-              startTouchCenter[1] * (scaleFactor - oldScaleFactor) //-(touchCenter[1]-moveTouchCenter[1])
-            ];
-
-            startTouchDistance = moveTouchDistance;
-            moveTouchCenter = touchCenter;
-
-            $("#chart").scrollLeft(scrollPos[0] + deltaTouchCenter[0]);
-            $("#chart").scrollTop(scrollPos[1] + deltaTouchCenter[1]);
-            redraw();
-          }
-        }
-      });
+      .on("touchstart", this.handleOuterTouchStartEvent(touchStartTime, startTouchCenter, scaleFactor, startTouchDistance, touchLongPressTimeout))
+      .on("touchmove", this.handleOuterTouchMoveEvent(touchStartTime, startTouchCenter, lasso, canvasMouseMove, oldScaleFactor, scaleFactor, startTouchDistance));
 
     var outer_background = vis.append("svg:rect")
       .attr("width", space_width)
@@ -278,43 +171,7 @@ export class View extends Context {
     this.dragGroup = vis.append("g");
 
 
-    RED.events.on("workspace:change", function (event) {
-      var chart = $("#chart");
-      if (event.old !== 0) {
-        workspaceScrollPositions[event.old] = {
-          left: chart.scrollLeft(),
-          top: chart.scrollTop()
-        };
-      }
-      var scrollStartLeft = chart.scrollLeft();
-      var scrollStartTop = chart.scrollTop();
-
-      activeSubflow = RED.nodes.subflow(event.workspace);
-
-      RED.menu.setDisabled("menu-item-workspace-edit", activeSubflow);
-      RED.menu.setDisabled("menu-item-workspace-delete", RED.workspaces.count() == 1 || activeSubflow);
-
-      if (workspaceScrollPositions[event.workspace]) {
-        chart.scrollLeft(workspaceScrollPositions[event.workspace].left);
-        chart.scrollTop(workspaceScrollPositions[event.workspace].top);
-      } else {
-        chart.scrollLeft(0);
-        chart.scrollTop(0);
-      }
-      var scrollDeltaLeft = chart.scrollLeft() - scrollStartLeft;
-      var scrollDeltaTop = chart.scrollTop() - scrollStartTop;
-      if (mouse_position != null) {
-        mouse_position[0] += scrollDeltaLeft;
-        mouse_position[1] += scrollDeltaTop;
-      }
-      clearSelection();
-      RED.nodes.eachNode(function (n) {
-        n.dirty = true;
-      });
-      updateSelection();
-      updateActiveNodes();
-      redraw();
-    });
+    RED.events.on("workspace:change", (evt) => this.handleWorkSpaceChangeEvent(evt, workspaceScrollPositions));
 
     $("#btn-zoom-out").click(function () {
       zoomOut();
@@ -859,9 +716,9 @@ export class View extends Context {
           var existingLinks = [];
           if (selected_link &&
             ((mousedown_port_type === PORT_TYPE_OUTPUT &&
-                selected_link.source === mousedown_node &&
-                selected_link.sourcePort === mousedown_port_index
-              ) ||
+              selected_link.source === mousedown_node &&
+              selected_link.sourcePort === mousedown_port_index
+            ) ||
               (mousedown_port_type === PORT_TYPE_INPUT &&
                 selected_link.target === mousedown_node
               ))
@@ -1075,15 +932,15 @@ export class View extends Context {
 
   canvasMouseUp() {
     var i;
-    var historyEvent;
-    if (mouse_mode === RED.state.QUICK_JOINING) {
+    var historyEvent;    
+    if (this.mouse_mode === this.RED.state.QUICK_JOINING) {
       return;
     }
-    if (mousedown_node && mouse_mode == RED.state.JOINING) {
+    if (this.mousedown_node && this.mouse_mode == this.RED.state.JOINING) {
       var removedLinks = [];
-      for (i = 0; i < drag_lines.length; i++) {
-        if (drag_lines[i].link) {
-          removedLinks.push(drag_lines[i].link)
+      for (i = 0; i < this.drag_lines.length; i++) {
+        if (this.drag_lines[i].link) {
+          removedLinks.push(this.drag_lines[i].link)
         }
       }
       historyEvent = {
@@ -1091,10 +948,10 @@ export class View extends Context {
         links: removedLinks,
         dirty: RED.nodes.dirty()
       };
-      RED.history.push(historyEvent);
-      hideDragLines();
+      this.RED.history.push(historyEvent);
+      this.hideDragLines();
     }
-    if (lasso) {
+    if (this.lasso) {
       var x = parseInt(lasso.attr("x"));
       var y = parseInt(lasso.attr("y"));
       var x2 = x + parseInt(lasso.attr("width"));
@@ -1134,13 +991,13 @@ export class View extends Context {
         });
       }
       updateSelection();
-      lasso.remove();
-      lasso = null;
-    } else if (mouse_mode == RED.state.DEFAULT && mousedown_link == null && !d3.event.ctrlKey && !d3.event.metaKey) {
-      clearSelection();
-      updateSelection();
+      this.lasso.remove();
+      this.lasso = null;
+    } else if (this.mouse_mode == this.RED.state.DEFAULT && this.mousedown_link == null && !d3.event.ctrlKey && !d3.event.metaKey) {
+      this.clearSelection();
+      this.updateSelection();
     }
-    if (mouse_mode == RED.state.MOVING_ACTIVE) {
+    if (this.mouse_mode == this.RED.state.MOVING_ACTIVE) {
       if (moving_set.length > 0) {
         var ns = [];
         for (var j = 0; j < moving_set.length; j++) {
@@ -1187,19 +1044,19 @@ export class View extends Context {
         }
       }
     }
-    if (mouse_mode == RED.state.MOVING || mouse_mode == RED.state.MOVING_ACTIVE) {
+    if (this.mouse_mode == this.RED.state.MOVING || this.mouse_mode == this.RED.state.MOVING_ACTIVE) {
       for (i = 0; i < moving_set.length; i++) {
         delete moving_set[i].ox;
         delete moving_set[i].oy;
       }
     }
-    if (mouse_mode == RED.state.IMPORT_DRAGGING) {
-      RED.keyboard.remove("escape");
+    if (this.mouse_mode == this.RED.state.IMPORT_DRAGGING) {
+      this.RED.keyboard.remove("escape");
       updateActiveNodes();
       RED.nodes.dirty(true);
     }
-    resetMouseVars();
-    redraw();
+    this.resetMouseVars();
+    this.redraw();
   }
 
   zoomIn() {
@@ -1565,13 +1422,13 @@ export class View extends Context {
   }
 
   resetMouseVars() {
-    mousedown_node = null;
-    mouseup_node = null;
-    mousedown_link = null;
-    mouse_mode = 0;
-    mousedown_port_type = PORT_TYPE_OUTPUT;
-    activeSpliceLink = null;
-    spliceActive = false;
+    this.mousedown_node = null;
+    this.mouseup_node = null;
+    this.mousedown_link = null;
+    this.mouse_mode = 0;
+    this.mousedown_port_type = this.PORT_TYPE_OUTPUT;
+    this.activeSpliceLink = null;
+    this.spliceActive = false;
     d3.select(".link_splice").classed("link_splice", false);
     if (spliceTimer) {
       clearTimeout(spliceTimer);
@@ -1797,8 +1654,8 @@ export class View extends Context {
         var labelHeight2 = labelHeight - 4;
         portLabelHover.append("path").attr("d",
           portType === PORT_TYPE_INPUT ?
-          "M0 0 l -5 -5 v -" + (labelHeight1) + " q 0 -2 -2 -2 h -" + labelWidth + " q -2 0 -2 2 v " + (labelHeight2) + " q 0 2 2 2 h " + labelWidth + " q 2 0 2 -2 v -" + (labelHeight1) + " l 5 -5" :
-          "M0 0 l 5 -5 v -" + (labelHeight1) + " q 0 -2 2 -2 h " + labelWidth + " q 2 0 2 2 v " + (labelHeight2) + " q 0 2 -2 2 h -" + labelWidth + " q -2 0 -2 -2 v -" + (labelHeight1) + " l -5 -5"
+            "M0 0 l -5 -5 v -" + (labelHeight1) + " q 0 -2 -2 -2 h -" + labelWidth + " q -2 0 -2 2 v " + (labelHeight2) + " q 0 2 2 2 h " + labelWidth + " q 2 0 2 -2 v -" + (labelHeight1) + " l 5 -5" :
+            "M0 0 l 5 -5 v -" + (labelHeight1) + " q 0 -2 2 -2 h " + labelWidth + " q 2 0 2 2 v " + (labelHeight2) + " q 0 2 -2 2 h -" + labelWidth + " q -2 0 -2 -2 v -" + (labelHeight1) + " l -5 -5"
         );
         var y = -labelHeight / 2 - 2;
         lines.forEach(function (l, i) {
@@ -2573,19 +2430,19 @@ export class View extends Context {
               });
             }
             thisNode.selectAll("text.node_label").text(function (d, i) {
-                var l = "";
-                if (d._def.label) {
-                  l = d._def.label;
-                  try {
-                    l = (typeof l === "function" ? l.call(d) : l) || "";
-                    l = RED.text.bidi.enforceTextDirectionWithUCC(l);
-                  } catch (err) {
-                    console.log("Definition error: " + d.type + ".label", err);
-                    l = d.type;
-                  }
+              var l = "";
+              if (d._def.label) {
+                l = d._def.label;
+                try {
+                  l = (typeof l === "function" ? l.call(d) : l) || "";
+                  l = RED.text.bidi.enforceTextDirectionWithUCC(l);
+                } catch (err) {
+                  console.log("Definition error: " + d.type + ".label", err);
+                  l = d.type;
                 }
-                return l;
-              })
+              }
+              return l;
+            })
               .attr("y", function (d) {
                 return (d.h / 2) - 1;
               })
@@ -2894,28 +2751,28 @@ export class View extends Context {
           linkG.append("svg:path").attr("class", "link_flow_link")
             .attr("class", "link_link")
             .attr("d",
-              "M " + stemLength + " 0 " +
-              "C " + (stemLength + (1.7 * branchLength)) + " " + 0 +
-              " " + (stemLength + (0.1 * branchLength)) + " " + y + " " +
-              (stemLength + branchLength * 1.5) + " " + y + " "
+            "M " + stemLength + " 0 " +
+            "C " + (stemLength + (1.7 * branchLength)) + " " + 0 +
+            " " + (stemLength + (0.1 * branchLength)) + " " + y + " " +
+            (stemLength + branchLength * 1.5) + " " + y + " "
             );
           linkG.append("svg:path")
             .attr("class", "link_port")
             .attr("d",
-              "M " + (stemLength + branchLength * 1.5 + s * (linkWidth + 7)) + " " + (y - 12) + " " +
-              "h " + (-s * linkWidth) + " " +
-              "a 3 3 45 0 " + (s === 1 ? "0" : "1") + " " + (s * -3) + " 3 " +
-              "v 18 " +
-              "a 3 3 45 0 " + (s === 1 ? "0" : "1") + " " + (s * 3) + " 3 " +
-              "h " + (s * linkWidth)
+            "M " + (stemLength + branchLength * 1.5 + s * (linkWidth + 7)) + " " + (y - 12) + " " +
+            "h " + (-s * linkWidth) + " " +
+            "a 3 3 45 0 " + (s === 1 ? "0" : "1") + " " + (s * -3) + " 3 " +
+            "v 18 " +
+            "a 3 3 45 0 " + (s === 1 ? "0" : "1") + " " + (s * 3) + " 3 " +
+            "h " + (s * linkWidth)
             );
           linkG.append("svg:path")
             .attr("class", "link_port")
             .attr("d",
-              "M " + (stemLength + branchLength * 1.5 + s * (linkWidth + 10)) + " " + (y - 12) + " " +
-              "h " + (s * (linkWidth * 3)) + " " +
-              "M " + (stemLength + branchLength * 1.5 + s * (linkWidth + 10)) + " " + (y + 12) + " " +
-              "h " + (s * (linkWidth * 3))
+            "M " + (stemLength + branchLength * 1.5 + s * (linkWidth + 10)) + " " + (y - 12) + " " +
+            "h " + (s * (linkWidth * 3)) + " " +
+            "M " + (stemLength + branchLength * 1.5 + s * (linkWidth + 10)) + " " + (y + 12) + " " +
+            "h " + (s * (linkWidth * 3))
             ).style("stroke-dasharray", "12 3 8 4 3");
           linkG.append("rect").attr("class", "port link_port")
             .attr("x", stemLength + branchLength * 1.5 - 4 + (s * 4))
@@ -3266,6 +3123,161 @@ export class View extends Context {
     } else {
       gridSize = v;
       updateGrid();
+    }
+  }
+
+  handleD3MouseDownEvent(evt) {
+    this.focusView();
+  }
+
+  handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp) {
+    clearTimeout(touchStartTime);
+    touchStartTime = null;    
+    if (this.RED.touch.radialMenu.active()) {
+      return;
+    }
+    if (lasso) {
+      outer_background.attr("fill", "#fff");
+    }
+    canvasMouseUp.call(this);
+  }
+
+  handleOuterTouchStartEvent(touchStartTime, startTouchCenter, scaleFactor, startTouchDistance, touchLongPressTimeout) {
+    var touch0;
+    if (d3.event.touches.length > 1) {
+      clearTimeout(touchStartTime);
+      touchStartTime = null;
+      d3.event.preventDefault();
+      touch0 = d3.event.touches.item(0);
+      var touch1 = d3.event.touches.item(1);
+      var a = touch0["pageY"] - touch1["pageY"];
+      var b = touch0["pageX"] - touch1["pageX"];
+
+      var offset = $("#chart").offset();
+      var scrollPos = [$("#chart").scrollLeft(), $("#chart").scrollTop()];
+      startTouchCenter = [
+        (touch1["pageX"] + (b / 2) - offset.left + scrollPos[0]) / scaleFactor,
+        (touch1["pageY"] + (a / 2) - offset.top + scrollPos[1]) / scaleFactor
+      ];
+      moveTouchCenter = [
+        touch1["pageX"] + (b / 2),
+        touch1["pageY"] + (a / 2)
+      ]
+      startTouchDistance = Math.sqrt((a * a) + (b * b));
+    } else {
+      var obj = d3.select(document.body);
+      touch0 = d3.event.touches.item(0);
+      var pos = [touch0.pageX, touch0.pageY];
+      startTouchCenter = [touch0.pageX, touch0.pageY];
+      startTouchDistance = 0;
+      var point = d3.touches(this)[0];
+      touchStartTime = setTimeout(function () {
+        touchStartTime = null;
+        this.showTouchMenu(obj, pos);
+        //lasso = vis.append("rect")
+        //    .attr("ox",point[0])
+        //    .attr("oy",point[1])
+        //    .attr("rx",2)
+        //    .attr("ry",2)
+        //    .attr("x",point[0])
+        //    .attr("y",point[1])
+        //    .attr("width",0)
+        //    .attr("height",0)
+        //    .attr("class","lasso");
+        //outer_background.attr("fill","#e3e3f3");
+      }, touchLongPressTimeout);
+    }
+  }
+
+  handleOuterTouchMoveEvent(touchStartTime, startTouchCenter, lasso, canvasMouseMove, oldScaleFactor, scaleFactor, startTouchDistance) {
+    if (this.RED.touch.radialMenu.active()) {
+      d3.event.preventDefault();
+      return;
+    }
+    var touch0;
+    if (d3.event.touches.length < 2) {
+      if (touchStartTime) {
+        touch0 = d3.event.touches.item(0);
+        var dx = (touch0.pageX - startTouchCenter[0]);
+        var dy = (touch0.pageY - startTouchCenter[1]);
+        var d = Math.abs(dx * dx + dy * dy);
+        if (d > 64) {
+          clearTimeout(touchStartTime);
+          touchStartTime = null;
+        }
+      } else if (lasso) {
+        d3.event.preventDefault();
+      }
+      canvasMouseMove.call(this);
+    } else {
+      touch0 = d3.event.touches.item(0);
+      var touch1 = d3.event.touches.item(1);
+      var a = touch0["pageY"] - touch1["pageY"];
+      var b = touch0["pageX"] - touch1["pageX"];
+      var offset = $("#chart").offset();
+      var scrollPos = [$("#chart").scrollLeft(), $("#chart").scrollTop()];
+      var moveTouchDistance = Math.sqrt((a * a) + (b * b));
+      var touchCenter = [
+        touch1["pageX"] + (b / 2),
+        touch1["pageY"] + (a / 2)
+      ];
+
+      if (!isNaN(moveTouchDistance)) {
+        oldScaleFactor = scaleFactor;
+        scaleFactor = Math.min(2, Math.max(0.3, scaleFactor + (Math.floor(((moveTouchDistance * 100) - (startTouchDistance * 100))) / 10000)));
+
+        var deltaTouchCenter = [ // Try to pan whilst zooming - not 100%
+          startTouchCenter[0] * (scaleFactor - oldScaleFactor), //-(touchCenter[0]-moveTouchCenter[0]),
+          startTouchCenter[1] * (scaleFactor - oldScaleFactor) //-(touchCenter[1]-moveTouchCenter[1])
+        ];
+
+        startTouchDistance = moveTouchDistance;
+        moveTouchCenter = touchCenter;
+
+        $("#chart").scrollLeft(scrollPos[0] + deltaTouchCenter[0]);
+        $("#chart").scrollTop(scrollPos[1] + deltaTouchCenter[1]);
+        this.redraw();
+      }
+    }
+  }
+
+  handleWorkSpaceChangeEvent(evt, workspaceScrollPositions) {
+    {
+      var chart = $("#chart");
+      if (event.old !== 0) {
+        workspaceScrollPositions[event.old] = {
+          left: chart.scrollLeft(),
+          top: chart.scrollTop()
+        };
+      }
+      var scrollStartLeft = chart.scrollLeft();
+      var scrollStartTop = chart.scrollTop();
+
+      activeSubflow = this.RED.nodes.subflow(event.workspace);
+
+      this.RED.menu.setDisabled("menu-item-workspace-edit", activeSubflow);
+      this.RED.menu.setDisabled("menu-item-workspace-delete", this.RED.workspaces.count() == 1 || activeSubflow);
+
+      if (workspaceScrollPositions[event.workspace]) {
+        chart.scrollLeft(workspaceScrollPositions[event.workspace].left);
+        chart.scrollTop(workspaceScrollPositions[event.workspace].top);
+      } else {
+        chart.scrollLeft(0);
+        chart.scrollTop(0);
+      }
+      var scrollDeltaLeft = chart.scrollLeft() - scrollStartLeft;
+      var scrollDeltaTop = chart.scrollTop() - scrollStartTop;
+      if (mouse_position != null) {
+        mouse_position[0] += scrollDeltaLeft;
+        mouse_position[1] += scrollDeltaTop;
+      }
+      this.clearSelection();
+      this.RED.nodes.eachNode(function (n) {
+        n.dirty = true;
+      });
+      this.updateSelection();
+      this.updateActiveNodes();
+      this.redraw();
     }
   }
 }

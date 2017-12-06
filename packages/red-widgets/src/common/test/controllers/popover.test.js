@@ -31,7 +31,11 @@ beforeEach(() => {
     target: $('#popover'),
     content: 'My popover',
     active: true,
-    width:"tere"
+    width: "tere",
+    delay: {
+      show: 300,
+      hide: 300
+    }
   })
 })
 
@@ -76,23 +80,22 @@ test('Popover: close', () => {
 })
 
 test('Popover: close with option', () => {
-  widgetElem.active=false;
-  widgetElem.trigger ="hover"
+  widgetElem.active = false;
+  widgetElem.trigger = "hover"
   let closed = widgetElem.close()
   expect(closed).toBe(widgetElem)
   expect(closed.active).toBeFalsy()
 })
 
 test('Popover: open', () => {
-  let opened = widgetElem.open()
-  expect(opened).toBe(widgetElem)
-  expect(opened.active).toBeTruthy()
+  let opened = widgetElem.open();
+  expect(widgetElem.active).toBeTruthy();
 })
 
 test('Popover: open with properties', () => {
   widgetElem.active = true;
   widgetElem.size = "small";
-  widgetElem.content = function () { }
+  widgetElem.content = function () { return $("<div></div>") }
   widgetElem.width = "test";
   let opened = widgetElem.open()
   expect(opened).toBe(widgetElem)
@@ -118,8 +121,41 @@ test('Popover: open', () => {
     content: 'My popover',
     size: "small",
     active: true,
-    width:"tst"
+    width: "tst"
   })
   let opened = popup.openPopup()
-  // expect(opened).toBe(widgetElem)
+  expect(opened).not.toBe(widgetElem)
+})
+
+
+test('Popover: openPopup with different options ', () => {
+  var popup = createPopup({
+    target: $('#popover'),
+    content: 'My popover',
+    size: "small",
+    active: true,
+    width: "15",
+    direction: "left"
+  })
+  popup.openPopup();
+  expect(popup).not.toBe(widgetElem);
+})
+
+test('Popover: closePopup with different options ', () => {
+  widgetElem.trigger = "click";
+  let popup = widgetElem.closePopup();
+  widgetElem.target.trigger("mouseenter");
+  expect(widgetElem.active).toBeTruthy();
+})
+
+test('Popover: target mouseleave', () => {
+  let popup = widgetElem.closePopup();
+  widgetElem.target.trigger("mouseleave");
+  expect(popup.active).toBe(true);
+})
+
+test('Popover: target click', () => {
+  let popup = widgetElem.closePopup();
+  widgetElem.timer = null;
+  widgetElem.target.trigger("click");
 })

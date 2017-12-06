@@ -56,6 +56,7 @@ export class Popover {
     this.delay = options.delay;
     this.width = options.width || "auto";
     var size = options.size || "default";
+    this.active = options.active || true;
     if (!deltaSizes[size]) {
       throw new Error("Invalid RED.popover size value:", size);
     }
@@ -72,7 +73,8 @@ export class Popover {
       size,
       content,
       width,
-      div
+      div,
+      delay
     } = this
     if (active) {
       div = $('<div class="red-ui-popover red-ui-popover-' + direction + '"></div>').appendTo("body");
@@ -80,7 +82,7 @@ export class Popover {
         div.addClass("red-ui-popover-size-" + size);
       }
       if (typeof content === 'function') {
-        content.call(res).appendTo(div);
+        content.call().appendTo(div);
       } else {
         div.html(content);
       }
@@ -117,7 +119,9 @@ export class Popover {
       trigger,
       active,
       timer,
-      div
+      div,
+      target,
+      delay
     } = this
 
     if (!active) {
@@ -130,24 +134,27 @@ export class Popover {
     }
 
     if (trigger === 'hover') {
-
       target.on('mouseenter', (e) => {
         clearTimeout(timer);
         active = true;
-        timer = setTimeout(openPopup, delay.show);
+        timer = setTimeout(this.openPopup, this.delay.show);
       });
       target.on('mouseleave', (e) => {
         if (timer) {
           clearTimeout(timer);
         }
         active = false;
-        setTimeout(closePopup, delay.hide);
+        setTimeout(this.closePopup, this.delay.hide);
       });
     } else if (trigger === 'click') {
       target.click((e) => {
         e.preventDefault();
         e.stopPropagation();
+        console.log(this.active)
+        console.log(active)
         active = !active;
+        console.log(active)
+        console.log(this.active)
         if (!active) {
           this.closePopup();
         } else {
