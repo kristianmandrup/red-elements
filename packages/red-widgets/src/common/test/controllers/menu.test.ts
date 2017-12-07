@@ -5,7 +5,6 @@ import {
   RED,
   controllers
 } from '../imports'
-
 const {
   Menu
 } = controllers

@@ -24,6 +24,7 @@ beforeAll(() => {
 
 describe('Panel', () => {
   test('is a class', () => {
+    // console.log(clazz)
     expect(typeof clazz).toBe('function')
   })
 })

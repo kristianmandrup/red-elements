@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  default as $
-} from 'jquery'
+
+import * as $ from "jquery";
 import { IRED, TYPES, container } from "../../setup/setup";
 import getDecorators from "inversify-inject-decorators";
 import { Container, injectable, tagged, named } from "inversify";
