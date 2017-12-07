@@ -52,11 +52,12 @@ test('Panel: can NOT be created from id unless has 2 child elements', () => {
 test('Panel: can be created from id when has 2 child elements', () => {
   let widgetElem = makePanel({
     id: 'valid-panel',
-    resize(newHeights1, newHeights2){}
+    resize(newHeights1, newHeights2) { }
   })
-  widgetElem.modifiedHeights=true;
+  console.log("WIDGET ELEME", widgetElem);
+  widgetElem.modifiedHeights = true;
   widgetElem.resize(20);
-  widgetElem.modifiedHeights=false;
+  widgetElem.modifiedHeights = false;
   widgetElem.resize(30);
   expect(widgetElem).toBeDefined()
   expect(typeof widgetElem.resize).toBe('function')

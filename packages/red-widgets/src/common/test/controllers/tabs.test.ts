@@ -27,16 +27,7 @@ let widgetElem
 beforeEach(() => {
   widgetElem = new Tabs({
     id: 'tabs'
-  }, {
-      text: {
-        bidi: {
-          // for renameTab
-          resolveBaseTextDir(label) {
-            return label
-          }
-        }
-      }
-    })
+  })
 })
 test('Tabs: is a class', () => {
   expect(typeof clazz).toBe('function')
@@ -72,17 +63,10 @@ test('Tabs: widget can be created with element: option', () => {
 test('Tabs: widget can set RED as 2nd option', () => {
   let el = document.createElement('div')
   let element = $(el)
-  let RED = {
-    text: {
-      bidi: {
-
-      }
-    }
-  }
   let tabs = new Tabs({
     element
-  }, RED)
-  expect(tabs.RED).toBe(RED)
+  })
+  expect(tabs.RED).toBeDefined()
 })
 
 
@@ -168,7 +152,7 @@ const _RED = {
 test('Tabs: updateScroll with blank div', () => {
   let options = blankDivOptions;
   let RED = _RED;
-  let ele = new Tabs(options, RED);
+  let ele = new Tabs(options);
   let updated = ele.updateScroll();
   expect(updated).toBe(ele);
   expect(ele.scrollLeft.is(":visible")).toBe(false);
@@ -198,7 +182,6 @@ test('Tabs: activateTab', () => {
     id: "tabs",
     scrollable: true
   });
-  console.log("from function")
   let activated = ele.activateTab(link)
   expect(activated).toBe(ele)
 })

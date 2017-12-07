@@ -1,8 +1,6 @@
 // import { Bottle } from "../../node_modules/bottlejs/dist/bottle";
 
 import { Menu } from "../common/controllers/menu";
-import { MenuFactory } from "../common/controllers/menu.factory";
-
 // var inversify = require("inversify");
 // require("reflect-metadata");
 import { Container, injectable, tagged, named } from "inversify";
@@ -13,6 +11,7 @@ export let TYPES = { RED: "IRED" };
 export interface IRED {
   settings: any;
   actions: any;
+  text: any;
 }
 
 @injectable()
@@ -25,6 +24,14 @@ export class RED implements IRED {
   };
   public actions = {
     get(callback) { }
+  }
+  public text = {
+    bidi: {
+      // for renameTab
+      resolveBaseTextDir(label) {
+        return label;
+      }
+    }
   }
 }
 container.bind<IRED>(TYPES.RED).to(RED);

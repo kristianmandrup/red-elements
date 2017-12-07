@@ -113,7 +113,7 @@ test('Stack: add(entry) if entry is not object', () => {
 })
 
 test('Stack : toggle is function', () => {
-  let entry = { expanded: true };
+  let entry = { expanded: true, visible: false };
   let addedEntry = widgetElem.add(entry)
   let isExpanded = addedEntry.toggle();
   expect(typeof addedEntry.toggle).toBe('function');
@@ -139,16 +139,7 @@ test('Stack: hide()', () => {
   expect(hidden.visible).toBeFalsy()
 })
 
-test('Stack: hide() with entries', () => {
-  widgetElem.entries = [{
-    container: {
-      show: () => { }
-    }
-  }];
-  let hidden = widgetElem.hide();
-  expect(hidden).toBeDefined()
-  expect(hidden.visible).toBeFalsy()
-})
+
 
 test('Stack: show() with entries', () => {
   widgetElem.entries = [{
@@ -158,7 +149,7 @@ test('Stack: show() with entries', () => {
   }];
   let hidden = widgetElem.show();
   expect(hidden).toBeDefined()
-  expect(hidden.visible).toBeFalsy()
+  expect(hidden.visible).not.toBeFalsy()
 })
 
 test('Stack: header click()', () => {
@@ -179,3 +170,14 @@ test('Stack: handle header clicked event with options singleExpanded to false', 
   widgetElem.handleHeaderClickedEvent({ singleExpanded: false }, entry, entries);
 })
 
+test('Stack: hide() with entries', () => {
+  widgetElem.entries = [{
+    container: {
+      show: () => { },
+      hide: () => { }
+    }
+  }];
+  let hidden = widgetElem.hide();
+  expect(hidden).toBeDefined()
+  expect(hidden.visible).toBeFalsy()
+})
