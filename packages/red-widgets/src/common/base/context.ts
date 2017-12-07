@@ -1,4 +1,5 @@
 export class BaseContext {
+  ctx: any;
   constructor(ctx) {
     this.ctx = ctx;
   }

@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  default as $
-} from 'jquery';
+import * as $ from "jquery";
 
 var deltaSizes = {
   "default": {
@@ -150,11 +148,8 @@ export class Popover {
       target.click((e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log(this.active)
         console.log(active)
         active = !active;
-        console.log(active)
-        console.log(this.active)
         if (!active) {
           this.closePopup();
         } else {

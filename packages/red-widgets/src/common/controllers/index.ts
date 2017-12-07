@@ -2,22 +2,22 @@ import {
   Menu
 }
   from './menu'
-// import {
-//   Panel
-// }
-//   from './panel'
-//import {
-//  Popover
-//}
-//from './popover'
-//import {
-//  Stack
-//}
-//from './stack'
-//import {
-//  Tabs
-//}
-//from './tabs'
+import {
+  Panel
+}
+  from './panel'
+import {
+  Popover
+}
+  from './popover'
+import {
+  Stack
+}
+  from './stack'
+import {
+  Tabs
+}
+  from './tabs'
 //import {
 //  default as CheckboxSet
 //}
@@ -49,10 +49,10 @@ import {
 
 export const controllers = {
   Menu,
-  // Panel,
-  // Popover,
-  // Stack,
-  // Tabs,
+  Panel,
+  Popover,
+  Stack,
+  Tabs,
   // CheckboxSet,
   // TypedInput,
   // EditableList,
@@ -64,10 +64,10 @@ export default controllers
 
 export {
   Menu,
-  // Panel,
-  // Popover,
-  // Stack,
-  // Tabs,
+  Panel,
+  Popover,
+  Stack,
+  Tabs,
   // CheckboxSet,
   // TypedInput,
   // EditableList,

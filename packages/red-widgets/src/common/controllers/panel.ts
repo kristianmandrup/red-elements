@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  default as $
-} from 'jquery';
-import { config } from 'bottlejs';
-
+import * as $ from "jquery";
 export class Panel {
+  modifiedHeights: any;
+  resize: any;
   constructor(options) {
     var container = options.container || $("#" + options.id);
     var children = container.children();
@@ -60,20 +58,18 @@ export class Panel {
       }
     });
 
-    return {
-      resize: function (height) {
-        var panelHeights = [$(children[0]).height(), $(children[1]).height()];
-        container.height(height);
-        if (this.modifiedHeights) {
-          var topPanelHeight = panelRatio * height;
-          var bottomPanelHeight = height - topPanelHeight - 48;
-          panelHeights = [topPanelHeight, bottomPanelHeight];
-          $(children[0]).height(panelHeights[0]);
-          $(children[1]).height(panelHeights[1]);
-        }
-        if (options.resize) {
-          options.resize(panelHeights[0], panelHeights[1]);
-        }
+    this.resize = function (height) {
+      var panelHeights = [$(children[0]).height(), $(children[1]).height()];
+      container.height(height);
+      if (this.modifiedHeights) {
+        var topPanelHeight = panelRatio * height;
+        var bottomPanelHeight = height - topPanelHeight - 48;
+        panelHeights = [topPanelHeight, bottomPanelHeight];
+        $(children[0]).height(panelHeights[0]);
+        $(children[1]).height(panelHeights[1]);
+      }
+      if (options.resize) {
+        options.resize(panelHeights[0], panelHeights[1]);
       }
     }
   }

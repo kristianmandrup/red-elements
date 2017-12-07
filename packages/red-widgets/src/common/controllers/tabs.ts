@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  default as $
-} from 'jquery'
+import * as $ from "jquery";
+import { IRED, TYPES, container } from "../../setup/setup";
+import getDecorators from "inversify-inject-decorators";
+import { Container, injectable, tagged, named } from "inversify";
+let { lazyInject } = getDecorators(container);
 
 import {
   Context
@@ -34,14 +36,13 @@ function rebind(varNames, ctx) {
 const {
   log
 } = console
-
 export class Tabs extends Context {
-
+  @lazyInject(TYPES.RED) RED: IRED;
+  options: any;
   // TODO: use dependency injection of RED instead
-  constructor(options = {}, RED) {
+  constructor(options = {}) {
     super(options)
     this.options = options || {}
-    this.RED = RED || options
     if (typeof options !== 'object') {
       this.handleError('Tabs must take an options object', {
         options
@@ -50,7 +51,6 @@ export class Tabs extends Context {
     var tabs = {};
     var currentTabWidth;
     var currentActiveTabWidth = 0;
-
     if (!(options.id || options.element)) {
       this.handleError('Tabs must take an id: or element: option for target element', {
         id: options.id,
@@ -97,7 +97,7 @@ export class Tabs extends Context {
       scrollLeft.on('mousedown', (evt) => this.scrollEventHandler(evt, '-=150'))
         .on('click', this.handleScrollMoveMouseClickEvent);
       scrollRight = $('<div class="red-ui-tab-button red-ui-tab-scroll red-ui-tab-scroll-right"><a href="#" style="display:none;"><i class="fa fa-caret-right"></i></a></div>').appendTo(wrapper).find("a");
-      scrollRight.on('mousedown', (evt) => scrollEventHandler(evt, '+=150'))
+      scrollRight.on('mousedown', (evt) => this.scrollEventHandler(evt, '+=150'))
         .on('click', this.handleScrollMoveMouseClickEvent);
     }
     const instVars = {
@@ -307,7 +307,7 @@ export class Tabs extends Context {
       currentActiveTabWidth = 0;
       var listWidth = Math.max(wrapper.width(), 12 + (tabWidth + 6) * tabCount);
       ul.width(listWidth);
-      updateScroll();
+      this.updateScroll();
     } else if (options.hasOwnProperty("minimumActiveTabWidth")) {
       if (tabWidth < options.minimumActiveTabWidth) {
         tabCount -= 1;
@@ -361,7 +361,7 @@ export class Tabs extends Context {
       if (tab.size() === 0) {
         tab = li.next();
       }
-      activateTab(tab.find("a"));
+      this.activateTab(tab.find("a"));
     }
     li.remove();
     if (options.onremove) {
@@ -378,7 +378,7 @@ export class Tabs extends Context {
       tabs,
       options,
       updateTabWidths,
-      RED
+      scrollContainer
     } = this
 
     let {
@@ -406,15 +406,14 @@ export class Tabs extends Context {
     var span = $('<span/>', {
       class: "bidiAware"
     }).text(tab.label).appendTo(link);
-
-    if (!(RED.text && RED.text.bidi && RED.text.bidi.resolveBaseTextDir)) {
+    if (!(this.RED.text && this.RED.text.bidi && this.RED.text.bidi.resolveBaseTextDir)) {
       this.handleError('addTab: mising RED.text.bidi.resolveBaseTextDir', {
-        text: RED.text,
-        RED
+        text: this.RED.text,
+        RED: this.RED
       })
     }
 
-    span.attr('dir', RED.text.bidi.resolveBaseTextDir(tab.label));
+    span.attr('dir', this.RED.text.bidi.resolveBaseTextDir(tab.label));
 
     link.on("click", onTabClick);
     link.on("dblclick", onTabDblClick);
@@ -425,7 +424,7 @@ export class Tabs extends Context {
       }).appendTo(li);
       closeLink.append('<i class="fa fa-times" />');
 
-      closeLink.on("click", function (event) {
+      closeLink.on("click", (event) => {
         event.preventDefault();
         this.removeTab(tab.id);
       });
@@ -551,7 +550,6 @@ export class Tabs extends Context {
     const {
       ul,
       tabs,
-      RED
     } = this
 
     if (!tabs[id]) {
@@ -565,7 +563,7 @@ export class Tabs extends Context {
     tabs[id].label = label;
     var tab = ul.find("a[href='#" + id + "']");
     tab.attr("title", label);
-    tab.find("span.bidiAware").text(label).attr('dir', RED.text.bidi.resolveBaseTextDir(label));
+    tab.find("span.bidiAware").text(label).attr('dir', this.RED.text.bidi.resolveBaseTextDir(label));
     this.updateTabWidths();
     return this
   }
