@@ -1,9 +1,14 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "es5",
+        "module": "systemjs",
+        "sourceMap": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "outDir": "./dist",
         "allowJs": true
-    }
+    },
+    "exclude": [
+        "node_modules"
+    ]
 }

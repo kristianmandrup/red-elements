@@ -5,14 +5,11 @@ import { MenuFactory } from "../common/controllers/menu.factory";
 
 // var inversify = require("inversify");
 // require("reflect-metadata");
-
-
-import getDecorators from "inversify-inject-decorators";
 import { Container, injectable, tagged, named } from "inversify";
 import "reflect-metadata";
 let container = new Container();
-let { lazyInject } = getDecorators(container);
 export let TYPES = { RED: "IRED" };
+
 export interface IRED {
   settings: any;
   actions: any;
