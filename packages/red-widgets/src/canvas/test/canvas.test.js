@@ -49,7 +49,7 @@ test.only('View: create', () => {
   expect(diff).toBeDefined()
 })
 
-test('View: configureHandlers', () => {
+test('View: configureD3', () => {
   view = create(ctx)
   const result = view.configureD3()
   expect(result).toBeDefined()
@@ -66,6 +66,13 @@ test('View: configureActions', () => {
   const result = view.configureActions()
   expect(result).toBeDefined()
 })
+
+test('View: configureEvents', () => {
+  view = create(ctx)
+  const result = view.configureEvents()
+  expect(result).toBeDefined()
+})
+
 
 test('View: configure', () => {
   view = create(ctx)

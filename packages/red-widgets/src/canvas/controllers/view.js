@@ -135,26 +135,22 @@ export class View extends Context {
 
     var PORT_TYPE_INPUT = 1;
     var PORT_TYPE_OUTPUT = 0;
+  }
 
-    this.configureD3()
-
-    this.grid = vis.append('g');
-    this.updateGrid();
-    this.dragGroup = vis.append('g');
-
-
-    RED.events.on('workspace:change', (evt) => this.handleWorkSpaceChangeEvent(evt, workspaceScrollPositions));
+  clearTimeout(timer) {
+    clearTimeout(timer)
   }
 
   configure() {
     this.configureD3()
     this.configureHandlers()
     this.configureActions()
+    this.configureEvents()
     return this
   }
 
   configureD3() {
-    const {
+    let {
       space_width,
       space_height,
       handleD3MouseDownEvent,
@@ -172,6 +168,9 @@ export class View extends Context {
       touchLongPressTimeout,
       oldScaleFactor,
     } = this
+
+    // TODO: use rebind?
+    handleOuterTouchEndEvent = handleOuterTouchEndEvent.bind(this)
 
     var outer = d3.select('#chart')
       .append('svg:svg')
@@ -205,7 +204,22 @@ export class View extends Context {
       vis,
       outer
     })
+    this.grid = vis.append('g');
+    this.updateGrid();
+    this.dragGroup = vis.append('g');
     return this
+  }
+
+  configureEvents() {
+    let {
+      RED,
+      handleWorkSpaceChangeEvent
+    } = this
+
+    // TODO: use rebind?
+    handleWorkSpaceChangeEvent = handleWorkSpaceChangeEvent.bind(this)
+
+    RED.events.on('workspace:change', (evt) => handleWorkSpaceChangeEvent(evt, workspaceScrollPositions));
   }
 
   configureHandlers() {
@@ -1778,7 +1792,11 @@ export class View extends Context {
   }
 
   portMouseOut(port, d, portType, portIndex) {
-    this.clearTimeout(portLabelHoverTimeout);
+    const {
+      clearTimeout
+    } = this
+
+    clearTimeout(portLabelHoverTimeout);
     if (portLabelHover) {
       portLabelHover.remove();
       portLabelHover = null;
@@ -3303,12 +3321,7 @@ export class View extends Context {
     const {
       RED,
       clearTimeout,
-      lasso,
-      outer_background,
-      canvasMouseUp
-    } = this
-    let {
-      touchStartTime
+      outer_background
     } = this
 
     clearTimeout(touchStartTime);
@@ -3322,18 +3335,18 @@ export class View extends Context {
     canvasMouseUp.call(this);
   }
 
-  handleOuterTouchStartEvent(touchStartTime, startTouchCenter, scaleFactor, startTouchDistance, touchLongPressTimeout) {
+  handleOuterTouchStartEvent(touchStartTime,
+    startTouchCenter,
+    scaleFactor,
+    startTouchDistance,
+    touchLongPressTimeout) {
     const {
       RED,
       clearTimeout,
       showTouchMenu
     } = this
     let {
-      touchStartTime,
-      touchLongPressTimeout,
-      startTouchCenter,
-      moveTouchCenter,
-      startTouchDistance
+      moveTouchCenter
     } = this
 
     var touch0;
@@ -3382,11 +3395,16 @@ export class View extends Context {
     }
   }
 
-  handleOuterTouchMoveEvent(touchStartTime, startTouchCenter, lasso, canvasMouseMove, oldScaleFactor, scaleFactor, startTouchDistance) {
+  handleOuterTouchMoveEvent(touchStartTime,
+    startTouchCenter,
+    lasso,
+    canvasMouseMove,
+    oldScaleFactor,
+    scaleFactor,
+    startTouchDistance) {
     const {
       RED,
-      clearTimeout,
-      lasso
+      clearTimeout
     } = this
 
     if (RED.touch.radialMenu.active()) {
