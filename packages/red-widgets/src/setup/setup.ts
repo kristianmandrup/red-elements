@@ -19,6 +19,8 @@ export interface IRED {
   nodes: any;
   sidebar: any;
   _: any;
+  tray: any;
+  tabs: any;
 }
 
 @injectable()
@@ -63,6 +65,13 @@ export class RED implements IRED {
     }
   }
   public _ = function () { }
+  public tray = {
+    close() { },
+    show() { }
+  }
+  public tabs = {
+    create(obj) { }
+  }
 }
 container.bind<IRED>(TYPES.RED).to(RED);
 export { container };
