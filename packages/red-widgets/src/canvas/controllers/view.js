@@ -26,6 +26,9 @@ const {
 export class View extends Context {
   constructor(ctx) {
     super(ctx)
+    log('View', {
+      ctx
+    })
     this.RED = ctx
     // console.log(ctx)
     // TODO: properties (ie. instance vars)
@@ -3326,6 +3329,12 @@ export class View extends Context {
 
     clearTimeout(touchStartTime);
     touchStartTime = null;
+    if (!RED.touch) {
+      this.handleError('handleOuterTouchEndEvent: RED missing touch object', {
+        RED
+      })
+    }
+
     if (RED.touch.radialMenu.active()) {
       return;
     }

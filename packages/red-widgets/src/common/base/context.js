@@ -4,7 +4,7 @@ export class BaseContext {
   }
 
   logWarning(msg, data) {
-    console.error(msg, data)
+    console.log(msg, data)
   }
 
   handleError(msg, data) {

@@ -1,5 +1,3 @@
-// const Nightmare = require('nightmare')
-// const nightmare = new Nightmare()
 import {
   controllers
 } from '../controllers'

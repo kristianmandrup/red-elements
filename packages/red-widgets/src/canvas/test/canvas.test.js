@@ -26,8 +26,7 @@ beforeAll(() => {
   document.documentElement.innerHTML = readPage('simple')
 })
 
-// use jest
-test.only('View: create', () => {
+function configCtx() {
   ctx.touch = {
     radialMenu: {
       active: () => {}
@@ -42,15 +41,23 @@ test.only('View: create', () => {
     IMPORT_DRAGGING: true
   }
   ctx.history = [];
-  let diff = create(ctx)
+
+  return ctx
+}
+
+// use jest
+test('View: create', () => {
+  let _ctx = configCtx()
+  let diff = create(_ctx)
   log(diff)
   // t.deepEqual(diff.currentDiff, {})
   // t.falsy(diff.diffVisible)
   expect(diff).toBeDefined()
 })
 
-test('View: configureD3', () => {
-  view = create(ctx)
+test.only('View: configureD3', () => {
+  let _ctx = configCtx()
+  view = create(_ctx)
   const result = view.configureD3()
   expect(result).toBeDefined()
 })
