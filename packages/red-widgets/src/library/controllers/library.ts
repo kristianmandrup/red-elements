@@ -17,9 +17,7 @@ import {
   Context
 } from './context'
 
-import {
-  default as $
-} from 'jquery'
+import * as $ from "jquery";
 import { LibraryUI } from '../controllers/library-ui'
 function rebind(varNames, ctx) {
   return varNames.reduce((acc, name) => {

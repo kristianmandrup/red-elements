@@ -2,9 +2,7 @@ import {
   Context
 } from './context'
 
-import {
-  default as $
-} from 'jquery'
+import * as $ from "jquery";
 
 var ace = require('brace');
 require('brace/mode/javascript');

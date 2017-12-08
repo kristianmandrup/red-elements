@@ -13,7 +13,7 @@ let events = {
   emit(property) { }
 }
 let view = {
-  focus() {}
+  focus() { }
 }
 let ctx = Object.assign({
   //actions,
@@ -33,14 +33,14 @@ beforeEach(() => {
 beforeAll(() => {
   // Searchbox(RED)
   // EditableList(RED)
-  document.documentElement.innerHTML = readPage('tray',__dirname)
+  document.documentElement.innerHTML = readPage('tray', __dirname)
 })
 
 let button = {
   id: 'my-button',
   text: 'click me',
   class: 'red',
-  click() {}
+  click() { }
 }
 
 let options = {
@@ -83,17 +83,17 @@ test('Tray: showTray', () => {
   expect(tray).toBeDefined()
 })
 
-test('Tray: close', async() => {
-   tray.show(options.basic)
-   tray.show(options.basic)
+test('Tray: close', async () => {
+  tray.show(options.basic)
+  tray.show(options.basic)
   let closed = await tray.close()
   expect(closed).toBeTruthy()
 })
 
-test('Tray: close', async() => {
+test('Tray: close', async () => {
   tray.show(options.basic)
- let closed = await tray.close()
- expect(closed).toBeTruthy()
+  let closed = await tray.close()
+  expect(closed).toBeTruthy()
 })
 
 
@@ -109,8 +109,8 @@ test('Tray: handleWindowResize', () => {
 
 test('Tray: append element can be start dragging', () => {
   tray.showTray(options.basic)
-  var elements=$(tray.editorStack).children();
-  var ele=$(elements[0]).data('ui-draggable');
+  var elements = $(tray.editorStack).children();
+  var ele = $(elements[0]).data('ui-draggable');
   ele.options.start(null, {
     position: { top: 50 }
   });
@@ -119,20 +119,20 @@ test('Tray: append element can be start dragging', () => {
 
 test('Tray: append element can be draggable', () => {
   tray.showTray(options.basic)
-  var elements=$(tray.editorStack).children();
-  var ele=$(elements[0]).data('ui-draggable');
+  var elements = $(tray.editorStack).children();
+  var ele = $(elements[0]).data('ui-draggable');
   ele.options.drag(null, {
-    position: { top: 50, left:52 }
+    position: { top: 50, left: 52 }
   });
   expect(typeof ele.options.start).toBe('function');
 })
 
 test('Tray: append element can be stop dragging', () => {
   tray.showTray(options.basic)
-  var elements=$(tray.editorStack).children();
-  var ele=$(elements[0]).data('ui-draggable');
+  var elements = $(tray.editorStack).children();
+  var ele = $(elements[0]).data('ui-draggable');
   ele.options.stop(null, {
-    position: { top: 50, left:52 }
+    position: { top: 50, left: 52 }
   });
   expect(typeof ele.options.stop).toBe('function');
 })

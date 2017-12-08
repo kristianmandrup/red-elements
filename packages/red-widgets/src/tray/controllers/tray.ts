@@ -16,16 +16,20 @@
 import {
   Context
 } from './context'
-import {
-  default as $
-} from 'jquery';
-
+import * as $ from "jquery";
+import { IRED, TYPES, container } from "../../setup/setup";
+import getDecorators from "inversify-inject-decorators";
+import { Container, injectable, tagged, named } from "inversify";
+let { lazyInject } = getDecorators(container);
 
 export class Tray extends Context {
+  @lazyInject(TYPES.RED) RED: IRED;
+  stack: any;
+  editorStack: any;
+  openingTray: boolean;
   constructor(ctx) {
     super(ctx)
-    const RED = ctx
-    this.RED = RED
+    const RED = this.RED;
     this.stack = [];
     this.editorStack = $("#editor-stack");
     this.openingTray = false;
@@ -36,8 +40,8 @@ export class Tray extends Context {
     $(window).resize(handleWindowResize);
     RED.events.on("sidebar:resize", handleWindowResize);
     $("#editor-shade").click(() => {
-      if (!openingTray) {
-        var tray = stack[stack.length - 1];
+      if (!this.openingTray) {
+        var tray = this.stack[this.stack.length - 1];
         if (tray && tray.primaryButton) {
           tray.primaryButton.click();
         }
@@ -83,8 +87,8 @@ export class Tray extends Context {
           if (stack.length > 0) {
             var oldTray = stack[stack.length - 1];
             oldTray.tray.appendTo("#editor-stack");
-            setTimeout(function () {
-              handleWindowResize();
+            setTimeout(() => {
+              this.handleWindowResize();
               oldTray.tray.css({
                 right: 0
               });
@@ -100,15 +104,15 @@ export class Tray extends Context {
             $("#editor-shade").hide();
             $("#palette-shade").hide();
             $(".sidebar-shade").hide();
-            RED.events.emit("editor:close");
-            RED.view.focus();
+            this.RED.events.emit("editor:close");
+            this.RED.view.focus();
           }
         }, 250)
       })
     }
   }
 
-  resize() {}
+  resize() { }
 
   showTray(options) {
     var editor;
@@ -166,10 +170,10 @@ export class Tray extends Context {
       primaryButton: primaryButton
     };
     this.stack.push(tray);
-    let handleWindowResize=this.handleWindowResize.bind(this);
-    let openingTray=this.openingTray;
+    let handleWindowResize = this.handleWindowResize.bind(this);
+    let openingTray = this.openingTray;
     if (!options.maximized) {
-      let editorStack=this.editorStack;
+      let editorStack = this.editorStack;
       el.draggable({
         handle: resizer,
         axis: "x",
@@ -231,7 +235,7 @@ export class Tray extends Context {
 
       tray.width = el.width();
       if (tray.width > $("#editor-stack").position().left - 8) {
-        tray.width = Math.max(0 /*tray.preferredWidth*/ , $("#editor-stack").position().left - 8);
+        tray.width = Math.max(0 /*tray.preferredWidth*/, $("#editor-stack").position().left - 8);
         el.width(tray.width);
       }
 

@@ -12,6 +12,13 @@ export interface IRED {
   settings: any;
   actions: any;
   text: any;
+  events: any;
+  view: any;
+  utils: any;
+  popover: any;
+  nodes: any;
+  sidebar: any;
+  _: any;
 }
 
 @injectable()
@@ -23,7 +30,15 @@ export class RED implements IRED {
     remove(id) { }
   };
   public actions = {
-    get(callback) { }
+    get(callback) { },
+    add(selector, elem) { }
+  }
+  public events = {
+    on(elem, fun) { },
+    emit(elm) { }
+  }
+  public view = {
+    focus() { }
   }
   public text = {
     bidi: {
@@ -33,6 +48,21 @@ export class RED implements IRED {
       }
     }
   }
+  public utils = {
+    getNodeIcon(def) { }
+  }
+  public popover = {
+    create(obj) { }
+  }
+  public nodes = {
+    subflow(index) { }
+  }
+  public sidebar = {
+    info: {
+      set(text) { }
+    }
+  }
+  public _ = function () { }
 }
 container.bind<IRED>(TYPES.RED).to(RED);
 export { container };
