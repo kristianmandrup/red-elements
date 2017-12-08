@@ -173,8 +173,14 @@ export class View extends Context {
     } = this
 
     // TODO: use rebind?
+    handleOuterTouchStartEvent = handleOuterTouchStartEvent.bind(this)
     handleOuterTouchEndEvent = handleOuterTouchEndEvent.bind(this)
 
+    log('create outer', {
+      space_width,
+      space_height,
+      handleD3MouseDownEvent
+    })
     var outer = d3.select('#chart')
       .append('svg:svg')
       .attr('width', space_width)
@@ -183,6 +189,14 @@ export class View extends Context {
       .style('cursor', 'crosshair')
       .on('mousedown', handleD3MouseDownEvent);
 
+    this.outer = outer
+
+    log('create vis', {
+      outer,
+      canvasMouseMove,
+      canvasMouseDown,
+      canvasMouseUp
+    })
     var vis = outer
       .append('svg:g')
       .on('dblclick.zoom', null)
@@ -191,25 +205,31 @@ export class View extends Context {
       .on('mousemove', canvasMouseMove)
       .on('mousedown', canvasMouseDown)
       .on('mouseup', canvasMouseUp)
+    this.vis = vis
+
+
+    vis
       .on('touchend', handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp))
       .on('touchcancel', canvasMouseUp)
       .on('touchstart', handleOuterTouchStartEvent(touchStartTime, startTouchCenter, scaleFactor, startTouchDistance, touchLongPressTimeout))
       .on('touchmove', handleOuterTouchMoveEvent(touchStartTime, startTouchCenter, lasso, canvasMouseMove, oldScaleFactor, scaleFactor, startTouchDistance));
 
+    log('create outer_background', {
+      vis,
+    })
     var outer_background = vis.append('svg:rect')
       .attr('width', space_width)
       .attr('height', space_height)
-      .attr('fill', '#fff');
+      .attr('fill', '#fff')
 
-    this.vis = vis
-    this.outer = outer
+
     log({
       vis,
       outer
     })
-    this.grid = vis.append('g');
-    this.updateGrid();
-    this.dragGroup = vis.append('g');
+    this.grid = vis.append('g')
+    this.updateGrid()
+    this.dragGroup = vis.append('g')
     return this
   }
 
@@ -2042,6 +2062,7 @@ export class View extends Context {
 
   redraw(updateActive) {
     const {
+      RED,
       updateActiveNodes,
       updateSelection,
       vis,
@@ -2049,7 +2070,11 @@ export class View extends Context {
       mouse_mode,
       scaleFactor,
       space_width,
-      space_height
+      space_height,
+      activeSubflow,
+      activeNodes,
+      activeLinks,
+      activeFlowLinks
     } = this
 
     if (updateActive) {
@@ -2065,7 +2090,17 @@ export class View extends Context {
     }
 
     vis.attr('transform', 'scale(' + scaleFactor + ')');
-    outer.attr('width', space_width * scaleFactor).attr('height', space_height * scaleFactor);
+
+    if (!outer) {
+      this.handleError('redraw: outer not yet defined', {
+        outer,
+        view: this
+      })
+    }
+
+    outer
+      .attr('width', space_width * scaleFactor)
+      .attr('height', space_height * scaleFactor);
 
     // Don't bother redrawing nodes if we're drawing links
     if (mouse_mode != RED.state.JOINING) {
@@ -2073,11 +2108,11 @@ export class View extends Context {
       var dirtyNodes = {};
 
       if (activeSubflow) {
-        var subflowOutputs = vis.selectAll('.subflowoutput').data(activeSubflow.out, function (d, i) {
+        var subflowOutputs = vis.selectAll('.subflowoutput').data(activeSubflow.out, (d, i) => {
           return d.id;
         });
         subflowOutputs.exit().remove();
-        var outGroup = subflowOutputs.enter().insert('svg:g').attr('class', 'node subflowoutput').attr('transform', function (d) {
+        var outGroup = subflowOutputs.enter().insert('svg:g').attr('class', 'node subflowoutput').attr('transform', (d) => {
           return 'translate(' + (d.x - 20) + ',' + (d.y - 20) + ')'
         });
         outGroup.each(function (d, i) {
@@ -2088,7 +2123,7 @@ export class View extends Context {
           // TODO: This is exactly the same set of handlers used for regular nodes - DRY
           .on('mouseup', nodeMouseUp)
           .on('mousedown', nodeMouseDown)
-          .on('touchstart', function (d) {
+          .on('touchstart', (d) => {
             var obj = d3.select(this);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
@@ -2099,7 +2134,7 @@ export class View extends Context {
             }, touchLongPressTimeout);
             nodeMouseDown.call(this, d)
           })
-          .on('touchend', function (d) {
+          .on('touchend', (d) => {
             clearTimeout(touchStartTime);
             touchStartTime = null;
             if (RED.touch.radialMenu.active()) {
@@ -3359,6 +3394,13 @@ export class View extends Context {
     } = this
 
     var touch0;
+    if (!d3.event) {
+      this.handleError('handleOuterTouchStartEvent: d3 missing event object', {
+        // d3
+        event: d3.event
+      })
+    }
+
     if (d3.event.touches.length > 1) {
       clearTimeout(touchStartTime);
       touchStartTime = null;
