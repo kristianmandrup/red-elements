@@ -1,5 +1,5 @@
-export class Context {
-  constructor(ctx) {
-    this.ctx = ctx;
-  }
-}
+import {
+  BaseContext
+} from '../../common'
+
+export class Context extends BaseContext {}
