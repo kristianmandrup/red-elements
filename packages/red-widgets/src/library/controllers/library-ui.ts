@@ -9,10 +9,12 @@ require('brace/mode/javascript');
 require('brace/theme/monokai');
 
 export class LibraryUI extends Context {
-  constructor(options) {
-    super(options.ctx || options)
-    const ctx = options.ctx || options
-    var libraryEditor;
+  libraryEditor: any;
+  selectedLibraryItem: any;
+  constructor(public options) {
+    super(options.ctx || options);
+    this.selectedLibraryItem = options.selectedLibraryItem || {};
+    const ctx = options.ctx || options;
     $('#node-input-name').css("width", "66%").after(
       '<div class="btn-group" style="margin-left: 5px;">' +
       '<a id="node-input-' + options.type + '-lookup" class="editor-button" data-toggle="dropdown"><i class="fa fa-book"></i> <i class="fa fa-caret-down"></i></a>' +
@@ -21,17 +23,22 @@ export class LibraryUI extends Context {
       '<li><a id="node-input-' + options.type + '-menu-save-library" tabindex="-1" href="#">' + ctx._("library.saveToLibrary") + '</a></li>' +
       '</ul></div>'
     );
-    $('#node-input-' + options.type + '-menu-open-library').click(function (e) {
+    // let {
+    //   buildFileList
+    // } = this.rebind([
+    //     'buildFileList'
+    //   ])
+    $('#node-input-' + options.type + '-menu-open-library').click((e) => {
       $("#node-select-library").children().remove();
       var bc = $("#node-dialog-library-breadcrumbs");
       bc.children().first().nextAll().remove();
-      libraryEditor.setValue('', -1);
+      this.libraryEditor.setValue('', -1);
 
-      $.getJSON("library/" + options.url, function (data) {
-        $("#node-select-library").append(buildFileList("/", data));
-        $("#node-dialog-library-breadcrumbs a").click(function (e) {
+      $.getJSON("library/" + options.url, (data) => {
+        $("#node-select-library").append(this.buildFileList("/", data));
+        $("#node-dialog-library-breadcrumbs a").click((e) => {
           $(this).parent().nextAll().remove();
-          $("#node-select-library").children().first().replaceWith(buildFileList("/", data));
+          $("#node-select-library").children().first().replaceWith(this.buildFileList("/", data));
           e.stopPropagation();
         });
         $("#node-dialog-library-lookup").dialog("open");
@@ -40,9 +47,9 @@ export class LibraryUI extends Context {
       e.preventDefault();
     });
 
-    $('#node-input-' + options.type + '-menu-save-library').click(function (e) {
+    $('#node-input-' + options.type + '-menu-save-library').click((e) => {
       //var found = false;
-      var name = $("#node-input-name").val().replace(/(^\s*)|(\s*$)/g, "");
+      var name = $("#node-input-name").val().toString().replace(/(^\s*)|(\s*$)/g, "");
 
       //var buildPathList = function(data,root) {
       //    var paths = [];
@@ -85,19 +92,23 @@ export class LibraryUI extends Context {
       $("#node-dialog-library-save").dialog("open");
       e.preventDefault();
     });
-    libraryEditor = ace.edit('node-select-library-text');
-    libraryEditor.setTheme("ace/theme/tomorrow");
+    this.libraryEditor = ace.edit('node-select-library-text');
+    this.libraryEditor.setTheme("ace/theme/tomorrow");
     if (options.mode) {
-      libraryEditor.getSession().setMode(options.mode);
+      this.libraryEditor.getSession().setMode(options.mode);
     }
-    libraryEditor.setOptions({
+    this.libraryEditor.setOptions({
       readOnly: true,
       highlightActiveLine: false,
       highlightGutterLine: false
     });
-    libraryEditor.renderer.$cursorLayer.element.style.opacity = 0;
-    libraryEditor.$blockScrolling = Infinity;
-
+    this.libraryEditor.renderer.$cursorLayer.element.style.opacity = 0;
+    this.libraryEditor.$blockScrolling = Infinity;
+    let {
+      saveToLibrary
+    } = this.rebind([
+        'saveToLibrary'
+      ])
     $("#node-dialog-library-lookup").dialog({
       title: ctx._("library.typeLibrary", {
         type: options.type
@@ -116,12 +127,12 @@ export class LibraryUI extends Context {
         text: ctx._("common.label.load"),
         class: "primary",
         click: function () {
-          if (selectedLibraryItem) {
+          if (this.selectedLibraryItem) {
             for (var i = 0; i < options.fields.length; i++) {
               var field = options.fields[i];
-              $("#node-input-" + field).val(selectedLibraryItem[field]);
+              $("#node-input-" + field).val(this.selectedLibraryItem[field]);
             }
-            options.editor.setValue(libraryEditor.getValue(), -1);
+            options.editor.setValue(this.libraryEditor.getValue(), -1);
           }
           $(this).dialog("close");
         }
@@ -206,22 +217,22 @@ export class LibraryUI extends Context {
       if (typeof v === "string") {
         // directory
         li = this.buildFileListItem(v);
-        li.onclick = (function () {
+        li.onclick = (() => {
           var dirName = v;
-          return function (e) {
+          return (e) => {
             var bcli = $('<li class="active"><span class="divider">/</span> <a href="#">' + dirName + '</a></li>');
-            $("a", bcli).click(function (e) {
+            $("a", bcli).click((e) => {
               $(this).parent().nextAll().remove();
-              $.getJSON("library/" + options.url + root + dirName, function (data) {
-                $("#node-select-library").children().first().replaceWith(buildFileList(root + dirName + "/", data));
+              $.getJSON("library/" + this.options.url + root + dirName, (data) => {
+                $("#node-select-library").children().first().replaceWith(this.buildFileList(root + dirName + "/", data));
               });
               e.stopPropagation();
             });
             var bc = $("#node-dialog-library-breadcrumbs");
             $(".active", bc).removeClass("active");
             bc.append(bcli);
-            $.getJSON("library/" + options.url + root + dirName, function (data) {
-              $("#node-select-library").children().first().replaceWith(buildFileList(root + dirName + "/", data));
+            $.getJSON("library/" + this.options.url + root + dirName, (data) => {
+              $("#node-select-library").children().first().replaceWith(this.buildFileList(root + dirName + "/", data));
             });
           }
         })();
@@ -231,14 +242,14 @@ export class LibraryUI extends Context {
         // file
         li = this.buildFileListItem(v);
         li.innerHTML = v.name;
-        li.onclick = (function () {
+        li.onclick = (() => {
           var item = v;
-          return function (e) {
+          return (e) => {
             $(".list-selected", ul).removeClass("list-selected");
             $(this).addClass("list-selected");
-            $.get("library/" + options.url + root + item.fn, function (data) {
-              selectedLibraryItem = item;
-              libraryEditor.setValue(data, -1);
+            $.get("library/" + this.options.url + root + item.fn, (data) => {
+              this.selectedLibraryItem = item;
+              this.libraryEditor.setValue(data, -1);
             });
           }
         })();
@@ -249,15 +260,15 @@ export class LibraryUI extends Context {
   }
 
   saveToLibrary(overwrite, options) {
-    var name = $("#node-input-name").val().replace(/(^\s*)|(\s*$)/g, "");
+    var name = $("#node-input-name").val().toString().replace(/(^\s*)|(\s*$)/g, "");
     var ctx = options.ctx;
     if (name === "") {
       name = ctx._("library.unnamedType", {
         type: options.type
       });
     }
-    var filename = $("#node-dialog-library-save-filename").val().replace(/(^\s*)|(\s*$)/g, "");
-    var pathname = $("#node-dialog-library-save-folder").val().replace(/(^\s*)|(\s*$)/g, "");
+    var filename = $("#node-dialog-library-save-filename").val().toString().replace(/(^\s*)|(\s*$)/g, "");
+    var pathname = $("#node-dialog-library-save-folder").val().toString().replace(/(^\s*)|(\s*$)/g, "");
     if (filename === "" || !/.+\.js$/.test(filename)) {
       ctx.notify(ctx._("library.invalidFilename"), "warning");
       return;
@@ -290,7 +301,7 @@ export class LibraryUI extends Context {
       //}
     }
     var queryArgs = [];
-    var data = {};
+    var data: any = {};
     for (var i = 0; i < options.fields.length; i++) {
       var field = options.fields[i];
       if (field == "name") {

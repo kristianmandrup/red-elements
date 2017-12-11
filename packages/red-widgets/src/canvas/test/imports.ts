@@ -3,11 +3,10 @@ import {
 } from '../controllers'
 
 export {
-  RED,
   readPage,
   ctx
 }
-from '../../test/setup'
+  from '../../test/setup'
 
 const {
   View

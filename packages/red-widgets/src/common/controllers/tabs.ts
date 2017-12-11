@@ -38,9 +38,17 @@ const {
 } = console
 export class Tabs extends Context {
   @lazyInject(TYPES.RED) RED: IRED;
+  scrollContainer: any;
   options: any;
+  tabs: any;
+  ul: any;
+  scrollLeft: any;
+  scrollRight: any;
+  wrapper: any;
+  currentTabWidth: any;
+  currentActiveTabWidth: any;
   // TODO: use dependency injection of RED instead
-  constructor(options = {}) {
+  constructor(options) {
     super(options)
     this.options = options || {}
     if (typeof options !== 'object') {
@@ -391,7 +399,7 @@ export class Tabs extends Context {
 
 
     tabs[tab.id] = tab;
-    var li = $("<li/>", {
+    var li: any = $("<li/>", {
       class: "red-ui-tab"
     }).appendTo(ul);
     li.attr('id', "red-ui-tab-" + (tab.id.replace(".", "-")));

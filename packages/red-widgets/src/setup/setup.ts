@@ -21,6 +21,17 @@ export interface IRED {
   _: any;
   tray: any;
   tabs: any;
+  history: any;
+  editor: any;
+  userSettings: any;
+  workspaces: any;
+  subflow: any;
+  state: any;
+  typeSearch: any;
+  touch: any;
+  keyboard: any;
+  menu: any;
+  notify(func, node);
 }
 
 @injectable()
@@ -57,7 +68,9 @@ export class RED implements IRED {
     create(obj) { }
   }
   public nodes = {
-    subflow(index) { }
+    subflow(index) { },
+    addLink(link) { },
+    removeLink(link) { }
   }
   public sidebar = {
     info: {
@@ -72,6 +85,48 @@ export class RED implements IRED {
   public tabs = {
     create(obj) { }
   }
+  public history = {
+    push(event) { }
+  }
+  public editor = {
+    validateNode(node) { }
+  }
+  public userSettings = {
+    toggle(elem) { }
+  }
+  public workspaces = {
+    active() { }
+  }
+  public subflow = {
+    refresh(val) { }
+  }
+  public state = {
+    QUICK_JOINING: true,
+    JOINING: true,
+    DEFAULT: true,
+    MOVING_ACTIVE: true,
+    MOVING: true,
+    IMPORT_DRAGGING: true
+  }
+  public typeSearch = {
+    show(obj) { }
+  }
+  public touch = {
+    radialMenu: {
+      active: () => { }
+    }
+  }
+  public keyboard = {
+    remove(selector) { },
+    add(selector) { }
+  }
+  /**
+   *  setDisabled
+   */
+  public menu = {
+    setDisabled() { }
+  }
+  notify(func, node) { }
 }
 container.bind<IRED>(TYPES.RED).to(RED);
 export { container };

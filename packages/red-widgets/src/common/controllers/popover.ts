@@ -42,6 +42,16 @@ export class Popover {
    * - width
    * - size (default or small)
    */
+  target: any;
+  direction: any;
+  trigger: any;
+  content: any;
+  delay: any;
+  width: any;
+  active: any;
+  size: string;
+  timer: any;
+  div: any;
   constructor(options) {
     if (!options.target) {
       throw new Error('Popover must take a target: option that is a jQuery element')
@@ -56,7 +66,7 @@ export class Popover {
     var size = options.size || "default";
     this.active = options.active || true;
     if (!deltaSizes[size]) {
-      throw new Error("Invalid RED.popover size value:", size);
+      throw new Error(`Invalid RED.popover size value: ${size}`);
     }
     this.size = size
 

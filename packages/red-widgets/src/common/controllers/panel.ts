@@ -26,7 +26,7 @@ export class Panel {
     }
 
     container.addClass("red-ui-panels");
-    var separator = $('<div class="red-ui-panels-separator"></div>').insertAfter(children[0]);
+    var separator: any = $('<div class="red-ui-panels-separator"></div>').insertAfter(children[0]);
     var startPosition;
     var panelHeights = [];
     this.modifiedHeights = false;

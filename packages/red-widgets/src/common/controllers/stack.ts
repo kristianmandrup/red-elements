@@ -24,7 +24,7 @@ export class Stack extends Context {
   container: any;
   entries: any;
   visible: any;
-  constructor(options = {}) {
+  constructor(private options: any = {}) {
     super(options)
     if (!options.container) {
       this.handleError(`Stack must take a container: option that is a jQuery element`, {
@@ -58,7 +58,7 @@ export class Stack extends Context {
     var header = $('<div class="palette-header"></div>').appendTo(entry.container);
     entry.content = $('<div></div>').appendTo(entry.container);
     if (entry.collapsible !== false) {
-      header.click(this.handleHeaderClickedEvent(this.options, entry, entries));
+      header.click(() => this.handleHeaderClickedEvent(this.options, entry, entries));
       var icon = $('<i class="fa fa-angle-down"></i>').appendTo(header);
 
       if (entry.expanded) {

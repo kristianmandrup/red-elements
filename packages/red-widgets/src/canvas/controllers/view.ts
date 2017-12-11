@@ -18,99 +18,88 @@ import {
 } from './context'
 
 import * as d3 from 'd3'
-
+import * as $ from 'jquery';
+import { IRED, TYPES, container } from '../../setup/setup';
+import getDecorators from 'inversify-inject-decorators';
+import { Container, injectable, tagged, named } from 'inversify';
+let { lazyInject } = getDecorators(container);
 const {
   log
 } = console
-
+const PORT_TYPE_INPUT = 1;
+const PORT_TYPE_OUTPUT = 0;
 export class View extends Context {
-  constructor(ctx) {
-    super(ctx)
-    log('View', {
-      ctx
-    })
-    this.RED = ctx
+  @lazyInject(TYPES.RED) RED: IRED;
+  space_width: any
+  space_height: any
+  lasso: any
+  scaleFactor: any
+  oldScaleFactor: any
+  scrollTop: any;
+  scrollLeft: any;
+  outer: any;
+  clipboard: any;
+  vis: any;
+  dragGroup: any;
+  grid: any;
+  snapGrid: any
+  gridsize: number = 20;
+  moving_set: any[] = [];
+  workspaceScrollPositions: any = {};
+  drag_lines: any[] = [];
+  lastSelection: any = null;
+  endMoveSet: boolean = false;
+  portLabelHoverTimeout: any = null;
+  portLabelHover: any = null;
+  activeSubflow: any = null;
+  activeNodes: any = [];
+  activeLinks: any = [];
+  activeFlowLinks: any = [];
+  node_width = 100;
+  mouse_mode = 0;
+  mousedown_link = null;
+  mousedown_node = null;
+  node_height = 30;
+  selected_link = null;
+  mouse_position = null;
+  mousedown_port_type = null;
+  mousedown_port_index = 0;
+  lineCurveScale: any;
+  clickElapsed = 0;
+  mouse_offset = [0, 0];
+  mouseup_node: any = null;
+  showStatus: any = false;
+  lastClickNode: any = null;
+  dblClickPrimed: any = null;
+  clickTime = 0;
+  activeSpliceLink: any;
+  spliceActive = false;
+  spliceTimer: any;
+  outer_background: any;
+  touchLongPressTimeout = 1000;
+  startTouchDistance = 0;
+  startTouchCenter = [];
+  moveTouchCenter = [];
+  touchStartTime: any = 0;
+  constructor() {
+    super({})
+    // this.RED = ctx
     // console.log(ctx)
     // TODO: properties (ie. instance vars)
     var space_width = 5000,
       space_height = 5000,
       lineCurveScale = 0.75,
-      scaleFactor = 1,
-      node_width = 100,
-      node_height = 30;
+      scaleFactor = 1;
 
-    var touchLongPressTimeout = 1000,
-      startTouchDistance = 0,
-      startTouchCenter = [],
-      moveTouchCenter = [],
-      touchStartTime = 0;
 
-    var workspaceScrollPositions = {};
 
-    var gridSize = 20;
     var snapGrid = false;
 
-    var activeSpliceLink;
-    var spliceActive = false;
-    var spliceTimer;
-
-    var activeSubflow = null;
-    var activeNodes = [];
-    var activeLinks = [];
-    var activeFlowLinks = [];
-
-    var selected_link = null,
-      mousedown_link = null,
-      mousedown_node = null,
-      mousedown_port_type = null,
-      mousedown_port_index = 0,
-      mouseup_node = null,
-      mouse_offset = [0, 0],
-      mouse_position = null,
-      mouse_mode = 0,
-      moving_set = [],
-      lasso = null,
-      showStatus = false,
-      lastClickNode = null,
-      dblClickPrimed = null,
-      clickTime = 0,
-      clickElapsed = 0;
-
-    var drag_lines = [],
-      lastSelection = null,
-      endMoveSet = false,
-      portLabelHoverTimeout = null,
-      portLabelHover = null;
-
     let instVars = {
-      drag_lines,
-      endMoveSet,
-      gridSize,
       snapGrid,
-      spliceActive,
-      activeNodes,
-      activeLinks,
-      activeFlowLinks,
-      mousedown_port_index,
-      mouse_offset,
-      mouse_mode,
-      moving_set,
-      showStatus,
-      clickTime,
-      clickElapsed,
-
       space_width,
       space_height,
-      lineCurveScale,
       scaleFactor,
-      node_width,
-      node_height,
-      touchLongPressTimeout,
-      startTouchDistance,
-      startTouchCenter,
-      moveTouchCenter,
-      touchStartTime,
-      workspaceScrollPositions
     }
     Object.keys(instVars).map(key => {
       this[key] = instVars[key]
@@ -121,10 +110,10 @@ export class View extends Context {
       canvasMouseDown,
       canvasMouseUp
     } = this.rebind([
-      'canvasMouseMove',
-      'canvasMouseDown',
-      'canvasMouseUp'
-    ])
+        'canvasMouseMove',
+        'canvasMouseDown',
+        'canvasMouseUp'
+      ])
 
     this.clipboard = '';
 
@@ -136,8 +125,7 @@ export class View extends Context {
       'grey': '#d3d3d3'
     }
 
-    var PORT_TYPE_INPUT = 1;
-    var PORT_TYPE_OUTPUT = 0;
+
   }
 
   clearTimeout(timer) {
@@ -159,9 +147,6 @@ export class View extends Context {
       handleD3MouseDownEvent,
       canvasMouseMove,
       canvasMouseDown,
-      canvasMouseUp,
-      handleOuterTouchEndEvent,
-      handleOuterTouchStartEvent,
       handleOuterTouchMoveEvent,
       touchStartTime,
       lasso,
@@ -172,9 +157,20 @@ export class View extends Context {
       oldScaleFactor,
     } = this
 
+    // handleOuterTouchStartEvent = handleOuterTouchStartEvent.bind(this)
+    // handleOuterTouchEndEvent = handleOuterTouchEndEvent.bind(this)
+
     // TODO: use rebind?
-    handleOuterTouchStartEvent = handleOuterTouchStartEvent.bind(this)
-    handleOuterTouchEndEvent = handleOuterTouchEndEvent.bind(this)
+    let {
+      handleOuterTouchStartEvent,
+      handleOuterTouchEndEvent,
+      canvasMouseUp
+    } = this.rebind([
+        'handleOuterTouchStartEvent',
+        'handleOuterTouchEndEvent',
+        'canvasMouseUp'
+      ])
+
 
     log('create outer', {
       space_width,
@@ -217,7 +213,7 @@ export class View extends Context {
     log('create outer_background', {
       vis,
     })
-    var outer_background = vis.append('svg:rect')
+    this.outer_background = vis.append('svg:rect')
       .attr('width', space_width)
       .attr('height', space_height)
       .attr('fill', '#fff')
@@ -234,15 +230,19 @@ export class View extends Context {
   }
 
   configureEvents() {
-    let {
-      RED,
-      handleWorkSpaceChangeEvent
-    } = this
+    // let {
+    //   handleWorkSpaceChangeEvent
+    // } = this
 
     // TODO: use rebind?
-    handleWorkSpaceChangeEvent = handleWorkSpaceChangeEvent.bind(this)
+    // handleWorkSpaceChangeEvent = handleWorkSpaceChangeEvent.bind(this);
+    let {
+      handleWorkSpaceChangeEvent,
+    } = this.rebind([
+        'handleWorkSpaceChangeEvent'
+      ])
 
-    RED.events.on('workspace:change', (evt) => handleWorkSpaceChangeEvent(evt, workspaceScrollPositions));
+    this.RED.events.on('workspace:change', (evt) => handleWorkSpaceChangeEvent(evt, this.workspaceScrollPositions));
   }
 
   configureHandlers() {
@@ -266,7 +266,7 @@ export class View extends Context {
     $('#btn-zoom-in').click(() => {
       zoomIn();
     });
-    $('#chart').on('DOMMouseScroll mousewheel', (evt) => {
+    $('#chart').on('DOMMouseScroll mousewheel', (evt: any) => {
       if (evt.altKey) {
         evt.preventDefault();
         evt.stopPropagation();
@@ -282,27 +282,27 @@ export class View extends Context {
     // Handle nodes dragged from the palette
     $('#chart').droppable({
       accept: '.palette_node',
-      drop: (event, ui) => {
+      drop: (event: any, ui: any) => {
         d3.event = event;
         var selected_tool = ui.draggable[0].type;
-        var result = addNode(selected_tool);
+        var result = this.addNode(selected_tool, null, null);
         if (!result) {
           return;
         }
-        var historyEvent = result.historyEvent;
-        var nn = result.node;
+        var historyEvent: any = result.historyEvent;
+        var nn: any = result.node;
 
         var helperOffset = d3.touches(ui.helper.get(0))[0] || d3.mouse(ui.helper.get(0));
-        var mousePos = d3.touches(this)[0] || d3.mouse(this);
+        var mousePos: any = d3.touches(this)[0] || d3.mouse(this);
 
         mousePos[1] += this.scrollTop + ((nn.h / 2) - helperOffset[1]);
         mousePos[0] += this.scrollLeft + ((nn.w / 2) - helperOffset[0]);
-        mousePos[1] /= scaleFactor;
-        mousePos[0] /= scaleFactor;
+        mousePos[1] /= this.scaleFactor;
+        mousePos[0] /= this.scaleFactor;
 
-        if (snapGrid) {
-          mousePos[0] = gridSize * (Math.ceil(mousePos[0] / gridSize));
-          mousePos[1] = gridSize * (Math.ceil(mousePos[1] / gridSize));
+        if (this.snapGrid) {
+          mousePos[0] = this.gridsize * (Math.ceil(mousePos[0] / this.gridsize));
+          mousePos[1] = this.gridsize * (Math.ceil(mousePos[1] / this.gridsize));
         }
         nn.x = mousePos[0];
         nn.y = mousePos[1];
@@ -310,7 +310,7 @@ export class View extends Context {
         var spliceLink = $(ui.helper).data('splice');
         if (spliceLink) {
           // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
-          RED.nodes.removeLink(spliceLink);
+          this.RED.nodes.removeLink(spliceLink);
           var link1 = {
             source: spliceLink.source,
             sourcePort: spliceLink.sourcePort,
@@ -321,28 +321,28 @@ export class View extends Context {
             sourcePort: 0,
             target: spliceLink.target
           };
-          RED.nodes.addLink(link1);
-          RED.nodes.addLink(link2);
+          this.RED.nodes.addLink(link1);
+          this.RED.nodes.addLink(link2);
           historyEvent.links = [link1, link2];
           historyEvent.removedLinks = [spliceLink];
         }
 
-        RED.history.push(historyEvent);
-        RED.nodes.add(nn);
-        RED.editor.validateNode(nn);
-        RED.nodes.dirty(true);
+        this.RED.history.push(historyEvent);
+        this.RED.nodes.add(nn);
+        this.RED.editor.validateNode(nn);
+        this.RED.nodes.dirty(true);
         // auto select dropped node - so info shows (if visible)
         clearSelection();
         nn.selected = true;
-        moving_set.push({
+        this.moving_set.push({
           n: nn
         });
         updateActiveNodes();
         updateSelection();
-        redraw();
+        this.redraw();
 
         if (nn._def.autoedit) {
-          RED.editor.edit(nn);
+          this.RED.editor.edit(nn);
         }
       }
     });
@@ -357,7 +357,6 @@ export class View extends Context {
 
   configureActions() {
     const {
-      RED,
       copySelection,
       deleteSelection,
       importNodes,
@@ -370,66 +369,66 @@ export class View extends Context {
       moveSelection
     } = this
 
-    RED.actions.add('core:copy-selection-to-internal-clipboard', copySelection);
-    RED.actions.add('core:cut-selection-to-internal-clipboard', () => {
+    this.RED.actions.add('core:copy-selection-to-internal-clipboard', copySelection);
+    this.RED.actions.add('core:cut-selection-to-internal-clipboard', () => {
       copySelection();
       deleteSelection();
     });
-    RED.actions.add('core:paste-from-internal-clipboard', () => {
-      importNodes(clipboard);
+    this.RED.actions.add('core:paste-from-internal-clipboard', () => {
+      this.importNodes(this.clipboard);
     });
-    RED.actions.add('core:delete-selection', deleteSelection);
-    RED.actions.add('core:edit-selected-node', editSelection);
-    RED.actions.add('core:undo', RED.history.pop);
-    RED.actions.add('core:select-all-nodes', selectAll);
-    RED.actions.add('core:zoom-in', zoomIn);
-    RED.actions.add('core:zoom-out', zoomOut);
-    RED.actions.add('core:zoom-reset', zoomZero);
+    this.RED.actions.add('core:delete-selection', deleteSelection);
+    this.RED.actions.add('core:edit-selected-node', this.editSelection);
+    this.RED.actions.add('core:undo', this.RED.history.pop);
+    this.RED.actions.add('core:select-all-nodes', selectAll);
+    this.RED.actions.add('core:zoom-in', zoomIn);
+    this.RED.actions.add('core:zoom-out', zoomOut);
+    this.RED.actions.add('core:zoom-reset', zoomZero);
 
-    RED.actions.add('core:toggle-show-grid', (state) => {
+    this.RED.actions.add('core:toggle-show-grid', (state) => {
       if (state === undefined) {
-        RED.userSettings.toggle('view-show-grid');
+        this.RED.userSettings.toggle('view-show-grid');
       } else {
         toggleShowGrid(state);
       }
     });
-    RED.actions.add('core:toggle-snap-grid', (state) => {
+    this.RED.actions.add('core:toggle-snap-grid', (state) => {
       if (state === undefined) {
-        RED.userSettings.toggle('view-snap-grid');
+        this.RED.userSettings.toggle('view-snap-grid');
       } else {
         toggleSnapGrid(state);
       }
     });
-    RED.actions.add('core:toggle-status', (state) => {
+    this.RED.actions.add('core:toggle-status', (state) => {
       if (state === undefined) {
-        RED.userSettings.toggle('view-node-status');
+        this.RED.userSettings.toggle('view-node-status');
       } else {
-        toggleStatus(state);
+        this.toggleStatus(state);
       }
     });
 
-    RED.actions.add('core:move-selection-up', () => {
+    this.RED.actions.add('core:move-selection-up', () => {
       moveSelection(0, -1);
     });
-    RED.actions.add('core:step-selection-up', () => {
+    this.RED.actions.add('core:step-selection-up', () => {
       moveSelection(0, -20);
     });
-    RED.actions.add('core:move-selection-right', () => {
+    this.RED.actions.add('core:move-selection-right', () => {
       moveSelection(1, 0);
     });
-    RED.actions.add('core:step-selection-right', () => {
+    this.RED.actions.add('core:step-selection-right', () => {
       moveSelection(20, 0);
     });
-    RED.actions.add('core:move-selection-down', () => {
+    this.RED.actions.add('core:move-selection-down', () => {
       moveSelection(0, 1);
     });
-    RED.actions.add('core:step-selection-down', () => {
+    this.RED.actions.add('core:step-selection-down', () => {
       moveSelection(0, 20);
     });
-    RED.actions.add('core:move-selection-left', () => {
+    this.RED.actions.add('core:move-selection-left', () => {
       moveSelection(-1, 0);
     });
-    RED.actions.add('core:step-selection-left', () => {
+    this.RED.actions.add('core:step-selection-left', () => {
       moveSelection(-20, 0);
     });
     return this
@@ -438,12 +437,11 @@ export class View extends Context {
   updateGrid() {
     const {
       space_width,
-      gridSize,
       grid
     } = this
-
+    console.log("DEEEEEEEEEEEEEEE", grid)
     var gridTicks = [];
-    for (var i = 0; i < space_width; i += +gridSize) {
+    for (var i = 0; i < space_width; i += +this.gridSize) {
       gridTicks.push(i);
     }
     grid.selectAll('line.horizontal').remove();
@@ -490,7 +488,7 @@ export class View extends Context {
     } = this
     for (var i = 0; i < nodes.length; i++) {
       var node = nodes[i];
-      node.el = dragGroup.append('svg:path').attr('class', 'drag_line');
+      node.el = this.dragGroup.append('svg:path').attr('class', 'drag_line');
       drag_lines.push(node);
     }
 
@@ -509,17 +507,13 @@ export class View extends Context {
   }
 
   updateActiveNodes() {
-    const {
-      RED
-    } = this
+    var activeWorkspace = this.RED.workspaces.active();
 
-    var activeWorkspace = RED.workspaces.active();
-
-    activeNodes = RED.nodes.filterNodes({
+    this.activeNodes = this.RED.nodes.filterNodes({
       z: activeWorkspace
     });
 
-    activeLinks = RED.nodes.filterLinks({
+    this.activeLinks = this.RED.nodes.filterLinks({
       source: {
         z: activeWorkspace
       },
@@ -531,39 +525,33 @@ export class View extends Context {
 
 
 
-  addNode(type, x, y) {
-    const {
-      RED,
-      activeSubflow,
-      node_width,
-      node_height
-    } = this
+  addNode(type: any, x: any, y: any) {
 
     var m = /^subflow:(.+)$/.exec(type);
 
-    if (activeSubflow && m) {
+    if (this.activeSubflow && m) {
       var subflowId = m[1];
-      if (subflowId === activeSubflow.id) {
-        RED.notify(RED._('notification.error', {
-          message: RED._('notification.errors.cannotAddSubflowToItself')
+      if (subflowId === this.activeSubflow.id) {
+        this.RED.notify(this.RED._('notification.error', {
+          message: this.RED._('notification.errors.cannotAddSubflowToItself')
         }), 'error');
         return;
       }
-      if (RED.nodes.subflowContains(m[1], activeSubflow.id)) {
-        RED.notify(RED._('notification.error', {
-          message: RED._('notification.errors.cannotAddCircularReference')
+      if (this.RED.nodes.subflowContains(m[1], this.activeSubflow.id)) {
+        this.RED.notify(this.RED._('notification.error', {
+          message: this.RED._('notification.errors.cannotAddCircularReference')
         }), 'error');
         return;
       }
     }
 
-    var nn = {
-      id: RED.nodes.id(),
-      z: RED.workspaces.active()
+    var nn: any = {
+      id: this.RED.nodes.id(),
+      z: this.RED.workspaces.active()
     };
 
     nn.type = type;
-    nn._def = RED.nodes.getType(nn.type);
+    nn._def = this.RED.nodes.getType(nn.type);
 
     if (!m) {
       nn.inputs = nn._def.inputs || 0;
@@ -585,7 +573,7 @@ export class View extends Context {
         }
       }
     } else {
-      var subflow = RED.nodes.subflow(m[1]);
+      var subflow = this.RED.nodes.subflow(m[1]);
       nn.inputs = subflow.in.length;
       nn.outputs = subflow.out.length;
     }
@@ -593,20 +581,20 @@ export class View extends Context {
     nn.changed = true;
     nn.moved = true;
 
-    nn.w = node_width;
-    nn.h = Math.max(node_height, (nn.outputs || 0) * 15);
+    nn.w = this.node_width;
+    nn.h = Math.max(this.node_height, (nn.outputs || 0) * 15);
 
-    var historyEvent = {
+    var historyEvent: any = {
       t: 'add',
       nodes: [nn.id],
-      dirty: RED.nodes.dirty()
+      dirty: this.RED.nodes.dirty()
     }
-    if (activeSubflow) {
-      var subflowRefresh = RED.subflow.refresh(true);
+    if (this.activeSubflow) {
+      var subflowRefresh = this.RED.subflow.refresh(true);
       if (subflowRefresh) {
         historyEvent.subflow = {
-          id: activeSubflow.id,
-          changed: activeSubflow.changed,
+          id: this.activeSubflow.id,
+          changed: this.activeSubflow.changed,
           instances: subflowRefresh.instances
         }
       }
@@ -625,39 +613,37 @@ export class View extends Context {
     } = this
 
     let {
-      lasso,
-      mouse_mode,
-      selected_link
+      lasso
     } = this
 
     var point;
 
-    if (!mousedown_node && !mousedown_link) {
-      selected_link = null;
-      updateSelection();
+    if (!this.mousedown_node && !mousedown_link) {
+      this.selected_link = null;
+      this.updateSelection();
     }
-    if (mouse_mode === 0) {
+    if (this.mouse_mode === 0) {
       if (lasso) {
         lasso.remove();
         lasso = null;
       }
     }
-    if (mouse_mode === 0 || mouse_mode === RED.state.QUICK_JOINING) {
+    if (this.mouse_mode === 0 || this.mouse_mode === this.RED.state.QUICK_JOINING) {
       if (d3.event.metaKey || d3.event.ctrlKey) {
         point = d3.mouse(this);
         d3.event.stopPropagation();
         var mainPos = $('#main-container').position();
 
-        if (mouse_mode !== RED.state.QUICK_JOINING) {
-          mouse_mode = RED.state.QUICK_JOINING;
-          $(window).on('keyup', disableQuickJoinEventHandler);
+        if (this.mouse_mode !== this.RED.state.QUICK_JOINING) {
+          this.mouse_mode = this.RED.state.QUICK_JOINING;
+          $(window).on('keyup', this.disableQuickJoinEventHandler);
         }
 
-        RED.typeSearch.show({
-          x: d3.event.clientX - mainPos.left - node_width / 2,
-          y: d3.event.clientY - mainPos.top - node_height / 2,
+        this.RED.typeSearch.show({
+          x: d3.event.clientX - mainPos.left - this.node_width / 2,
+          y: d3.event.clientY - mainPos.top - this.node_height / 2,
           add: function (type) {
-            var result = addNode(type);
+            var result = this.addNode(type);
             if (!result) {
               return;
             }
@@ -665,9 +651,9 @@ export class View extends Context {
             var historyEvent = result.historyEvent;
             nn.x = point[0];
             nn.y = point[1];
-            if (mouse_mode === RED.state.QUICK_JOINING) {
-              if (drag_lines.length > 0) {
-                var drag_line = drag_lines[0];
+            if (this.mouse_mode === this.RED.state.QUICK_JOINING) {
+              if (this.drag_lines.length > 0) {
+                var drag_line = this.drag_lines[0];
                 var src = null,
                   dst, src_port;
 
@@ -686,73 +672,73 @@ export class View extends Context {
                     sourcePort: src_port,
                     target: dst
                   };
-                  RED.nodes.addLink(link);
+                  this.RED.nodes.addLink(link);
                   historyEvent.links = [link];
-                  hideDragLines();
+                  this.hideDragLines();
                   if (drag_line.portType === PORT_TYPE_OUTPUT && nn.outputs > 0) {
-                    showDragLines([{
+                    this.showDragLines([{
                       node: nn,
                       port: 0,
                       portType: PORT_TYPE_OUTPUT
                     }]);
                   } else if (drag_line.portType === PORT_TYPE_INPUT && nn.inputs > 0) {
-                    showDragLines([{
+                    this.showDragLines([{
                       node: nn,
                       port: 0,
                       portType: PORT_TYPE_INPUT
                     }]);
                   } else {
-                    resetMouseVars();
+                    this.resetMouseVars();
                   }
                 } else {
-                  hideDragLines();
-                  resetMouseVars();
+                  this.hideDragLines();
+                  this.resetMouseVars();
                 }
               } else {
                 if (nn.outputs > 0) {
-                  showDragLines([{
+                  this.showDragLines([{
                     node: nn,
                     port: 0,
                     portType: PORT_TYPE_OUTPUT
                   }]);
                 } else if (nn.inputs > 0) {
-                  showDragLines([{
+                  this.showDragLines([{
                     node: nn,
                     port: 0,
                     portType: PORT_TYPE_INPUT
                   }]);
                 } else {
-                  resetMouseVars();
+                  this.resetMouseVars();
                 }
               }
             }
 
 
-            RED.history.push(historyEvent);
-            RED.nodes.add(nn);
-            RED.editor.validateNode(nn);
-            RED.nodes.dirty(true);
+            this.RED.history.push(historyEvent);
+            this.RED.nodes.add(nn);
+            this.RED.editor.validateNode(nn);
+            this.RED.nodes.dirty(true);
             // auto select dropped node - so info shows (if visible)
-            clearSelection();
+            this.clearSelection();
             nn.selected = true;
-            moving_set.push({
+            this.moving_set.push({
               n: nn
             });
-            updateActiveNodes();
-            updateSelection();
-            redraw();
+            this.updateActiveNodes();
+            this.updateSelection();
+            this.redraw();
           }
         });
 
-        updateActiveNodes();
-        updateSelection();
-        redraw();
+        this.updateActiveNodes();
+        this.updateSelection();
+        this.redraw();
       }
     }
-    if (mouse_mode === 0 && !(d3.event.metaKey || d3.event.ctrlKey)) {
-      if (!touchStartTime) {
+    if (this.mouse_mode === 0 && !(d3.event.metaKey || d3.event.ctrlKey)) {
+      if (!this.touchStartTime) {
         point = d3.mouse(this);
-        lasso = vis.append('rect')
+        lasso = this.vis.append('rect')
           .attr('ox', point[0])
           .attr('oy', point[1])
           .attr('rx', 1)
@@ -775,14 +761,10 @@ export class View extends Context {
       showDragLines,
       updateActiveNodes
     } = this
-    let {
-      mouse_mode,
-      mouse_position
-    } = this
 
     var i;
     var node;
-    mouse_position = d3.touches(this)[0] || d3.mouse(this);
+    this.mouse_position = d3.touches(this)[0] || d3.mouse(this);
     // Prevent touch scrolling...
     //if (d3.touches(this)[0]) {
     //    d3.event.preventDefault();
@@ -793,26 +775,26 @@ export class View extends Context {
     //if (point[0]-container.scrollLeft < 30 && container.scrollLeft > 0) { container.scrollLeft -= 15; }
     //console.log(d3.mouse(this),container.offsetWidth,container.offsetHeight,container.scrollLeft,container.scrollTop);
 
-    if (lasso) {
-      var ox = parseInt(lasso.attr('ox'));
-      var oy = parseInt(lasso.attr('oy'));
-      var x = parseInt(lasso.attr('x'));
-      var y = parseInt(lasso.attr('y'));
+    if (this.lasso) {
+      var ox = parseInt(this.lasso.attr('ox'));
+      var oy = parseInt(this.lasso.attr('oy'));
+      var x = parseInt(this.lasso.attr('x'));
+      var y = parseInt(this.lasso.attr('y'));
       var w;
       var h;
-      if (mouse_position[0] < ox) {
-        x = mouse_position[0];
+      if (this.mouse_position[0] < ox) {
+        x = this.mouse_position[0];
         w = ox - x;
       } else {
-        w = mouse_position[0] - x;
+        w = this.mouse_position[0] - x;
       }
-      if (mouse_position[1] < oy) {
-        y = mouse_position[1];
+      if (this.mouse_position[1] < oy) {
+        y = this.mouse_position[1];
         h = oy - y;
       } else {
-        h = mouse_position[1] - y;
+        h = this.mouse_position[1] - y;
       }
-      lasso
+      this.lasso
         .attr('x', x)
         .attr('y', y)
         .attr('width', w)
@@ -820,50 +802,50 @@ export class View extends Context {
       return;
     }
 
-    if (mouse_mode != RED.state.QUICK_JOINING && mouse_mode != RED.state.IMPORT_DRAGGING && !mousedown_node && selected_link == null) {
+    if (this.mouse_mode != this.RED.state.QUICK_JOINING && this.mouse_mode != this.RED.state.IMPORT_DRAGGING && !this.mousedown_node && this.selected_link == null) {
       return;
     }
 
     var mousePos;
-    if (mouse_mode == RED.state.JOINING || mouse_mode === RED.state.QUICK_JOINING) {
+    if (this.mouse_mode == this.RED.state.JOINING || this.mouse_mode === this.RED.state.QUICK_JOINING) {
       // update drag line
-      if (drag_lines.length === 0) {
+      if (this.drag_lines.length === 0) {
         if (d3.event.shiftKey) {
           // Get all the wires we need to detach.
           var links = [];
           var existingLinks = [];
-          if (selected_link &&
-            ((mousedown_port_type === PORT_TYPE_OUTPUT &&
-                selected_link.source === mousedown_node &&
-                selected_link.sourcePort === mousedown_port_index
-              ) ||
-              (mousedown_port_type === PORT_TYPE_INPUT &&
-                selected_link.target === mousedown_node
+          if (this.selected_link &&
+            ((this.mousedown_port_type === PORT_TYPE_OUTPUT &&
+              this.selected_link.source === this.mousedown_node &&
+              this.selected_link.sourcePort === this.mousedown_port_index
+            ) ||
+              (this.mousedown_port_type === PORT_TYPE_INPUT &&
+                this.selected_link.target === this.mousedown_node
               ))
           ) {
-            existingLinks = [selected_link];
+            existingLinks = [this.selected_link];
           } else {
             var filter;
-            if (mousedown_port_type === PORT_TYPE_OUTPUT) {
+            if (this.mousedown_port_type === PORT_TYPE_OUTPUT) {
               filter = {
-                source: mousedown_node,
-                sourcePort: mousedown_port_index
+                source: this.mousedown_node,
+                sourcePort: this.mousedown_port_index
               }
             } else {
               filter = {
-                target: mousedown_node
+                target: this.mousedown_node
               }
             }
-            existingLinks = RED.nodes.filterLinks(filter);
+            existingLinks = this.RED.nodes.filterLinks(filter);
           }
           for (i = 0; i < existingLinks.length; i++) {
             var link = existingLinks[i];
-            RED.nodes.removeLink(link);
+            this.RED.nodes.removeLink(link);
             links.push({
               link: link,
-              node: (mousedown_port_type === PORT_TYPE_OUTPUT) ? link.target : link.source,
-              port: (mousedown_port_type === PORT_TYPE_OUTPUT) ? 0 : link.sourcePort,
-              portType: (mousedown_port_type === PORT_TYPE_OUTPUT) ? PORT_TYPE_INPUT : PORT_TYPE_OUTPUT
+              node: (this.mousedown_port_type === PORT_TYPE_OUTPUT) ? link.target : link.source,
+              port: (this.mousedown_port_type === PORT_TYPE_OUTPUT) ? 0 : link.sourcePort,
+              portType: (this.mousedown_port_type === PORT_TYPE_OUTPUT) ? PORT_TYPE_INPUT : PORT_TYPE_OUTPUT
             })
           }
           if (links.length === 0) {
@@ -871,23 +853,23 @@ export class View extends Context {
             redraw();
           } else {
             showDragLines(links);
-            mouse_mode = 0;
+            this.mouse_mode = 0;
             updateActiveNodes();
             redraw();
-            mouse_mode = RED.state.JOINING;
+            this.mouse_mode = this.RED.state.JOINING;
           }
-        } else if (mousedown_node) {
+        } else if (this.mousedown_node) {
           showDragLines([{
-            node: mousedown_node,
-            port: mousedown_port_index,
-            portType: mousedown_port_type
+            node: this.mousedown_node,
+            port: this.mousedown_port_index,
+            portType: this.mousedown_port_type
           }]);
         }
-        selected_link = null;
+        this.selected_link = null;
       }
-      mousePos = mouse_position;
-      for (i = 0; i < drag_lines.length; i++) {
-        var drag_line = drag_lines[i];
+      mousePos = this.mouse_position;
+      for (i = 0; i < this.drag_lines.length; i++) {
+        var drag_line = this.drag_lines[i];
         var numOutputs = (drag_line.portType === PORT_TYPE_OUTPUT) ? (drag_line.node.outputs || 1) : 1;
         var sourcePort = drag_line.port;
         var portY = -((numOutputs - 1) / 2) * 13 + 13 * sourcePort;
@@ -897,58 +879,58 @@ export class View extends Context {
         var dy = mousePos[1] - (drag_line.node.y + portY);
         var dx = mousePos[0] - (drag_line.node.x + sc * drag_line.node.w / 2);
         var delta = Math.sqrt(dy * dy + dx * dx);
-        var scale = lineCurveScale;
+        var scale = this.lineCurveScale;
         var scaleY = 0;
 
-        if (delta < node_width) {
-          scale = 0.75 - 0.75 * ((node_width - delta) / node_width);
+        if (delta < this.node_width) {
+          scale = 0.75 - 0.75 * ((this.node_width - delta) / this.node_width);
         }
         if (dx * sc < 0) {
-          scale += 2 * (Math.min(5 * node_width, Math.abs(dx)) / (5 * node_width));
-          if (Math.abs(dy) < 3 * node_height) {
-            scaleY = ((dy > 0) ? 0.5 : -0.5) * (((3 * node_height) - Math.abs(dy)) / (3 * node_height)) * (Math.min(node_width, Math.abs(dx)) / (node_width));
+          scale += 2 * (Math.min(5 * this.node_width, Math.abs(dx)) / (5 * this.node_width));
+          if (Math.abs(dy) < 3 * this.node_height) {
+            scaleY = ((dy > 0) ? 0.5 : -0.5) * (((3 * this.node_height) - Math.abs(dy)) / (3 * this.node_height)) * (Math.min(this.node_width, Math.abs(dx)) / (this.node_width));
           }
         }
 
         drag_line.el.attr('d',
           'M ' + (drag_line.node.x + sc * drag_line.node.w / 2) + ' ' + (drag_line.node.y + portY) +
-          ' C ' + (drag_line.node.x + sc * (drag_line.node.w / 2 + node_width * scale)) + ' ' + (drag_line.node.y + portY + scaleY * node_height) + ' ' +
-          (mousePos[0] - sc * (scale) * node_width) + ' ' + (mousePos[1] - scaleY * node_height) + ' ' +
+          ' C ' + (drag_line.node.x + sc * (drag_line.node.w / 2 + this.node_width * scale)) + ' ' + (drag_line.node.y + portY + scaleY * this.node_height) + ' ' +
+          (mousePos[0] - sc * (scale) * this.node_width) + ' ' + (mousePos[1] - scaleY * this.node_height) + ' ' +
           mousePos[0] + ' ' + mousePos[1]
         );
       }
       d3.event.preventDefault();
-    } else if (mouse_mode == RED.state.MOVING) {
+    } else if (this.mouse_mode == this.RED.state.MOVING) {
       mousePos = d3.mouse(document.body);
       if (isNaN(mousePos[0])) {
         mousePos = d3.touches(document.body)[0];
       }
-      var d = (mouse_offset[0] - mousePos[0]) * (mouse_offset[0] - mousePos[0]) + (mouse_offset[1] - mousePos[1]) * (mouse_offset[1] - mousePos[1]);
+      var d = (this.mouse_offset[0] - mousePos[0]) * (this.mouse_offset[0] - mousePos[0]) + (this.mouse_offset[1] - mousePos[1]) * (this.mouse_offset[1] - mousePos[1]);
       if (d > 3) {
-        mouse_mode = RED.state.MOVING_ACTIVE;
-        clickElapsed = 0;
-        spliceActive = false;
-        if (moving_set.length === 1) {
-          node = moving_set[0];
-          spliceActive = node.n.hasOwnProperty('_def') &&
+        this.mouse_mode = this.RED.state.MOVING_ACTIVE;
+        this.clickElapsed = 0;
+        this.spliceActive = false;
+        if (this.moving_set.length === 1) {
+          node = this.moving_set[0];
+          this.spliceActive = node.n.hasOwnProperty('_def') &&
             node.n._def.inputs > 0 &&
             node.n._def.outputs > 0 &&
-            RED.nodes.filterLinks({
+            this.RED.nodes.filterLinks({
               source: node.n
             }).length === 0 &&
-            RED.nodes.filterLinks({
+            this.RED.nodes.filterLinks({
               target: node.n
             }).length === 0;
         }
       }
-    } else if (mouse_mode == RED.state.MOVING_ACTIVE || mouse_mode == RED.state.IMPORT_DRAGGING) {
-      mousePos = mouse_position;
+    } else if (this.mouse_mode == this.RED.state.MOVING_ACTIVE || this.mouse_mode == this.RED.state.IMPORT_DRAGGING) {
+      mousePos = this.mouse_position;
       var minX = 0;
       var minY = 0;
-      var maxX = space_width;
-      var maxY = space_height;
-      for (var n = 0; n < moving_set.length; n++) {
-        node = moving_set[n];
+      var maxX = this.space_width;
+      var maxY = this.space_height;
+      for (var n = 0; n < this.moving_set.length; n++) {
+        node = this.moving_set[n];
         if (d3.event.shiftKey) {
           node.n.ox = node.n.x;
           node.n.oy = node.n.y;
@@ -962,27 +944,27 @@ export class View extends Context {
         maxY = Math.max(node.n.y + node.n.h / 2 + 5, maxY);
       }
       if (minX !== 0 || minY !== 0) {
-        for (i = 0; i < moving_set.length; i++) {
-          node = moving_set[i];
+        for (i = 0; i < this.moving_set.length; i++) {
+          node = this.moving_set[i];
           node.n.x -= minX;
           node.n.y -= minY;
         }
       }
-      if (maxX !== space_width || maxY !== space_height) {
-        for (i = 0; i < moving_set.length; i++) {
-          node = moving_set[i];
-          node.n.x -= (maxX - space_width);
-          node.n.y -= (maxY - space_height);
+      if (maxX !== this.space_width || maxY !== this.space_height) {
+        for (i = 0; i < this.moving_set.length; i++) {
+          node = this.moving_set[i];
+          node.n.x -= (maxX - this.space_width);
+          node.n.y -= (maxY - this.space_height);
         }
       }
-      if (snapGrid != d3.event.shiftKey && moving_set.length > 0) {
+      if (this.snapGrid != d3.event.shiftKey && this.moving_set.length > 0) {
         var gridOffset = [0, 0];
-        node = moving_set[0];
-        gridOffset[0] = node.n.x - (gridSize * Math.floor((node.n.x - node.n.w / 2) / gridSize) + node.n.w / 2);
-        gridOffset[1] = node.n.y - (gridSize * Math.floor(node.n.y / gridSize));
+        node = this.moving_set[0];
+        gridOffset[0] = node.n.x - (this.gridsize * Math.floor((node.n.x - node.n.w / 2) / this.gridsize) + node.n.w / 2);
+        gridOffset[1] = node.n.y - (this.gridsize * Math.floor(node.n.y / this.gridsize));
         if (gridOffset[0] !== 0 || gridOffset[1] !== 0) {
-          for (i = 0; i < moving_set.length; i++) {
-            node = moving_set[i];
+          for (i = 0; i < this.moving_set.length; i++) {
+            node = this.moving_set[i];
             node.n.x -= gridOffset[0];
             node.n.y -= gridOffset[1];
             if (node.n.x == node.n.ox && node.n.y == node.n.oy) {
@@ -991,27 +973,27 @@ export class View extends Context {
           }
         }
       }
-      if ((mouse_mode == RED.state.MOVING_ACTIVE || mouse_mode == RED.state.IMPORT_DRAGGING) && moving_set.length === 1) {
-        node = moving_set[0];
-        if (spliceActive) {
-          if (!spliceTimer) {
-            spliceTimer = setTimeout(function () {
+      if ((this.mouse_mode == this.RED.state.MOVING_ACTIVE || this.mouse_mode == this.RED.state.IMPORT_DRAGGING) && this.moving_set.length === 1) {
+        node = this.moving_set[0];
+        if (this.spliceActive) {
+          if (!this.spliceTimer) {
+            this.spliceTimer = setTimeout(function () {
               var nodes = [];
               var bestDistance = Infinity;
               var bestLink = null;
               var mouseX = node.n.x;
               var mouseY = node.n.y;
-              if (outer[0][0].getIntersectionList) {
-                var svgRect = outer[0][0].createSVGRect();
+              if (this.outer[0][0].getIntersectionList) {
+                var svgRect = this.outer[0][0].createSVGRect();
                 svgRect.x = mouseX;
                 svgRect.y = mouseY;
                 svgRect.width = 1;
                 svgRect.height = 1;
-                nodes = outer[0][0].getIntersectionList(svgRect, outer[0][0]);
+                nodes = this.outer[0][0].getIntersectionList(svgRect, this.outer[0][0]);
               } else {
                 // Firefox doesn't do getIntersectionList and that
                 // makes us sad
-                nodes = RED.view.getLinksAtPoint(mouseX, mouseY);
+                nodes = this.RED.view.getLinksAtPoint(mouseX, mouseY);
               }
               for (var i = 0; i < nodes.length; i++) {
                 if (d3.select(nodes[i]).classed('link_background')) {
@@ -1026,16 +1008,16 @@ export class View extends Context {
                   }
                 }
               }
-              if (activeSpliceLink && activeSpliceLink !== bestLink) {
-                d3.select(activeSpliceLink.parentNode).classed('link_splice', false);
+              if (this.activeSpliceLink && this.activeSpliceLink !== bestLink) {
+                d3.select(this.activeSpliceLink.parentNode).classed('link_splice', false);
               }
               if (bestLink) {
                 d3.select(bestLink.parentNode).classed('link_splice', true)
               } else {
                 d3.select('.link_splice').classed('link_splice', false);
               }
-              activeSpliceLink = bestLink;
-              spliceTimer = null;
+              this.activeSpliceLink = bestLink;
+              this.spliceTimer = null;
             }, 100);
           }
         }
@@ -1043,7 +1025,7 @@ export class View extends Context {
 
 
     }
-    if (mouse_mode !== 0) {
+    if (this.mouse_mode !== 0) {
       redraw();
     }
   }
@@ -1064,51 +1046,51 @@ export class View extends Context {
       historyEvent = {
         t: 'delete',
         links: removedLinks,
-        dirty: RED.nodes.dirty()
+        dirty: this.RED.nodes.dirty()
       };
       this.RED.history.push(historyEvent);
       this.hideDragLines();
     }
     if (this.lasso) {
-      var x = parseInt(lasso.attr('x'));
-      var y = parseInt(lasso.attr('y'));
-      var x2 = x + parseInt(lasso.attr('width'));
-      var y2 = y + parseInt(lasso.attr('height'));
+      var x = parseInt(this.lasso.attr('x'));
+      var y = parseInt(this.lasso.attr('y'));
+      var x2 = x + parseInt(this.lasso.attr('width'));
+      var y2 = y + parseInt(this.lasso.attr('height'));
       if (!d3.event.ctrlKey) {
-        clearSelection();
+        this.clearSelection();
       }
-      RED.nodes.eachNode(function (n) {
-        if (n.z == RED.workspaces.active() && !n.selected) {
+      this.RED.nodes.eachNode(function (n) {
+        if (n.z == this.RED.workspaces.active() && !n.selected) {
           n.selected = (n.x > x && n.x < x2 && n.y > y && n.y < y2);
           if (n.selected) {
             n.dirty = true;
-            moving_set.push({
+            this.moving_set.push({
               n: n
             });
           }
         }
       });
-      if (activeSubflow) {
-        activeSubflow.in.forEach(function (n) {
+      if (this.activeSubflow) {
+        this.activeSubflow.in.forEach(function (n) {
           n.selected = (n.x > x && n.x < x2 && n.y > y && n.y < y2);
           if (n.selected) {
             n.dirty = true;
-            moving_set.push({
+            this.moving_set.push({
               n: n
             });
           }
         });
-        activeSubflow.out.forEach(function (n) {
+        this.activeSubflow.out.forEach(function (n) {
           n.selected = (n.x > x && n.x < x2 && n.y > y && n.y < y2);
           if (n.selected) {
             n.dirty = true;
-            moving_set.push({
+            this.moving_set.push({
               n: n
             });
           }
         });
       }
-      updateSelection();
+      this.updateSelection();
       this.lasso.remove();
       this.lasso = null;
     } else if (this.mouse_mode == this.RED.state.DEFAULT && this.mousedown_link == null && !d3.event.ctrlKey && !d3.event.metaKey) {
@@ -1116,10 +1098,10 @@ export class View extends Context {
       this.updateSelection();
     }
     if (this.mouse_mode == this.RED.state.MOVING_ACTIVE) {
-      if (moving_set.length > 0) {
+      if (this.moving_set.length > 0) {
         var ns = [];
-        for (var j = 0; j < moving_set.length; j++) {
-          var n = moving_set[j];
+        for (var j = 0; j < this.moving_set.length; j++) {
+          var n = this.moving_set[j];
           if (n.ox !== n.n.x || n.oy !== n.n.y) {
             ns.push({
               n: n.n,
@@ -1135,128 +1117,128 @@ export class View extends Context {
           historyEvent = {
             t: 'move',
             nodes: ns,
-            dirty: RED.nodes.dirty()
+            dirty: this.RED.nodes.dirty()
           };
-          if (activeSpliceLink) {
+          if (this.activeSpliceLink) {
             // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
-            var spliceLink = d3.select(activeSpliceLink).data()[0];
-            RED.nodes.removeLink(spliceLink);
+            var spliceLink = d3.select(this.activeSpliceLink).data()[0];
+            this.RED.nodes.removeLink(spliceLink);
             var link1 = {
               source: spliceLink.source,
               sourcePort: spliceLink.sourcePort,
-              target: moving_set[0].n
+              target: this.moving_set[0].n
             };
             var link2 = {
-              source: moving_set[0].n,
+              source: this.moving_set[0].n,
               sourcePort: 0,
               target: spliceLink.target
             };
-            RED.nodes.addLink(link1);
-            RED.nodes.addLink(link2);
+            this.RED.nodes.addLink(link1);
+            this.RED.nodes.addLink(link2);
             historyEvent.links = [link1, link2];
             historyEvent.removedLinks = [spliceLink];
-            updateActiveNodes();
+            this.updateActiveNodes();
           }
-          RED.nodes.dirty(true);
-          RED.history.push(historyEvent);
+          this.RED.nodes.dirty(true);
+          this.RED.history.push(historyEvent);
         }
       }
     }
     if (this.mouse_mode == this.RED.state.MOVING || this.mouse_mode == this.RED.state.MOVING_ACTIVE) {
-      for (i = 0; i < moving_set.length; i++) {
-        delete moving_set[i].ox;
-        delete moving_set[i].oy;
+      for (i = 0; i < this.moving_set.length; i++) {
+        delete this.moving_set[i].ox;
+        delete this.moving_set[i].oy;
       }
     }
     if (this.mouse_mode == this.RED.state.IMPORT_DRAGGING) {
       this.RED.keyboard.remove('escape');
-      updateActiveNodes();
-      RED.nodes.dirty(true);
+      this.updateActiveNodes();
+      this.RED.nodes.dirty(true);
     }
     this.resetMouseVars();
     this.redraw();
   }
 
   zoomIn() {
-    if (scaleFactor < 2) {
-      scaleFactor += 0.1;
+    if (this.scaleFactor < 2) {
+      this.scaleFactor += 0.1;
       this.redraw();
     }
   }
 
   zoomOut() {
-    if (scaleFactor > 0.3) {
-      scaleFactor -= 0.1;
+    if (this.scaleFactor > 0.3) {
+      this.scaleFactor -= 0.1;
       this.redraw();
     }
   }
 
   zoomZero() {
-    scaleFactor = 1;
+    this.scaleFactor = 1;
     this.redraw();
   }
 
   selectAll() {
-    RED.nodes.eachNode(function (n) {
-      if (n.z == RED.workspaces.active()) {
+    this.RED.nodes.eachNode(function (n) {
+      if (n.z == this.RED.workspaces.active()) {
         if (!n.selected) {
           n.selected = true;
           n.dirty = true;
-          moving_set.push({
+          this.moving_set.push({
             n: n
           });
         }
       }
     });
-    if (activeSubflow) {
-      activeSubflow.in.forEach(function (n) {
+    if (this.activeSubflow) {
+      this.activeSubflow.in.forEach(function (n) {
         if (!n.selected) {
           n.selected = true;
           n.dirty = true;
-          moving_set.push({
+          this.moving_set.push({
             n: n
           });
         }
       });
-      activeSubflow.out.forEach(function (n) {
+      this.activeSubflow.out.forEach(function (n) {
         if (!n.selected) {
           n.selected = true;
           n.dirty = true;
-          moving_set.push({
+          this.moving_set.push({
             n: n
           });
         }
       });
     }
 
-    selected_link = null;
-    updateSelection();
-    redraw();
+    this.selected_link = null;
+    this.updateSelection();
+    this.redraw();
   }
 
   clearSelection() {
-    for (var i = 0; i < moving_set.length; i++) {
-      var n = moving_set[i];
+    for (var i = 0; i < this.moving_set.length; i++) {
+      var n = this.moving_set[i];
       n.n.dirty = true;
       n.n.selected = false;
     }
-    moving_set = [];
-    selected_link = null;
+    this.moving_set = [];
+    this.selected_link = null;
   }
 
   updateSelection() {
-    var selection = {};
+    var selection: any = {};
 
-    if (moving_set.length > 0) {
-      selection.nodes = moving_set.map(function (n) {
+    if (this.moving_set.length > 0) {
+      selection.nodes = this.moving_set.map(function (n) {
         return n.n;
       });
     }
-    if (selected_link != null) {
-      selection.link = selected_link;
+    if (this.selected_link != null) {
+      selection.link = this.selected_link;
     }
-    var activeWorkspace = RED.workspaces.active();
-    activeLinks = RED.nodes.filterLinks({
+    var activeWorkspace = this.RED.workspaces.active();
+    this.activeLinks = this.RED.nodes.filterLinks({
       source: {
         z: activeWorkspace
       },
@@ -1264,21 +1246,21 @@ export class View extends Context {
         z: activeWorkspace
       }
     });
-    var tabOrder = RED.nodes.getWorkspaceOrder();
-    var currentLinks = activeLinks;
+    var tabOrder = this.RED.nodes.getWorkspaceOrder();
+    var currentLinks = this.activeLinks;
     var addedLinkLinks = {};
-    activeFlowLinks = [];
-    for (var i = 0; i < moving_set.length; i++) {
-      if (moving_set[i].n.type === 'link out' || moving_set[i].n.type === 'link in') {
-        var linkNode = moving_set[i].n;
+    this.activeFlowLinks = [];
+    for (var i = 0; i < this.moving_set.length; i++) {
+      if (this.moving_set[i].n.type === 'link out' || this.moving_set[i].n.type === 'link in') {
+        var linkNode = this.moving_set[i].n;
         var offFlowLinks = {};
         linkNode.links.forEach(function (id) {
-          var target = RED.nodes.node(id);
+          var target = this.RED.nodes.node(id);
           if (target) {
             if (linkNode.type === 'link out') {
               if (target.z === linkNode.z) {
                 if (!addedLinkLinks[linkNode.id + ':' + target.id]) {
-                  activeLinks.push({
+                  this.activeLinks.push({
                     source: linkNode,
                     sourcePort: 0,
                     target: target,
@@ -1293,7 +1275,7 @@ export class View extends Context {
             } else {
               if (target.z === linkNode.z) {
                 if (!addedLinkLinks[target.id + ':' + linkNode.id]) {
-                  activeLinks.push({
+                  this.activeLinks.push({
                     source: target,
                     sourcePort: 0,
                     target: linkNode,
@@ -1313,7 +1295,7 @@ export class View extends Context {
         //     return tabOrder.indexOf(A) - tabOrder.indexOf(B);
         // });
         if (offFlows.length > 0) {
-          activeFlowLinks.push({
+          this.activeFlowLinks.push({
             refresh: Math.floor(Math.random() * 10000),
             node: linkNode,
             links: offFlowLinks //offFlows.map(function(i) { return {id:i,links:offFlowLinks[i]};})
@@ -1332,51 +1314,51 @@ export class View extends Context {
       }
       return value;
     });
-    if (selectionJSON !== lastSelection) {
-      lastSelection = selectionJSON;
-      RED.events.emit('view:selection-changed', selection);
+    if (selectionJSON !== this.lastSelection) {
+      this.lastSelection = selectionJSON;
+      this.RED.events.emit('view:selection-changed', selection);
     }
   }
 
   endKeyboardMove() {
-    endMoveSet = false;
-    if (moving_set.length > 0) {
+    this.endMoveSet = false;
+    if (this.moving_set.length > 0) {
       var ns = [];
-      for (var i = 0; i < moving_set.length; i++) {
+      for (var i = 0; i < this.moving_set.length; i++) {
         ns.push({
-          n: moving_set[i].n,
-          ox: moving_set[i].ox,
-          oy: moving_set[i].oy,
-          moved: moving_set[i].n.moved
+          n: this.moving_set[i].n,
+          ox: this.moving_set[i].ox,
+          oy: this.moving_set[i].oy,
+          moved: this.moving_set[i].n.moved
         });
-        moving_set[i].n.moved = true;
-        moving_set[i].n.dirty = true;
-        delete moving_set[i].ox;
-        delete moving_set[i].oy;
+        this.moving_set[i].n.moved = true;
+        this.moving_set[i].n.dirty = true;
+        delete this.moving_set[i].ox;
+        delete this.moving_set[i].oy;
       }
-      redraw();
-      RED.history.push({
+      this.redraw();
+      this.RED.history.push({
         t: 'move',
         nodes: ns,
-        dirty: RED.nodes.dirty()
+        dirty: this.RED.nodes.dirty()
       });
-      RED.nodes.dirty(true);
+      this.RED.nodes.dirty(true);
     }
   }
 
 
   moveSelection(dx, dy) {
-    if (moving_set.length > 0) {
-      if (!endMoveSet) {
-        $(document).one('keyup', endKeyboardMove);
-        endMoveSet = true;
+    if (this.moving_set.length > 0) {
+      if (!this.endMoveSet) {
+        $(document).one('keyup', this.endKeyboardMove);
+        this.endMoveSet = true;
       }
       var minX = 0;
       var minY = 0;
       var node;
 
-      for (var i = 0; i < moving_set.length; i++) {
-        node = moving_set[i];
+      for (var i = 0; i < this.moving_set.length; i++) {
+        node = this.moving_set[i];
         node.n.moved = true;
         node.n.dirty = true;
         if (node.ox == null && node.oy == null) {
@@ -1391,30 +1373,30 @@ export class View extends Context {
       }
 
       if (minX !== 0 || minY !== 0) {
-        for (var n = 0; n < moving_set.length; n++) {
-          node = moving_set[n];
+        for (var n = 0; n < this.moving_set.length; n++) {
+          node = this.moving_set[n];
           node.n.x -= minX;
           node.n.y -= minY;
         }
       }
 
-      redraw();
+      this.redraw();
     }
   }
 
   editSelection() {
-    if (moving_set.length > 0) {
-      var node = moving_set[0].n;
+    if (this.moving_set.length > 0) {
+      var node = this.moving_set[0].n;
       if (node.type === 'subflow') {
-        RED.editor.editSubflow(activeSubflow);
+        this.RED.editor.editSubflow(this.activeSubflow);
       } else {
-        RED.editor.edit(node);
+        this.RED.editor.edit(node);
       }
     }
   }
 
   deleteSelection() {
-    if (moving_set.length > 0 || selected_link != null) {
+    if (this.moving_set.length > 0 || this.selected_link != null) {
       var result;
       var removedNodes = [];
       var removedLinks = [];
@@ -1422,17 +1404,17 @@ export class View extends Context {
       var removedSubflowInputs = [];
       var subflowInstances = [];
 
-      var startDirty = RED.nodes.dirty();
+      var startDirty = this.RED.nodes.dirty();
       var startChanged = false;
-      if (moving_set.length > 0) {
-        for (var i = 0; i < moving_set.length; i++) {
-          var node = moving_set[i].n;
+      if (this.moving_set.length > 0) {
+        for (var i = 0; i < this.moving_set.length; i++) {
+          var node = this.moving_set[i].n;
           node.selected = false;
           if (node.type != 'subflow') {
             if (node.x < 0) {
               node.x = 25
             }
-            var removedEntities = RED.nodes.remove(node.id);
+            var removedEntities = this.RED.nodes.remove(node.id);
             removedNodes.push(node);
             removedNodes = removedNodes.concat(removedEntities.nodes);
             removedLinks = removedLinks.concat(removedEntities.links);
@@ -1446,31 +1428,31 @@ export class View extends Context {
           }
         }
         if (removedSubflowOutputs.length > 0) {
-          result = RED.subflow.removeOutput(removedSubflowOutputs);
+          result = this.RED.subflow.removeOutput(removedSubflowOutputs);
           if (result) {
             removedLinks = removedLinks.concat(result.links);
           }
         }
         // Assume 0/1 inputs
         if (removedSubflowInputs.length == 1) {
-          result = RED.subflow.removeInput();
+          result = this.RED.subflow.removeInput();
           if (result) {
             removedLinks = removedLinks.concat(result.links);
           }
         }
-        var instances = RED.subflow.refresh(true);
+        var instances = this.RED.subflow.refresh(true);
         if (instances) {
           subflowInstances = instances.instances;
         }
-        moving_set = [];
+        this.moving_set = [];
         if (removedNodes.length > 0 || removedSubflowOutputs.length > 0 || removedSubflowInputs.length > 0) {
-          RED.nodes.dirty(true);
+          this.RED.nodes.dirty(true);
         }
       }
-      if (selected_link) {
-        RED.nodes.removeLink(selected_link);
-        removedLinks.push(selected_link);
-        RED.nodes.dirty(true);
+      if (this.selected_link) {
+        this.RED.nodes.removeLink(this.selected_link);
+        removedLinks.push(this.selected_link);
+        this.RED.nodes.dirty(true);
       }
       var historyEvent = {
         t: 'delete',
@@ -1483,41 +1465,41 @@ export class View extends Context {
         },
         dirty: startDirty
       };
-      RED.history.push(historyEvent);
+      this.RED.history.push(historyEvent);
 
-      selected_link = null;
-      updateActiveNodes();
-      updateSelection();
-      redraw();
+      this.selected_link = null;
+      this.updateActiveNodes();
+      this.updateSelection();
+      this.redraw();
     }
   }
 
   copySelection() {
-    if (moving_set.length > 0) {
+    if (this.moving_set.length > 0) {
       var nns = [];
-      for (var n = 0; n < moving_set.length; n++) {
-        var node = moving_set[n].n;
+      for (var n = 0; n < this.moving_set.length; n++) {
+        var node = this.moving_set[n].n;
         // The only time a node.type == subflow can be selected is the
         // input/output 'proxy' nodes. They cannot be copied.
         if (node.type != 'subflow') {
           for (var d in node._def.defaults) {
             if (node._def.defaults.hasOwnProperty(d)) {
               if (node._def.defaults[d].type) {
-                var configNode = RED.nodes.node(node[d]);
+                var configNode = this.RED.nodes.node(node[d]);
                 if (configNode && configNode._def.exclusive) {
-                  nns.push(RED.nodes.convertNode(configNode));
+                  nns.push(this.RED.nodes.convertNode(configNode));
                 }
               }
             }
           }
-          nns.push(RED.nodes.convertNode(node));
+          nns.push(this.RED.nodes.convertNode(node));
           //TODO: if the node has an exclusive config node, it should also be copied, to ensure it remains exclusive...
         }
       }
-      clipboard = JSON.stringify(nns);
-      RED.notify(RED._('clipboard.nodeCopied', {
+      this.clipboard = JSON.stringify(nns);
+      this.RED.notify(this.RED._('clipboard.nodeCopied', {
         count: nns.length
-      }));
+      }), null);
     }
   }
 
@@ -1543,20 +1525,18 @@ export class View extends Context {
     const {
       clearTimeout
     } = this
-    let {
-      spliceTimer
-    } = this
+
 
     this.mousedown_node = null;
     this.mouseup_node = null;
     this.mousedown_link = null;
     this.mouse_mode = 0;
-    this.mousedown_port_type = this.PORT_TYPE_OUTPUT;
+    this.mousedown_port_type = PORT_TYPE_OUTPUT;
     this.activeSpliceLink = null;
     this.spliceActive = false;
     d3.select('.link_splice').classed('link_splice', false);
-    if (spliceTimer) {
-      clearTimeout(spliceTimer);
+    if (this.spliceTimer) {
+      clearTimeout(this.spliceTimer);
       this.spliceTimer = null;
     }
   }
@@ -1576,7 +1556,6 @@ export class View extends Context {
 
   portMouseDown(d, portType, portIndex) {
     const {
-      RED,
       // methods
       showDragLines
     } = this
@@ -1593,17 +1572,17 @@ export class View extends Context {
     mousedown_node = d;
     mousedown_port_type = portType;
     mousedown_port_index = portIndex || 0;
-    if (mouse_mode !== RED.state.QUICK_JOINING) {
-      mouse_mode = RED.state.JOINING;
+    if (mouse_mode !== this.RED.state.QUICK_JOINING) {
+      mouse_mode = this.RED.state.JOINING;
       document.body.style.cursor = 'crosshair';
       if (d3.event.ctrlKey || d3.event.metaKey) {
-        mouse_mode = RED.state.QUICK_JOINING;
+        mouse_mode = this.RED.state.QUICK_JOINING;
         showDragLines([{
           node: mousedown_node,
           port: mousedown_port_index,
           portType: mousedown_port_type
         }]);
-        $(window).on('keyup', disableQuickJoinEventHandler);
+        $(window).on('keyup', this.disableQuickJoinEventHandler);
       }
     }
     d3.event.stopPropagation();
@@ -1615,51 +1594,51 @@ export class View extends Context {
       mouse_mode
     } = this
     var i;
-    if (mouse_mode === RED.state.QUICK_JOINING) {
-      if (drag_lines[0].node === d) {
+    if (mouse_mode === this.RED.state.QUICK_JOINING) {
+      if (this.drag_lines[0].node === d) {
         return
       }
     }
     document.body.style.cursor = '';
-    if (mouse_mode == RED.state.JOINING || mouse_mode == RED.state.QUICK_JOINING) {
+    if (mouse_mode == this.RED.state.JOINING || mouse_mode == this.RED.state.QUICK_JOINING) {
       if (typeof TouchEvent != 'undefined' && d3.event instanceof TouchEvent) {
-        RED.nodes.eachNode(function (n) {
-          if (n.z == RED.workspaces.active()) {
+        this.RED.nodes.eachNode(function (n) {
+          if (n.z == this.RED.workspaces.active()) {
             var hw = n.w / 2;
             var hh = n.h / 2;
-            if (n.x - hw < mouse_position[0] && n.x + hw > mouse_position[0] &&
-              n.y - hh < mouse_position[1] && n.y + hh > mouse_position[1]) {
-              mouseup_node = n;
-              portType = mouseup_node.inputs > 0 ? PORT_TYPE_INPUT : PORT_TYPE_OUTPUT;
+            if (n.x - hw < this.mouse_position[0] && n.x + hw > this.mouse_position[0] &&
+              n.y - hh < this.mouse_position[1] && n.y + hh > this.mouse_position[1]) {
+              this.mouseup_node = n;
+              portType = this.mouseup_node.inputs > 0 ? PORT_TYPE_INPUT : PORT_TYPE_OUTPUT;
               portIndex = 0;
             }
           }
         });
       } else {
-        mouseup_node = d;
+        this.mouseup_node = d;
       }
       var addedLinks = [];
       var removedLinks = [];
 
-      for (i = 0; i < drag_lines.length; i++) {
-        if (drag_lines[i].link) {
-          removedLinks.push(drag_lines[i].link)
+      for (i = 0; i < this.drag_lines.length; i++) {
+        if (this.drag_lines[i].link) {
+          removedLinks.push(this.drag_lines[i].link)
         }
       }
-      for (i = 0; i < drag_lines.length; i++) {
-        if (portType != drag_lines[i].portType && mouseup_node !== drag_lines[i].node) {
-          var drag_line = drag_lines[i];
+      for (i = 0; i < this.drag_lines.length; i++) {
+        if (portType != this.drag_lines[i].portType && this.mouseup_node !== this.drag_lines[i].node) {
+          var drag_line = this.drag_lines[i];
           var src, dst, src_port;
           if (drag_line.portType === PORT_TYPE_OUTPUT) {
             src = drag_line.node;
             src_port = drag_line.port;
-            dst = mouseup_node;
+            dst = this.mouseup_node;
           } else if (drag_line.portType === PORT_TYPE_INPUT) {
-            src = mouseup_node;
+            src = this.mouseup_node;
             dst = drag_line.node;
             src_port = portIndex;
           }
-          var existingLink = RED.nodes.filterLinks({
+          var existingLink = this.RED.nodes.filterLinks({
             source: src,
             target: dst,
             sourcePort: src_port
@@ -1670,59 +1649,59 @@ export class View extends Context {
               sourcePort: src_port,
               target: dst
             };
-            RED.nodes.addLink(link);
+            this.RED.nodes.addLink(link);
             addedLinks.push(link);
           }
         }
       }
       if (addedLinks.length > 0 || removedLinks.length > 0) {
-        var historyEvent = {
+        var historyEvent: any = {
           t: 'add',
           links: addedLinks,
           removedLinks: removedLinks,
-          dirty: RED.nodes.dirty()
+          dirty: this.RED.nodes.dirty()
         };
-        if (activeSubflow) {
-          var subflowRefresh = RED.subflow.refresh(true);
+        if (this.activeSubflow) {
+          var subflowRefresh = this.RED.subflow.refresh(true);
           if (subflowRefresh) {
             historyEvent.subflow = {
-              id: activeSubflow.id,
-              changed: activeSubflow.changed,
+              id: this.activeSubflow.id,
+              changed: this.activeSubflow.changed,
               instances: subflowRefresh.instances
             }
           }
         }
-        RED.history.push(historyEvent);
-        updateActiveNodes();
-        RED.nodes.dirty(true);
+        this.RED.history.push(historyEvent);
+        this.updateActiveNodes();
+        this.RED.nodes.dirty(true);
       }
-      if (mouse_mode === RED.state.QUICK_JOINING) {
+      if (mouse_mode === this.RED.state.QUICK_JOINING) {
         if (addedLinks.length > 0) {
-          hideDragLines();
+          this.hideDragLines();
           if (portType === PORT_TYPE_INPUT && d.outputs > 0) {
-            showDragLines([{
+            this.showDragLines([{
               node: d,
               port: 0,
               portType: PORT_TYPE_OUTPUT
             }]);
           } else if (portType === PORT_TYPE_OUTPUT && d.inputs > 0) {
-            showDragLines([{
+            this.showDragLines([{
               node: d,
               port: 0,
               portType: PORT_TYPE_INPUT
             }]);
           } else {
-            resetMouseVars();
+            this.resetMouseVars();
           }
         }
-        redraw();
+        this.redraw();
         return;
       }
 
-      resetMouseVars();
-      hideDragLines();
-      selected_link = null;
-      redraw();
+      this.resetMouseVars();
+      this.hideDragLines();
+      this.selected_link = null;
+      this.redraw();
     }
   }
 
@@ -1741,7 +1720,7 @@ export class View extends Context {
     } else {
       localPos = [d3Node.attr('x') || 0, d3Node.attr('y') || 0];
     }
-    var parentPos = getElementPosition(node.parentNode);
+    var parentPos = this.getElementPosition(node.parentNode);
     return [localPos[0] + parentPos[0], localPos[1] + parentPos[1]]
 
   }
@@ -1769,17 +1748,17 @@ export class View extends Context {
   }
 
   portMouseOver(port, d, portType, portIndex) {
-    clearTimeout(portLabelHoverTimeout);
-    var active = (mouse_mode != RED.state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== portType));
+    clearTimeout(this.portLabelHoverTimeout);
+    var active = (this.mouse_mode != this.RED.state.JOINING || (this.drag_lines.length > 0 && this.drag_lines[0].portType !== portType));
     if (active && ((portType === PORT_TYPE_INPUT && ((d._def && d._def.inputLabels) || d.inputLabels)) || (portType === PORT_TYPE_OUTPUT && ((d._def && d._def.outputLabels) || d.outputLabels)))) {
-      portLabelHoverTimeout = setTimeout(function () {
-        var tooltip = getPortLabel(d, portType, portIndex);
+      this.portLabelHoverTimeout = setTimeout(function () {
+        var tooltip = this.getPortLabel(d, portType, portIndex);
         if (!tooltip) {
           return;
         }
-        var pos = getElementPosition(port.node());
-        portLabelHoverTimeout = null;
-        portLabelHover = vis.append('g')
+        var pos = this.getElementPosition(port.node());
+        this.portLabelHoverTimeout = null;
+        this.portLabelHover = this.vis.append('g')
           .attr('transform', 'translate(' + (pos[0] + (portType === PORT_TYPE_INPUT ? -2 : 12)) + ',' + (pos[1] + 5) + ')')
           .attr('class', 'port_tooltip');
         var lines = tooltip.split('\n');
@@ -1787,7 +1766,7 @@ export class View extends Context {
         var labelHeight = 4;
         var labelHeights = [];
         lines.forEach(function (l) {
-          var labelDimensions = calculateTextDimensions(l, 'port_tooltip_label', 8, 0);
+          var labelDimensions = this.calculateTextDimensions(l, 'port_tooltip_label', 8, 0);
           labelWidth = Math.max(labelWidth, labelDimensions[0]);
           labelHeights.push(0.8 * labelDimensions[1]);
           labelHeight += 0.8 * labelDimensions[1];
@@ -1795,15 +1774,15 @@ export class View extends Context {
 
         var labelHeight1 = (labelHeight / 2) - 5 - 2;
         var labelHeight2 = labelHeight - 4;
-        portLabelHover.append('path').attr('d',
+        this.portLabelHover.append('path').attr('d',
           portType === PORT_TYPE_INPUT ?
-          'M0 0 l -5 -5 v -' + (labelHeight1) + ' q 0 -2 -2 -2 h -' + labelWidth + ' q -2 0 -2 2 v ' + (labelHeight2) + ' q 0 2 2 2 h ' + labelWidth + ' q 2 0 2 -2 v -' + (labelHeight1) + ' l 5 -5' :
-          'M0 0 l 5 -5 v -' + (labelHeight1) + ' q 0 -2 2 -2 h ' + labelWidth + ' q 2 0 2 2 v ' + (labelHeight2) + ' q 0 2 -2 2 h -' + labelWidth + ' q -2 0 -2 -2 v -' + (labelHeight1) + ' l -5 -5'
+            'M0 0 l -5 -5 v -' + (labelHeight1) + ' q 0 -2 -2 -2 h -' + labelWidth + ' q -2 0 -2 2 v ' + (labelHeight2) + ' q 0 2 2 2 h ' + labelWidth + ' q 2 0 2 -2 v -' + (labelHeight1) + ' l 5 -5' :
+            'M0 0 l 5 -5 v -' + (labelHeight1) + ' q 0 -2 2 -2 h ' + labelWidth + ' q 2 0 2 2 v ' + (labelHeight2) + ' q 0 2 -2 2 h -' + labelWidth + ' q -2 0 -2 -2 v -' + (labelHeight1) + ' l -5 -5'
         );
         var y = -labelHeight / 2 - 2;
         lines.forEach(function (l, i) {
           y += labelHeights[i];
-          portLabelHover.append('svg:text').attr('class', 'port_tooltip_label')
+          this.portLabelHover.append('svg:text').attr('class', 'port_tooltip_label')
             .attr('x', portType === PORT_TYPE_INPUT ? -10 : 10)
             .attr('y', y)
             .attr('text-anchor', portType === PORT_TYPE_INPUT ? 'end' : 'start')
@@ -1819,23 +1798,23 @@ export class View extends Context {
       clearTimeout
     } = this
 
-    clearTimeout(portLabelHoverTimeout);
-    if (portLabelHover) {
-      portLabelHover.remove();
-      portLabelHover = null;
+    clearTimeout(this.portLabelHoverTimeout);
+    if (this.portLabelHover) {
+      this.portLabelHover.remove();
+      this.portLabelHover = null;
     }
     port.classed('port_hovered', false);
   }
 
   nodeMouseUp(d) {
-    if (dblClickPrimed && mousedown_node == d && clickElapsed > 0 && clickElapsed < 750) {
-      mouse_mode = RED.state.DEFAULT;
+    if (this.dblClickPrimed && this.mousedown_node == d && this.clickElapsed > 0 && this.clickElapsed < 750) {
+      this.mouse_mode = this.RED.state.DEFAULT;
       if (d.type != 'subflow') {
-        RED.editor.edit(d);
+        this.RED.editor.edit(d);
       } else {
-        RED.editor.editSubflow(activeSubflow);
+        this.RED.editor.editSubflow(this.activeSubflow);
       }
-      clickElapsed = 0;
+      this.clickElapsed = 0;
       d3.event.stopPropagation();
       return;
     }
@@ -1847,95 +1826,95 @@ export class View extends Context {
     this.focusView();
     //var touch0 = d3.event;
     //var pos = [touch0.pageX,touch0.pageY];
-    //RED.touch.radialMenu.show(d3.select(this),pos);
-    if (mouse_mode == RED.state.IMPORT_DRAGGING) {
-      RED.keyboard.remove('escape');
+    //this.RED.touch.radialMenu.show(d3.select(this),pos);
+    if (this.mouse_mode == this.RED.state.IMPORT_DRAGGING) {
+      this.RED.keyboard.remove('escape');
 
-      if (activeSpliceLink) {
+      if (this.activeSpliceLink) {
         // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
-        var spliceLink = d3.select(activeSpliceLink).data()[0];
-        RED.nodes.removeLink(spliceLink);
+        var spliceLink = d3.select(this.activeSpliceLink).data()[0];
+        this.RED.nodes.removeLink(spliceLink);
         var link1 = {
           source: spliceLink.source,
           sourcePort: spliceLink.sourcePort,
-          target: moving_set[0].n
+          target: this.moving_set[0].n
         };
         var link2 = {
-          source: moving_set[0].n,
+          source: this.moving_set[0].n,
           sourcePort: 0,
           target: spliceLink.target
         };
-        RED.nodes.addLink(link1);
-        RED.nodes.addLink(link2);
-        var historyEvent = RED.history.peek();
+        this.RED.nodes.addLink(link1);
+        this.RED.nodes.addLink(link2);
+        var historyEvent = this.RED.history.peek();
         historyEvent.links = [link1, link2];
         historyEvent.removedLinks = [spliceLink];
-        updateActiveNodes();
+        this.updateActiveNodes();
       }
 
       this.updateSelection();
-      RED.nodes.dirty(true);
+      this.RED.nodes.dirty(true);
       this.redraw();
       this.resetMouseVars();
       d3.event.stopPropagation();
       return;
-    } else if (mouse_mode == RED.state.QUICK_JOINING) {
+    } else if (this.mouse_mode == this.RED.state.QUICK_JOINING) {
       d3.event.stopPropagation();
       return;
     }
-    mousedown_node = d;
+    this.mousedown_node = d;
     var now = Date.now();
-    clickElapsed = now - clickTime;
-    clickTime = now;
+    this.clickElapsed = now - this.clickTime;
+    this.clickTime = now;
 
-    dblClickPrimed = (lastClickNode == mousedown_node);
-    lastClickNode = mousedown_node;
+    this.dblClickPrimed = (this.lastClickNode == this.mousedown_node);
+    this.lastClickNode = this.mousedown_node;
 
     var i;
 
     if (d.selected && (d3.event.ctrlKey || d3.event.metaKey)) {
-      mousedown_node.selected = false;
-      for (i = 0; i < moving_set.length; i += 1) {
-        if (moving_set[i].n === mousedown_node) {
-          moving_set.splice(i, 1);
+      this.mousedown_node.selected = false;
+      for (i = 0; i < this.moving_set.length; i += 1) {
+        if (this.moving_set[i].n === this.mousedown_node) {
+          this.moving_set.splice(i, 1);
           break;
         }
       }
     } else {
       if (d3.event.shiftKey) {
         this.clearSelection();
-        var cnodes = RED.nodes.getAllFlowNodes(mousedown_node);
+        var cnodes = this.RED.nodes.getAllFlowNodes(this.mousedown_node);
         for (var n = 0; n < cnodes.length; n++) {
           cnodes[n].selected = true;
           cnodes[n].dirty = true;
-          moving_set.push({
+          this.moving_set.push({
             n: cnodes[n]
           });
         }
       } else if (!d.selected) {
         if (!d3.event.ctrlKey && !d3.event.metaKey) {
-          clearSelection();
+          this.clearSelection();
         }
-        mousedown_node.selected = true;
-        moving_set.push({
-          n: mousedown_node
+        this.mousedown_node.selected = true;
+        this.moving_set.push({
+          n: this.mousedown_node
         });
       }
-      selected_link = null;
+      this.selected_link = null;
       if (d3.event.button != 2) {
-        mouse_mode = RED.state.MOVING;
+        this.mouse_mode = this.RED.state.MOVING;
         var mouse = d3.touches(this)[0] || d3.mouse(this);
         mouse[0] += d.x - d.w / 2;
         mouse[1] += d.y - d.h / 2;
-        for (i = 0; i < moving_set.length; i++) {
-          moving_set[i].ox = moving_set[i].n.x;
-          moving_set[i].oy = moving_set[i].n.y;
-          moving_set[i].dx = moving_set[i].n.x - mouse[0];
-          moving_set[i].dy = moving_set[i].n.y - mouse[1];
+        for (i = 0; i < this.moving_set.length; i++) {
+          this.moving_set[i].ox = this.moving_set[i].n.x;
+          this.moving_set[i].oy = this.moving_set[i].n.y;
+          this.moving_set[i].dx = this.moving_set[i].n.x - mouse[0];
+          this.moving_set[i].dy = this.moving_set[i].n.y - mouse[1];
         }
-        mouse_offset = d3.mouse(document.body);
-        if (isNaN(mouse_offset[0])) {
-          mouse_offset = d3.touches(document.body)[0];
+        this.mouse_offset = d3.mouse(document.body);
+        if (isNaN(this.mouse_offset[0])) {
+          this.mouse_offset = d3.touches(document.body)[0];
         }
       }
     }
@@ -1959,7 +1938,6 @@ export class View extends Context {
 
   nodeButtonClicked(d) {
     const {
-      RED,
       activeSubflow,
       redraw
     } = this
@@ -1980,8 +1958,8 @@ export class View extends Context {
         redraw();
       }
     } else {
-      RED.notify(RED._('notification.warning', {
-        message: RED._('notification.warnings.nodeActionDisabled')
+      this.RED.notify(this.RED._('notification.warning', {
+        message: this.RED._('notification.warnings.nodeActionDisabled')
       }), 'warning');
     }
     d3.event.preventDefault();
@@ -1989,7 +1967,6 @@ export class View extends Context {
 
   showTouchMenu(obj, pos) {
     const {
-      RED,
       mousedown_node,
       moving_set,
       clipboard,
@@ -2038,7 +2015,7 @@ export class View extends Context {
       name: 'edit',
       disabled: (moving_set.length != 1),
       onselect: () => {
-        RED.editor.edit(mdn);
+        this.RED.editor.edit(mdn);
       }
     });
     options.push({
@@ -2049,20 +2026,19 @@ export class View extends Context {
     });
     options.push({
       name: 'undo',
-      disabled: (RED.history.depth() === 0),
+      disabled: (this.RED.history.depth() === 0),
       onselect: () => {
-        RED.history.pop();
+        this.RED.history.pop();
       }
     });
 
-    RED.touch.radialMenu.show(obj, pos, options);
+    this.RED.touch.radialMenu.show(obj, pos, options);
     resetMouseVars();
     return this
   }
 
-  redraw(updateActive) {
+  redraw(updateActive?) {
     const {
-      RED,
       updateActiveNodes,
       updateSelection,
       vis,
@@ -2103,7 +2079,7 @@ export class View extends Context {
       .attr('height', space_height * scaleFactor);
 
     // Don't bother redrawing nodes if we're drawing links
-    if (mouse_mode != RED.state.JOINING) {
+    if (mouse_mode != this.RED.state.JOINING) {
 
       var dirtyNodes = {};
 
@@ -2121,47 +2097,47 @@ export class View extends Context {
         });
         outGroup.append('rect').attr('class', 'subflowport').attr('rx', 8).attr('ry', 8).attr('width', 40).attr('height', 40)
           // TODO: This is exactly the same set of handlers used for regular nodes - DRY
-          .on('mouseup', nodeMouseUp)
-          .on('mousedown', nodeMouseDown)
+          .on('mouseup', this.nodeMouseUp)
+          .on('mousedown', this.nodeMouseDown)
           .on('touchstart', (d) => {
             var obj = d3.select(this);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
-            startTouchCenter = [touch0.pageX, touch0.pageY];
-            startTouchDistance = 0;
-            touchStartTime = setTimeout(function () {
-              showTouchMenu(obj, pos);
-            }, touchLongPressTimeout);
-            nodeMouseDown.call(this, d)
+            this.startTouchCenter = [touch0.pageX, touch0.pageY];
+            this.startTouchDistance = 0;
+            this.touchStartTime = setTimeout(function () {
+              this.showTouchMenu(obj, pos);
+            }, this.touchLongPressTimeout);
+            this.nodeMouseDown.call(this, d)
           })
           .on('touchend', (d) => {
-            clearTimeout(touchStartTime);
-            touchStartTime = null;
-            if (RED.touch.radialMenu.active()) {
+            clearTimeout(this.touchStartTime);
+            this.touchStartTime = null;
+            if (this.RED.touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
             }
-            nodeMouseUp.call(this, d);
+            this.nodeMouseUp.call(this, d);
           });
 
         outGroup.append('g').attr('transform', 'translate(-5,15)').append('rect').attr('class', 'port').attr('rx', 3).attr('ry', 3).attr('width', 10).attr('height', 10)
           .on('mousedown', function (d, i) {
-            portMouseDown(d, PORT_TYPE_INPUT, 0);
+            this.portMouseDown(d, PORT_TYPE_INPUT, 0);
           })
           .on('touchstart', function (d, i) {
-            portMouseDown(d, PORT_TYPE_INPUT, 0);
+            this.portMouseDown(d, PORT_TYPE_INPUT, 0);
           })
           .on('mouseup', function (d, i) {
-            portMouseUp(d, PORT_TYPE_INPUT, 0);
+            this.portMouseUp(d, PORT_TYPE_INPUT, 0);
           })
           .on('touchend', function (d, i) {
-            portMouseUp(d, PORT_TYPE_INPUT, 0);
+            this.portMouseUp(d, PORT_TYPE_INPUT, 0);
           })
           .on('mouseover', function (d) {
-            portMouseOver(d3.select(this), d, PORT_TYPE_INPUT, 0);
+            this.portMouseOver(d3.select(this), d, PORT_TYPE_INPUT, 0);
           })
           .on('mouseout', function (d) {
-            portMouseOut(d3.select(this), d, PORT_TYPE_INPUT, 0);
+            this.portMouseOut(d3.select(this), d, PORT_TYPE_INPUT, 0);
           });
 
         outGroup.append('svg:text').attr('class', 'port_label').attr('x', 20).attr('y', 8).style('font-size', '10px').text('output');
@@ -2182,47 +2158,47 @@ export class View extends Context {
         });
         inGroup.append('rect').attr('class', 'subflowport').attr('rx', 8).attr('ry', 8).attr('width', 40).attr('height', 40)
           // TODO: This is exactly the same set of handlers used for regular nodes - DRY
-          .on('mouseup', nodeMouseUp)
-          .on('mousedown', nodeMouseDown)
+          .on('mouseup', this.nodeMouseUp)
+          .on('mousedown', this.nodeMouseDown)
           .on('touchstart', function (d) {
             var obj = d3.select(this);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
-            startTouchCenter = [touch0.pageX, touch0.pageY];
-            startTouchDistance = 0;
-            touchStartTime = setTimeout(function () {
-              showTouchMenu(obj, pos);
-            }, touchLongPressTimeout);
-            nodeMouseDown.call(this, d)
+            this.startTouchCenter = [touch0.pageX, touch0.pageY];
+            this.startTouchDistance = 0;
+            this.touchStartTime = setTimeout(function () {
+              this.showTouchMenu(obj, pos);
+            }, this.touchLongPressTimeout);
+            this.nodeMouseDown.call(this, d)
           })
           .on('touchend', function (d) {
-            clearTimeout(touchStartTime);
-            touchStartTime = null;
-            if (RED.touch.radialMenu.active()) {
+            clearTimeout(this.touchStartTime);
+            this.touchStartTime = null;
+            if (this.RED.touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
             }
-            nodeMouseUp.call(this, d);
+            this.nodeMouseUp.call(this, d);
           });
 
         inGroup.append('g').attr('transform', 'translate(35,15)').append('rect').attr('class', 'port').attr('rx', 3).attr('ry', 3).attr('width', 10).attr('height', 10)
           .on('mousedown', function (d, i) {
-            portMouseDown(d, PORT_TYPE_OUTPUT, i);
+            this.portMouseDown(d, PORT_TYPE_OUTPUT, i);
           })
           .on('touchstart', function (d, i) {
-            portMouseDown(d, PORT_TYPE_OUTPUT, i);
+            this.portMouseDown(d, PORT_TYPE_OUTPUT, i);
           })
           .on('mouseup', function (d, i) {
-            portMouseUp(d, PORT_TYPE_OUTPUT, i);
+            this.portMouseUp(d, PORT_TYPE_OUTPUT, i);
           })
           .on('touchend', function (d, i) {
-            portMouseUp(d, PORT_TYPE_OUTPUT, i);
+            this.portMouseUp(d, PORT_TYPE_OUTPUT, i);
           })
           .on('mouseover', function (d) {
-            portMouseOver(d3.select(this), d, PORT_TYPE_OUTPUT, 0);
+            this.portMouseOver(d3.select(this), d, PORT_TYPE_OUTPUT, 0);
           })
           .on('mouseout', function (d) {
-            portMouseOut(d3.select(this), d, PORT_TYPE_OUTPUT, 0);
+            this.portMouseOut(d3.select(this), d, PORT_TYPE_OUTPUT, 0);
           });
 
 
@@ -2282,13 +2258,13 @@ export class View extends Context {
         var node = d3.select(this);
         var isLink = d.type === 'link in' || d.type === 'link out';
         node.attr('id', d.id);
-        var l = RED.utils.getNodeLabel(d);
+        var l = this.RED.utils.getNodeLabel(d);
         if (isLink) {
-          d.w = node_height;
+          d.w = this.node_height;
         } else {
-          d.w = Math.max(node_width, 20 * (Math.ceil((calculateTextWidth(l, 'node_label', 50) + (d._def.inputs > 0 ? 7 : 0)) / 20)));
+          d.w = Math.max(this.node_width, 20 * (Math.ceil((this.calculateTextWidth(l, 'node_label', 50) + (d._def.inputs > 0 ? 7 : 0)) / 20)));
         }
-        d.h = Math.max(node_height, (d.outputs || 0) * 15);
+        d.h = Math.max(this.node_height, (d.outputs || 0) * 15);
 
         if (d._def.badge) {
           var badge = node.append('svg:g').attr('class', 'node_badge_group');
@@ -2315,7 +2291,7 @@ export class View extends Context {
             .attr('rx', 5)
             .attr('ry', 5)
             .attr('width', 32)
-            .attr('height', node_height - 4)
+            .attr('height', this.node_height - 4)
             .attr('fill', '#eee'); //function(d) { return d._def.color;})
           nodeButtonGroup.append('rect')
             .attr('class', 'node_button_button')
@@ -2326,33 +2302,33 @@ export class View extends Context {
             .attr('rx', 4)
             .attr('ry', 4)
             .attr('width', 16)
-            .attr('height', node_height - 12)
+            .attr('height', this.node_height - 12)
             .attr('fill', function (d) {
               return d._def.color;
             })
             .attr('cursor', 'pointer')
             .on('mousedown', function (d) {
-              if (!lasso && isButtonEnabled(d)) {
-                focusView();
+              if (!this.lasso && this.isButtonEnabled(d)) {
+                this.focusView();
                 d3.select(this).attr('fill-opacity', 0.2);
                 d3.event.preventDefault();
                 d3.event.stopPropagation();
               }
             })
             .on('mouseup', function (d) {
-              if (!lasso && isButtonEnabled(d)) {
+              if (!this.lasso && this.isButtonEnabled(d)) {
                 d3.select(this).attr('fill-opacity', 0.4);
                 d3.event.preventDefault();
                 d3.event.stopPropagation();
               }
             })
             .on('mouseover', function (d) {
-              if (!lasso && isButtonEnabled(d)) {
+              if (!this.lasso && this.isButtonEnabled(d)) {
                 d3.select(this).attr('fill-opacity', 0.4);
               }
             })
             .on('mouseout', function (d) {
-              if (!lasso && isButtonEnabled(d)) {
+              if (!this.lasso && this.isButtonEnabled(d)) {
                 var op = 1;
                 if (d._def.button.toggle) {
                   op = d[d._def.button.toggle] ? 1 : 0.2;
@@ -2360,8 +2336,8 @@ export class View extends Context {
                 d3.select(this).attr('fill-opacity', op);
               }
             })
-            .on('click', nodeButtonClicked)
-            .on('touchstart', nodeButtonClicked)
+            .on('click', this.nodeButtonClicked)
+            .on('touchstart', this.nodeButtonClicked)
         }
 
         var mainRect = node.append('rect')
@@ -2374,27 +2350,27 @@ export class View extends Context {
           .attr('fill', function (d) {
             return d._def.color;
           })
-          .on('mouseup', nodeMouseUp)
-          .on('mousedown', nodeMouseDown)
+          .on('mouseup', this.nodeMouseUp)
+          .on('mousedown', this.nodeMouseDown)
           .on('touchstart', function (d) {
             var obj = d3.select(this);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
-            startTouchCenter = [touch0.pageX, touch0.pageY];
-            startTouchDistance = 0;
-            touchStartTime = setTimeout(function () {
-              showTouchMenu(obj, pos);
-            }, touchLongPressTimeout);
-            nodeMouseDown.call(this, d)
+            this.startTouchCenter = [touch0.pageX, touch0.pageY];
+            this.startTouchDistance = 0;
+            this.touchStartTime = setTimeout(function () {
+              this.showTouchMenu(obj, pos);
+            }, this.touchLongPressTimeout);
+            this.nodeMouseDown.call(this, d)
           })
           .on('touchend', function (d) {
-            clearTimeout(touchStartTime);
-            touchStartTime = null;
-            if (RED.touch.radialMenu.active()) {
+            clearTimeout(this.touchStartTime);
+            this.touchStartTime = null;
+            if (this.RED.touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
             }
-            nodeMouseUp.call(this, d);
+            this.nodeMouseUp.call(this, d);
           })
           .on('mouseover', function (d) {
             if (mouse_mode === 0) {
@@ -2411,7 +2387,7 @@ export class View extends Context {
         //node.append('rect').attr('class', 'node-gradient-bottom').attr('rx', 6).attr('ry', 6).attr('height',30).attr('stroke','none').attr('fill','url(#gradient-bottom)').style('pointer-events','none');
 
         if (d._def.icon) {
-          var icon_url = RED.utils.getNodeIcon(d._def, d);
+          var icon_url = this.RED.utils.getNodeIcon(d._def, d);
           var icon_group = node.append('g')
             .attr('class', 'node_icon_group')
             .attr('x', 0).attr('y', 0);
@@ -2512,10 +2488,10 @@ export class View extends Context {
           dirtyNodes[d.id] = d;
           //if (d.x < -50) deleteSelection();  // Delete nodes if dragged back to palette
           if (!isLink && d.resize) {
-            var l = RED.utils.getNodeLabel(d);
+            var l = this.RED.utils.getNodeLabel(d);
             var ow = d.w;
-            d.w = Math.max(node_width, 20 * (Math.ceil((calculateTextWidth(l, 'node_label', 50) + (d._def.inputs > 0 ? 7 : 0)) / 20)));
-            d.h = Math.max(node_height, (d.outputs || 0) * 15);
+            d.w = Math.max(this.node_width, 20 * (Math.ceil((this.calculateTextWidth(l, 'node_label', 50) + (d._def.inputs > 0 ? 7 : 0)) / 20)));
+            d.h = Math.max(this.node_height, (d.outputs || 0) * 15);
             d.x += (d.w - ow) / 2;
             d.resize = false;
           }
@@ -2525,7 +2501,7 @@ export class View extends Context {
             return 'translate(' + (d.x - d.w / 2) + ',' + (d.y - d.h / 2) + ')';
           });
 
-          if (mouse_mode != RED.state.MOVING_ACTIVE) {
+          if (mouse_mode != this.RED.state.MOVING_ACTIVE) {
             thisNode.selectAll('.node')
               .attr('width', function (d) {
                 return d.w
@@ -2560,22 +2536,22 @@ export class View extends Context {
               var inputGroup = thisNode.append('g').attr('class', 'port_input');
               inputGroup.append('rect').attr('class', 'port').attr('rx', 3).attr('ry', 3).attr('width', 10).attr('height', 10)
                 .on('mousedown', function (d) {
-                  portMouseDown(d, PORT_TYPE_INPUT, 0);
+                  this.portMouseDown(d, PORT_TYPE_INPUT, 0);
                 })
                 .on('touchstart', function (d) {
-                  portMouseDown(d, PORT_TYPE_INPUT, 0);
+                  this.portMouseDown(d, PORT_TYPE_INPUT, 0);
                 })
                 .on('mouseup', function (d) {
-                  portMouseUp(d, PORT_TYPE_INPUT, 0);
+                  this.portMouseUp(d, PORT_TYPE_INPUT, 0);
                 })
                 .on('touchend', function (d) {
-                  portMouseUp(d, PORT_TYPE_INPUT, 0);
+                  this.portMouseUp(d, PORT_TYPE_INPUT, 0);
                 })
                 .on('mouseover', function (d) {
-                  portMouseOver(d3.select(this), d, PORT_TYPE_INPUT, 0);
+                  this.portMouseOver(d3.select(this), d, PORT_TYPE_INPUT, 0);
                 })
                 .on('mouseout', function (d) {
-                  portMouseOut(d3.select(this), d, PORT_TYPE_INPUT, 0);
+                  this.portMouseOut(d3.select(this), d, PORT_TYPE_INPUT, 0);
                 });
             }
 
@@ -2589,37 +2565,37 @@ export class View extends Context {
               .on('mousedown', (function () {
                 var node = d;
                 return function (d, i) {
-                  portMouseDown(node, PORT_TYPE_OUTPUT, i);
+                  this.portMouseDown(node, PORT_TYPE_OUTPUT, i);
                 }
               })())
               .on('touchstart', (function () {
                 var node = d;
                 return function (d, i) {
-                  portMouseDown(node, PORT_TYPE_OUTPUT, i);
+                  this.portMouseDown(node, PORT_TYPE_OUTPUT, i);
                 }
               })())
               .on('mouseup', (function () {
                 var node = d;
                 return function (d, i) {
-                  portMouseUp(node, PORT_TYPE_OUTPUT, i);
+                  this.portMouseUp(node, PORT_TYPE_OUTPUT, i);
                 }
               })())
               .on('touchend', (function () {
                 var node = d;
                 return function (d, i) {
-                  portMouseUp(node, PORT_TYPE_OUTPUT, i);
+                  this.portMouseUp(node, PORT_TYPE_OUTPUT, i);
                 }
               })())
               .on('mouseover', (function () {
                 var node = d;
                 return function (d, i) {
-                  portMouseOver(d3.select(this), node, PORT_TYPE_OUTPUT, i);
+                  this.portMouseOver(d3.select(this), node, PORT_TYPE_OUTPUT, i);
                 }
               })())
               .on('mouseout', (function () {
                 var node = d;
                 return function (d, i) {
-                  portMouseOut(d3.select(this), node, PORT_TYPE_OUTPUT, i);
+                  this.portMouseOut(d3.select(this), node, PORT_TYPE_OUTPUT, i);
                 }
               })());
 
@@ -2637,24 +2613,24 @@ export class View extends Context {
               });
             }
             thisNode.selectAll('text.node_label').text(function (d, i) {
-                var l = '';
-                if (d._def.label) {
-                  l = d._def.label;
-                  try {
-                    l = (typeof l === 'function' ? l.call(d) : l) || '';
-                    l = RED.text.bidi.enforceTextDirectionWithUCC(l);
-                  } catch (err) {
-                    console.log('Definition error: ' + d.type + '.label', err);
-                    l = d.type;
-                  }
+              var l: any = '';
+              if (d._def.label) {
+                l = d._def.label;
+                try {
+                  l = (typeof l === 'function' ? l.call(d) : l) || '';
+                  l = this.RED.text.bidi.enforceTextDirectionWithUCC(l);
+                } catch (err) {
+                  console.log('Definition error: ' + d.type + '.label', err);
+                  l = d.type;
                 }
-                return l;
-              })
+              }
+              return l;
+            })
               .attr('y', function (d) {
                 return (d.h / 2) - 1;
               })
               .attr('class', function (d) {
-                var s = '';
+                var s: any = '';
                 if (d._def.labelStyle) {
                   s = d._def.labelStyle;
                   try {
@@ -2670,17 +2646,17 @@ export class View extends Context {
               });
 
             if (d._def.icon) {
-              icon = thisNode.select('.node_icon');
-              var current_url = icon.attr('xlink:href');
-              var new_url = RED.utils.getNodeIcon(d._def, d);
+              this.icon = thisNode.select('.node_icon');
+              var current_url = this.icon.attr('xlink:href');
+              var new_url = this.RED.utils.getNodeIcon(d._def, d);
               if (new_url !== current_url) {
-                icon.attr('xlink:href', new_url);
+                this.icon.attr('xlink:href', new_url);
                 var img = new Image();
                 img.src = new_url;
-                img.onload = function () {
-                  icon.attr('width', Math.min(img.width, 30));
-                  icon.attr('height', Math.min(img.height, 30));
-                  icon.attr('x', 15 - Math.min(img.width, 30) / 2);
+                img.onload = () => {
+                  this.icon.attr('width', Math.min(img.width, 30));
+                  this.icon.attr('height', Math.min(img.height, 30));
+                  this.icon.attr('x', 15 - Math.min(img.width, 30) / 2);
                 }
               }
             }
@@ -2726,10 +2702,10 @@ export class View extends Context {
             });
 
             thisNode.selectAll('.node_button').attr('opacity', function (d) {
-              return (activeSubflow || !isButtonEnabled(d)) ? 0.4 : 1
+              return (activeSubflow || !this.isButtonEnabled(d)) ? 0.4 : 1
             });
             thisNode.selectAll('.node_button_button').attr('cursor', function (d) {
-              return (activeSubflow || !isButtonEnabled(d)) ? '' : 'pointer';
+              return (activeSubflow || !this.isButtonEnabled(d)) ? '' : 'pointer';
             });
             thisNode.selectAll('.node_right_button').attr('transform', function (d) {
               var x = d.w - 6;
@@ -2769,11 +2745,11 @@ export class View extends Context {
             });
           }
 
-          if (!showStatus || !d.status) {
+          if (!this.showStatus || !d.status) {
             thisNode.selectAll('.node_status_group').style('display', 'none');
           } else {
             thisNode.selectAll('.node_status_group').style('display', 'inline').attr('transform', 'translate(3,' + (d.h + 3) + ')');
-            var fill = status_colours[d.status.fill]; // Only allow our colours for now
+            var fill = this.status_colours[d.status.fill]; // Only allow our colours for now
             if (d.status.shape == null && fill == null) {
               thisNode.selectAll('.node_status').style('display', 'none');
             } else {
@@ -2812,35 +2788,35 @@ export class View extends Context {
       );
       var linkEnter = link.enter().insert('g', '.node').attr('class', 'link');
 
-      linkEnter.each(function (d, i) {
+      linkEnter.each((d, i) => {
         var l = d3.select(this);
         d.added = true;
         l.append('svg:path').attr('class', 'link_background link_path')
-          .on('mousedown', function (d) {
-            mousedown_link = d;
-            clearSelection();
-            selected_link = mousedown_link;
-            updateSelection();
-            redraw();
-            focusView();
+          .on('mousedown', (d) => {
+            this.mousedown_link = d;
+            this.clearSelection();
+            this.selected_link = this.mousedown_link;
+            this.updateSelection();
+            this.redraw();
+            this.focusView();
             d3.event.stopPropagation();
           })
-          .on('touchstart', function (d) {
-            mousedown_link = d;
-            clearSelection();
-            selected_link = mousedown_link;
-            updateSelection();
-            redraw();
-            focusView();
+          .on('touchstart', (d) => {
+            this.mousedown_link = d;
+            this.clearSelection();
+            this.selected_link = this.mousedown_link;
+            this.updateSelection();
+            this.redraw();
+            this.focusView();
             d3.event.stopPropagation();
 
             var obj = d3.select(document.body);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
-            touchStartTime = setTimeout(function () {
-              touchStartTime = null;
-              showTouchMenu(obj, pos);
-            }, touchLongPressTimeout);
+            this.touchStartTime = setTimeout(() => {
+              this.touchStartTime = null;
+              this.showTouchMenu(obj, pos);
+            }, this.touchLongPressTimeout);
           })
         l.append('svg:path').attr('class', 'link_outline link_path');
         l.append('svg:path').attr('class', 'link_line link_path')
@@ -2856,7 +2832,7 @@ export class View extends Context {
       var links = vis.selectAll('.link_path');
       links.each(function (d) {
         var link = d3.select(this);
-        if (d.added || d === selected_link || d.selected || dirtyNodes[d.source.id] || dirtyNodes[d.target.id]) {
+        if (d.added || d === this.selected_link || d.selected || dirtyNodes[d.source.id] || dirtyNodes[d.target.id]) {
           link.attr('d', function (d) {
             var numOutputs = d.source.outputs || 1;
             var sourcePort = d.sourcePort || 0;
@@ -2865,16 +2841,16 @@ export class View extends Context {
             var dy = d.target.y - (d.source.y + y);
             var dx = (d.target.x - d.target.w / 2) - (d.source.x + d.source.w / 2);
             var delta = Math.sqrt(dy * dy + dx * dx);
-            var scale = lineCurveScale;
+            var scale = this.lineCurveScale;
             var scaleY = 0;
-            if (delta < node_width) {
-              scale = 0.75 - 0.75 * ((node_width - delta) / node_width);
+            if (delta < this.node_width) {
+              scale = 0.75 - 0.75 * ((this.node_width - delta) / this.node_width);
             }
 
             if (dx < 0) {
-              scale += 2 * (Math.min(5 * node_width, Math.abs(dx)) / (5 * node_width));
-              if (Math.abs(dy) < 3 * node_height) {
-                scaleY = ((dy > 0) ? 0.5 : -0.5) * (((3 * node_height) - Math.abs(dy)) / (3 * node_height)) * (Math.min(node_width, Math.abs(dx)) / (node_width));
+              scale += 2 * (Math.min(5 * this.node_width, Math.abs(dx)) / (5 * this.node_width));
+              if (Math.abs(dy) < 3 * this.node_height) {
+                scaleY = ((dy > 0) ? 0.5 : -0.5) * (((3 * this.node_height) - Math.abs(dy)) / (3 * this.node_height)) * (Math.min(this.node_width, Math.abs(dx)) / (this.node_width));
               }
             }
 
@@ -2884,15 +2860,15 @@ export class View extends Context {
             d.y2 = d.target.y;
 
             return 'M ' + d.x1 + ' ' + d.y1 +
-              ' C ' + (d.x1 + scale * node_width) + ' ' + (d.y1 + scaleY * node_height) + ' ' +
-              (d.x2 - scale * node_width) + ' ' + (d.y2 - scaleY * node_height) + ' ' +
+              ' C ' + (d.x1 + scale * this.node_width) + ' ' + (d.y1 + scaleY * this.node_height) + ' ' +
+              (d.x2 - scale * this.node_width) + ' ' + (d.y2 - scaleY * this.node_height) + ' ' +
               d.x2 + ' ' + d.y2;
           });
         }
       })
 
       link.classed('link_selected', function (d) {
-        return d === selected_link || d.selected;
+        return d === this.selected_link || d.selected;
       });
       link.classed('link_unknown', function (d) {
         delete d.added;
@@ -2920,12 +2896,12 @@ export class View extends Context {
           .attr('class', 'link_link').attr('d', 'M 0 0 h ' + stemLength);
         var links = d.links;
         var flows = Object.keys(links);
-        var tabOrder = RED.nodes.getWorkspaceOrder();
+        var tabOrder = this.RED.nodes.getWorkspaceOrder();
         flows.sort(function (A, B) {
           return tabOrder.indexOf(A) - tabOrder.indexOf(B);
         });
         var linkWidth = 10;
-        var h = node_height;
+        var h = this.node_height;
         var y = -(flows.length - 1) * h / 2;
         var linkGroups = g.selectAll('.link_group').data(flows);
         var enterLinkGroups = linkGroups.enter().append('g').attr('class', 'link_group')
@@ -2942,44 +2918,44 @@ export class View extends Context {
           .on('mouseup', function (f) {
             d3.event.stopPropagation();
             var targets = d.links[f];
-            RED.workspaces.show(f);
+            this.RED.workspaces.show(f);
             targets.forEach(function (n) {
               n.selected = true;
               n.dirty = true;
-              moving_set.push({
+              this.moving_set.push({
                 n: n
               });
             });
-            updateSelection();
-            redraw();
+            this.updateSelection();
+            this.redraw();
           });
         enterLinkGroups.each(function (f) {
           var linkG = d3.select(this);
           linkG.append('svg:path').attr('class', 'link_flow_link')
             .attr('class', 'link_link')
             .attr('d',
-              'M ' + stemLength + ' 0 ' +
-              'C ' + (stemLength + (1.7 * branchLength)) + ' ' + 0 +
-              ' ' + (stemLength + (0.1 * branchLength)) + ' ' + y + ' ' +
-              (stemLength + branchLength * 1.5) + ' ' + y + ' '
+            'M ' + stemLength + ' 0 ' +
+            'C ' + (stemLength + (1.7 * branchLength)) + ' ' + 0 +
+            ' ' + (stemLength + (0.1 * branchLength)) + ' ' + y + ' ' +
+            (stemLength + branchLength * 1.5) + ' ' + y + ' '
             );
           linkG.append('svg:path')
             .attr('class', 'link_port')
             .attr('d',
-              'M ' + (stemLength + branchLength * 1.5 + s * (linkWidth + 7)) + ' ' + (y - 12) + ' ' +
-              'h ' + (-s * linkWidth) + ' ' +
-              'a 3 3 45 0 ' + (s === 1 ? '0' : '1') + ' ' + (s * -3) + ' 3 ' +
-              'v 18 ' +
-              'a 3 3 45 0 ' + (s === 1 ? '0' : '1') + ' ' + (s * 3) + ' 3 ' +
-              'h ' + (s * linkWidth)
+            'M ' + (stemLength + branchLength * 1.5 + s * (linkWidth + 7)) + ' ' + (y - 12) + ' ' +
+            'h ' + (-s * linkWidth) + ' ' +
+            'a 3 3 45 0 ' + (s === 1 ? '0' : '1') + ' ' + (s * -3) + ' 3 ' +
+            'v 18 ' +
+            'a 3 3 45 0 ' + (s === 1 ? '0' : '1') + ' ' + (s * 3) + ' 3 ' +
+            'h ' + (s * linkWidth)
             );
           linkG.append('svg:path')
             .attr('class', 'link_port')
             .attr('d',
-              'M ' + (stemLength + branchLength * 1.5 + s * (linkWidth + 10)) + ' ' + (y - 12) + ' ' +
-              'h ' + (s * (linkWidth * 3)) + ' ' +
-              'M ' + (stemLength + branchLength * 1.5 + s * (linkWidth + 10)) + ' ' + (y + 12) + ' ' +
-              'h ' + (s * (linkWidth * 3))
+            'M ' + (stemLength + branchLength * 1.5 + s * (linkWidth + 10)) + ' ' + (y - 12) + ' ' +
+            'h ' + (s * (linkWidth * 3)) + ' ' +
+            'M ' + (stemLength + branchLength * 1.5 + s * (linkWidth + 10)) + ' ' + (y + 12) + ' ' +
+            'h ' + (s * (linkWidth * 3))
             ).style('stroke-dasharray', '12 3 8 4 3');
           linkG.append('rect').attr('class', 'port link_port')
             .attr('x', stemLength + branchLength * 1.5 - 4 + (s * 4))
@@ -2989,13 +2965,13 @@ export class View extends Context {
             .attr('width', 8)
             .attr('height', 8);
           linkG.append('rect')
-            .attr('x', stemLength + branchLength * 1.5 - (s === -1 ? node_width : 0))
+            .attr('x', stemLength + branchLength * 1.5 - (s === -1 ? this.node_width : 0))
             .attr('y', y - 12)
-            .attr('width', node_width)
+            .attr('width', this.node_width)
             .attr('height', 24)
             .style('stroke', 'none')
             .style('fill', 'transparent')
-          var tab = RED.nodes.workspace(f);
+          var tab = this.RED.nodes.workspace(f);
           var label;
           if (tab) {
             label = tab.label || tab.id;
@@ -3066,13 +3042,13 @@ export class View extends Context {
    *  - all 'selected'
    *  - attached to mouse for placing - 'IMPORT_DRAGGING'
    */
-  importNodes(newNodesStr, addNewFlow, touchImport) {
+  importNodes(newNodesStr, addNewFlow?, touchImport?) {
     try {
       var activeSubflowChanged;
-      if (activeSubflow) {
-        activeSubflowChanged = activeSubflow.changed;
+      if (this.activeSubflow) {
+        activeSubflowChanged = this.activeSubflow.changed;
       }
-      var result = RED.nodes.import(newNodesStr, true, addNewFlow);
+      var result = this.RED.nodes.import(newNodesStr, true, addNewFlow);
       if (result) {
         var new_nodes = result[0];
         var new_links = result[1];
@@ -3080,10 +3056,10 @@ export class View extends Context {
         var new_subflows = result[3];
         var new_default_workspace = result[4];
         if (addNewFlow && new_default_workspace) {
-          RED.workspaces.show(new_default_workspace.id);
+          this.RED.workspaces.show(new_default_workspace.id);
         }
         var new_ms = new_nodes.filter(function (n) {
-          return n.hasOwnProperty('x') && n.hasOwnProperty('y') && n.z == RED.workspaces.active()
+          return n.hasOwnProperty('x') && n.hasOwnProperty('y') && n.z == this.RED.workspaces.active()
         }).map(function (n) {
           return {
             n: n
@@ -3099,8 +3075,8 @@ export class View extends Context {
           var dx = root_node.x;
           var dy = root_node.y;
 
-          if (mouse_position == null) {
-            mouse_position = [0, 0];
+          if (this.mouse_position == null) {
+            this.mouse_position = [0, 0];
           }
 
           var minX = 0;
@@ -3113,12 +3089,12 @@ export class View extends Context {
             node.n.selected = true;
             node.n.changed = true;
             node.n.moved = true;
-            node.n.x -= dx - mouse_position[0];
-            node.n.y -= dy - mouse_position[1];
-            node.dx = node.n.x - mouse_position[0];
-            node.dy = node.n.y - mouse_position[1];
-            minX = Math.min(node.n.x - node_width / 2 - 5, minX);
-            minY = Math.min(node.n.y - node_height / 2 - 5, minY);
+            node.n.x -= dx - this.mouse_position[0];
+            node.n.y -= dy - this.mouse_position[1];
+            node.dx = node.n.x - this.mouse_position[0];
+            node.dy = node.n.y - this.mouse_position[1];
+            minX = Math.min(node.n.x - this.node_width / 2 - 5, minX);
+            minY = Math.min(node.n.y - this.node_height / 2 - 5, minY);
           }
           for (i = 0; i < new_ms.length; i++) {
             node = new_ms[i];
@@ -3136,62 +3112,62 @@ export class View extends Context {
 
           }
           if (!touchImport) {
-            mouse_mode = RED.state.IMPORT_DRAGGING;
-            spliceActive = false;
+            this.mouse_mode = this.RED.state.IMPORT_DRAGGING;
+            this.spliceActive = false;
             if (new_ms.length === 1) {
               node = new_ms[0];
-              spliceActive = node.n.hasOwnProperty('_def') &&
+              this.spliceActive = node.n.hasOwnProperty('_def') &&
                 node.n._def.inputs > 0 &&
                 node.n._def.outputs > 0;
             }
           }
-          RED.keyboard.add('*', 'escape', function () {
-            RED.keyboard.remove('escape');
-            clearSelection();
-            RED.history.pop();
-            mouse_mode = 0;
+          this.RED.keyboard.add('*', 'escape', function () {
+            this.RED.keyboard.remove('escape');
+            this.clearSelection();
+            this.RED.history.pop();
+            this.mouse_mode = 0;
           });
           this.clearSelection();
-          moving_set = new_ms;
+          this.moving_set = new_ms;
         }
 
-        var historyEvent = {
+        var historyEvent: any = {
           t: 'add',
           nodes: new_node_ids,
           links: new_links,
           workspaces: new_workspaces,
           subflows: new_subflows,
-          dirty: RED.nodes.dirty()
+          dirty: this.RED.nodes.dirty()
         };
         if (new_ms.length === 0) {
-          RED.nodes.dirty(true);
+          this.RED.nodes.dirty(true);
         }
-        if (activeSubflow) {
-          var subflowRefresh = RED.subflow.refresh(true);
+        if (this.activeSubflow) {
+          var subflowRefresh = this.RED.subflow.refresh(true);
           if (subflowRefresh) {
             historyEvent.subflow = {
-              id: activeSubflow.id,
+              id: this.activeSubflow.id,
               changed: activeSubflowChanged,
               instances: subflowRefresh.instances
             }
           }
         }
-        RED.history.push(historyEvent);
+        this.RED.history.push(historyEvent);
 
         this.updateActiveNodes();
         this.redraw();
       }
     } catch (error) {
-      if (error.code != 'NODE_RED') {
-        console.log(error.stack);
-        RED.notify(RED._('notification.error', {
-          message: error.toString()
-        }), 'error');
-      } else {
-        RED.notify(RED._('notification.error', {
-          message: error.message
-        }), 'error');
-      }
+      // if (error.code != 'NODE_RED') {
+      //   console.log(error.stack);
+      //   this.RED.notify(this.RED._('notification.error', {
+      //     message: error.toString()
+      //   }), 'error');
+      // } else {
+      //   this.RED.notify(this.RED._('notification.error', {
+      //     message: error.message
+      //   }), 'error');
+      // }
     }
     return this
   }
@@ -3214,18 +3190,14 @@ export class View extends Context {
       redraw
     } = this
 
-    snapGrid = state;
+    this.snapGrid = state;
     redraw();
     return this
   }
 
   toggleStatus(s) {
-    const {
-      RED
-    } = this
-
-    showStatus = s;
-    RED.nodes.eachNode(function (n) {
+    this.showStatus = s;
+    this.RED.nodes.eachNode(function (n) {
       n.dirty = true;
     });
     //TODO: subscribe/unsubscribe here
@@ -3236,9 +3208,9 @@ export class View extends Context {
   // API
   state(state) {
     if (state == null) {
-      return mouse_mode
+      return this.mouse_mode
     } else {
-      mouse_mode = state;
+      this.mouse_mode = state;
     }
     return this
   }
@@ -3253,11 +3225,11 @@ export class View extends Context {
     if (typeof selection !== 'undefined') {
       clearSelection();
       if (typeof selection == 'string') {
-        var selectedNode = RED.nodes.node(selection);
+        var selectedNode = this.RED.nodes.node(selection);
         if (selectedNode) {
           selectedNode.selected = true;
           selectedNode.dirty = true;
-          moving_set = [{
+          this.moving_set = [{
             n: selectedNode
           }];
         }
@@ -3269,25 +3241,25 @@ export class View extends Context {
   }
 
   selection() {
-    var selection = {};
-    if (moving_set.length > 0) {
-      selection.nodes = moving_set.map(function (n) {
+    var selection: any = {};
+    if (this.moving_set.length > 0) {
+      selection.nodes = this.moving_set.map(function (n) {
         return n.n;
       });
     }
-    if (selected_link != null) {
-      selection.link = selected_link;
+    if (this.selected_link != null) {
+      selection.link = this.selected_link;
     }
     return selection;
   }
 
   scale() {
-    return scaleFactor;
+    return this.scaleFactor;
   }
 
   getLinksAtPoint(x, y) {
     var result = [];
-    var links = outer.selectAll('.link_background')[0];
+    var links = this.outer.selectAll('.link_background')[0];
     for (var i = 0; i < links.length; i++) {
       var bb = links[i].getBBox();
       if (x >= bb.x && y >= bb.y && x <= bb.x + bb.width && y <= bb.y + bb.height) {
@@ -3298,14 +3270,14 @@ export class View extends Context {
   }
 
   reveal(id) {
-    if (RED.nodes.workspace(id) || RED.nodes.subflow(id)) {
-      RED.workspaces.show(id);
+    if (this.RED.nodes.workspace(id) || this.RED.nodes.subflow(id)) {
+      this.RED.workspaces.show(id);
     } else {
-      var node = RED.nodes.node(id);
+      var node = this.RED.nodes.node(id);
       if (node._def.category !== 'config' && node.z) {
         node.highlighted = true;
         node.dirty = true;
-        RED.workspaces.show(node.z);
+        this.RED.workspaces.show(node.z);
 
         var screenSize = [$('#chart').width(), $('#chart').height()];
         var scrollPos = [$('#chart').scrollLeft(), $('#chart').scrollTop()];
@@ -3332,22 +3304,22 @@ export class View extends Context {
               node.highlighted = false;
               delete node._flashing;
             }
-            RED.view.redraw();
+            this.RED.view.redraw();
           }
           flashFunc();
         }
       } else if (node._def.category === 'config') {
-        RED.sidebar.config.show(id);
+        this.RED.sidebar.config.show(id);
       }
     }
   }
 
   gridSize(v) {
     if (v === undefined) {
-      return gridSize;
+      return this.gridSize;
     } else {
-      gridSize = v;
-      updateGrid();
+      this.gridSize = v;
+      this.updateGrid();
     }
   }
 
@@ -3356,25 +3328,18 @@ export class View extends Context {
   }
 
   handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp) {
-    const {
-      RED,
-      clearTimeout,
-      outer_background
-    } = this
 
     clearTimeout(touchStartTime);
     touchStartTime = null;
-    if (!RED.touch) {
-      this.handleError('handleOuterTouchEndEvent: RED missing touch object', {
-        RED
-      })
+    if (!this.RED.touch) {
+      this.handleError('handleOuterTouchEndEvent: this.RED missing touch object', this.RED);
     }
 
-    if (RED.touch.radialMenu.active()) {
+    if (this.RED.touch.radialMenu.active()) {
       return;
     }
     if (lasso) {
-      outer_background.attr('fill', '#fff');
+      this.outer_background.attr('fill', '#fff');
     }
     canvasMouseUp.call(this);
   }
@@ -3385,15 +3350,12 @@ export class View extends Context {
     startTouchDistance,
     touchLongPressTimeout) {
     const {
-      RED,
       clearTimeout,
       showTouchMenu
     } = this
-    let {
-      moveTouchCenter
-    } = this
 
     var touch0;
+    console.log("D#############", d3)
     if (!d3.event) {
       this.handleError('handleOuterTouchStartEvent: d3 missing event object', {
         // d3
@@ -3416,7 +3378,7 @@ export class View extends Context {
         (touch1['pageX'] + (b / 2) - offset.left + scrollPos[0]) / scaleFactor,
         (touch1['pageY'] + (a / 2) - offset.top + scrollPos[1]) / scaleFactor
       ];
-      moveTouchCenter = [
+      this.moveTouchCenter = [
         touch1['pageX'] + (b / 2),
         touch1['pageY'] + (a / 2)
       ]
@@ -3446,19 +3408,18 @@ export class View extends Context {
     }
   }
 
-  handleOuterTouchMoveEvent(touchStartTime,
-    startTouchCenter,
-    lasso,
-    canvasMouseMove,
-    oldScaleFactor,
-    scaleFactor,
-    startTouchDistance) {
+  handleOuterTouchMoveEvent(touchStartTime: any,
+    startTouchCenter: any,
+    lasso: any,
+    canvasMouseMove: any,
+    oldScaleFactor: any,
+    scaleFactor: any,
+    startTouchDistance: any) {
     const {
-      RED,
       clearTimeout
     } = this
 
-    if (RED.touch.radialMenu.active()) {
+    if (this.RED.touch.radialMenu.active()) {
       d3.event.preventDefault();
       return;
     }
@@ -3500,7 +3461,7 @@ export class View extends Context {
         ];
 
         startTouchDistance = moveTouchDistance;
-        moveTouchCenter = touchCenter;
+        this.moveTouchCenter = touchCenter;
 
         $('#chart').scrollLeft(scrollPos[0] + deltaTouchCenter[0]);
         $('#chart').scrollTop(scrollPos[1] + deltaTouchCenter[1]);
@@ -3509,7 +3470,7 @@ export class View extends Context {
     }
   }
 
-  handleWorkSpaceChangeEvent(evt, workspaceScrollPositions) {
+  handleWorkSpaceChangeEvent(event, workspaceScrollPositions) {
     {
       var chart = $('#chart');
       if (event.old !== 0) {
@@ -3521,10 +3482,10 @@ export class View extends Context {
       var scrollStartLeft = chart.scrollLeft();
       var scrollStartTop = chart.scrollTop();
 
-      activeSubflow = this.RED.nodes.subflow(event.workspace);
+      this.activeSubflow = this.RED.nodes.subflow(event.workspace);
 
-      this.RED.menu.setDisabled('menu-item-workspace-edit', activeSubflow);
-      this.RED.menu.setDisabled('menu-item-workspace-delete', this.RED.workspaces.count() == 1 || activeSubflow);
+      this.RED.menu.setDisabled('menu-item-workspace-edit', this.activeSubflow);
+      this.RED.menu.setDisabled('menu-item-workspace-delete', this.RED.workspaces.count() == 1 || this.activeSubflow);
 
       if (workspaceScrollPositions[event.workspace]) {
         chart.scrollLeft(workspaceScrollPositions[event.workspace].left);
@@ -3535,9 +3496,9 @@ export class View extends Context {
       }
       var scrollDeltaLeft = chart.scrollLeft() - scrollStartLeft;
       var scrollDeltaTop = chart.scrollTop() - scrollStartTop;
-      if (mouse_position != null) {
-        mouse_position[0] += scrollDeltaLeft;
-        mouse_position[1] += scrollDeltaTop;
+      if (this.mouse_position != null) {
+        this.mouse_position[0] += scrollDeltaLeft;
+        this.mouse_position[1] += scrollDeltaTop;
       }
       this.clearSelection();
       this.RED.nodes.eachNode(function (n) {
@@ -3548,8 +3509,8 @@ export class View extends Context {
       this.redraw();
     }
   }
-}
+  init() {
+    return new View().configure()
+  }
 
-View.init = () => {
-  return new View().configure()
 }

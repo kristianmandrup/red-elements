@@ -28,6 +28,9 @@ function rebind(varNames, ctx) {
 }
 
 export class Library extends Context {
+  exportToLibraryDialog: any;
+  flowName: any;
+  ui: any;
   constructor(ctx) {
     super(ctx)
 
@@ -60,7 +63,7 @@ export class Library extends Context {
     });
 
     if (ctx.settings.theme("menu.menu-item-import-library") !== false) {
-      this.loadFlowLibrary();
+      this.loadFlowLibrary(true);
     }
 
     this.exportToLibraryDialog = $('<div id="library-dialog" class="hide"><form class="dialog-form form-horizontal"></form></div>')
@@ -84,7 +87,7 @@ export class Library extends Context {
           text: ctx._("common.label.export"),
           click: () => {
             //TODO: move this to ctx.library
-            var flowName = $("#node-input-library-filename").val();
+            var flowName: any = $("#node-input-library-filename").val();
             if (!/^\s*$/.test(flowName)) {
               $.ajax({
                 url: 'library/flows/' + flowName,
@@ -165,9 +168,9 @@ export class Library extends Context {
               a.href = "#";
               a.innerHTML = data.f[i];
               a.flowName = root + (root !== "" ? "/" : "") + data.f[i];
-              a.onclick = function () {
+              a.onclick = () => {
                 $.get('library/flows/' + this.flowName, function (data) {
-                  ctx.view.importNodes(data);
+                  this.ctx.view.importNodes(data);
                 });
               };
               li.appendChild(a);
@@ -185,9 +188,9 @@ export class Library extends Context {
       var menu = buildMenu(data, "");
       $("#menu-item-import-examples").remove();
       if (examples) {
-        ctx.menu.addItem("menu-item-import", {
+        this.ctx.menu.addItem("menu-item-import", {
           id: "menu-item-import-examples",
-          label: ctx._("menu.label.examples"),
+          label: this.ctx._("menu.label.examples"),
           options: []
         })
         $("#menu-item-import-examples-submenu").replaceWith(buildMenu(examples, "_examples_"));
@@ -195,7 +198,7 @@ export class Library extends Context {
       //TODO: need an api in ctx.menu for this
       $("#menu-item-import-library-submenu").replaceWith(menu);
       if (!done) {
-        this.logWarning('async:loadFlowLibrary must take a cb function')
+        this.logWarning('async:loadFlowLibrary must take a cb function', null)
       }
       done(null, {
         loaded: true
@@ -203,7 +206,7 @@ export class Library extends Context {
     });
   }
 
-  createUI(options = {}) {
+  createUI(options) {
     var libraryData = {};
     var selectedLibraryItem = null;
     var libraryEditor = null;
@@ -232,7 +235,7 @@ export class Library extends Context {
     if (editor.getText) {
       editor.getValue = editor.getText;
     }
-
+    options.selectedLibraryItem = selectedLibraryItem;
     this.ui = new LibraryUI(options)
   }
 

@@ -7,7 +7,7 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "test": "jest --no-cache --config ./jest.config.js",
+    "test": "ts-jest --no-cache --config ./jest.config.js",
     "test:watch": "jest --watch"
   },
   "dependencies": {
