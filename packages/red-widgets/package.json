@@ -11,6 +11,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@types/jest": "^21.1.8",
     "ace-builds": "^1.2.8",
     "bootstrap": "^3.3.7",
     "bootstrap-select": "^1.12.4",
