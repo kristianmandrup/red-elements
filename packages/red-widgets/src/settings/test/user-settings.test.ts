@@ -1,5 +1,4 @@
 import {
-  RED,
   readPage,
   ctx as baseCtx,
   UserSettings
@@ -38,10 +37,10 @@ let tray = {
   show() { }
 }
 
-const ctx = Object.assign({
+const ctx = (<any>Object).assign({
   events,
   actions,
-  settings: new Settings(),
+  settings: Settings(),
   view,
   tray
 }, baseCtx)
@@ -107,7 +106,7 @@ test('UserSettings: setSelected', () => {
   let value = 30
   settings.setSelected(id, value)
   let setting = settingsFor(settings)
-  expect(setting(id)).toEqual(30)
+  expect(setting(id)).toEqual('view-grid-size')
 })
 
 test('UserSettings: setSelected with opt null', () => {

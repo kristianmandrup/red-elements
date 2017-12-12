@@ -23,16 +23,21 @@ import {
 const {
   log
 } = console
-
+import { IRED, TYPES, container } from "../../setup/setup";
+import getDecorators from "inversify-inject-decorators";
+import { Container, injectable, tagged, named } from "inversify";
+let { lazyInject } = getDecorators(container);
 export class UserSettings extends Context {
+  @lazyInject(TYPES.RED) RED: IRED;
+  allSettings: any;
+  settingsVisible: any;
+  trayWidth: any;
+  panes: any;
   constructor(ctx) {
     // TODO: inject RED global singleton instead
     super(ctx)
     // TODO: inject RED global singleton instead
-    let RED = ctx
-    this.RED = RED
-
-    let viewSettings = this.viewSettings
+    let viewSettings: any = this.viewSettings
 
     this.allSettings = {}
     let allSettings = this.allSettings
@@ -61,29 +66,27 @@ export class UserSettings extends Context {
       panes
     })
 
-    if (!RED.actions) {
-      this.handleError('UserSettings: missing actions', {
-        RED
-      })
+    if (!this.RED.actions) {
+      this.handleError('UserSettings: missing actions', this.RED);
     }
 
-    RED.actions.add("core:show-user-settings", show);
-    RED.actions.add("core:show-help", () => {
+    this.RED.actions.add("core:show-user-settings", show);
+    this.RED.actions.add("core:show-help", () => {
       show('keyboard')
     });
 
     this.addPane({
       id: 'view',
-      title: RED._("menu.label.view.view"),
+      title: this.RED._("menu.label.view.view"),
       get: createViewPane,
       close: () => {
         viewSettings.forEach((section) => {
           section.options.forEach((opt) => {
             var input = $("#user-settings-" + opt.setting);
             if (opt.toggle) {
-              setSelected(opt.setting, input.prop('checked'));
+              this.setSelected(opt.setting, input.prop('checked'));
             } else {
-              setSelected(opt.setting, input.val());
+              this.setSelected(opt.setting, input.val());
             }
           });
         })
@@ -93,23 +96,23 @@ export class UserSettings extends Context {
     viewSettings.forEach((section) => {
       section.options.forEach((opt) => {
         if (opt.oldSetting) {
-          var oldValue = RED.settings.get(opt.oldSetting);
+          var oldValue = this.RED.settings.get(opt.oldSetting);
           if (oldValue !== undefined && oldValue !== null) {
-            RED.settings.set(opt.setting, oldValue);
-            RED.settings.remove(opt.oldSetting);
+            this.RED.settings.set(opt.setting, oldValue);
+            this.RED.settings.remove(opt.oldSetting);
           }
         }
         allSettings[opt.setting] = opt;
         if (opt.onchange) {
-          var value = RED.settings.get(opt.setting);
+          var value = this.RED.settings.get(opt.setting);
           if (value === null && opt.hasOwnProperty('default')) {
             value = opt.default;
-            RED.settings.set(opt.setting, value);
+            this.RED.settings.set(opt.setting, value);
           }
 
           var callback = opt.onchange;
           if (typeof callback === 'string') {
-            callback = RED.actions.get(callback);
+            callback = this.RED.actions.get(callback);
           }
           if (typeof callback === 'function') {
             callback.call(opt, value);
@@ -185,13 +188,13 @@ export class UserSettings extends Context {
       trayWidth,
     } = this
 
-    if (settingsVisible) {
+    if (this.settingsVisible) {
       return this
     }
     this.settingsVisible = true;
     var tabContainer;
 
-    var trayOptions = {
+    var trayOptions: any = {
       title: RED._("menu.label.userSettings"),
       buttons: [{
         id: "node-dialog-ok",
@@ -206,7 +209,7 @@ export class UserSettings extends Context {
       },
       open: (tray) => {
         var trayBody = tray.find('.editor-tray-body');
-        var settingsContent = $('<div></div>').appendTo(trayBody);
+        var settingsContent: any = $('<div></div>').appendTo(trayBody);
         var tabContainer = $('<div></div>', {
           id: "user-settings-tabs-container"
         }).appendTo(settingsContent);
@@ -231,7 +234,7 @@ export class UserSettings extends Context {
           id: "user-settings-tabs-content"
         }).appendTo(settingsContent);
 
-        panes.forEach((pane) => {
+        this.panes.forEach((pane) => {
           settingsTabs.addTab({
             id: "user-settings-tab-" + pane.id,
             label: pane.title,
@@ -245,7 +248,7 @@ export class UserSettings extends Context {
       },
       close: () => {
         settingsVisible = false;
-        panes.forEach((pane) => {
+        this.panes.forEach((pane) => {
           if (pane.close) {
             pane.close();
           }
@@ -269,7 +272,7 @@ export class UserSettings extends Context {
 
     var pane = $('<div id="user-settings-tab-view" class="node-help"></div>');
 
-    viewSettings.forEach(function (section) {
+    viewSettings.forEach(function (section: any) {
       $('<h3></h3>').text(RED._(section.title)).appendTo(pane);
       section.options.forEach(function (opt) {
         var initialState = RED.settings.get(opt.setting);

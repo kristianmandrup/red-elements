@@ -94,3 +94,9 @@
 - src/workspaces/workspaces.js: this.workspace_tabs.resize is not a function.
 - src/canvas/view.ts d3.event getting null.
 - facing issue in creating jquery widget factory in typescript file.
+- how to get i18n reference? 
+- Unable to convert below components to ts due widget refrences of editablelist widget factory:-
+  1. node-diff
+  2. node-editor
+  3. palette
+  4. search

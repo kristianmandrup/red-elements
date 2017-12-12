@@ -38,7 +38,7 @@ export interface IRED {
 export class RED implements IRED {
   public settings = {
     theme(id) { },
-    get(settings) { },
+    get(id) { return id },
     set(settings, state) { },
     remove(id) { }
   };
