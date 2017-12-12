@@ -280,7 +280,7 @@ export class View extends Context {
     });
 
     // Handle nodes dragged from the palette
-    $('#chart').droppable({
+    (<any>$('#chart')).droppable({
       accept: '.palette_node',
       drop: (event: any, ui: any) => {
         d3.event = event;

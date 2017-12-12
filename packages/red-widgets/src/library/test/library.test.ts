@@ -11,17 +11,17 @@ import {
 // set to real instance for each!
 // See red-runtime
 let actions = {
-  add() {}
+  add() { }
 }
 let events = {
-  on() {}
+  on() { }
 }
 let settings = {
-  theme() {}
+  theme() { }
 }
 // use a Nodes instance (see runtime)
 let nodes = {
-  createExportableNodeSet() {}
+  createExportableNodeSet() { }
 }
 let view = {
   selection() {
@@ -33,7 +33,7 @@ let view = {
   }
 }
 
-let ctx = Object.assign({
+let ctx = (<any>Object).assign({
   actions,
   events,
   settings,
@@ -42,7 +42,7 @@ let ctx = Object.assign({
 }, baseCtx)
 
 function create(ctx) {
-  document.body.innerHTML =readPage('library',__dirname);
+  document.body.innerHTML = readPage('library', __dirname);
   return new Library(ctx)
 }
 
@@ -70,7 +70,7 @@ test('Library: loadFlowLibrary', () => {
 })
 
 test('Library: createUI', () => {
-  let options = {editor:{setText:{}},ctx:ctx}
+  let options = { editor: { setText: {} }, ctx: ctx }
   library.createUI(options)
 
   expect(typeof library.ui).toBe('object')

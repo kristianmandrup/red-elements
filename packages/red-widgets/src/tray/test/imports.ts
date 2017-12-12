@@ -1,4 +1,4 @@
-import * as matchers from 'jest-jquery-matchers'
+var matchers = require('jest-jquery-matchers');
 beforeAll(() => {
   jest.addMatchers(matchers);
 });

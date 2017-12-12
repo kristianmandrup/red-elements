@@ -10,7 +10,7 @@ function create() {
 }
 
 function init() {
-  return View.init()
+  return create().init()
 }
 
 const {

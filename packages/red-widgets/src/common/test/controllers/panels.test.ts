@@ -42,7 +42,7 @@ function makePanel(opts) {
 
 
 test('Panel: can NOT be created from id unless has 2 child elements', () => {
-  let elems = ['invalid-panel-1', 'invalid-panel-2'].map(id => {
+  let elems: any = ['invalid-panel-1', 'invalid-panel-2'].map(id => {
     return makePanel({ id })
   })
   elems.map(elem => expect(elem.invalid).toBe(true))
@@ -50,11 +50,10 @@ test('Panel: can NOT be created from id unless has 2 child elements', () => {
 
 
 test('Panel: can be created from id when has 2 child elements', () => {
-  let widgetElem = makePanel({
+  let widgetElem: any = makePanel({
     id: 'valid-panel',
     resize(newHeights1, newHeights2) { }
   })
-  console.log("WIDGET ELEME", widgetElem);
   widgetElem.modifiedHeights = true;
   widgetElem.resize(20);
   widgetElem.modifiedHeights = false;

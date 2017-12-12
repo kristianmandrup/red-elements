@@ -1,7 +1,7 @@
 // import {
 //   default as i18n
 // } from 'i18next'
-import * as matchers from 'jest-jquery-matchers'
+var matchers = require('jest-jquery-matchers');
 
 beforeAll(() => {
   jest.addMatchers(matchers);
