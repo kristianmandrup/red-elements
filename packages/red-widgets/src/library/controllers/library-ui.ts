@@ -105,51 +105,51 @@ export class LibraryUI extends Context {
     this.libraryEditor.renderer.$cursorLayer.element.style.opacity = 0;
     this.libraryEditor.$blockScrolling = Infinity;
     let {
-      saveToLibrary
-    } = this.rebind([
-        'saveToLibrary'
-      ])
-        (<any>$("#node-dialog-library-lookup")).dialog({
-          title: ctx._("library.typeLibrary", {
-            type: options.type
-          }),
-          modal: true,
-          autoOpen: false,
-          width: 800,
-          height: 450,
-          buttons: [{
-            text: ctx._("common.label.cancel"),
-            click: function () {
-              (<any>$(this)).dialog("close");
+      saveToLibrary } = this;
+    // } = this.rebind([
+    //     'saveToLibrary'
+    //   ])
+    (<any>$("#node-dialog-library-lookup")).dialog({
+      title: ctx._("library.typeLibrary", {
+        type: options.type
+      }),
+      modal: true,
+      autoOpen: false,
+      width: 800,
+      height: 450,
+      buttons: [{
+        text: ctx._("common.label.cancel"),
+        click: () => {
+          (<any>$(this)).dialog("close");
+        }
+      },
+      {
+        text: ctx._("common.label.load"),
+        class: "primary",
+        click: function () {
+          if (this.selectedLibraryItem) {
+            for (var i = 0; i < options.fields.length; i++) {
+              var field = options.fields[i];
+              $("#node-input-" + field).val(this.selectedLibraryItem[field]);
             }
-          },
-          {
-            text: ctx._("common.label.load"),
-            class: "primary",
-            click: function () {
-              if (this.selectedLibraryItem) {
-                for (var i = 0; i < options.fields.length; i++) {
-                  var field = options.fields[i];
-                  $("#node-input-" + field).val(this.selectedLibraryItem[field]);
-                }
-                options.editor.setValue(this.libraryEditor.getValue(), -1);
-              }
-              (<any>$(this)).dialog("close");
-            }
+            options.editor.setValue(this.libraryEditor.getValue(), -1);
           }
-          ],
-          open: function (e) {
-            var form = $("form", this);
-            form.height(form.parent().height() - 30);
-            $("#node-select-library-text").height("100%");
-            $(".form-row:last-child", form).children().height(form.height() - 60);
-          },
-          resize: function (e) {
-            var form = $("form", this);
-            form.height(form.parent().height() - 30);
-            $(".form-row:last-child", form).children().height(form.height() - 60);
-          }
-        });
+          (<any>$(this)).dialog("close");
+        }
+      }
+      ],
+      open: function (e) {
+        var form = $("form", this);
+        form.height(form.parent().height() - 30);
+        $("#node-select-library-text").height("100%");
+        $(".form-row:last-child", form).children().height(form.height() - 60);
+      },
+      resize: function (e) {
+        var form = $("form", this);
+        form.height(form.parent().height() - 30);
+        $(".form-row:last-child", form).children().height(form.height() - 60);
+      }
+    });
 
 
     (<any>$("#node-dialog-library-save-confirm")).dialog({
@@ -168,7 +168,7 @@ export class LibraryUI extends Context {
         text: ctx._("common.label.save"),
         class: "primary",
         click: function () {
-          saveToLibrary(true);
+          saveToLibrary(true, {});
           (<any>$(this)).dialog("close");
         }
       }
@@ -190,7 +190,7 @@ export class LibraryUI extends Context {
         text: ctx._("common.label.save"),
         class: "primary",
         click: function () {
-          saveToLibrary(false);
+          saveToLibrary(false, {});
           (<any>$(this)).dialog("close");
         }
       }

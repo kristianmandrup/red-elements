@@ -104,7 +104,7 @@ test('LibraryUI: library-lookup dialog resize', () => {
   expect(typeof libLookup.options.resize).toBe('function')
 })
 test('LibraryUI: library-lookup dialog button click', () => {
-  let libLookup = $("#node-dialog-library-lookup").data('ui-dialog');
+  let libLookup = (<any>$("#node-dialog-library-lookup")).data('ui-dialog');
   libLookup.options.buttons[0].click();
   // libLookup.options.buttons[1].click();
 })
