@@ -66,7 +66,7 @@ export class Library extends Context {
       this.loadFlowLibrary(true);
     }
 
-    this.exportToLibraryDialog = $('<div id="library-dialog" class="hide"><form class="dialog-form form-horizontal"></form></div>')
+    this.exportToLibraryDialog = (<any>$('<div id="library-dialog" class="hide"><form class="dialog-form form-horizontal"></form></div>'))
       .appendTo("body")
       .dialog({
         modal: true,
@@ -78,7 +78,7 @@ export class Library extends Context {
           id: "library-dialog-cancel",
           text: ctx._("common.label.cancel"),
           click: function () {
-            $(this).dialog("close");
+            (<any>$(this)).dialog("close");
           }
         },
         {
@@ -109,7 +109,7 @@ export class Library extends Context {
                 }
               });
             }
-            $(this).dialog("close");
+            (<any>$(this)).dialog("close");
           }
         }
         ],

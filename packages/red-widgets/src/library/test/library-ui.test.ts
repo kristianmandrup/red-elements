@@ -33,7 +33,7 @@ test('LibraryUI: buildFileList', () => {
   let data = ['111', 'add']
   let ul = ui.buildFileList(root, data)
   var li = $(ul).children();
-  li[0].onclick();
+  li[0].onclick(null);
   // use jest to test returned ul element
 });
 
@@ -42,27 +42,27 @@ test('LibraryUI: buildFileList', () => {
   let data = [1, 2]
   let ul = ui.buildFileList(root, data)
   var li = $(ul).children();
-  li[0].onclick();
+  li[0].onclick(null);
   // use jest to test returned ul element
 });
 
 test('LibraryUI: saveToLibrary', () => {
   let root = {} // document element?
   let overwrite = true;
-  RED.notify = function (callback, text) { }
+  RED["notify"] = function (callback, text) { }
   ui.saveToLibrary(overwrite, { ctx: RED, types: {}, editor: { getValue: function () { } }, fields: ['name', 'asdf', 'eert'] })
 })
 
 test('LibraryUI: saveToLibrary', () => {
   let root = {} // document element?
   let overwrite = false;
-  RED.notify = function (callback, text) { }
+  RED["notify"] = function (callback, text) { }
   ui.saveToLibrary(overwrite, { ctx: RED, types: {}, editor: { getValue: function () { } }, fields: ['name', 'asdf', 'eert'] })
 })
 test('LibraryUI: saveToLibrary', () => {
   let root = {} // document element?
   let overwrite = true;
-  RED.notify = function (callback, text) { }
+  RED["notify"] = function (callback, text) { }
   $("#node-input-name").val('');
   $("#node-dialog-library-save-filename").val('');
   ui.saveToLibrary(overwrite, { ctx: RED, types: {}, editor: { getValue: function () { } }, fields: ['name', 'asdf', 'eert'] })
@@ -95,7 +95,7 @@ test('LibraryUI: menu save click', () => {
   //expect(typeof ul).toBe('object')
 })
 test('LibraryUI: library-lookup dialog open', () => {
-  $("#node-dialog-library-lookup").dialog('open');
+  (<any>$("#node-dialog-library-lookup")).dialog('open');
 })
 
 test('LibraryUI: library-lookup dialog resize', () => {

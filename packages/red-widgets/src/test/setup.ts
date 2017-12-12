@@ -36,7 +36,7 @@ global.$ = $
 global.jQuery = global.$
 require('jquery-ui-dist/jquery-ui')
 
-function readPage(name, basePath) {
+function readPage(name, basePath?) {
   basePath = basePath || __dirname
   const filePath = path.join(basePath, `app/${name}.html`)
 

@@ -279,7 +279,7 @@ test('Menu: set initial state without optoins', () => {
   widgetElem.setInitialState({}, "")
 });
 
-function getMenuItemsOptions(element) {
+function getMenuItemsOptions(element?) {
   return {
     id: {
       onselect: function () { }

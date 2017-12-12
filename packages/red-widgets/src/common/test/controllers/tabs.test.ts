@@ -107,7 +107,7 @@ test('Tabs: handle add tab click event without options add button', () => {
   expect(result).toBe(undefined);
 });
 
-function mockEvent(opts) {
+function mockEvent(opts?) {
   return {
     preventDefault: () => { }
   }
@@ -262,13 +262,14 @@ test.skip('Tabs: renameTab(id, label) - has such a tab', () => {
   const tab2 = {
     id: 'tab2'
   }
+  let label = 'hello';
 
   widgetElem
     .addTab(tab1)
     .addTab(tab2)
 
   let renamed = widgetElem.renameTab(tab1.id, label)
-  let renamedTab = renamed.tabs[id]
+  let renamedTab = renamed.tabs[tab1.id]
   expect(renamedTab.label).toBe(label)
 })
 
