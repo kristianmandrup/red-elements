@@ -7,7 +7,7 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "test": "ts-jest --no-cache --config ./jest.config.js",
+    "test": "jest --no-cache --config ./jest.config.js",
     "test:watch": "jest --watch"
   },
   "dependencies": {
@@ -28,7 +28,8 @@
     "marked": "^0.3.6",
     "normalize.css": "^7.0.0",
     "promise-polyfill": "^6.0.2",
-    "reflect-metadata": "^0.1.10"
+    "reflect-metadata": "^0.1.10",
+    "ts-jest": "^21.2.4"
   },
   "devDependencies": {
     "@types/jquery": "^3.2.16",

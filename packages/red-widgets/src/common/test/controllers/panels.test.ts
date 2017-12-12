@@ -45,7 +45,7 @@ test('Panel: can NOT be created from id unless has 2 child elements', () => {
   let elems: any = ['invalid-panel-1', 'invalid-panel-2'].map(id => {
     return makePanel({ id })
   })
-  elems.map(elem => expect(elem.invalid).toBe(true))
+  elems.map((elem: any) => expect(elem.invalid).toBe(true))
 })
 
 

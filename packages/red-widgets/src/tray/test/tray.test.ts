@@ -15,7 +15,7 @@ let events = {
 let view = {
   focus() { }
 }
-let ctx = Object.assign({
+let ctx = (<any>Object).assign({
   //actions,
   //keyboard,
   //utils,
@@ -83,17 +83,20 @@ test('Tray: showTray', () => {
   expect(tray).toBeDefined()
 })
 
-test('Tray: close', async () => {
+test('Tray: close', () => {
   tray.show(options.basic)
   tray.show(options.basic)
-  let closed = await tray.close()
-  expect(closed).toBeTruthy()
+  tray.close().then((closed) => {
+    expect(closed).toBeTruthy()
+  });
 })
 
-test('Tray: close', async () => {
+test('Tray: close', () => {
   tray.show(options.basic)
-  let closed = await tray.close()
-  expect(closed).toBeTruthy()
+  let closed = tray.close()
+  tray.close().then((closed) => {
+    expect(closed).toBeTruthy()
+  });
 })
 
 

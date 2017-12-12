@@ -105,7 +105,7 @@ test('Popover: open with properties', () => {
 test('Popover: with no matching size', () => {
   var popup;
   try {
-    var popup = createPopup({
+    popup = createPopup({
       target: $('#popover'),
       content: 'My popover',
       size: "test"
