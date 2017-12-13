@@ -113,13 +113,13 @@ test('Menu: set element to be enabled', () => {
   expect(result).toBe(false);
 });
 
-test('Menu: add item with empty options', () => {
+test('Menu: add item with empty sub menu', () => {
   let widgetElem = createMenu({});
   widgetElem.addItem("menu", {});
   expect(typeof (widgetElem.addItem)).toBe('function');
 });
 
-test('Menu: add item with options', () => {
+test('Menu: add item with sub menu', () => {
   let widgetElem = createMenu({});
   let id = "add-item";
   let options = {
@@ -136,7 +136,7 @@ test('Menu: add item with options', () => {
   widgetElem.addItem("add-item", options);
 });
 
-test('Menu: add item with options', () => {
+test('Menu: add item with sub menu', () => {
   let widgetElem = createMenu({});
   let id = "add-empty-item";
   let options = {
@@ -176,7 +176,7 @@ test('Menu: create menu items with option id', () => {
   expect(result).toBeNull();
 });
 
-test('Menu: create menu items with options', () => {
+test('Menu: create menu items with sub menu', () => {
   let widgetElem = createMenu({});
   let options = {
     toggle: function () { },
