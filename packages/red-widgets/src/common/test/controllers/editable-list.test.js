@@ -3,8 +3,8 @@ import {
   ctx,
   RED,
   controllers
-} from '../imports'
-
+} from '../imports';
+import * as utility from '../utility/helper';
 const {
   EditableList
 } = controllers
@@ -22,27 +22,14 @@ beforeAll(() => {
   document.documentElement.innerHTML = readPage('simple')
 })
 
-const options = {
-  header: $('<div></div>'),
-  class: 'editable',
-  addButton: true,
-  height: 100,
-  sortable: "sortable",
-  connectWith: 100,
-  resize: () => { },
-  sort: function (data, item) { return -1; },
-  removable: true,
-  addItem: function (row, index, data) { },
-  scrollOnAdd: true,
-  removeItem: function (data) { }
-}
+const options = utility.options;
 function getElement() {
   return $('<div><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
 }
 
 test('EditableList: is a class', () => {
-  expect(typeof clazz).toBe('function')
-})
+  expect(typeof clazz).toBe('function');
+});
 
 test('EditableList: widget can be created', () => {
   let elem = $('<div style="position:absolute;top:0;width:20%"></div>');
@@ -260,8 +247,8 @@ test('EditableList: with RED null', () => {
   let elem = getElement();
   options.addButton = true;
   let editableList = elem.editableList();
-  let deleteButton=$(".red-ui-editableList-item-remove");
-  
+  let deleteButton = $(".red-ui-editableList-item-remove");
+
   expect(editableList).toBeDefined();
 });
 
