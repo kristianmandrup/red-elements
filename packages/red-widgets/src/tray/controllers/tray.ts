@@ -116,7 +116,7 @@ export class Tray extends Context {
 
   showTray(options) {
     var editor;
-    var el = $('<div class="editor-tray"></div>');
+    var el = <any>$('<div class="editor-tray"></div>');
     var header = $('<div class="editor-tray-header"></div>').appendTo(el);
     var bodyWrapper = $('<div class="editor-tray-body-wrapper"></div>').appendTo(el);
     var body = $('<div class="editor-tray-body"></div>').appendTo(bodyWrapper);
@@ -136,7 +136,7 @@ export class Tray extends Context {
     if (options.buttons) {
       for (var i = 0; i < options.buttons.length; i++) {
         var button = options.buttons[i];
-        var b = $('<button>').button().appendTo(buttonBar);
+        var b = (<any>$('<button>')).button().appendTo(buttonBar);
         if (button.id) {
           b.attr('id', button.id);
         }
@@ -167,7 +167,9 @@ export class Tray extends Context {
       body: body,
       footer: footer,
       options: options,
-      primaryButton: primaryButton
+      primaryButton: primaryButton,
+      preferredWidth: 0,
+      width: 0
     };
     this.stack.push(tray);
     let handleWindowResize = this.handleWindowResize.bind(this);
