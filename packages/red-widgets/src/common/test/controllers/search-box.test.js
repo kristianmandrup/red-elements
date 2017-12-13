@@ -40,7 +40,7 @@ test('Searchbox: widget can be created', () => {
 })
 
 test('Searchbox: can clear search input box', () => {
-  let elem = $('#btnClear');
+  let elem = $('.btnClear');
 
   let clickEvent = elem.click();
   expect(typeof elem.click).toBe('function')

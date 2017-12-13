@@ -36,7 +36,7 @@ function factory(RED) {
         this.element.val("");
         this.uiContainer = this.element.wrap("<div>").parent();
         this.uiContainer.addClass("red-ui-searchBox-container");
-        
+
         // create handler in same scope
         this.clearButtonClick = function (e) {
           e.preventDefault();
@@ -46,7 +46,7 @@ function factory(RED) {
         }
 
         $('<i class="fa fa-search"></i>').prependTo(this.uiContainer);
-        this.clearButton = $('<a id="btnClear" href="#"><i class="fa fa-times"></i></a>').appendTo(this.uiContainer);
+        this.clearButton = $('<a class="btnClear" href="#"><i class="fa fa-times"></i></a>').appendTo(this.uiContainer);
         this.clearButton.on("click", this.clearButtonClick);
 
         this.resultCount = $('<span>', {
@@ -80,7 +80,7 @@ function factory(RED) {
         if (fireEvent) {
           if (!instant && this.options.delay > 0) {
             clearTimeout(this.currentTimeout);
-            this.currentTimeout = setTimeout( () => {
+            this.currentTimeout = setTimeout(() => {
               this.lastSent = this.element.val();
               this._trigger("change");
             }, this.options.delay);

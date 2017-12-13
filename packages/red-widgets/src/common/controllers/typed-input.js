@@ -190,7 +190,7 @@ export function factory(RED) {
 
         this.options.types = this.options.types || Object.keys(allOptions);
 
-        this.selectTrigger = $('<button id="btnSelectTrigger" tabindex="0"></button>').prependTo(this.uiSelect);
+        this.selectTrigger = $('<button class="btnSelectTrigger" tabindex="0"></button>').prependTo(this.uiSelect);
         $('<i class="fa fa-sort-desc"></i>').appendTo(this.selectTrigger);
         this.selectLabel = $('<span></span>').appendTo(this.selectTrigger);
 
@@ -295,7 +295,7 @@ export function factory(RED) {
               label: opt
             };
           }
-          var op = $('<a id="typeOpt" href="#"></a>').attr("value", opt.value).appendTo(menu);
+          var op = $('<a class="typeOpt" href="#"></a>').attr("value", opt.value).appendTo(menu);
           if (opt.label) {
             op.text(opt.label);
           }
