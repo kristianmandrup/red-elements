@@ -953,8 +953,7 @@ export class Diff extends Context {
       className = "node-diff-selectbox-tab-" + (propertiesTable ? node.id : node.z).replace(/\./g, '-');
     }
     var titleRow = !propertiesTable && (node.type === 'tab' || node.type === 'subflow');
-    var that = this;
-    var changeHandler = function (evt) {
+    var changeHandler = (evt) => {
       var className;
       if (node.type === undefined) {
         // TODO: handle globals
@@ -984,7 +983,7 @@ export class Diff extends Context {
         row.addClass("node-diff-select-remote");
         row.removeClass("node-diff-select-local");
       }
-      that.refreshConflictHeader();
+      this.refreshConflictHeader();
     }
 
     var localSelectDiv = $('<label>', {
@@ -1027,12 +1026,11 @@ export class Diff extends Context {
 
   refreshConflictHeader() {
     var resolutionCount = 0;
-    var that = this;
-    $(".node-diff-selectbox>input:checked").each(function () {
-      if (that.currentDiff.conflicts[$(this).data('node-id')]) {
+    $(".node-diff-selectbox>input:checked").each(() => {
+      if (this.currentDiff.conflicts[$(this).data('node-id')]) {
         resolutionCount++;
       }
-      that.currentDiff.resolutions[$(this).data('node-id')] = $(this).val();
+      this.currentDiff.resolutions[$(this).data('node-id')] = $(this).val();
     })
     var conflictCount = Object.keys(this.currentDiff.conflicts).length;
     if (conflictCount - resolutionCount === 0) {

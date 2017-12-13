@@ -30,7 +30,6 @@ function factory(RED) {
     $.widget("nodered.searchBox", {
       _create: function () {
         var that = this;
-
         this.currentTimeout = null;
         this.lastSent = "";
         this.element.val("");
@@ -38,16 +37,16 @@ function factory(RED) {
         this.uiContainer.addClass("red-ui-searchBox-container");
 
         // create handler in same scope
-        this.clearButtonClick = function (e) {
+        this.clearButtonClick = (e) => {
           e.preventDefault();
-          that.element.val("");
-          that._change("", true);
-          that.element.focus();
+          this.element.val("");
+          this._change("", true);
+          this.element.focus();
         }
 
         $('<i class="fa fa-search"></i>').prependTo(this.uiContainer);
         this.clearButton = $('<a class="btnClear" href="#"><i class="fa fa-times"></i></a>').appendTo(this.uiContainer);
-        this.clearButton.on("click", this.clearButtonClick);
+        this.clearButton.on("click", (e) => this.clearButtonClick(e));
 
         this.resultCount = $('<span>', {
           class: "red-ui-searchBox-resultCount hide"
