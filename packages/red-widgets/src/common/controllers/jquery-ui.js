@@ -1,7 +1,7 @@
 import {
   default as _jQuery
 }
-from 'jquery';
+  from 'jquery';
 
 export const jQuery = _jQuery
 

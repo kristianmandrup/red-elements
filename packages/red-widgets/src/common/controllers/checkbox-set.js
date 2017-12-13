@@ -56,7 +56,7 @@ function factory(RED) {
           this.options[0].show();
         }
 
-        this.element.change(()=> {
+        this.element.change(() => {
           if (this.checked) {
             this.options[0].hide();
             this.options[1].show();
@@ -71,7 +71,7 @@ function factory(RED) {
             child.checkboxSet('state', isChecked, false, true);
           })
         })
-        this.uiElement.click((e)=> {
+        this.uiElement.click((e) => {
           e.stopPropagation();
           // state returns null for a partial state. Clicking on that should
           // result in false.
