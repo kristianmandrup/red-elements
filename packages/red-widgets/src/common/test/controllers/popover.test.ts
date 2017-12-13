@@ -87,12 +87,12 @@ test('Popover: close with option', () => {
   expect(closed.active).toBeFalsy()
 })
 
-test('Popover: open', () => {
+test('Popover: can open', () => {
   let opened = widgetElem.open();
   expect(widgetElem.active).toBeTruthy();
 })
 
-test('Popover: open with properties', () => {
+test('Popover: can open with properties', () => {
   widgetElem.active = true;
   widgetElem.size = "small";
   widgetElem.content = function () { return $("<div></div>") }
@@ -128,7 +128,7 @@ test('Popover: open', () => {
 })
 
 
-test('Popover: openPopup with different options ', () => {
+test('Popover: open Popup with different options ', () => {
   var popup = createPopup({
     target: $('#popover'),
     content: 'My popover',
@@ -141,7 +141,7 @@ test('Popover: openPopup with different options ', () => {
   expect(popup).not.toBe(widgetElem);
 })
 
-test('Popover: closePopup with different options ', () => {
+test('Popover: close Popup with different options ', () => {
   widgetElem.trigger = "click";
   let popup = widgetElem.closePopup();
   widgetElem.target.trigger("mouseenter");

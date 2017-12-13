@@ -426,7 +426,7 @@ test('Diff: Tray options resize', () => {
     trayOptions.resize();
   }
 });
-test('Diff: Tray options button cancle', () => {
+test('Diff: can click tray options cancle button', () => {
   if (trayOptions) {
     trayOptions.buttons[0].click();
   }
@@ -462,7 +462,7 @@ test('Diff: showDiff', () => {
   diff.showDiff(difference)
   // use nightmare
 })
-test('Diff: Tray options button merge', () => {
+test('Diff: can click tray options merge button', () => {
   if (trayOptions) {
     trayOptions.buttons[1].click();
   }
@@ -535,7 +535,7 @@ test('Diff: createNodeConflictRadioBoxes', () => {
   diff.createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state)
   $("#node-diff-selectbox-test-str-CHK-props-remote").change();
 })
-test('node-diff-selectbox', () => {
+test('Diff: can click diff selectbox', () => {
   $('.node-diff-selectbox').click()
 })
 test('Diff:showRemoteDiff', () => {

@@ -47,20 +47,20 @@ test('Stack: widget can be created from target elem', () => {
   expect(widgetElem).toBeDefined()
 })
 
-test('Stack: add(entry)', () => {
+test('Stack: can add(entry)', () => {
   let entry = {}
   let addedEntry = widgetElem.add(entry);
   expect(addedEntry).toBeDefined()
 })
 
-test('Stack: add(entry) with visible false', () => {
+test('Stack: can add(entry) with visible false', () => {
   let entry = {}
   widgetElem.visible = false;
   let addedEntry = widgetElem.add(entry);
   expect(addedEntry).toBeDefined()
 })
 
-test('Stack: add(entry) with collapsible false', () => {
+test('Stack: can add(entry) with collapsible false', () => {
   let entry = { collapsible: false }
   let addedEntry = widgetElem.add(entry);
   expect(addedEntry).toBeDefined()
@@ -102,7 +102,7 @@ test('Stack : collapse is function', () => {
   expect(typeof addedEntry.collapse).toBe('function');
 })
 
-test('Stack: add(entry) if entry is not object', () => {
+test('Stack: can add(entry) if entry is not object', () => {
   let entry = ''
   let addedEntry;
   try {
@@ -127,13 +127,13 @@ test('Stack : expand is function', () => {
   expect(typeof addedEntry.expand).toBe('function');
 })
 
-test('Stack: show()', () => {
+test('Stack: can toggle visiblity to true', () => {
   let shown = widgetElem.show()
   expect(shown).toBeDefined()
   expect(shown.visible).toBeTruthy()
 })
 
-test('Stack: hide()', () => {
+test('Stack: can toggle visiblity to false', () => {
   let hidden = widgetElem.hide()
   expect(hidden).toBeDefined()
   expect(hidden.visible).toBeFalsy()
@@ -152,7 +152,7 @@ test('Stack: show() with entries', () => {
   expect(hidden.visible).not.toBeFalsy()
 })
 
-test('Stack: header click()', () => {
+test('Stack: header can be clicked', () => {
   let entry = { expanded: true }
   let addedEntry = widgetElem.add(entry)
   $("#palette-header").click();

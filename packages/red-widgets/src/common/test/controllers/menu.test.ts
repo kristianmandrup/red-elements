@@ -49,7 +49,7 @@ test('Menu: can be created from id with NO options', () => {
 })
 
 
-test('Menu: can create widget with options', () => {
+test('Menu: widget can be created with options', () => {
   let options = {
     options: [null]
   }
@@ -75,20 +75,20 @@ test('Menu: can be created from id with options', () => {
   expect(menuItem).toBeDefined()
 })
 
-test('Menu: set item selected with selected item without options', () => {
+test('Menu: set item to be selected with selected item without options', () => {
   let widgetElem = createMenu({});
   var result = widgetElem.setSelected("selection-active", true);
   expect(result).not.toBeDefined();
 });
 
-test('Menu: set item selected', () => {
+test('Menu: item to be selected', () => {
   let widgetElem = createMenu({});
   widgetElem.menuItems = {};
   widgetElem.menuItems["selection-not-active"] = { setting: {} };
   var result = widgetElem.setSelected("selection-not-active", true);
 });
 
-test('Menu: remove item to selected', () => {
+test('Menu: remove selection from selected item', () => {
   let widgetElem = createMenu({});
   var menuItem = widgetElem.createMenuItem({ id: 12 });
   widgetElem.menuItems["selection-active"] = { setting: {} };
@@ -106,7 +106,7 @@ test('Menu: set element disable and enable', () => {
   expect(result).toBe(false);
 });
 
-test('Menu: set element enable', () => {
+test('Menu: set element to be enabled', () => {
   let widgetElem = createMenu({});
   widgetElem.setDisabled("selection-active", false);
   let result = $("#selection-active").parent().hasClass("disabled");
@@ -147,7 +147,7 @@ test('Menu: add item with options', () => {
   widgetElem.addItem("add-item", options);
 });
 
-test('Menu: removeItem', () => {
+test('Menu: remove item', () => {
   let widgetElem = createMenu({});
   widgetElem.removeItem("menu");
   expect($("#menu").length).toBe(0);
@@ -188,7 +188,7 @@ test('Menu: create menu items with options', () => {
   expect(item).not.toBeUndefined();
 });
 
-test('Menu: create menu items with options icon to jpg', () => {
+test('Menu: create menu items with option icon to jpg', () => {
   let widgetElem = createMenu({});
   let options = {
     toggle: function () { },
@@ -198,7 +198,7 @@ test('Menu: create menu items with options icon to jpg', () => {
   expect(item).not.toBeUndefined();
 });
 
-test('Menu: create menu items with options icon to null', () => {
+test('Menu: create menu items with option icon to null', () => {
   let widgetElem = createMenu({});
   let options = {
     id: "link",
@@ -274,7 +274,7 @@ test('Menu: trigger action without callback', () => {
   widgetElem.triggerAction("id", {});
 });
 
-test('Menu: set initial state without optoins', () => {
+test('Menu: set initial state without options', () => {
   let widgetElem = createMenu({});
   widgetElem.setInitialState({}, "")
 });
@@ -295,7 +295,7 @@ function getOptionsForSetInitialState() {
   }
 }
 
-test('Menu: set initial state with optoins and RED setting true', () => {
+test('Menu: set initial state with options and RED setting true', () => {
   let widgetElem = createMenu({});
   widgetElem.menuItems = getMenuItemsOptions();
   widgetElem.RED.settings.get = function (id) {
@@ -308,7 +308,7 @@ test('Menu: set initial state with optoins and RED setting true', () => {
   link.removeClass("active");
 });
 
-test('Menu: set initial state with optoins RED setting true', () => {
+test('Menu: set initial state with options RED setting true', () => {
   let widgetElem = createMenu({});
   widgetElem.menuItems = getMenuItemsOptions();
   widgetElem.RED.settings.get = function (id) {
@@ -319,7 +319,7 @@ test('Menu: set initial state with optoins RED setting true', () => {
   expect(link.hasClass("active")).toBeTruthy();
 });
 
-test('Menu: set initial state with optoins RED setting false', () => {
+test('Menu: set initial state with options RED setting false', () => {
   let widgetElem = createMenu({});
   widgetElem.menuItems = getMenuItemsOptions();
   widgetElem.RED.settings.get = function (id) {
@@ -333,7 +333,7 @@ test('Menu: set initial state with optoins RED setting false', () => {
 });
 
 
-test('Menu: set initial state with optoins selected true', () => {
+test('Menu: set initial state with options selected true', () => {
   let widgetElem = createMenu({});
   widgetElem.menuItems = getMenuItemsOptions();
   widgetElem.RED.settings.get = function (id) {
@@ -345,7 +345,7 @@ test('Menu: set initial state with optoins selected true', () => {
   expect(link.hasClass("active")).toBeTruthy();
 });
 
-test('Menu: set initial state with optoins selected false', () => {
+test('Menu: set initial state with options selected false', () => {
   let widgetElem = createMenu({});
   widgetElem.menuItems = getMenuItemsOptions();
   widgetElem.RED.settings.get = function (id) {

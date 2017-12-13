@@ -97,14 +97,14 @@ test('TypedInput: value to be defined', () => {
 
 })
 
-test('TypedInput: btnSelectTrigger can be clicked', () => {
+test('TypedInput: can show type menu', () => {
   let elem = $('.btnSelectTrigger')
 
   let btnclick = elem.click();
 
   expect(typeof btnclick).toBe('object')
 })
-test('TypedInput: btnSelectTrigger on focus', () => {
+test('TypedInput: can be focused', () => {
   let elem = $('.btnSelectTrigger')
 
   let btnclick = elem.focus();

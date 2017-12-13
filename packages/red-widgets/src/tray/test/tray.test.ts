@@ -67,7 +67,7 @@ test('Tray: has editorStack', () => {
   expect(tray.editorStack).toBeDefined()
 })
 
-test('Tray: create has openingTray', () => {
+test('Tray: create has openingTray to be false', () => {
   expect(tray.openingTray).toBeFalsy()
 })
 

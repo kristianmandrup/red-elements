@@ -66,7 +66,7 @@ test('UserSettings: has viewSettings', () => {
   expect(settings.viewSettings[0].title).toBe('menu.label.view.grid')
 })
 
-test('UserSettings: addPane', () => {
+test('UserSettings: can add pane', () => {
   let options = {
     id: 'x'
   }
@@ -75,13 +75,13 @@ test('UserSettings: addPane', () => {
   expect(pane.id).toEqual('view')
 })
 
-test('UserSettings: show', () => {
+test('UserSettings: can show', () => {
   let initialTab = {}
   settings.show(initialTab)
   expect(settings.settingsVisible).toBeTruthy()
 })
 
-test('UserSettings: show', () => {
+test('UserSettings: can show with settingsVisible true', () => {
   let initialTab = {};
   settings.settingsVisible = true;
   settings.show(initialTab)
@@ -100,7 +100,7 @@ function settingsFor(settings) {
   }
 }
 
-test('UserSettings: setSelected', () => {
+test('UserSettings: can be selected', () => {
   // RED.settings.set(opt.setting, value);
   let id = 'view-grid-size'
   let value = 30
@@ -109,7 +109,7 @@ test('UserSettings: setSelected', () => {
   expect(setting(id)).toEqual('view-grid-size')
 })
 
-test('UserSettings: setSelected with opt null', () => {
+test('UserSettings: can be selected with option null', () => {
   // RED.settings.set(opt.setting, value);
   try {
     let id = 'test-opt'
@@ -121,20 +121,14 @@ test('UserSettings: setSelected with opt null', () => {
   }
 })
 
-test('UserSettings: toggle', () => {
+test('UserSettings: can toggle', () => {
   let id = 'view-snap-grid'
-  // let setting = settingsFor(settings)
-  // expect(setting(id)).toEqual(true)
   settings.toggle(id);
-  // expect(setting(id)).toEqual(false)
 })
-test('UserSettings: toggle', () => {
+test('UserSettings: can not able to toggle with invalid id', () => {
   try {
     let id = 'test-opt'
-    // let setting = settingsFor(settings)
-    // expect(setting(id)).toEqual(true)
     settings.toggle(id);
-    // expect(setting(id)).toEqual(false)
   }
   catch (e) {
     expect(typeof settings).toBe('object')

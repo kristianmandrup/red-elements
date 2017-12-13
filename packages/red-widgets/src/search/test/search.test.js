@@ -133,26 +133,26 @@ test('Search: ensureSelectedIsVisible', () => {
 test('Search: reveal', () => {
   search.reveal({ id: 102 });
 })
-test('Search: hide', () => {
+test('Search: can hide when dialog is null', () => {
   search.dialog = null;
   search.hide();
 })
-test('Search: show', () => {
+test('Search: can show when dialog is defined', () => {
   search.dialog = {
     slideDown(int) { }
   }
   search.show();
 })
-test('Search: show', () => {
+test('Search: can show with disabled true', () => {
   search.disabled = true;
   search.show();
 })
-test('Search: show', () => {
+test('Search: can show when visible true', () => {
   search.visible = true;
   search.show();
 })
 
-test('Search: hide', () => {
+test('Search: can hide when visible true', () => {
   search.visible = true;
   search.dialog = {
     slideUp(int) { }
