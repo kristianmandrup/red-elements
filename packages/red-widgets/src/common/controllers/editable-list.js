@@ -147,7 +147,7 @@ function factory(RED) {
             ".red-ui-editableList-item-handle";
           var sortOptions = {
             axis: "y",
-            update: (event, ui)=> {
+            update: (event, ui) => {
               if (this.options.sortItems) {
                 this.options.sortItems(this.items());
               }
@@ -189,14 +189,14 @@ function factory(RED) {
           });
         }
       },
-      _destroy: function () {},
+      _destroy: function () { },
       _refreshFilter: function () {
         var count = 0;
         if (!this.activeFilter) {
           return this.element.children().show();
         }
         var items = this.items();
-        items.each((i, el)=> {
+        items.each((i, el) => {
           var data = el.data('data');
           try {
             if (this.activeFilter(data)) {
@@ -272,7 +272,7 @@ function factory(RED) {
             evt.preventDefault();
             var data = row.data('data');
             li.addClass("red-ui-editableList-item-deleting")
-            li.fadeOut(300, ()=> {
+            li.fadeOut(300, () => {
               $(this).remove();
               if (this.options.removeItem) {
                 this.options.removeItem(data);
@@ -289,7 +289,7 @@ function factory(RED) {
                 if (!this.activeFilter(data)) {
                   li.hide();
                 }
-              } catch (err) {}
+              } catch (err) { }
             }
 
             if (!this.activeSort && this.scrollOnAdd) {

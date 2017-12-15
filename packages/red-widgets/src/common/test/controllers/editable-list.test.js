@@ -3,7 +3,7 @@ import {
   ctx,
   RED,
   controllers
-} from '../imports';
+} from '../_imports';
 import * as utility from '../utility/helper';
 const {
   EditableList

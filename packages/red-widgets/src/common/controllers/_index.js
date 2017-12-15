@@ -7,10 +7,10 @@ import {
 //     default as TypedInput
 // }
 //     from './typed-input';
-// import {
-//     default as EditableList
-// }
-//     from './editable-list';
+import {
+    default as EditableList
+}
+    from './editable-list';
 // import {
 //     default as Searchbox
 // }
@@ -31,7 +31,7 @@ import {
 export const controllers = {
     CheckboxSet,
     // TypedInput,
-    // EditableList,
+    EditableList,
     // Searchbox,
     // Validators
 }
@@ -41,7 +41,7 @@ export default controllers
 export {
     CheckboxSet,
     // TypedInput,
-    // EditableList,
+    EditableList
     // Searchbox,
     // Validators
 }
