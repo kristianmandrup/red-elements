@@ -10,6 +10,7 @@ module.exports = {
     '^.+\\.(css|scss)$': 'identity-obj-proxy'
   },
   "transform": {
+    "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
     "^.+\\.(ts|tsx)$": "<rootDir>/preprocessor.js"
   },
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
@@ -23,5 +24,6 @@ module.exports = {
   moduleDirectories: [
     "node_modules",
     "src"
-  ]
+  ],
+ 
 }
