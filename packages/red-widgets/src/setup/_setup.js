@@ -1,4 +1,4 @@
-import { Bottle } from "../../node_modules/bottlejs/dist/bottle";
+import { Bottle } from "bottlejs";
 
 var inversify = require("inversify");
 require("reflect-metadata");
