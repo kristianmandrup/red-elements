@@ -1272,9 +1272,6 @@ export class Diff extends Context {
         this.refreshConflictHeader();
 
         $("#node-dialog-view-diff-headers").empty();
-        // console.log("--------------");
-        // console.log(localDiff);
-        // console.log(remoteDiff);
         var currentConfig = this.currentDiff.localDiff.currentConfig;
         var newConfig = this.currentDiff.localDiff.newConfig;
         conflicts = this.currentDiff.conflicts || {};

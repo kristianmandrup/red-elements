@@ -45,9 +45,6 @@ export class SidebarTabInfo extends Context {
     // FIX: ensure that _ is set to i18n translate (ie. key lookup) function
     let i18n = new I18n(RED)
     this.tips = new Tips(ctx)
-    console.log('SidebarTabInfo', {
-      RED
-    })
 
     // FIX: when i18n is initialized (translation map loaded), we can continue constructor in init
     i18n.initCb(this.init.bind(this))

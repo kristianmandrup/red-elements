@@ -158,7 +158,6 @@ export class Popover {
       target.click((e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log(active)
         active = !active;
         if (!active) {
           this.closePopup();

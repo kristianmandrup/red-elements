@@ -411,7 +411,6 @@ export function factory(RED) {
       types: function (types) {
         var currentType = this.type();
         this.typeMap = {};
-        console.log(types)
         this.typeList = types.map((opt) => {
           var result;
           if (typeof opt === 'string') {
@@ -438,7 +437,6 @@ export function factory(RED) {
         this._resize();
       },
       value: function (value) {
-        console.log('value called: ' + value);
         if (!arguments.length) {
           return this.element.val();
         } else {

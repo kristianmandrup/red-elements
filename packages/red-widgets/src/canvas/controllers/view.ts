@@ -438,8 +438,7 @@ export class View extends Context {
     const {
       space_width,
       grid
-    } = this
-    console.log("DEEEEEEEEEEEEEEE", grid)
+    } = this    
     var gridTicks = [];
     for (var i = 0; i < space_width; i += +this.gridSize) {
       gridTicks.push(i);
@@ -3355,7 +3354,6 @@ export class View extends Context {
     } = this
 
     var touch0;
-    console.log("D#############", d3)
     if (!d3.event) {
       this.handleError('handleOuterTouchStartEvent: d3 missing event object', {
         // d3
