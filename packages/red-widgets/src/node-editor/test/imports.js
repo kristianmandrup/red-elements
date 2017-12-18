@@ -9,7 +9,7 @@ export {
   readPage,
   ctx
 }
-from '../../test/setup'
+from '../../test/_setup'
 
 const {
   Editor,

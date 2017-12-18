@@ -55,7 +55,7 @@ let userSettings = {
 
 import {
   common
-} from '../../'
+} from '../../_index'
 
 const {
   Popover,

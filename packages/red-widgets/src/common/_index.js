@@ -7,7 +7,7 @@ import {
 export {
     BaseContext
 }
-    from './base/_context';
+    from './base/_context.js';
 
 export const common = {
     controllers

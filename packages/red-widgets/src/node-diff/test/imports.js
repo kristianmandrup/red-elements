@@ -9,11 +9,11 @@ export {
   readPage,
   ctx
 }
-from '../../test/setup'
+from '../../test/_setup'
 
 import {
   common
-} from '../../'
+} from '../../_index'
 
 const {
   EditableList
