@@ -38,8 +38,7 @@ require('jquery-ui-dist/jquery-ui')
 
 function readPage(name, basePath) {
     basePath = basePath || __dirname
-    const filePath = path.join(basePath, `app/${name}.html`)
-
+    const filePath = `${name}.html`;
     return fs.readFileSync(filePath).toString();
 }
 

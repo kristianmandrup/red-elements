@@ -79,7 +79,7 @@ beforeEach(() => {
 beforeAll(() => {
   Searchbox(RED)
   EditableList(RED)
-  document.documentElement.innerHTML = readPage('search', __dirname);
+  document.documentElement.innerHTML = readPage('../red-widgets/src/search/test/app/search');
 })
 function getSerachResult() {
   return $("#searchResults");

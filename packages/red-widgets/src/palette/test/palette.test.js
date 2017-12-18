@@ -9,7 +9,7 @@ beforeAll(() => {
   // widgets that need to be available
   Searchbox(RED)
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('palette', __dirname)
+  document.documentElement.innerHTML = readPage('../red-widgets/src/palette/test/app/palette');
 })
 
 test('Palette: created', () => {

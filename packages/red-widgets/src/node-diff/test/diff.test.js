@@ -98,7 +98,7 @@ beforeAll(() => {
   EditableList(RED)
   diff = create(ctx)
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('diff', __dirname)
+  document.documentElement.innerHTML = readPage('../red-widgets/src/node-diff/test/app/diff');
 })
 
 

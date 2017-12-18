@@ -16,7 +16,7 @@ beforeAll(() => {
   Searchbox(RED)
 
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('palette-editor', __dirname)
+  document.documentElement.innerHTML = readPage('../red-widgets/src/palette/test/app/palette-editor');
 })
 
 test('Editor: semVerCompare', () => {

@@ -33,7 +33,7 @@ beforeEach(() => {
 beforeAll(() => {
   // Searchbox(RED)
   // EditableList(RED)
-  document.documentElement.innerHTML = readPage('tray', __dirname)
+  document.documentElement.innerHTML = readPage('../red-widgets/src/tray/test/app/simple')
 })
 
 let button = {

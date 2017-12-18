@@ -12,3 +12,5 @@ const options = {
     scrollOnAdd: true,
     removeItem: function (data) { }
 };
+
+export default options;

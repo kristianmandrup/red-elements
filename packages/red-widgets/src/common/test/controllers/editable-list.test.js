@@ -4,7 +4,7 @@ import {
   RED,
   controllers
 } from '../_imports';
-import * as utility from '../utility/helper';
+import * as options from '../utility/helper'
 const {
   EditableList
 } = controllers
@@ -19,10 +19,9 @@ beforeAll(() => {
   // create jquery UI widget via factory (ie. make available on jQuery elements)
   EditableList(RED)
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('simple')
+  document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');
 })
 
-const options = utility.options;
 function getElement() {
   return $('<div><div class="red-ui-editableList-item-content"></div><div class="red-ui-editableList-item-content"></div></div>');
 }

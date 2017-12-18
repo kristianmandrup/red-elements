@@ -27,7 +27,7 @@ beforeAll(() => {
   // Menu has no widget factory, just a class
 
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('simple')
+  document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');
 })
 
 test('Menu: is a class', () => {
@@ -276,6 +276,9 @@ test('Menu: trigger action without callback', () => {
 
 test('Menu: set initial state without options', () => {
   let widgetElem = createMenu({});
+  widgetElem.RED.settings.get = () => {
+    return null;
+  }
   widgetElem.setInitialState({}, "")
 });
 

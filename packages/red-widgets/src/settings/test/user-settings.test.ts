@@ -54,7 +54,7 @@ beforeAll(() => {
   // Searchbox(RED)
   // EditableList(RED)
 
-  document.documentElement.innerHTML = readPage('simple')
+  document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');
 })
 
 test('UserSettings: create', () => {

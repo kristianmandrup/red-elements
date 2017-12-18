@@ -41,7 +41,7 @@ beforeAll(() => {
   // EditableList(RED)
 
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('editor', __dirname)
+  document.documentElement.innerHTML = readPage('../red-widgets/src/node-editor/test/app/editor');  
 })
 
 test('Editor: create', () => {
