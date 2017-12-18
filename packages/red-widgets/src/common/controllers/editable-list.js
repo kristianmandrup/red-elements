@@ -17,11 +17,12 @@
 import {
   jQuery
 } from './jquery-ui'
-
+import { bottle} from '../../setup/_setup'
+const RED=bottle.container.RED;
 const log = console.log
 export default factory
 
-function factory(RED) {
+function factory() {
   // console.log('create editableList widget', {
   //   RED
   // });

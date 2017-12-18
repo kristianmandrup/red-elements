@@ -15,7 +15,7 @@
  **/
 import {
   Context
-} from '../context'
+} from '../_context'
 
 import utils from './utils'
 

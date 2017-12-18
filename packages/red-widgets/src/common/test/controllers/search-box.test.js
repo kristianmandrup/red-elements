@@ -3,7 +3,7 @@ import {
   ctx,
   RED,
   controllers
-} from '../imports'
+} from '../_imports'
 
 const {
   Searchbox

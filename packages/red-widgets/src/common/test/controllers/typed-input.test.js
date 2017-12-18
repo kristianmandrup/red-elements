@@ -3,7 +3,7 @@ import {
   ctx,
   RED,
   controllers
-} from '../imports'
+} from '../_imports'
 
 const {
   TypedInput
@@ -17,7 +17,6 @@ const {
 
 beforeAll(() => {
   // TypeInput has factory function.
-  log('before all...');
   TypedInput(RED)
   // load document with placeholder elements to create widgets (for testing)
   document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');
@@ -26,7 +25,6 @@ beforeAll(() => {
 let widgetElem
 
 beforeEach(() => {
-  log('before each...')
   widgetElem = new TypedInput({
     container: $('#stack')
   })
@@ -38,13 +36,7 @@ test('TypedInput: is a class', () => {
 
 test('TypedInput: widget can be created', () => {
   let elem = $('#typed-input')
-  log({
-    elem
-  })
   let widgetElem = elem.typedInput()
-  // log({
-  //   widgetElem
-  // })
   expect(widgetElem).toBeDefined()
 })
 

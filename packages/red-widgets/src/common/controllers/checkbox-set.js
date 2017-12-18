@@ -28,10 +28,10 @@ import {
 const {
   log
 } = console
-
+import { bottle} from '../../setup/_setup'
+const RED=bottle.container.RED;
 export default factory
-
-function factory(RED) {
+function factory() {
   (function ($) {
     $.widget("nodered.checkboxSet", {
       _create: function () {

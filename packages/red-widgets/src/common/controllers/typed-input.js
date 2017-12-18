@@ -19,7 +19,8 @@ import {
 import {
   Validators
 } from './utils/validators'
-
+import { bottle} from '../../setup/_setup'
+const RED=bottle.container.RED;
 function icon(uri) {
   return 'images/typedInput/' + uri + '.png';
 }
@@ -27,7 +28,7 @@ function icon(uri) {
 const log = console.log
 export default factory
 
-export function factory(RED) {
+export function factory() {
   // https://stackoverflow.com/questions/31013221/typeerror-console-log-is-not-a-function
   // console.log({
   //   RED,

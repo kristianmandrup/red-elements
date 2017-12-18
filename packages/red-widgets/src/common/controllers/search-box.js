@@ -18,10 +18,11 @@ import {
   jQuery
 } from './jquery-ui'
 const log = console.log
-
+import { bottle} from '../../setup/_setup'
+const RED=bottle.container.RED;
 export default factory
 
-function factory(RED) {
+function factory() {
   (function ($) {
     // log('creating searchBox widget: nodered.searchBox', {
     //   $widget: $.widget
