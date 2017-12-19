@@ -1,13 +1,10 @@
 // import { Bottle } from "../../node_modules/bottlejs/dist/bottle";
 
-import { Menu } from "../common/controllers/menu";
-// var inversify = require("inversify");
-// require("reflect-metadata");
-import { Container, injectable, tagged, named } from "inversify";
-import "reflect-metadata";
+import { Menu } from '../common/controllers';
+import { Container, injectable, tagged, named } from 'inversify';
+import 'reflect-metadata';
 let container = new Container();
-export let TYPES = { RED: "IRED" };
-
+export let TYPES = { RED: 'IRED' };
 export interface IRED {
   settings: any;
   actions: any;
@@ -38,6 +35,9 @@ export interface IRED {
 
 @injectable()
 export class RED implements IRED {
+  public palette: any
+  public stack: any
+
   public settings = {
     theme(id) { },
     get(id) { return id },
