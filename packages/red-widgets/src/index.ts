@@ -34,7 +34,9 @@ import {
   from './node-editor'
 
 import {
-  palette
+  palette,
+  Palette,
+  PaletteEditor
 } from './palette'
 
 export const widgets = {
@@ -53,10 +55,9 @@ export const widgets = {
 
 export default widgets
 
-const { Palette } = palette.controllers
-
 export {
-  Palette
+  Palette,
+  PaletteEditor
 }
 
 export {
@@ -67,7 +68,7 @@ export {
   // mainContainer,
   // nodeDiff,
   // nodeEditor,
-  // palette,
+  palette,
   // search,
   // settings,
   // sidebar,

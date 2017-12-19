@@ -30,6 +30,10 @@ const {
 } = console
 
 export class Tabs extends Context {
+  public static create(ctx) {
+    return new Tabs(ctx)
+  }
+
   scrollContainer: any;
   options: any;
   tabs: any;

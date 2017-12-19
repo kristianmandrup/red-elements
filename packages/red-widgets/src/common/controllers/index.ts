@@ -8,8 +8,7 @@ import {
   from './panel'
 import {
   Popover
-}
-  from './popover'
+} from './pop-over'
 import {
   Stack
 }
@@ -18,34 +17,24 @@ import {
   Tabs
 }
   from './tabs'
-//import {
-//  default as CheckboxSet
-//}
-//from './checkbox-set'
-//import {
-//  default as TypedInput
-//}
-//from './typed-input'
-//import {
-//  default as EditableList
-//}
-//from './editable-list'
-//import {
-//  default as Searchbox
-//}
-//from './search-box'
-//import {
-//  Validators
-//}
-//from './utils/validators'
-//Popover.create = (ctx, RED) => {
-//  return new Popover(ctx, RED)
-//}
-//
-//Tabs.create = (ctx, RED) => {
-//  return new Tabs(ctx, RED)
-//}
+import {
+  CheckboxSet
+} from './checkbox-set'
 
+import {
+  TypedInput
+} from './typed-input'
+
+import {
+  EditableList
+} from './editable-list'
+import {
+  Searchbox
+} from './search-box'
+
+import {
+  Validators
+} from './utils/validators'
 
 export const controllers = {
   Menu,
@@ -53,11 +42,11 @@ export const controllers = {
   Popover,
   Stack,
   Tabs,
-  // CheckboxSet,
-  // TypedInput,
-  // EditableList,
-  // Searchbox,
-  // Validators
+  CheckboxSet,
+  TypedInput,
+  EditableList,
+  Searchbox,
+  Validators
 }
 
 export default controllers

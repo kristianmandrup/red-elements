@@ -19,7 +19,7 @@ import getDecorators from 'inversify-inject-decorators';
 let { lazyInject } = getDecorators(container);
 import { Widget } from './widget'
 
-class EditableList {
+export class EditableList {
   @lazyInject(TYPES.RED) RED: IRED
   public widget: any
 

@@ -30,6 +30,10 @@ var deltaSizes = {
 
 export class Popover {
 
+  public static create(ctx) {
+    return new Popover(ctx)
+  }
+
   /**
    *
    * @param {Object} options
