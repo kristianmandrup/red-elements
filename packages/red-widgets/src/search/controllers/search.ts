@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  $,
-  Context
-} from '../../common';
+import { Context, $ } from '../../common'
 
-interface ISearchResults {
+// TODO: Find I18n constructor in node-red
+// import {
+//   I18n
+// } from 'i18n'
+
+interface ISearchResults extends JQuery<HTMLElement> {
   editableList: Function
-  find: Function
-  parent: Function
 }
 
 interface ISearchboxWidget extends JQuery<HTMLElement> {
+  searchBox: Function
+}
+
+interface ISearchInput extends JQuery<HTMLElement> {
+  i18n: Function
   searchBox: Function
 }
 
@@ -37,10 +42,10 @@ export class Search extends Context {
   public keys: Array<any>
   public results: Array<any>
   public searchResults: ISearchResults
-  public searchInput: JQuery<HTMLElement>
+  public searchInput: ISearchInput
 
-  constructor(ctx) {
-    super(ctx)
+  constructor() {
+    super()
     this.disabled = false;
     this.dialog = null;
     // searchInput;
@@ -257,10 +262,14 @@ export class Search extends Context {
 
   createDialog() {
     let {
+      ctx,
       dialog,
       search,
       searchInput,
-      searchResults
+      searchResults,
+      results,
+      selected,
+      reveal
     } = this
 
     dialog = $("<div>", {
@@ -324,17 +333,21 @@ export class Search extends Context {
       })
     }
 
-    let i18n = new I18n(RED)
+    // TODO: ensure i18n widget factory is instantiated!
+    // new I18n()
     searchInput.i18n();
 
     var searchResultsDiv = $("<div>", {
       class: "red-ui-search-results-container"
     }).appendTo(dialog);
 
-    searchResults = $('<ol>', {
+    searchResults = <ISearchResults>$('<ol>', {
       id: "search-result-list",
       style: "position: absolute;top: 5px;bottom: 5px;left: 5px;right: 5px;"
-    }).appendTo(searchResultsDiv).editableList({
+    })
+    searchResults.appendTo(searchResultsDiv)
+
+    searchResults.editableList({
       addButton: false,
       addItem: (container, i, object) => {
         var node = object.node;
@@ -411,6 +424,10 @@ export class Search extends Context {
   }
 
   show() {
+    const {
+      hide
+    } = this
+
     if (this.disabled) {
       return;
     }

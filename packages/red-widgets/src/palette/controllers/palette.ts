@@ -32,18 +32,15 @@ export {
   PaletteEditor
 } from './editor'
 
-// TODO: avoid doing this. Instead import $ from globals file
-import * as $ from 'jquery';
-
-import { IRED, TYPES, lazyInject, Context } from '../../common'
+import { IRED, TYPES, lazyInject, Context, $ } from '../../common'
 
 export class Palette extends Context {
   public categoryContainers: Object
 
   @lazyInject(TYPES.RED) RED: IRED;
 
-  constructor(ctx) {
-    super(ctx)
+  constructor() {
+    super()
     this.categoryContainers = {};
     const RED = this.RED
 

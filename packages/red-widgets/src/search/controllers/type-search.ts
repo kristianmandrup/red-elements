@@ -1,24 +1,36 @@
 import {
+  $,
   Context
-} from './context'
-import {
-  default as $
-} from 'jquery'
-import { config } from 'bottlejs';
+} from '../../common';
+
 const {
   log
 } = console
 
+interface ISearchDiv extends JQuery<HTMLElement> {
+  searchBox: Function
+}
+
+interface ISearchResultsWidget extends JQuery<HTMLElement> {
+  editableList: Function
+}
+
 export class TypeSearch extends Context {
-  constructor(ctx = {}) {
-    super(ctx)
-    this.RED = ctx
+  public disabled: Boolean
+  public dialog: any
+  public selected: any
+  public visible: Boolean
+  public activeFilter: any
+  public typesUsed: Object
+  public searchInput: any
+  public searchResults: any
+  public searchResultsDiv: any
+  public addCallback: Function
+
+  constructor() {
+    super()
     this.disabled = false;
     this.dialog = null;
-    //  searchInput;
-    //  searchResults;
-    //  searchResultsDiv;
-    // addCallback;
     this.selected = -1;
     this.visible = false;
     this.activeFilter = "";
@@ -70,9 +82,15 @@ export class TypeSearch extends Context {
       searchResultsDiv,
       dialog,
       confirm,
+      search,
+      ensureSelectedIsVisible,
+      activeFilter,
       RED
-    } = this
-    confirm = confirm.bind(this)
+    } = this.rebind([
+        'search',
+        'ensureSelectedIsVisible'
+      ])
+
 
     // debugging
     let mainContainer = $('#main-container')
@@ -83,7 +101,7 @@ export class TypeSearch extends Context {
       class: "red-ui-search red-ui-type-search"
     }).appendTo(mainContainer);
 
-    
+
     const searchDiv = $("<div>", {
       class: "red-ui-search-container"
     }).appendTo(dialog);
@@ -91,7 +109,7 @@ export class TypeSearch extends Context {
 
     const caption = RED._("search.addNode")
     const inputWPlaceholder = $('<input type="text">').attr("placeholder", caption)
-    let fullSearchDiv = inputWPlaceholder.appendTo(searchDiv)
+    let fullSearchDiv = <ISearchDiv>inputWPlaceholder.appendTo(searchDiv)
 
     // requires jQuery widget 'searchBox' is registered
     const searchInput = fullSearchDiv.searchBox({
@@ -141,7 +159,7 @@ export class TypeSearch extends Context {
       class: "red-ui-search-results-container"
     }).appendTo(dialog);
 
-    let withSearchResults = $('<ol>', {
+    let withSearchResults = <ISearchResultsWidget>$('<ol>', {
       id: "search-result-list",
       style: "position: absolute;top: 0;bottom: 0;left: 0;right: 0;"
     }).appendTo(searchResultsDiv)
@@ -251,8 +269,12 @@ export class TypeSearch extends Context {
       dialog,
       createDialog,
       addCallback,
+      handleMouseActivity,
       RED
-    } = this
+    } = this.rebind([
+        'handleMouseActivity',
+
+      ])
     createDialog = createDialog.bind(this)
     if (!visible) {
       RED.keyboard.add("*", "escape", () => {
@@ -286,7 +308,7 @@ export class TypeSearch extends Context {
     }, 100);
   }
 
-  hide(fast) {
+  hide(fast?: Boolean) {
     let {
       visible,
       searchResultsDiv,
@@ -312,11 +334,11 @@ export class TypeSearch extends Context {
     }
   }
 
-  getTypeLabel(type, def) {
+  getTypeLabel(type, def: any) {
     var label = type;
     if (typeof def.paletteLabel !== "undefined") {
       try {
-        label = (typeof def.paletteLabel === "" ? def.paletteLabel.call(def) : def.paletteLabel) || "";
+        label = (typeof def.paletteLabel === 'function' ? def.paletteLabel.call(def) : def.paletteLabel) || '';
         label += " (" + type + ")";
       } catch (err) {
         console.log("Definition error: " + type + ".paletteLabel", err);
@@ -332,8 +354,11 @@ export class TypeSearch extends Context {
       searchResults,
       searchInput,
       selected,
+      getTypeLabel,
       RED
-    } = this
+    } = this.rebind([
+        'getTypeLabel'
+      ])
 
     var i;
     searchResults.editableList('empty');
@@ -384,7 +409,7 @@ export class TypeSearch extends Context {
           common: true,
           def: itemDef
         };
-        item.label = this.getTypeLabel(item.type, item.def);
+        item.label = getTypeLabel(item.type, item.def);
         if (i === common.length - 1) {
           item.separator = true;
         }
