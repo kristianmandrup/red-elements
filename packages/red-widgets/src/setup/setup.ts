@@ -11,6 +11,8 @@ export let TYPES = { RED: "IRED" };
 export interface IRED {
   settings: any;
   actions: any;
+  palette: any,
+  stack: any,
   text: any;
   events: any;
   view: any;

@@ -1,8 +1,7 @@
 import {
-  Context
-} from './context'
-
-import * as $ from "jquery";
+  Context,
+  $
+} from '../../common'
 
 var ace = require('brace');
 require('brace/mode/javascript');
@@ -11,9 +10,11 @@ require('brace/theme/monokai');
 export class LibraryUI extends Context {
   libraryEditor: any;
   selectedLibraryItem: any;
+
   constructor(public options) {
     super(options.ctx || options);
     this.selectedLibraryItem = options.selectedLibraryItem || {};
+
     const ctx = options.ctx || options;
     $('#node-input-name').css("width", "66%").after(
       '<div class="btn-group" style="margin-left: 5px;">' +
@@ -23,11 +24,11 @@ export class LibraryUI extends Context {
       '<li><a id="node-input-' + options.type + '-menu-save-library" tabindex="-1" href="#">' + ctx._("library.saveToLibrary") + '</a></li>' +
       '</ul></div>'
     );
-    // let {
-    //   buildFileList
-    // } = this.rebind([
-    //     'buildFileList'
-    //   ])
+    let {
+      buildFileList
+    } = this.rebind([
+        'buildFileList'
+      ])
     $('#node-input-' + options.type + '-menu-open-library').click((e) => {
       $("#node-select-library").children().remove();
       var bc = $("#node-dialog-library-breadcrumbs");
@@ -35,10 +36,10 @@ export class LibraryUI extends Context {
       this.libraryEditor.setValue('', -1);
 
       $.getJSON("library/" + options.url, (data) => {
-        $("#node-select-library").append(this.buildFileList("/", data));
+        $("#node-select-library").append(buildFileList("/", data));
         $("#node-dialog-library-breadcrumbs a").click((e) => {
           $(this).parent().nextAll().remove();
-          $("#node-select-library").children().first().replaceWith(this.buildFileList("/", data));
+          $("#node-select-library").children().first().replaceWith(buildFileList("/", data));
           e.stopPropagation();
         });
         (<any>$("#node-dialog-library-lookup")).dialog("open");
@@ -106,10 +107,11 @@ export class LibraryUI extends Context {
     this.libraryEditor.$blockScrolling = Infinity;
     let {
       saveToLibrary } = this;
-    // } = this.rebind([
-    //     'saveToLibrary'
-    //   ])
-    (<any>$("#node-dialog-library-lookup")).dialog({
+    } = this.rebind([
+        'saveToLibrary'
+      ])
+
+      (<any>$("#node-dialog-library-lookup")).dialog({
       title: ctx._("library.typeLibrary", {
         type: options.type
       }),

@@ -8,9 +8,13 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --no-cache --config ./jest.config.js",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-widgets",
+    "lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
+    "lerna:clean": "rm -f package.json.lock 2> /dev/null && echo y | lerna clean --scope @tecla5/red-widgets"
   },
   "dependencies": {
+    "@tecla5/red-shared": "^0.0.1",
     "@types/jest": "^21.1.8",
     "ace-builds": "^1.2.8",
     "bootstrap": "^3.3.7",

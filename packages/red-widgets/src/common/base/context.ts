@@ -2,7 +2,7 @@ import { IRED, TYPES, lazyInject } from '../../common'
 export class BaseContext {
   @lazyInject(TYPES.RED) RED: IRED;
 
-  protected ctx: any;
+  protected ctx: IRED;
   constructor() {
     this.ctx = this.RED;
   }

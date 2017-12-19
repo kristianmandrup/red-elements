@@ -14,20 +14,17 @@
  * limitations under the License.
  **/
 import {
-  Context
-} from './context'
-import {
-  default as $
-} from 'jquery'
+  Context,
+  $
+} from '../../common'
 import {
   I18n
 } from '@tecla5/red-shared/src/i18n'
 
-
 export class SidebarTabConfig extends Context {
-  constructor(ctx) {
-    super(ctx)
-    let RED = ctx
+  constructor() {
+    super()
+    const RED = this.RED
     var content = document.createElement("div");
     this.content = content
     content.className = "sidebar-node-config";

@@ -17,35 +17,28 @@
 const allSettings = {};
 
 import {
-  Context
-} from './context'
+  Context,
+  lazyInject,
+  TYPES,
+  IRED
+} from '../../common'
 
 const {
   log
 } = console
-import { IRED, TYPES, container } from "../../setup/setup";
-import getDecorators from "inversify-inject-decorators";
-import { Container, injectable, tagged, named } from "inversify";
-let { lazyInject } = getDecorators(container);
+
 export class UserSettings extends Context {
   @lazyInject(TYPES.RED) RED: IRED;
   allSettings: any;
   settingsVisible: any;
   trayWidth: any;
   panes: any;
-  constructor(ctx) {
-    // TODO: inject RED global singleton instead
-    super(ctx)
-    // TODO: inject RED global singleton instead
+  constructor() {
+    super()
     let viewSettings: any = this.viewSettings
 
     this.allSettings = {}
     let allSettings = this.allSettings
-
-    // log({
-    //   RED
-    // })
-
     let {
       show,
       createViewPane

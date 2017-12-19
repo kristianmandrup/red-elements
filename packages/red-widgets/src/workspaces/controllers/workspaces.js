@@ -15,7 +15,7 @@
  **/
 import {
   Context
-} from './context'
+} from '../../common'
 import {
   Tabs
 } from '../../common/controllers'
@@ -25,9 +25,9 @@ export class Workspaces extends Context {
     return new Tabs(options)
   }
 
-  constructor(ctx) {
-    super(ctx)
-    let RED = ctx
+  constructor() {
+    super()
+    let RED = this.RED
     this.activeWorkspace = 0;
     this.workspaceIndex = 0;
 

@@ -14,18 +14,19 @@
  * limitations under the License.
  **/
 import {
-  Context
-} from './context'
+  Context,
+  $
+} from '../../common'
 
-import * as $ from "jquery";
 import { LibraryUI } from '../controllers/library-ui'
 
 export class Library extends Context {
   exportToLibraryDialog: any;
   flowName: any;
   ui: any;
-  constructor(ctx) {
-    super(ctx)
+
+  constructor() {
+    super()
 
     const required = ['actions', 'events', 'settings']
     required.map(name => {

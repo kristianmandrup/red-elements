@@ -1,17 +1,27 @@
 import {
   Context
-} from './context'
+} from '../../common'
 
 export class Tips extends Context {
-  constructor(ctx) {
-    super(ctx)
-    let RED = ctx
-    this.enabled = true;
-    this.startDelay = 1000;
-    this.cycleDelay = 15000;
-    // startTimeout;
-    // refreshTimeout;
-    this.tipCount = -1;
+  public enabled: Boolean = true
+  public startDelay: number = 1000
+  public cycleDelay: number = 15000
+  public tipCount: number = -1
+  public startTimeout: any;
+  public refreshTimeout: any;
+  public tipBox: any
+
+  constructor() {
+    super()
+    const RED = this.RED
+    let {
+      enabled,
+      startTips,
+      stopTips
+    } = this.rebind([
+        'startTips',
+        'stopTips'
+      ])
 
     RED.actions.add("core:toggle-show-tips", function (state) {
       if (state === undefined) {
@@ -28,7 +38,18 @@ export class Tips extends Context {
   }
 
   setTip() {
-    let RED = this.ctx
+    const {
+      RED,
+     } = this
+    let {
+      tipCount,
+      tipBox,
+      startTimeout,
+      refreshTimeout,
+      cycleTips,
+      cycleDelay
+    } = this
+
     var r = Math.floor(Math.random() * tipCount);
     var tip = RED._("infotips:info.tip" + r);
 
@@ -52,12 +73,27 @@ export class Tips extends Context {
   }
 
   cycleTips() {
+    const {
+      tipBox
+    } = this
     tipBox.fadeOut(300, () => {
       this.setTip();
     })
   }
 
   startTips() {
+    const {
+      enabled,
+      refreshTimeout,
+      setTip,
+      startDelay,
+      RED
+    } = this
+    let {
+    tipCount,
+      startTimeout
+  } = this
+
     $(".sidebar-node-info").addClass('show-tips');
     if (enabled) {
       if (!startTimeout && !refreshTimeout) {
@@ -72,6 +108,11 @@ export class Tips extends Context {
   }
 
   stopTips() {
+    let {
+      startTimeout,
+      refreshTimeout
+    } = this
+
     $(".sidebar-node-info").removeClass('show-tips');
     clearInterval(refreshTimeout);
     clearTimeout(startTimeout);
@@ -80,6 +121,14 @@ export class Tips extends Context {
   }
 
   nextTip() {
+    let {
+      startTimeout,
+      refreshTimeout,
+      setTip
+    } = this.rebind([
+        'setTip'
+      ])
+
     clearInterval(refreshTimeout);
     startTimeout = true;
     setTip();

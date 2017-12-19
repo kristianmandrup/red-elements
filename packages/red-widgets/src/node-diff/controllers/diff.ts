@@ -1,16 +1,22 @@
 import {
   Context
-} from './context'
+} from '../../common'
+
 import { log } from 'util';
-import { config } from 'bottlejs';
+
+interface IDiffWidget extends JQuery<HTMLElement> {
+  i18n: Function
+}
 
 export class Diff extends Context {
-  constructor(ctx) {
-    super(ctx)
-    const RED = ctx
-    this.RED = RED
-    this.currentDiff = {};
-    this.diffVisible = false;
+  public currentDiff: any = {};
+  public diffVisible: Boolean = false;
+  public diffList: any
+  public value: any
+
+  constructor() {
+    super()
+    const { RED } = this
 
     let {
       showRemoteDiff
@@ -34,8 +40,17 @@ export class Diff extends Context {
 
   buildDiffPanel(container) {
     let {
-      diffList
-    } = this
+      diffList,
+      currentDiff,
+      createNodeIcon,
+      createNodePropertiesTable,
+      createNodeDiffRow,
+      RED
+    } = this.rebind([
+        'createNodeIcon',
+        'createNodePropertiesTable',
+        'createNodeDiffRow'
+      ])
 
     if (!container) {
       this.handleError('buildDiffPanel: missing argument container, the element to build panel on')
@@ -47,7 +62,9 @@ export class Diff extends Context {
       '<span><span id="node-diff-toolbar-resolved-conflicts"></span></span> ' +
       '</div>').prependTo(diffPanel);
 
-    this.diffList = diffPanel.find("#node-dialog-view-diff-diff").editableList({
+    diffList = diffPanel.find("#node-dialog-view-diff-diff")
+
+    diffList.editableList({
       addButton: false,
       scrollOnAdd: false,
       addItem: (container, i, object) => {
@@ -183,7 +200,7 @@ export class Diff extends Context {
               $(this).parent().toggleClass('collapsed');
             });
 
-            this.createNodePropertiesTable(def, tab, localTabNode, remoteTabNode, conflicts).appendTo(div);
+            createNodePropertiesTable(def, tab, localTabNode, remoteTabNode, conflicts).appendTo(div);
             selectState = "";
             if (conflicts[tab.id]) {
               flowStats.conflicts++;
@@ -342,6 +359,13 @@ export class Diff extends Context {
   }
 
   formatWireProperty(wires, allNodes) {
+    const {
+      RED,
+      createNode
+    } = this.rebind([
+        'createNode'
+      ])
+
     var result = $("<div>", {
       class: "node-diff-property-wires"
     })
@@ -661,6 +685,13 @@ export class Diff extends Context {
   }
 
   createNodePropertiesTable(def, node, localNodeObj, remoteNodeObj) {
+    const {
+      RED,
+      formatWireProperty
+    } = this.rebind([
+        'formatWireProperty'
+      ])
+
     var propertyElements = {};
     var localNode = localNodeObj.node;
     var remoteNode;
@@ -947,6 +978,10 @@ export class Diff extends Context {
     return nodePropertiesDiv;
   }
   createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state) {
+    let {
+      value
+    } = this
+
     var safeNodeId = "node-diff-selectbox-" + node.id.replace(/\./g, '-') + (propertiesTable ? "-props" : "");
     var className = "";
     if (node.z || propertiesTable) {
@@ -959,13 +994,13 @@ export class Diff extends Context {
         // TODO: handle globals
       } else if (titleRow) {
         className = "node-diff-selectbox-tab-" + node.id.replace(/\./g, '-');
-        $("." + className + "-" + this.value).prop('checked', true);
-        if (this.value === 'local') {
-          $("." + className + "-" + this.value).closest(".node-diff-node-entry").addClass("node-diff-select-local");
-          $("." + className + "-" + this.value).closest(".node-diff-node-entry").removeClass("node-diff-select-remote");
+        $("." + className + "-" + value).prop('checked', true);
+        if (value === 'local') {
+          $("." + className + "-" + value).closest(".node-diff-node-entry").addClass("node-diff-select-local");
+          $("." + className + "-" + value).closest(".node-diff-node-entry").removeClass("node-diff-select-remote");
         } else {
-          $("." + className + "-" + this.value).closest(".node-diff-node-entry").removeClass("node-diff-select-local");
-          $("." + className + "-" + this.value).closest(".node-diff-node-entry").addClass("node-diff-select-remote");
+          $("." + className + "-" + value).closest(".node-diff-node-entry").removeClass("node-diff-select-local");
+          $("." + className + "-" + value).closest(".node-diff-node-entry").addClass("node-diff-select-remote");
         }
       } else {
         // Individual node or properties table
@@ -1048,6 +1083,15 @@ export class Diff extends Context {
   }
 
   getRemoteDiff(callback) {
+    const {
+      RED,
+      generateDiff,
+      resolveDiffs
+    } = this.rebind([
+        'generateDiff',
+        'resolveDiffs'
+      ])
+
     $.ajax({
       headers: {
         "Accept": "application/json",
@@ -1222,14 +1266,20 @@ export class Diff extends Context {
   }
 
   showDiff(diff) {
+    const {
+      RED,
+    } = this
+    let {
+      diffList,
+      currentDiff
+    } = this
+
     if (this.diffVisible) {
       return;
     }
 
-    var localDiff = diff.localDiff;
-    var remoteDiff = diff.remoteDiff;
-    var conflicts = diff.conflicts;
-    this.currentDiff = diff;
+    var { localDiff, remoteDiff, conflicts } = diff
+    currentDiff = diff;
 
     var trayOptions = {
       title: "Review Changes", //TODO: nls
@@ -1289,13 +1339,17 @@ export class Diff extends Context {
           newTab: {
             n: {},
             nodes: newConfig.globals
-          }
+          },
+          remoteTab: {},
+          remoteDiff: null
         };
 
         if (remoteDiff !== undefined) {
           diffPanel.addClass('node-diff-three-way');
 
-          $('<div data-i18n="diff.local"></div><div data-i18n="diff.remote"></div>').i18n().appendTo("#node-dialog-view-diff-headers");
+          var diffWidget = <IDiffWidget>$('<div data-i18n="diff.local"></div><div data-i18n="diff.remote"></div>').appendTo("#node-dialog-view-diff-headers");
+          diffWidget.i18n()
+
           el.remoteTab = {
             n: {},
             nodes: remoteDiff.newConfig.globals
@@ -1305,7 +1359,7 @@ export class Diff extends Context {
           diffPanel.removeClass('node-diff-three-way');
         }
 
-        this.diffList.editableList('addItem', el);
+        diffList.editableList('addItem', el);
 
         var seenTabs = {};
 
@@ -1314,7 +1368,10 @@ export class Diff extends Context {
           var el = {
             diff: localDiff,
             def: this.RED.nodes.getType('tab'),
-            tab: tab
+            tab: tab,
+            newTab: null,
+            remoteTab: null,
+            remoteDiff: null
           };
           if (newConfig.tabs.hasOwnProperty(tabId)) {
             el.newTab = newConfig.tabs[tabId];
@@ -1324,7 +1381,7 @@ export class Diff extends Context {
             el.remoteDiff = remoteDiff;
           }
           seenTabs[tabId] = true;
-          this.diffList.editableList('addItem', el)
+          diffList.editableList('addItem', el)
         });
         newConfig.tabOrder.forEach((tabId) => {
           if (!seenTabs[tabId]) {
@@ -1332,14 +1389,15 @@ export class Diff extends Context {
             var tab = newConfig.tabs[tabId];
             var el = {
               diff: localDiff,
-              def: this.RED.nodes.getType('tab'),
+              def: RED.nodes.getType('tab'),
               tab: tab,
-              newTab: tab
+              newTab: tab,
+              remoteDiff: null
             };
             if (remoteDiff !== undefined) {
               el.remoteDiff = remoteDiff;
             }
-            this.diffList.editableList('addItem', el)
+            diffList.editableList('addItem', el)
           }
         });
         if (remoteDiff !== undefined) {
@@ -1363,15 +1421,23 @@ export class Diff extends Context {
           if (currentConfig.subflows.hasOwnProperty(subflowId)) {
             seenTabs[subflowId] = true;
             el = {
+              newTab: null,
+              remoteTab: null,
+              remoteDiff: null,
               diff: localDiff,
               def: {
-                defaults: {},
-                icon: "subflow.png",
+                // defaults: {},
+                // icon: "subflow.png",
                 category: "subflows",
                 color: "#da9"
               },
               tab: currentConfig.subflows[subflowId]
             }
+
+            // TODO: possibly force invalid properties on el if needed here
+            // el.def['defaults'] = {}
+            // el.def['icon'] = "subflow.png"
+
             if (newConfig.subflows.hasOwnProperty(subflowId)) {
               el.newTab = newConfig.subflows[subflowId];
             }
@@ -1386,16 +1452,20 @@ export class Diff extends Context {
           if (newConfig.subflows.hasOwnProperty(subflowId) && !seenTabs[subflowId]) {
             seenTabs[subflowId] = true;
             el = {
+              remoteTab: null,
+              remoteDiff: null,
               diff: localDiff,
               def: {
-                defaults: {},
-                icon: "subflow.png",
+                // defaults: {},
+                // icon: "subflow.png",
                 category: "subflows",
                 color: "#da9"
               },
               tab: newConfig.subflows[subflowId],
               newTab: newConfig.subflows[subflowId]
             }
+            // TODO: possibly force invalid props on def if needed here (see previous example)
+
             if (remoteDiff !== undefined) {
               el.remoteDiff = remoteDiff;
             }
@@ -1406,11 +1476,12 @@ export class Diff extends Context {
           for (subflowId in remoteDiff.newConfig.subflows) {
             if (remoteDiff.newConfig.subflows.hasOwnProperty(subflowId) && !seenTabs[subflowId]) {
               el = {
+                newTab: null,
                 diff: localDiff,
                 remoteDiff: remoteDiff,
                 def: {
-                  defaults: {},
-                  icon: "subflow.png",
+                  // defaults: {},
+                  // icon: "subflow.png",
                   category: "subflows",
                   color: "#da9"
                 },
@@ -1447,7 +1518,7 @@ export class Diff extends Context {
       if (conflicts.hasOwnProperty(id)) {
         if (!resolutions.hasOwnProperty(id)) {
           console.log(diff);
-          throw new Error("No resolution for conflict on node", id);
+          throw new Error(`No resolution for conflict on node: ${id}`);
         }
       }
     }

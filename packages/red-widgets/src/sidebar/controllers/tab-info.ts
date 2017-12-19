@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  default as $
-} from 'jquery';
 
 import {
-  Context
-} from './context'
+  Context,
+  $
+} from '../../common'
 
 import {
   Tips
 } from './tips'
 import {
   Stack
-} from '../../common/controllers'
+} from '../../common'
 import {
   I18n
 } from '@tecla5/red-shared/src/i18n'

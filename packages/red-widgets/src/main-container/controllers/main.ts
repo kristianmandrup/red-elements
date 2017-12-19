@@ -15,7 +15,7 @@
  **/
 import {
   Context
-} from './context'
+} from '../../common'
 
 import {
   Actions,
@@ -39,16 +39,15 @@ import {
   SidebarTabInfo,
   Palette,
   PaletteEditor
-}
-  from '../..'
+} from '../..'
 
 import {
   Nodes
-} from '.'
+} from '.' // from node-red runtime?
 
 export class Main extends Context {
-  constructor(ctx) {
-    super(ctx);
+  constructor() {
+    super();
     $(() => {
 
       if ((window.location.hostname !== "localhost") && (window.location.hostname !== "127.0.0.1")) {

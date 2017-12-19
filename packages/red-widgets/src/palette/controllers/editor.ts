@@ -14,42 +14,51 @@
  * limitations under the License.
  **/
 import {
-  Context
-} from './context'
-import * as $ from 'jquery';
+  Context,
+  $
+} from '../../common'
 
 const {
   log
 } = console
 
+interface ISearchTerm extends JQuery<HTMLElement> {
+
+}
+
+interface IDialogWidget extends JQuery<HTMLElement> {
+  dialog: Function
+}
+
 export class PaletteEditor extends Context {
-  constructor(ctx, RED) {
-    super(ctx)
-    var RED = RED || ctx
-    this.RED = RED
-    this.disabled = false;
+  public disabled: Boolean = false
+  public loadedList: Array<any> = [];
+  public filteredList: Array<any> = [];
+  public loadedIndex: Object = {};
 
-    // editorTabs;
-    // filterInput;
-    //searchInput;
-    // nodeList;
-    // packageList;
-    this.loadedList = [];
-    this.filteredList = [];
-    this.loadedIndex = {};
+  public typesInUse: Object = {};
+  public nodeEntries: Object = {};
+  public eventTimers: Object = {};
+  public activeFilter: Object = '';
 
-    this.typesInUse = {};
-    this.nodeEntries = {};
-    this.eventTimers = {};
-    this.activeFilter = "";
+  public editorTabs: any;
+  public filterInput: any;
+  public searchInput: any;
+  public nodeList: any;
+  public packageList: any;
 
-    // settingsPane;
-    // catalogueCount;
-    this.catalogueLoadStatus = [];
-    // catalogueLoadStart;
-    this.catalogueLoadErrors = false;
+  public settingsPane: any;
+  public catalogueCount: any;
 
-    this.activeSort = this.sortModulesAZ;
+  public catalogueLoadStatus: Array<any> = [];
+  public catalogueLoadStart: any
+  public catalogueLoadErrors: Boolean = false;
+
+  public activeSort: any = this.sortModulesAZ;
+
+  constructor() {
+    super()
+    const RED = this.RED
 
     if (RED.settings.theme('palette.editable') === false) {
       return;
@@ -65,8 +74,16 @@ export class PaletteEditor extends Context {
 
     let {
       settingsPane,
-      editorTabs
-    } = this
+      editorTabs,
+      filterInput,
+      filteredList,
+      refreshNodeModule,
+      nodeEntries,
+      nodeList,
+      typesInUse,
+    } = this.rebind([
+        'refreshNodeModule',
+      ])
 
     createSettingsPane();
 
@@ -192,6 +209,13 @@ export class PaletteEditor extends Context {
   }
 
   changeNodeState(id, state, shade, callback) {
+    const {
+      delayCallback
+    } = this.rebind([
+        'delayCallback'
+      ])
+
+
     shade.show();
     var start = Date.now();
     $.ajax({
@@ -216,7 +240,8 @@ export class PaletteEditor extends Context {
 
   installNodeModule(id, version, shade, callback) {
     var requestBody = {
-      module: id
+      module: id,
+      version: null
     };
     if (callback === undefined) {
       callback = shade;
@@ -251,6 +276,10 @@ export class PaletteEditor extends Context {
   }
 
   refreshNodeModuleList() {
+    const {
+      nodeEntries
+    } = this
+
     for (var id in nodeEntries) {
       if (nodeEntries.hasOwnProperty(id)) {
         this._refreshNodeModule(id);
@@ -259,6 +288,10 @@ export class PaletteEditor extends Context {
   }
 
   refreshNodeModule(module) {
+    const {
+      eventTimers
+    } = this
+
     if (!eventTimers.hasOwnProperty(module)) {
       eventTimers[module] = setTimeout(() => {
         delete eventTimers[module];
@@ -286,6 +319,10 @@ export class PaletteEditor extends Context {
   }
 
   formatUpdatedAt(dateString) {
+    const {
+      RED
+    } = this
+
     var now = new Date();
     var d = new Date(dateString);
     var delta = (Date.now() - new Date(dateString).getTime()) / 1000;
@@ -352,6 +389,16 @@ export class PaletteEditor extends Context {
 
 
   _refreshNodeModule(module) {
+    const {
+      nodeEntries,
+      nodeList,
+      typesInUse,
+      getContrastingBorder,
+      loadedIndex,
+      semVerCompare,
+      RED
+    } = this
+
     if (!nodeEntries.hasOwnProperty(module)) {
       nodeEntries[module] = {
         info: RED.nodes.registry.getModule(module)
@@ -471,6 +518,12 @@ export class PaletteEditor extends Context {
   }
 
   filterChange(val) {
+    let {
+      activeFilter,
+      nodeList,
+      filterInput
+    } = this
+
     activeFilter = val.toLowerCase();
     var visible = nodeList.editableList('filter');
     var size = nodeList.editableList('length');
@@ -485,12 +538,15 @@ export class PaletteEditor extends Context {
   handleCatalogResponse(err, catalog, index, v) {
     let {
       catalogueLoadStatus,
+      catalogueLoadStart,
       catalogueCount,
       catalogueLoadErrors,
       loadedIndex,
       loadedList,
-      searchInput
+      searchInput,
+      RED
     } = this
+
     catalogueLoadStatus.push(err || v);
     if (!err) {
       if (!v.modules) {
@@ -524,7 +580,7 @@ export class PaletteEditor extends Context {
     }
     if (catalogueLoadStatus.length === catalogueCount) {
       if (catalogueLoadErrors) {
-        RED.notify(RED._('palette.editor.errors.catalogLoadFailed', {
+        RED.notify.call(RED._('palette.editor.errors.catalogLoadFailed', {
           url: catalog
         }), "error", false, 8000);
       }
@@ -538,6 +594,7 @@ export class PaletteEditor extends Context {
 
   initInstallTab() {
     let {
+      searchInput,
       loadedList,
       loadedIndex,
       packageList,
@@ -545,8 +602,13 @@ export class PaletteEditor extends Context {
       catalogueLoadErrors,
       catalogueLoadStart,
       catalogueCount,
-      RED
-    } = this
+      RED,
+      handleCatalogResponse,
+      refreshNodeModuleList,
+    } = this.rebind([
+        'handleCatalogResponse',
+        'refreshNodeModuleList'
+      ])
 
     if (loadedList.length === 0) {
       loadedList = [];
@@ -602,7 +664,8 @@ export class PaletteEditor extends Context {
       packageList,
       loadedList,
       filteredList,
-      searchInput
+      searchInput,
+      activeSort
     } = this
 
     packageList.editableList('empty');
@@ -660,15 +723,36 @@ export class PaletteEditor extends Context {
 
   createSettingsPane() {
     let {
+      id,
+      activeFilter,
       settingsPane,
       editorTabs,
       filterInput,
+      filterChange,
       searchInput,
       nodeList,
       packageList,
       initInstallTab,
+      loadedIndex,
+      changeNodeState,
+      refreshNodeModule,
+      filteredList,
+      loadedList,
+      refreshFilteredItems,
+      activeSort,
+      sortModulesAZ,
+      sortModulesRecent,
+      nodeEntries,
+      installNodeModule,
+      formatUpdatedAt,
+      removeNodeModule,
       RED
-    } = this
+    } = this.rebind([
+        'changeNodeState',
+        'refreshNodeModule',
+        'refreshFilteredItems',
+        'installNodeModule'
+      ])
 
     initInstallTab = initInstallTab.bind(this)
 
@@ -720,18 +804,21 @@ export class PaletteEditor extends Context {
     }).appendTo(modulesTab);
     filterInput = $('<input type="text" data-i18n="[placeholder]palette.filter"></input>')
       .appendTo(filterDiv)
-      .searchBox({
-        delay: 200,
-        change: () => {
-          filterChange($(this).val());
-        }
-      });
+
+    filterInput.searchBox({
+      delay: 200,
+      change: () => {
+        filterChange($(this).val());
+      }
+    });
     this.filterInput = filterInput
 
     nodeList = $('<ol>', {
       id: "palette-module-list",
       style: "position: absolute;top: 35px;bottom: 0;left: 0;right: 0px;"
-    }).appendTo(modulesTab).editableList({
+    }).appendTo(modulesTab)
+
+    nodeList.editableList({
       addButton: false,
       scrollOnAdd: false,
       sort: (A, B) => {
@@ -785,9 +872,11 @@ export class PaletteEditor extends Context {
             } else {
               $(".palette-module-install-confirm-button-update").hide();
             }
-            $("#palette-module-install-confirm")
-              .dialog('option', 'title', RED._("palette.editor.confirm.update.title"))
-              .dialog('open');
+
+            const dialogWidget = <IDialogWidget>$("#palette-module-install-confirm")
+
+            dialogWidget.dialog('option', 'title', RED._("palette.editor.confirm.update.title"))
+            dialogWidget.dialog('open');
           })
 
 
@@ -802,7 +891,9 @@ export class PaletteEditor extends Context {
             $(".palette-module-install-confirm-button-install").hide();
             $(".palette-module-install-confirm-button-remove").show();
             $(".palette-module-install-confirm-button-update").hide();
-            $("#palette-module-install-confirm")
+            const dialogWidget = <IDialogWidget>$("#palette-module-install-confirm")
+
+            dialogWidget
               .dialog('option', 'title', RED._("palette.editor.confirm.remove.title"))
               .dialog('open');
           })
@@ -933,30 +1024,33 @@ export class PaletteEditor extends Context {
     }).appendTo(installTab);
     searchInput = $('<input type="text" data-i18n="[placeholder]palette.search"></input>')
       .appendTo(searchDiv)
-      .searchBox({
-        delay: 300,
-        change: () => {
-          var searchTerm = $(this).val().trim().toLowerCase();
-          if (searchTerm.length > 0) {
-            filteredList = loadedList.filter(function (m) {
-              return (m.index.indexOf(searchTerm) > -1);
-            }).map(function (f) {
-              return {
-                info: f
-              }
-            });
-            refreshFilteredItems();
-            searchInput.searchBox('count', filteredList.length + " / " + loadedList.length);
-          } else {
-            searchInput.searchBox('count', loadedList.length);
-            packageList.editableList('empty');
-            packageList.editableList('addItem', {
-              count: loadedList.length
-            });
 
-          }
+    searchInput.searchBox({
+      delay: 300,
+      change: () => {
+        var searchTerm = <ISearchTerm>$(this)
+        var term: String = <String>searchTerm.val()
+        term.trim().toLowerCase();
+        if (searchTerm.length > 0) {
+          filteredList = loadedList.filter(function (m) {
+            return (m.index.indexOf(searchTerm) > -1);
+          }).map(function (f) {
+            return {
+              info: f
+            }
+          });
+          refreshFilteredItems();
+          searchInput.searchBox('count', filteredList.length + " / " + loadedList.length);
+        } else {
+          searchInput.searchBox('count', loadedList.length);
+          packageList.editableList('empty');
+          packageList.editableList('addItem', {
+            count: loadedList.length
+          });
+
         }
-      });
+      }
+    });
 
 
     $('<span>').html(RED._("palette.editor.sort") + ' ').appendTo(toolBar);
@@ -998,7 +1092,9 @@ export class PaletteEditor extends Context {
 
     packageList = $('<ol>', {
       style: "position: absolute;top: 78px;bottom: 0;left: 0;right: 0px;"
-    }).appendTo(installTab).editableList({
+    }).appendTo(installTab)
+
+    packageList.editableList({
       addButton: false,
       scrollOnAdd: false,
       addItem: (container, i, object) => {
@@ -1070,7 +1166,8 @@ export class PaletteEditor extends Context {
               $(".palette-module-install-confirm-button-install").show();
               $(".palette-module-install-confirm-button-remove").hide();
               $(".palette-module-install-confirm-button-update").hide();
-              $("#palette-module-install-confirm")
+              const dialogWidget = <IDialogWidget>$("#palette-module-install-confirm")
+              dialogWidget
                 .dialog('option', 'title', RED._("palette.editor.confirm.install.title"))
                 .dialog('open');
             }
@@ -1096,7 +1193,8 @@ export class PaletteEditor extends Context {
     $('<div id="palette-module-install-shade" class="palette-module-shade hide"><div class="palette-module-shade-status"></div><img src="red/images/spin.svg" class="palette-spinner"/></div>').appendTo(installTab);
 
     $('<div id="palette-module-install-confirm" class="hide"><form class="form-horizontal"><div id="palette-module-install-confirm-body" class="node-dialog-confirm-row"></div></form></div>').appendTo(document.body);
-    $("#palette-module-install-confirm").dialog({
+    const dialogWidget = <IDialogWidget>$("#palette-module-install-confirm")
+    dialogWidget.dialog({
       title: RED._('palette.editor.confirm.title'),
       modal: true,
       autoOpen: false,
@@ -1105,7 +1203,8 @@ export class PaletteEditor extends Context {
       buttons: [{
         text: RED._("common.label.cancel"),
         click: () => {
-          $(this).dialog("close");
+          const dialogWidget = <IDialogWidget>$(this)
+          dialogWidget.dialog("close");
         }
       },
       {
@@ -1133,7 +1232,8 @@ export class PaletteEditor extends Context {
               }
             }
           });
-          $(this).dialog("close");
+          const dialogWidget = <IDialogWidget>$(this)
+          dialogWidget.dialog("close");
         }
       },
       {
@@ -1154,8 +1254,8 @@ export class PaletteEditor extends Context {
               }
             }
           })
-
-          $(this).dialog("close");
+          const dialogWidget = <IDialogWidget>$(this)
+          dialogWidget.dialog("close");
         }
       },
       {
@@ -1176,7 +1276,8 @@ export class PaletteEditor extends Context {
               }
             }
           });
-          $(this).dialog("close");
+          const dialogWidget = <IDialogWidget>$(this)
+          dialogWidget.dialog("close");
         }
       }
       ]

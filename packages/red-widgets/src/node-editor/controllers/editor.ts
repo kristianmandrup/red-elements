@@ -17,10 +17,14 @@ import {
   Tray
 } from '../../tray'
 
+import marked from 'marked'
+import jsonata from 'jsonata'
+import * as ace from 'brace'
+
 import { IRED, TYPES, lazyInject, Context } from '../../common'
-interface ICtx {
-  actions: Object
-  tray: Tray
+
+interface ITabSelect extends JQuery<HTMLElement> {
+  i18n: Function
 }
 
 export class Editor extends Context {
@@ -32,8 +36,10 @@ export class Editor extends Context {
   public editing_node: any
   public editing_config_node: any
 
-  constructor(ctx: ICtx) {
-    super(ctx)
+  constructor() {
+    super()
+    const { ctx } = this
+
     this.editStack = [];
     this.editing_node = null;
     this.editing_config_node = null;
@@ -45,7 +51,7 @@ export class Editor extends Context {
     // fix: use class
     ctx.tray = new Tray(ctx);
 
-    if (!typeof ctx.actions === 'object') {
+    if (typeof ctx.actions !== 'object') {
       throw new Error('ctx.actions must be an Actions object')
     }
 
@@ -71,8 +77,13 @@ export class Editor extends Context {
    */
   validateNode(node) {
     const {
-      ctx
-    } = this
+      ctx,
+      validateNode,
+      validateNodeProperties
+    } = this.rebind([
+        'validateNode',
+        'validateNodeProperties'
+      ])
 
     var oldValue = node.valid;
     var oldChanged = node.changed;
@@ -171,6 +182,10 @@ export class Editor extends Context {
    * @returns {boolean} whether the node proprty is valid
    */
   validateNodeProperty(node, definition, property, value) {
+    const {
+      ctx
+    } = this
+
     var valid = true;
     if (/^\$\([a-zA-Z_][a-zA-Z0-9_]*\)$/.test(value)) {
       return true;
@@ -246,6 +261,10 @@ export class Editor extends Context {
    * @returns {array} the links that were removed due to this update
    */
   updateNodeProperties(node, outputMap) {
+    const {
+      ctx
+    } = this
+
     node.resize = true;
     node.dirty = true;
     var removedLinks = [];
@@ -294,11 +313,20 @@ export class Editor extends Context {
    * @param type - the type of the config-node
    */
   prepareConfigNodeSelect(node, property, type, prefix) {
+    const {
+      updateConfigNodeSelect,
+      showEditConfigNodeDialog,
+      ctx
+    } = this.rebind([
+        'updateConfigNodeSelect',
+        'showEditConfigNodeDialog'
+      ])
+
     var input = $("#" + prefix + "-" + property);
     if (input.length === 0) {
       return;
     }
-    var newWidth = input.width();
+    var newWidth: string | number = input.width();
     var attrStyle = input.attr('style');
     var m;
     if ((m = /width\s*:\s*(\d+(%|[a-z]+))/i.exec(attrStyle)) !== null) {
@@ -353,6 +381,13 @@ export class Editor extends Context {
    * @param type - the type of the config-node
    */
   prepareConfigNodeButton(node, property, type, prefix) {
+    const {
+      ctx,
+      showEditConfigNodeDialog
+    } = this.rebind([
+        'showEditConfigNodeDialog'
+      ])
+
     var input = $("#" + prefix + "-" + property);
     input.val(node[property]);
     input.attr("type", "hidden");
@@ -383,6 +418,10 @@ export class Editor extends Context {
    * @param definition - the definition of the field
    */
   preparePropertyEditor(node, property, prefix, definition) {
+    const {
+      ctx
+    } = this
+
     var input = $("#" + prefix + "-" + property);
     if (input.length === 0) {
       return;
@@ -414,6 +453,12 @@ export class Editor extends Context {
    * @param prefix - the prefix to use in the input element ids (node-input|node-config-input)
    */
   attachPropertyChangeHandler(node, definition, property, prefix) {
+    const {
+      validateNodeEditor
+    } = this.rebind([
+        'validateNodeEditor'
+      ])
+
     var input = $("#" + prefix + "-" + property);
     if (definition !== undefined && "format" in definition[property] && definition[property].format !== "" && input[0].nodeName === "DIV") {
       $("#" + prefix + "-" + property).on('change keyup', function (event, skipValidation) {
@@ -500,6 +545,25 @@ export class Editor extends Context {
    * @param prefix - the prefix to use in the input element ids (node-input|node-config-input)
    */
   prepareEditDialog(node, definition, prefix, done) {
+    const {
+      ctx,
+      prepareConfigNodeButton,
+      prepareConfigNodeSelect,
+      preparePropertyEditor,
+      attachPropertyChangeHandler,
+      validateNodeEditor,
+      populateCredentialsInputs,
+      getCredentialsURL
+    } = this.rebind([
+        'prepareConfigNodeButton',
+        'prepareConfigNodeSelect',
+        'preparePropertyEditor',
+        'attachPropertyChangeHandler',
+        'validateNodeEditor',
+        'populateCredentialsInputs',
+        'getCredentialsURL'
+      ])
+
     for (var d in definition.defaults) {
       if (definition.defaults.hasOwnProperty(d)) {
         if (definition.defaults[d].type) {
@@ -566,6 +630,11 @@ export class Editor extends Context {
   }
 
   getEditStackTitle() {
+    const {
+      ctx,
+      editStack
+    } = this
+
     var title = '<ul class="editor-tray-breadcrumbs">';
     for (var i = 0; i < editStack.length; i++) {
       var node = editStack[i];
@@ -644,6 +713,15 @@ export class Editor extends Context {
   }
 
   refreshLabelForm(container, node) {
+    const {
+      ctx,
+      formInputs,
+      buildLabelRow,
+      updateNodeProperties
+    } = this.rebind([
+        'buildLabelRow',
+        'updateNodeProperties'
+      ])
 
     var inputPlaceholder = node._def.inputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
     var outputPlaceholder = node._def.outputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
@@ -677,7 +755,7 @@ export class Editor extends Context {
 
     var outputCount;
     var i;
-    var formOutputs = $("#node-input-outputs").val();
+    var formOutputs: any = $("#node-input-outputs").val();
 
     if (formOutputs === undefined) {
       outputCount = node.outputs || node._def.outputs || 0;
@@ -750,6 +828,10 @@ export class Editor extends Context {
   }
 
   buildLabelRow(type, index, value, placeHolder) {
+    const {
+      ctx
+    } = this
+
     var result = $('<div>', {
       class: "node-label-form-row"
     });
@@ -777,6 +859,13 @@ export class Editor extends Context {
   }
 
   buildLabelForm(container, node) {
+    const {
+      ctx,
+      buildLabelRow
+    } = this.rebind([
+        'buildLabelRow'
+      ])
+
     var dialogForm = $('<form class="dialog-form form-horizontal" autocomplete="off"></form>').appendTo(container);
 
     var inputCount = node.inputs || node._def.inputs || 0;
@@ -816,8 +905,27 @@ export class Editor extends Context {
   showEditDialog(node) {
     let {
       editStack,
+      getEditStackTitle,
+      updateNodeCredentials,
+      updateNodeProperties,
+      validateNode,
+      editTrayWidthCache,
+      refreshLabelForm,
+      buildEditForm,
+      buildLabelForm,
+      prepareEditDialog,
       ctx
-    } = this
+    } = this.rebind([
+        'getEditStackTitle',
+        'updateNodeCredentials',
+        'updateNodeProperties',
+        'validateNode',
+        'editTrayWidthCache',
+        'refreshLabelForm',
+        'buildEditForm',
+        'buildLabelForm',
+        'prepareEditDialog'
+      ])
 
     var editing_node = node;
     editStack.push(node);
@@ -827,6 +935,7 @@ export class Editor extends Context {
       type = "subflow";
     }
     var trayOptions = {
+      width: null,
       title: getEditStackTitle(),
       buttons: [{
         id: "node-dialog-delete",
@@ -896,7 +1005,7 @@ export class Editor extends Context {
         text: ctx._("common.label.done"),
         class: "primary",
         click: function () {
-          var changes = {};
+          var changes: any = {};
           var changed = false;
           var wasDirty = ctx.nodes.dirty();
           var d;
@@ -963,7 +1072,7 @@ export class Editor extends Context {
                       var outputCount = 0;
                       var outputsChanged = false;
                       var keys = Object.keys(outputMap);
-                      keys.forEach(function (p) {
+                      keys.forEach((p: any) => {
                         if (isNaN(p)) {
                           // New output;
                           outputCount++;
@@ -1048,7 +1157,7 @@ export class Editor extends Context {
           hasNonBlankLabel = false;
           newValue = new Array(editing_node.outputs);
           outputLabels.each(function () {
-            var index = $(this).attr('id').substring(23); // node-label-form-output-<index>
+            var index: any = $(this).attr('id').substring(23); // node-label-form-output-<index>
             if (outputMap && outputMap.hasOwnProperty(index)) {
               index = parseInt(outputMap[index]);
               if (index === -1) {
@@ -1094,7 +1203,9 @@ export class Editor extends Context {
               changes: changes,
               links: removedLinks,
               dirty: wasDirty,
-              changed: wasChanged
+              changed: wasChanged,
+              outputMap: null,
+              subflow: null
             };
             if (outputMap) {
               historyEvent.outputMap = outputMap;
@@ -1113,7 +1224,14 @@ export class Editor extends Context {
         }
       }
       ],
-      resize: function (dimensions) {
+      missingDimensions: (dimensions?: any) => {
+        // TODO
+      },
+      resize: (dimensions?: any) => {
+        if (!dimensions) {
+          dimensions = trayOptions.missingDimensions(dimensions)
+        }
+
         editTrayWidthCache[type] = dimensions.width;
         $(".editor-tray-content").height(dimensions.height - 78);
         var form = $(".editor-tray-content form").height(dimensions.height - 78 - 40);
@@ -1193,6 +1311,7 @@ export class Editor extends Context {
     if (type === 'subflow') {
       var id = editing_node.type.substring(8);
       trayOptions.buttons.unshift({
+        id,
         class: 'leftButton',
         text: ctx._("subflow.edit"),
         click: function () {
@@ -1212,8 +1331,24 @@ export class Editor extends Context {
    */
   showEditConfigNodeDialog(name, type, id, prefix) {
     let {
-      ctx
-    } = this
+      ctx,
+      editStack,
+      getEditStackTitle,
+      buildEditForm,
+      prepareEditDialog,
+      newScope,
+      validateNode,
+      updateNodeCredentials,
+      updateConfigNodeSelect
+    } = this.rebind([
+        'getEditStackTitle',
+        'buildEditForm',
+        'prepareEditDialog',
+        'newScope',
+        'validateNode',
+        'updateNodeCredentials',
+        'updateConfigNodeSelect'
+      ])
     var adding = (id == "_ADD_");
     var node_def = ctx.nodes.getType(type);
     var editing_config_node = ctx.nodes.node(id);
@@ -1248,6 +1383,7 @@ export class Editor extends Context {
 
     ctx.view.state(ctx.state.EDITING);
     var trayOptions = {
+      buttons: [],
       title: getEditStackTitle(), //(adding?ctx._("editor.addNewConfig", {type:type}):ctx._("editor.editConfig", {type:type})),
       resize: function () {
         if (editing_config_node && editing_config_node._def.oneditresize) {
@@ -1286,7 +1422,7 @@ export class Editor extends Context {
             nodeUserFlows[n.z] = true;
           });
           var flowCount = Object.keys(nodeUserFlows).length;
-          var tabSelect = $("#node-config-dialog-scope").empty();
+          var tabSelect = <ITabSelect>$("#node-config-dialog-scope").empty();
           tabSelect.off("change");
           tabSelect.append('<option value=""' + (!editing_config_node.z ? " selected" : "") + ' data-i18n="sidebar.config.global"></option>');
           tabSelect.append('<option disabled data-i18n="sidebar.config.flows"></option>');
@@ -1307,11 +1443,11 @@ export class Editor extends Context {
           });
           if (flowCount > 0) {
             tabSelect.on('change', function () {
-              var newScope = $(this).val();
+              var newScope: string = String($(this).val());
               if (newScope === '') {
                 // global scope - everyone can use it
                 $("#node-config-dialog-scope-warning").hide();
-              } else if (!nodeUserFlows[newScope] || flowCount > 1) {
+              } else if (!nodeUserFlows[parseInt(newScope)] || flowCount > 1) {
                 // a user will loose access to it
                 $("#node-config-dialog-scope-warning").show();
               } else {
@@ -1557,6 +1693,10 @@ export class Editor extends Context {
   }
 
   updateConfigNodeSelect(name, type, value, prefix) {
+    const {
+      ctx,
+      defaultConfigNodeSort
+    } = this
     // if prefix is null, there is no config select to update
     if (prefix) {
       var button = $("#" + prefix + "-edit-" + name);
@@ -1615,8 +1755,18 @@ export class Editor extends Context {
   showEditSubflowDialog(subflow) {
     let {
       ctx,
-      editStack
-    } = this
+      editStack,
+      getEditStackTitle,
+      buildEditForm,
+      updateNodeProperties,
+      buildLabelForm
+    } = this.rebind([
+        'buildEditForm',
+        'updateNodeProperties',
+        'buildLabelForm'
+      ])
+
+
     var editing_node = subflow;
     editStack.push(subflow);
     ctx.view.state(ctx.state.EDITING);
@@ -1637,7 +1787,7 @@ export class Editor extends Context {
         text: ctx._("common.label.done"),
         click: function () {
           var i;
-          var changes = {};
+          var changes: any = {};
           var changed = false;
           var wasDirty = ctx.nodes.dirty();
 
@@ -1712,14 +1862,16 @@ export class Editor extends Context {
         }
       }
       ],
-      resize: function (dimensions) {
+      resize: (dimensions) => {
         $(".editor-tray-content").height(dimensions.height - 78);
         var form = $(".editor-tray-content form").height(dimensions.height - 78 - 40);
 
         var rows = $("#dialog-form>div:not(.node-text-editor-row)");
         var editorRow = $("#dialog-form>div.node-text-editor-row");
         var height = $("#dialog-form").height();
-        for (var i = 0; i < rows.size(); i++) {
+        var rowCount = rows.length
+
+        for (var i = 0; i < rowCount; i++) {
           height -= $(rows[i]).outerHeight(true);
         }
         height -= (parseInt($("#dialog-form").css("marginTop")) + parseInt($("#dialog-form").css("marginBottom")));
@@ -1744,8 +1896,6 @@ export class Editor extends Context {
           title: ctx._("editor.portLabels")
         });
         portLabels.content.addClass("editor-tray-content");
-
-
 
         if (editing_node) {
           ctx.sidebar.info.refresh(editing_node);
@@ -1791,6 +1941,18 @@ export class Editor extends Context {
   }
 
   editExpression(options) {
+    const {
+      ctx,
+      editStack,
+      getEditStackTitle,
+      editTrayWidthCache,
+      buildEditForm,
+      expressionTestCache
+    } = this.rebind([
+        'getEditStackTitle',
+        'buildEditForm'
+      ])
+
     var expressionTestCacheId = "_";
     if (editStack.length > 0) {
       expressionTestCacheId = editStack[editStack.length - 1].id;
@@ -1809,6 +1971,7 @@ export class Editor extends Context {
     var panels;
 
     var trayOptions = {
+      width: null,
       title: getEditStackTitle(),
       buttons: [{
         id: "node-dialog-cancel",
@@ -1828,7 +1991,14 @@ export class Editor extends Context {
         }
       }
       ],
-      resize: function (dimensions) {
+      missingDimensions: (dimensions?: any) => {
+        // TODO
+      },
+      resize: function (dimensions?: any) {
+        if (!dimensions) {
+          dimensions = trayOptions.missingDimensions(dimensions)
+        }
+
         if (dimensions) {
           editTrayWidthCache[type] = dimensions.width;
         }
@@ -2112,6 +2282,17 @@ export class Editor extends Context {
 
 
   editJSON(options) {
+    const {
+      ctx,
+      editStack,
+      editTrayWidthCache,
+      getEditStackTitle,
+      buildEditForm
+    } = this.rebind([
+        'getEditStackTitle',
+        'buildEditForm'
+      ])
+
     var value = options.value;
     var onComplete = options.complete;
     var type = "_json"
@@ -2146,7 +2327,9 @@ export class Editor extends Context {
         var rows = $("#dialog-form>div:not(.node-text-editor-row)");
         var editorRow = $("#dialog-form>div.node-text-editor-row");
         var height = $("#dialog-form").height();
-        for (var i = 0; i < rows.size(); i++) {
+        var rowCount = rows.length
+
+        for (var i = 0; i < rowCount; i++) {
           height -= $(rows[i]).outerHeight(true);
         }
         height -= (parseInt($("#dialog-form").css("marginTop")) + parseInt($("#dialog-form").css("marginBottom")));
@@ -2178,7 +2361,8 @@ export class Editor extends Context {
         editStack.pop();
         expressionEditor.destroy();
       },
-      show: function () { }
+      show: function () { },
+      width: null
     }
     if (editTrayWidthCache.hasOwnProperty(type)) {
       trayOptions.width = editTrayWidthCache[type];
@@ -2214,6 +2398,17 @@ export class Editor extends Context {
   }
 
   editBuffer(options) {
+    const {
+      ctx,
+      editStack,
+      getEditStackTitle,
+      editTrayWidthCache,
+      buildEditForm,
+      stringToUTF8Array
+    } = this.rebind([
+        'buildEditForm'
+      ])
+
     var value = options.value;
     var onComplete = options.complete;
     var type = "_buffer"
@@ -2221,8 +2416,7 @@ export class Editor extends Context {
       type: type
     });
     ctx.view.state(ctx.state.EDITING);
-    var bufferStringEditor = [];
-    var bufferBinValue;
+    var bufferStringEditor, bufferBinValue, bufferBinEditor;
 
     var panels;
 
@@ -2263,6 +2457,7 @@ export class Editor extends Context {
           value: "",
           mode: "ace/mode/text"
         });
+
         bufferStringEditor.getSession().setValue(value || "", -1);
 
         bufferBinEditor = ctx.editor.createEditor({
@@ -2368,7 +2563,8 @@ export class Editor extends Context {
         bufferStringEditor.destroy();
         bufferBinEditor.destroy();
       },
-      show: function () { }
+      show: function () { },
+      width: null
     }
     if (editTrayWidthCache.hasOwnProperty(type)) {
       trayOptions.width = editTrayWidthCache[type];
@@ -2379,7 +2575,7 @@ export class Editor extends Context {
   createEditor(options) {
     var editor = ace.edit(options.id);
     editor.setTheme("ace/theme/tomorrow");
-    var session = editor.getSession();
+    var session: any = editor.getSession();
     if (options.mode) {
       session.setMode(options.mode);
     }
@@ -2401,7 +2597,14 @@ export class Editor extends Context {
       editor.container.classList.add("ace_read-only");
     }
     if (options.hasOwnProperty('lineNumbers')) {
-      editor.renderer.setOption('showGutter', options.lineNumbers);
+      const setOption = editor.renderer['setOption']
+      if (!setOption) {
+        this.handleError('createEditor: renderer missing method setOption', {
+          renderer: editor.renderer
+        })
+      }
+
+      setOption('showGutter', options.lineNumbers);
     }
     editor.$blockScrolling = Infinity;
     if (options.value) {

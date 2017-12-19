@@ -14,20 +14,18 @@
  * limitations under the License.
  **/
 import {
-  Context
-} from './context'
+  Context,
+  $
+} from '../../common'
 
 import {
   SidebarTabConfig
 }
-from './tab-config'
+  from './tab-config'
 import {
   SidebarTabInfo
 }
-from './tab-info'
-import {
-  default as $
-} from 'jquery';
+  from './tab-info'
 
 import 'jquery-ui-dist/jquery-ui'
 
@@ -35,7 +33,7 @@ const log = console.log
 
 import {
   Tabs
-} from '../../tabs/controllers'
+} from '../../common'
 
 import {
   Actions
