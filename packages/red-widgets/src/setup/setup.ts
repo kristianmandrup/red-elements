@@ -31,6 +31,7 @@ export interface IRED {
   keyboard: any;
   menu: any;
   notify(func, node);
+  clipboard: any
 }
 
 @injectable()
@@ -129,6 +130,9 @@ export class RED implements IRED {
     setDisabled() { }
   }
   notify(func, node) { }
+  public clipboard = {
+    copyText(key, copyPath, msgPath) { }
+  }
 }
 container.bind<IRED>(TYPES.RED).to(RED);
 export { container };

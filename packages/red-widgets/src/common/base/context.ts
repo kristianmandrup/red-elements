@@ -1,4 +1,4 @@
-import { IRED, TYPES, lazyInject } from '../../common'
+import { IRED, TYPES, lazyInject } from '../../common/base'
 export class BaseContext {
   @lazyInject(TYPES.RED) RED: IRED;
 

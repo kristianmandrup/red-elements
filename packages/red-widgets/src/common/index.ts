@@ -20,14 +20,14 @@ export const common = {
 
 export default common
 
-const {
-  Tabs
-} = controllers
+// const {
+//   Tabs
+// } = controllers
 
 export {
   controllers
 }
 
-export {
-  Tabs
-}
+// export {
+//   Tabs
+// }

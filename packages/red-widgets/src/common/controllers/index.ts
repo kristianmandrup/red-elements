@@ -42,11 +42,11 @@ export const controllers = {
   Popover,
   Stack,
   Tabs,
-  CheckboxSet,
   TypedInput,
   EditableList,
   Searchbox,
-  Validators
+  Validators,
+  CheckboxSet
 }
 
 export default controllers
@@ -57,9 +57,9 @@ export {
   Popover,
   Stack,
   Tabs,
-  // CheckboxSet,
-  // TypedInput,
-  // EditableList,
-  // Searchbox,
-  // Validators
+  TypedInput,
+  EditableList,
+  Searchbox,
+  Validators,
+  CheckboxSet
 }

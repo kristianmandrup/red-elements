@@ -15,9 +15,7 @@
  **/
 import { IRED, TYPES, lazyInject, $ } from '../../base'
 
-import {
-  Context
-} from '../context'
+import { Context } from '../context'
 
 const {
   log
@@ -70,7 +68,7 @@ export class Tabs extends Context {
       onTabDblClick,
       updateTabWidths,
       updateScroll
-    } = rebind([
+    } = this.rebind([
         'onTabClick',
         'onTabDblClick',
         'updateTabWidths',
@@ -383,7 +381,7 @@ export class Tabs extends Context {
     let {
       onTabClick,
       onTabDblClick,
-    } = rebind([
+    } = this.rebind([
         'onTabClick',
         'onTabDblClick',
       ], this)

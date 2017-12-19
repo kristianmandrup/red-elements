@@ -26,7 +26,7 @@ const {
 } = console
 import {
   jQuery
-} from '../jquery-ui'
+} from '../jquery-ui';
 
 export function Widget(RED) {
   (function ($) {
