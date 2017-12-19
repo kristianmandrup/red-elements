@@ -4,11 +4,13 @@ const { lazyInject } = getDecorators(container);
 
 export {
   lazyInject,
-  IRED, TYPES
+  IRED,
+  TYPES
 }
 
 export {
-  BaseContext
+  BaseContext,
+  BaseContext as Context
 } from './context'
 
 export {

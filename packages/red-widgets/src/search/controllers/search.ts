@@ -14,13 +14,31 @@
  * limitations under the License.
  **/
 import {
+  $,
   Context
-} from './context'
-import {
-  default as $
-} from 'jquery';
+} from '../../common';
+
+interface ISearchResults {
+  editableList: Function
+  find: Function
+  parent: Function
+}
+
+interface ISearchboxWidget extends JQuery<HTMLElement> {
+  searchBox: Function
+}
 
 export class Search extends Context {
+  public disabled: Boolean
+  public dialog: any // Dialog ?
+  public selected: any
+  public visible: Boolean
+  public index: Object
+  public keys: Array<any>
+  public results: Array<any>
+  public searchResults: ISearchResults
+  public searchInput: JQuery<HTMLElement>
+
   constructor(ctx) {
     super(ctx)
     this.disabled = false;
@@ -164,6 +182,8 @@ export class Search extends Context {
 
   search(val) {
     let {
+      keys,
+      index,
       searchResults,
       selected,
       results
@@ -238,6 +258,7 @@ export class Search extends Context {
   createDialog() {
     let {
       dialog,
+      search,
       searchInput,
       searchResults
     } = this
@@ -250,14 +271,14 @@ export class Search extends Context {
       class: "red-ui-search-container"
     }).appendTo(dialog);
 
-    const searchInputElem = $('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv)
+    const searchInputElem: ISearchboxWidget = <ISearchboxWidget>$('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv)
     searchInput = searchInputElem.searchBox({
       delay: 200,
-      change: ()=> {
+      change: () => {
         search($(this).val());
       },
       // Fix: trying to add i18n support (better to do directly on widget)
-      i18n: ()=> {
+      i18n: () => {
         // console.log('i18n not implemented')
       }
     });

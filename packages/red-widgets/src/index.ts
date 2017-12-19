@@ -39,6 +39,13 @@ import {
   PaletteEditor
 } from './palette'
 
+import {
+  tray,
+  Tray
+}
+  from './tray'
+
+
 export const widgets = {
   // canvas,
   common,
@@ -49,7 +56,7 @@ export const widgets = {
   // search,
   // settings,
   // sidebar,
-  // tray,
+  tray,
   // workspaces
 }
 
@@ -57,7 +64,8 @@ export default widgets
 
 export {
   Palette,
-  PaletteEditor
+  PaletteEditor,
+  Tray
 }
 
 export {
@@ -72,6 +80,6 @@ export {
   // search,
   // settings,
   // sidebar,
-  // tray,
+  tray,
   // workspaces
 }

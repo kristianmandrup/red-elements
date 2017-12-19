@@ -35,10 +35,7 @@ export {
 // TODO: avoid doing this. Instead import $ from globals file
 import * as $ from 'jquery';
 
-import {
-  Context
-} from './context'
-import { IRED, TYPES, lazyInject } from '../../common/base'
+import { IRED, TYPES, lazyInject, Context } from '../../common'
 
 export class Palette extends Context {
   public categoryContainers: Object

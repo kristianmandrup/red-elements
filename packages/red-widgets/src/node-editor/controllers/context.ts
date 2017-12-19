@@ -1,6 +1,6 @@
 import {
   BaseContext
-} from '../../common/_index'
+} from '../../common'
 
 export class Context extends BaseContext {
   constructor(ctx) {

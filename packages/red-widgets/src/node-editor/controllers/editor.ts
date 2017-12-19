@@ -14,16 +14,10 @@
  * limitations under the License.
  **/
 import {
-  Context
-} from './context'
-import * as $ from 'jquery';
-import {
   Tray
-} from '../..'
-import { IRED, TYPES, container } from '../../setup/setup';
-import getDecorators from 'inversify-inject-decorators';
-let { lazyInject } = getDecorators(container);
+} from '../../tray'
 
+import { IRED, TYPES, lazyInject, Context } from '../../common'
 interface ICtx {
   actions: Object
   tray: Tray
