@@ -45,12 +45,6 @@ test('EditableList: widget header created', () => {
   expect(widgetElem).toBeDefined()
 });
 
-test('EditableList: create widget without connect width', () => {
-  let elem: any = getElement();
-  options.connectWith = undefined;
-  let widgetElem = elem.editableList(options);
-  expect(widgetElem).toBeDefined()
-});
 
 test('EditableList: widget addItem with empty object', () => {
   let elem: any = getElement();
@@ -252,23 +246,29 @@ test('EditableList: with RED null', () => {
   expect(editableList).toBeDefined();
 });
 
-  // * options:
-  // *   - addButton : boolean|string - text for add label, default 'add'
-  // *   - height : number|'auto'
-  // *   - resize : function - called when list as a whole is resized
-  // *   - resizeItem : function(item) - called to resize individual item
-  // *   - sortable : boolean|string - string is the css selector for handle
-  // *   - sortItems : function(items) - when order of items changes
-  // *   - connectWith : css selector of other sortables
-  // *   - removable : boolean - whether to display delete button on items
-  // *   - addItem : function(row,index,itemData) - when an item is added
-  // *   - removeItem : function(itemData) - called when an item is removed
-  // *   - filter : function(itemData) - called for each item to determine if it should be shown
-  // *   - sort : function(itemDataA,itemDataB) - called to sort items
-  // *   - scrollOnAdd : boolean - whether to scroll to newly added items
-  // * methods:
-  // *   - addItem(itemData)
-  // *   - removeItem(itemData)
+test('EditableList: create widget without connect width', () => {
+  let elem: any = getElement();
+  options.connectWith = undefined;
+  let widgetElem = elem.editableList(options);
+  expect(widgetElem).toBeDefined()
+});
+// * options:
+// *   - addButton : boolean|string - text for add label, default 'add'
+// *   - height : number|'auto'
+// *   - resize : function - called when list as a whole is resized
+// *   - resizeItem : function(item) - called to resize individual item
+// *   - sortable : boolean|string - string is the css selector for handle
+// *   - sortItems : function(items) - when order of items changes
+// *   - connectWith : css selector of other sortables
+// *   - removable : boolean - whether to display delete button on items
+// *   - addItem : function(row,index,itemData) - when an item is added
+// *   - removeItem : function(itemData) - called when an item is removed
+// *   - filter : function(itemData) - called for each item to determine if it should be shown
+// *   - sort : function(itemDataA,itemDataB) - called to sort items
+// *   - scrollOnAdd : boolean - whether to scroll to newly added items
+// * methods:
+// *   - addItem(itemData)
+// *   - removeItem(itemData)
   // *   - width(width)
   // *   - height(height)
   // *   - items()
