@@ -13,31 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import * as $ from "jquery";
-import { IRED, TYPES, container } from "../../setup/setup";
+import * as $ from 'jquery';
+import { IRED, TYPES, container } from '../../../setup/setup';
 import getDecorators from "inversify-inject-decorators";
 import { Container, injectable, tagged, named } from "inversify";
 let { lazyInject } = getDecorators(container);
 
 import {
   Context
-} from './context'
+} from '../context'
 
 // import 'jquery-ui-dist/jquery-ui'
-
-function rebind(varNames, ctx) {
-  return varNames.reduce((acc, name) => {
-    ctx[name] = ctx[name].bind(ctx)
-    acc[name] = ctx[name]
-    return acc
-  }, {})
-}
 
 const {
   log
 } = console
+
 export class Tabs extends Context {
-  @lazyInject(TYPES.RED) RED: IRED;
   scrollContainer: any;
   options: any;
   tabs: any;
@@ -47,7 +39,8 @@ export class Tabs extends Context {
   wrapper: any;
   currentTabWidth: any;
   currentActiveTabWidth: any;
-  // TODO: use dependency injection of RED instead
+
+  @lazyInject(TYPES.RED) RED: IRED;
   constructor(options) {
     super(options)
     this.options = options || {}

@@ -17,8 +17,10 @@
 import {
   jQuery
 } from './jquery-ui'
-import { bottle} from '../../setup/_setup'
-const RED=bottle.container.RED;
+import {
+  bottle
+} from '../../setup/_setup'
+const RED = bottle.container.RED;
 const log = console.log
 export default factory
 
@@ -190,7 +192,7 @@ function factory() {
           });
         }
       },
-      _destroy: function () { },
+      _destroy: function () {},
       _refreshFilter: function () {
         var count = 0;
         if (!this.activeFilter) {
@@ -290,7 +292,7 @@ function factory() {
                 if (!this.activeFilter(data)) {
                   li.hide();
                 }
-              } catch (err) { }
+              } catch (err) {}
             }
 
             if (!this.activeSort && this.scrollOnAdd) {

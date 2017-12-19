@@ -40,7 +40,7 @@ import {
   Palette,
   PaletteEditor
 }
-from './ui'
+  from '../..'
 
 import {
   Nodes
@@ -279,15 +279,15 @@ export class Main extends Context {
       id: "menu-item-import",
       label: ctx._("menu.label.import"),
       options: [{
-          id: "menu-item-import-clipboard",
-          label: ctx._("menu.label.clipboard"),
-          onselect: "core:show-import-dialog"
-        },
-        {
-          id: "menu-item-import-library",
-          label: ctx._("menu.label.library"),
-          options: []
-        }
+        id: "menu-item-import-clipboard",
+        label: ctx._("menu.label.clipboard"),
+        onselect: "core:show-import-dialog"
+      },
+      {
+        id: "menu-item-import-library",
+        label: ctx._("menu.label.library"),
+        options: []
+      }
       ]
     });
     menuOptions.push({
@@ -295,17 +295,17 @@ export class Main extends Context {
       label: ctx._("menu.label.export"),
       disabled: true,
       options: [{
-          id: "menu-item-export-clipboard",
-          label: ctx._("menu.label.clipboard"),
-          disabled: true,
-          onselect: "core:show-export-dialog"
-        },
-        {
-          id: "menu-item-export-library",
-          label: ctx._("menu.label.library"),
-          disabled: true,
-          onselect: "core:library-export"
-        }
+        id: "menu-item-export-clipboard",
+        label: ctx._("menu.label.clipboard"),
+        disabled: true,
+        onselect: "core:show-export-dialog"
+      },
+      {
+        id: "menu-item-export-library",
+        label: ctx._("menu.label.library"),
+        disabled: true,
+        onselect: "core:library-export"
+      }
       ]
     });
     menuOptions.push(null);
@@ -324,36 +324,36 @@ export class Main extends Context {
       id: "menu-item-workspace",
       label: ctx._("menu.label.flows"),
       options: [{
-          id: "menu-item-workspace-add",
-          label: ctx._("menu.label.add"),
-          onselect: "core:add-flow"
-        },
-        {
-          id: "menu-item-workspace-edit",
-          label: ctx._("menu.label.rename"),
-          onselect: "core:edit-flow"
-        },
-        {
-          id: "menu-item-workspace-delete",
-          label: ctx._("menu.label.delete"),
-          onselect: "core:remove-flow"
-        }
+        id: "menu-item-workspace-add",
+        label: ctx._("menu.label.add"),
+        onselect: "core:add-flow"
+      },
+      {
+        id: "menu-item-workspace-edit",
+        label: ctx._("menu.label.rename"),
+        onselect: "core:edit-flow"
+      },
+      {
+        id: "menu-item-workspace-delete",
+        label: ctx._("menu.label.delete"),
+        onselect: "core:remove-flow"
+      }
       ]
     });
     menuOptions.push({
       id: "menu-item-subflow",
       label: ctx._("menu.label.subflows"),
       options: [{
-          id: "menu-item-subflow-create",
-          label: ctx._("menu.label.createSubflow"),
-          onselect: "core:create-subflow"
-        },
-        {
-          id: "menu-item-subflow-convert",
-          label: ctx._("menu.label.selectionToSubflow"),
-          disabled: true,
-          onselect: "core:convert-to-subflow"
-        },
+        id: "menu-item-subflow-create",
+        label: ctx._("menu.label.createSubflow"),
+        onselect: "core:create-subflow"
+      },
+      {
+        id: "menu-item-subflow-convert",
+        label: ctx._("menu.label.selectionToSubflow"),
+        disabled: true,
+        onselect: "core:convert-to-subflow"
+      },
       ]
     });
     menuOptions.push(null);

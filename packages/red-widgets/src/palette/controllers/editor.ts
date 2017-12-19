@@ -16,9 +16,7 @@
 import {
   Context
 } from './context'
-import {
-  default as $
-} from 'jquery';
+import * as $ from 'jquery';
 
 const {
   log
@@ -61,9 +59,9 @@ export class PaletteEditor extends Context {
       createSettingsPane,
       getSettingsPane
     } = this.rebind([
-      'createSettingsPane',
-      'getSettingsPane'
-    ])
+        'createSettingsPane',
+        'getSettingsPane'
+      ])
 
     let {
       settingsPane,
@@ -1105,82 +1103,82 @@ export class PaletteEditor extends Context {
       width: 550,
       height: "auto",
       buttons: [{
-          text: RED._("common.label.cancel"),
-          click: () => {
-            $(this).dialog("close");
-          }
-        },
-        {
-          text: RED._("palette.editor.confirm.button.review"),
-          class: "primary palette-module-install-confirm-button-install",
-          click: () => {
-            var url = $(this).data('url');
-            window.open(url);
-          }
-        },
-        {
-          text: RED._("palette.editor.confirm.button.install"),
-          class: "primary palette-module-install-confirm-button-install",
-          click: () => {
-            var id = $(this).data('module');
-            var version = $(this).data('version');
-            var shade = $(this).data('shade');
-            installNodeModule(id, version, shade, function (xhr) {
-              if (xhr) {
-                if (xhr.responseJSON) {
-                  RED.notify(RED._('palette.editor.errors.installFailed', {
-                    module: id,
-                    message: xhr.responseJSON.message
-                  }));
-                }
-              }
-            });
-            $(this).dialog("close");
-          }
-        },
-        {
-          text: RED._("palette.editor.confirm.button.remove"),
-          class: "primary palette-module-install-confirm-button-remove",
-          click: () => {
-            var id = $(this).data('module');
-            var shade = $(this).data('shade');
-            shade.show();
-            removeNodeModule(id, function (xhr) {
-              shade.hide();
-              if (xhr) {
-                if (xhr.responseJSON) {
-                  RED.notify(RED._('palette.editor.errors.removeFailed', {
-                    module: id,
-                    message: xhr.responseJSON.message
-                  }));
-                }
-              }
-            })
-
-            $(this).dialog("close");
-          }
-        },
-        {
-          text: RED._("palette.editor.confirm.button.update"),
-          class: "primary palette-module-install-confirm-button-update",
-          click: () => {
-            var id = $(this).data('module');
-            var version = $(this).data('version');
-            var shade = $(this).data('shade');
-            shade.show();
-            installNodeModule(id, version, shade, (xhr) => {
-              if (xhr) {
-                if (xhr.responseJSON) {
-                  RED.notify(RED._('palette.editor.errors.updateFailed', {
-                    module: id,
-                    message: xhr.responseJSON.message
-                  }));
-                }
-              }
-            });
-            $(this).dialog("close");
-          }
+        text: RED._("common.label.cancel"),
+        click: () => {
+          $(this).dialog("close");
         }
+      },
+      {
+        text: RED._("palette.editor.confirm.button.review"),
+        class: "primary palette-module-install-confirm-button-install",
+        click: () => {
+          var url = $(this).data('url');
+          window.open(url);
+        }
+      },
+      {
+        text: RED._("palette.editor.confirm.button.install"),
+        class: "primary palette-module-install-confirm-button-install",
+        click: () => {
+          var id = $(this).data('module');
+          var version = $(this).data('version');
+          var shade = $(this).data('shade');
+          installNodeModule(id, version, shade, function (xhr) {
+            if (xhr) {
+              if (xhr.responseJSON) {
+                RED.notify(RED._('palette.editor.errors.installFailed', {
+                  module: id,
+                  message: xhr.responseJSON.message
+                }));
+              }
+            }
+          });
+          $(this).dialog("close");
+        }
+      },
+      {
+        text: RED._("palette.editor.confirm.button.remove"),
+        class: "primary palette-module-install-confirm-button-remove",
+        click: () => {
+          var id = $(this).data('module');
+          var shade = $(this).data('shade');
+          shade.show();
+          removeNodeModule(id, function (xhr) {
+            shade.hide();
+            if (xhr) {
+              if (xhr.responseJSON) {
+                RED.notify(RED._('palette.editor.errors.removeFailed', {
+                  module: id,
+                  message: xhr.responseJSON.message
+                }));
+              }
+            }
+          })
+
+          $(this).dialog("close");
+        }
+      },
+      {
+        text: RED._("palette.editor.confirm.button.update"),
+        class: "primary palette-module-install-confirm-button-update",
+        click: () => {
+          var id = $(this).data('module');
+          var version = $(this).data('version');
+          var shade = $(this).data('shade');
+          shade.show();
+          installNodeModule(id, version, shade, (xhr) => {
+            if (xhr) {
+              if (xhr.responseJSON) {
+                RED.notify(RED._('palette.editor.errors.updateFailed', {
+                  module: id,
+                  message: xhr.responseJSON.message
+                }));
+              }
+            }
+          });
+          $(this).dialog("close");
+        }
+      }
       ]
     })
     return this

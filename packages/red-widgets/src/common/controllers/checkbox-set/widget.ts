@@ -21,17 +21,14 @@
 // http://code.tonytuan.org/2017/03/webpack-import-jquery-ui-in-es6-syntax.html
 
 // jQuery
-import {
-  jQuery
-} from './jquery-ui'
-
 const {
   log
 } = console
-import { bottle} from '../../setup/_setup'
-const RED=bottle.container.RED;
-export default factory
-function factory() {
+import {
+  jQuery
+} from '../jquery-ui'
+
+export function Widget(RED) {
   (function ($) {
     $.widget("nodered.checkboxSet", {
       _create: function () {

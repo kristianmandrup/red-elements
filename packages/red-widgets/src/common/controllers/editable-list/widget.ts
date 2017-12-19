@@ -1,32 +1,8 @@
-/**
- * Copyright JS Foundation and other contributors, http://js.foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
-// jQuery
 import {
   jQuery
-} from './jquery-ui'
-import { bottle } from '../../setup/_setup'
-const RED = bottle.container.RED;
-const log = console.log
-export default factory
+} from '../jquery-ui'
 
-function factory() {
-  // console.log('create editableList widget', {
-  //   RED
-  // });
-
+export function Widget(RED) {
   (function ($) {
 
     /**
@@ -56,7 +32,7 @@ function factory() {
      *   - length()
      */
     $.widget("nodered.editableList", {
-      _create: function () {
+      _create() {
         this.element.addClass('red-ui-editableList-list');
         this.uiWidth = this.element.width();
         this.uiContainer = this.element
@@ -341,4 +317,5 @@ function factory() {
       }
     });
   })(jQuery);
+
 }

@@ -15,23 +15,19 @@
  **/
 import {
   jQuery
-} from './jquery-ui'
+} from '../jquery-ui'
 import {
   Validators
-} from './utils/validators'
+} from '../utils/validators'
 
 import jsonata from 'jsonata'
 
-import { bottle } from '../../setup/_setup'
-const RED = bottle.container.RED;
 function icon(uri) {
   return 'images/typedInput/' + uri + '.png';
 }
+const { log } = console
 
-const log = console.log
-export default factory
-
-export function factory() {
+export function Widget(RED) {
   // https://stackoverflow.com/questions/31013221/typeerror-console-log-is-not-a-function
   // console.log({
   //   RED,

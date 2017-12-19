@@ -1,22 +1,22 @@
 import {
   canvas
 }
-from './canvas'
+  from './canvas'
 
 import {
   common
 }
-from './common'
+  from './common'
 
 import {
   header
 }
-from './header'
+  from './header'
 
 import {
   library
 }
-from './library'
+  from './library'
 
 // import {
 //   mainContainer
@@ -26,17 +26,16 @@ from './library'
 import {
   nodeDiff
 }
-from './node-diff'
+  from './node-diff'
 
 import {
   nodeEditor
 }
-from './node-editor'
+  from './node-editor'
 
 import {
   palette
-}
-from './palette'
+} from './palette'
 
 export const widgets = {
   // canvas,
@@ -53,6 +52,12 @@ export const widgets = {
 }
 
 export default widgets
+
+const { Palette } = palette.controllers
+
+export {
+  Palette
+}
 
 export {
   // canvas,

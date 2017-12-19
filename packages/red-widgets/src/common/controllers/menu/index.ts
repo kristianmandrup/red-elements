@@ -1,33 +1,32 @@
 /**
  * Copyright JS Foundation and other contributors, http://js.foundation
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
 
-import * as $ from "jquery";
-import { IRED, TYPES, container } from "../../setup/setup";
-import getDecorators from "inversify-inject-decorators";
-import { Container, injectable, tagged, named } from "inversify";
+import * as $ from 'jquery';
+import { IRED, TYPES, container } from '../../../setup/setup';
+import getDecorators from 'inversify-inject-decorators';
 let { lazyInject } = getDecorators(container);
 export class Menu {
   menuItems: any;
   @lazyInject(TYPES.RED) RED: IRED;
   constructor(options) {
     this.menuItems = {};
-    var menuParent = $("#" + options.id);
-    var topMenu = $("<ul/>", {
-      id: options.id + "-submenu",
-      class: "dropdown-menu pull-right"
+    var menuParent = $('#' + options.id);
+    var topMenu = $('<ul/>', {
+      id: options.id + '-submenu',
+      class: 'dropdown-menu pull-right'
     });
 
     if (menuParent.length === 1) {
@@ -61,7 +60,7 @@ export class Menu {
     var item;
 
     if (opt !== null && opt.id) {
-      var themeSetting = this.RED.settings.theme("menu." + opt.id);
+      var themeSetting = this.RED.settings.theme('menu.' + opt.id);
       if (themeSetting === false) {
         return null;
       }
@@ -73,7 +72,7 @@ export class Menu {
       item = $('<li></li>');
 
       if (opt.group) {
-        item.addClass("menu-group-" + opt.group);
+        item.addClass('menu-group-' + opt.group);
 
       }
       var linkContent = '<a ' + (opt.id ? 'id="' + opt.id + '" ' : '') + 'tabindex="-1" href="#">';
@@ -86,7 +85,7 @@ export class Menu {
         if (/\.png/.test(opt.icon)) {
           linkContent += '<img src="' + opt.icon + '"/> ';
         } else {
-          linkContent += '<i class="' + (opt.icon ? opt.icon : '" style="display: inline-block;"') + '"></i> ';
+          linkContent += '<i class="' + (opt.icon ? opt.icon : ' style="display: inline-block;') + '"></i> ';
         }
       }
 
@@ -105,12 +104,12 @@ export class Menu {
       if (opt.onselect) {
         link.click((e) => {
           e.preventDefault();
-          if ($(this).parent().hasClass("disabled")) {
+          if ($(this).parent().hasClass('disabled')) {
             return;
           }
           if (opt.toggle) {
             var selected = this.isSelected(opt.id);
-            if (typeof opt.toggle === "string") {
+            if (typeof opt.toggle === 'string') {
               if (!selected) {
                 for (var m in menuItems) {
                   if (menuItems.hasOwnProperty(m)) {
@@ -133,15 +132,15 @@ export class Menu {
           this.setInitialState(opt, link);
         }
       } else if (opt.href) {
-        link.attr("target", "_blank").attr("href", opt.href);
+        link.attr('target', '_blank').attr('href', opt.href);
       } else if (!opt.options) {
-        item.addClass("disabled");
+        item.addClass('disabled');
         link.click(function (event) {
           event.preventDefault();
         });
       }
       if (opt.options) {
-        item.addClass("dropdown-submenu pull-left");
+        item.addClass('dropdown-submenu pull-left');
         var submenu = $('<ul id="' + opt.id + '-submenu" class="dropdown-menu"></ul>').appendTo(item);
 
         for (var i = 0; i < opt.options.length; i++) {
@@ -152,7 +151,7 @@ export class Menu {
         }
       }
       if (opt.disabled) {
-        item.addClass("disabled");
+        item.addClass('disabled');
       }
     }
 
@@ -162,28 +161,28 @@ export class Menu {
   }
 
   setInitialState(opt, link) {
-    var savedStateActive = this.RED.settings.get("menu-" + opt.id);
+    var savedStateActive = this.RED.settings.get('menu-' + opt.id);
     if (opt.setting) {
       // May need to migrate pre-0.17 setting
 
       if (savedStateActive !== null) {
         this.RED.settings.set(opt.setting, savedStateActive);
-        this.RED.settings.remove("menu-" + opt.id);
+        this.RED.settings.remove('menu-' + opt.id);
       } else {
         savedStateActive = this.RED.settings.get(opt.setting);
       }
     }
     if (savedStateActive) {
-      link.addClass("active");
+      link.addClass('active');
       this.triggerAction(opt.id, true);
     } else if (savedStateActive === false) {
-      link.removeClass("active");
+      link.removeClass('active');
       this.triggerAction(opt.id, false);
-    } else if (opt.hasOwnProperty("selected")) {
+    } else if (opt.hasOwnProperty('selected')) {
       if (opt.selected) {
-        link.addClass("active");
+        link.addClass('active');
       } else {
-        link.removeClass("active");
+        link.removeClass('active');
       }
       this.triggerAction(opt.id, opt.selected);
     }
@@ -198,12 +197,12 @@ export class Menu {
     if (callback) {
       callback.call(opt, args);
     } else {
-      console.log("No callback for", id, opt.onselect);
+      console.log('No callback for', id, opt.onselect);
     }
   }
 
   isSelected(id) {
-    return $("#" + id).hasClass("active");
+    return $('#' + id).hasClass('active');
   }
 
   setSelected(id, state) {
@@ -212,14 +211,14 @@ export class Menu {
     }
     var opt = this.menuItems[id];
     if (state) {
-      $("#" + id).addClass("active");
+      $('#' + id).addClass('active');
     } else {
-      $("#" + id).removeClass("active");
+      $('#' + id).removeClass('active');
     }
     if (opt && opt.onselect) {
       this.triggerAction(opt.id, state);
     }
-    this.RED.settings.set(opt.setting || ("menu-" + opt.id), state);
+    this.RED.settings.set(opt.setting || ('menu-' + opt.id), state);
   }
 
   toggleSelected(id) {
@@ -228,37 +227,37 @@ export class Menu {
 
   setDisabled(id, state) {
     if (state) {
-      $("#" + id).parent().addClass("disabled");
+      $('#' + id).parent().addClass('disabled');
     } else {
-      $("#" + id).parent().removeClass("disabled");
+      $('#' + id).parent().removeClass('disabled');
     }
   }
 
   addItem(id, opt) {
     var item = this.createMenuItem(opt);
     if (opt.group) {
-      var groupItems = $("#" + id + "-submenu").children(".menu-group-" + opt.group);
+      var groupItems = $('#' + id + '-submenu').children('.menu-group-' + opt.group);
       if (groupItems.length === 0) {
-        item.appendTo("#" + id + "-submenu");
+        item.appendTo('#' + id + '-submenu');
       } else {
         for (var i = 0; i < groupItems.length; i++) {
           var groupItem = groupItems[i];
-          var label = $(groupItem).find(".menu-label").html();
+          var label = $(groupItem).find('.menu-label').html();
           if (opt.label < label) {
             $(groupItem).before(item);
             break;
           }
         }
         if (i === groupItems.length) {
-          item.appendTo("#" + id + "-submenu");
+          item.appendTo('#' + id + '-submenu');
         }
       }
     } else {
-      item.appendTo("#" + id + "-submenu");
+      item.appendTo('#' + id + '-submenu');
     }
   }
   removeItem(id) {
-    $("#" + id).parent().remove();
+    $('#' + id).parent().remove();
   }
 
   setAction(id, action) {

@@ -19,13 +19,6 @@ import {
 
 import * as $ from "jquery";
 import { LibraryUI } from '../controllers/library-ui'
-function rebind(varNames, ctx) {
-  return varNames.reduce((acc, name) => {
-    ctx[name] = ctx[name].bind(ctx)
-    acc[name] = ctx[name]
-    return acc
-  }, {})
-}
 
 export class Library extends Context {
   exportToLibraryDialog: any;
@@ -44,9 +37,9 @@ export class Library extends Context {
 
     let {
       exportFlow,
-    } = rebind([
+    } = this.rebind([
         'exportFlow',
-      ], this)
+      ])
 
     ctx.actions.add("core:library-export", exportFlow);
 
