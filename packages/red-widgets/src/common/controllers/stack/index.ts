@@ -18,7 +18,6 @@ import * as $ from 'jquery';
 import {
   Context
 } from '../context'
-import { config } from 'bottlejs';
 
 export class Stack extends Context {
   container: any;

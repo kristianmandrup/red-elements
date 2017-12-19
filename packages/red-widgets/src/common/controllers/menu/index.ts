@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+import { IRED, TYPES, lazyInject, $ } from '../../base';
 
-import * as $ from 'jquery';
-import { IRED, TYPES, container } from '../../../setup/setup';
-import getDecorators from 'inversify-inject-decorators';
-let { lazyInject } = getDecorators(container);
 export class Menu {
   menuItems: any;
   @lazyInject(TYPES.RED) RED: IRED;

@@ -1,27 +1,27 @@
 /**
  * Copyright JS Foundation and other contributors, http://js.foundation
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import * as $ from "jquery";
+import { $ } from '../../base'
 
 var deltaSizes = {
-  "default": {
+  'default': {
     top: 10,
     leftRight: 17,
     leftLeft: 25
   },
-  "small": {
+  'small': {
     top: 5,
     leftRight: 8,
     leftLeft: 16
@@ -62,12 +62,12 @@ export class Popover {
     }
 
     this.target = options.target;
-    this.direction = options.direction || "right";
+    this.direction = options.direction || 'right';
     this.trigger = options.trigger;
     this.content = options.content;
     this.delay = options.delay;
-    this.width = options.width || "auto";
-    var size = options.size || "default";
+    this.width = options.width || 'auto';
+    var size = options.size || 'default';
     this.active = options.active || true;
     if (!deltaSizes[size]) {
       throw new Error(`Invalid RED.popover size value: ${size}`);
@@ -89,16 +89,16 @@ export class Popover {
       delay
     } = this
     if (active) {
-      div = $('<div class="red-ui-popover red-ui-popover-' + direction + '"></div>').appendTo("body");
-      if (size !== "default") {
-        div.addClass("red-ui-popover-size-" + size);
+      div = $('<div class="red - ui - popover red - ui - popover - ' + direction + '"></div>').appendTo('body');
+      if (size !== 'default') {
+        div.addClass('red-ui-popover-size-' + size);
       }
       if (typeof content === 'function') {
         content.call().appendTo(div);
       } else {
         div.html(content);
       }
-      if (width !== "auto") {
+      if (width !== 'auto') {
         div.width(width);
       }
 
@@ -121,7 +121,7 @@ export class Popover {
         });
       }
 
-      div.fadeIn("fast");
+      div.fadeIn('fast');
     }
     return this
   }
@@ -138,7 +138,7 @@ export class Popover {
 
     if (!active) {
       if (div) {
-        div.fadeOut("fast", function () {
+        div.fadeOut('fast', function () {
           $(this).remove();
         });
         div = null;

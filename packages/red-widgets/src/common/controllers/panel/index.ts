@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import * as $ from 'jquery';
+import { $ } from '../../base'
+
 export class Panel {
   modifiedHeights: any;
   resize: any;
@@ -33,7 +34,7 @@ export class Panel {
     var panelRatio;
 
     separator.draggable({
-      axis: "y",
+      axis: 'y',
       containment: container,
       scroll: false,
       start: function (event, ui) {

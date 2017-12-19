@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import * as $ from 'jquery';
-import { IRED, TYPES, container } from '../../../setup/setup';
-import getDecorators from "inversify-inject-decorators";
-import { Container, injectable, tagged, named } from "inversify";
-let { lazyInject } = getDecorators(container);
+import { IRED, TYPES, lazyInject, $ } from '../../base'
 
 import {
   Context
 } from '../context'
-
-// import 'jquery-ui-dist/jquery-ui'
 
 const {
   log

@@ -1,10 +1,10 @@
 import {
-    BaseContext
-} from '../../common/_index'
+  BaseContext
+} from '../../common/index'
 
 export class Context extends BaseContext {
-    constructor(ctx) {
-        super(ctx)
-    }
+  constructor(ctx) {
+    super(ctx)
+  }
 }
 

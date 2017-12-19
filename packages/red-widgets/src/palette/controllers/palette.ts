@@ -21,25 +21,50 @@ import {
   default as marked
 } from 'marked'
 
+import * as d3 from 'd3'
+
+interface IChartSVG extends HTMLElement {
+  getIntersectionList: Function
+  createSVGRect: Function
+}
+
 export {
   PaletteEditor
-}
-from './editor'
-import {
-  default as $
-} from 'jquery';
+} from './editor'
+
+// TODO: avoid doing this. Instead import $ from globals file
+import * as $ from 'jquery';
 
 import {
   Context
 } from './context'
+import { IRED, TYPES, lazyInject } from '../../common/base'
 
 export class Palette extends Context {
+  public categoryContainers: Object
+
+  @lazyInject(TYPES.RED) RED: IRED;
 
   constructor(ctx) {
     super(ctx)
     this.categoryContainers = {};
-    var RED = ctx;
-    this.RED = RED
+    const RED = this.RED
+
+    const {
+      addNodeType,
+      removeNodeType,
+      showNodeType,
+      hideNodeType,
+      filterChange,
+      categoryContainers
+    } = this.rebind([
+        'addNodeType',
+        'removeNodeType',
+        'showNodeType',
+        'hideNodeType',
+        'filterChange',
+        'categoryContainers'
+      ])
 
     RED.events.on('registry:node-type-added', function (nodeType) {
       var def = RED.nodes.getType(nodeType);
@@ -85,7 +110,9 @@ export class Palette extends Context {
 
     $("#palette > .palette-spinner").show();
 
-    $("#palette-search input").searchBox({
+    // create searchBox widget
+    const widget = $("#palette-search input")
+    widget['searchBox']({
       delay: 100,
       change: function () {
         filterChange($(this).val());
@@ -275,9 +302,9 @@ export class Palette extends Context {
       escapeNodeType,
       createCategoryContainer
     } = this.rebind([
-      'escapeNodeType',
-      'createCategoryContainer'
-    ])
+        'escapeNodeType',
+        'createCategoryContainer'
+      ])
 
     var nodeTypeId = escapeNodeType(nt);
     if ($("#palette_node_" + nodeTypeId).length) {
@@ -290,7 +317,7 @@ export class Palette extends Context {
 
       var d = document.createElement("div");
       d.id = "palette_node_" + nodeTypeId;
-      d.type = nt;
+      d['type'] = nt;
 
       var label = /^(.*?)([ -]in|[ -]out)?$/.exec(nt)[1];
       if (typeof def.paletteLabel !== "undefined") {
@@ -382,18 +409,23 @@ export class Palette extends Context {
         if (nt.indexOf("subflow:") === 0) {
           helpText = marked(RED.nodes.subflow(nt.substring(8)).info || "");
         } else {
-          helpText = $("script[data-help-name='" + d.type + "']").html() || "";
+          helpText = $("script[data-help-name='" + d['type'] + "']").html() || "";
         }
         RED.sidebar.info.set(helpText);
       });
       var chart = $("#chart");
       var chartOffset = chart.offset();
-      var chartSVG = $("#chart>svg").get(0);
+
+      // TODO: use IChartSVG interface
+      const chartSVG: IChartSVG = <IChartSVG>$("#chart>svg").get(0);
       var activeSpliceLink;
       var mouseX;
       var mouseY;
       var spliceTimer;
-      $(d).draggable({
+
+      const dWidget = $(d)
+
+      dWidget['draggable']({
         helper: 'clone',
         appendTo: 'body',
         revert: true,
@@ -420,18 +452,20 @@ export class Palette extends Context {
             mouseX = ui.position.left + (ui.helper.width() / 2) - chartOffset.left + chart.scrollLeft();
             mouseY = ui.position.top + (ui.helper.height() / 2) - chartOffset.top + chart.scrollTop();
 
+            const { getIntersectionList, createSVGRect } = chartSVG
+
             if (!spliceTimer) {
               spliceTimer = setTimeout(function () {
                 var nodes = [];
                 var bestDistance = Infinity;
                 var bestLink = null;
-                if (chartSVG.getIntersectionList) {
+                if (getIntersectionList) {
                   var svgRect = chartSVG.createSVGRect();
                   svgRect.x = mouseX;
                   svgRect.y = mouseY;
                   svgRect.width = 1;
                   svgRect.height = 1;
-                  nodes = chartSVG.getIntersectionList(svgRect, chartSVG);
+                  nodes = getIntersectionList(svgRect, chartSVG);
                   mouseX /= RED.view.scale();
                   mouseY /= RED.view.scale();
                 } else {

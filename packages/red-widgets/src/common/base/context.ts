@@ -4,11 +4,11 @@ export class BaseContext {
     this.ctx = ctx;
   }
 
-  logWarning(msg, data) {
+  logWarning(msg, data?) {
     console.log(msg, data)
   }
 
-  handleError(msg, data) {
+  handleError(msg, data?) {
     this.logWarning(msg, data)
     throw new Error(msg)
   }
@@ -19,7 +19,8 @@ export class BaseContext {
     })
   }
 
-  rebind(varNames, ctx = this) {
+  rebind(varNames, ctx?) {
+    ctx = ctx || this
     return varNames.reduce((acc, name) => {
       ctx[name] = ctx[name].bind(ctx)
       acc[name] = ctx[name]
