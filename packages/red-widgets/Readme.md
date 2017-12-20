@@ -2,7 +2,19 @@
 
 The goal is  update the widget tests and include as much test cases as we can for individual components.
 
-# Q & A
+## Getting started
+
+Run the `lerna:update` to ensure all dependency modules are installed, including `@tecla5/red-shared` a Lerna package (part of the Lerna project).
+
+```bash
+$ npm run lerna:update
+...
+lerna success Bootstrapped 1 packages
+```
+
+Now you should have a `@tecla5/red-shared` in `node_modules`
+
+## Q & A
 
 Where is the code logic of all the components of which we are about to write jest tests? Like header’s path is `red-widget/src/header`
 

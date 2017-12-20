@@ -1,7 +1,7 @@
 import {
   Workspaces
 }
-from './workspaces'
+  from './workspaces'
 
 export const controllers = {
   Workspaces

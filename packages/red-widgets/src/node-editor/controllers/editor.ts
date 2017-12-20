@@ -21,14 +21,14 @@ import marked from 'marked'
 import jsonata from 'jsonata'
 import * as ace from 'brace'
 
-import { IRED, TYPES, lazyInject, Context } from '../../common'
+import { Context } from '../../common'
 
 interface ITabSelect extends JQuery<HTMLElement> {
   i18n: Function
 }
 
 export class Editor extends Context {
-  @lazyInject(TYPES.RED) RED: IRED;
+  // @lazyInject(TYPES.RED) RED: IRED;
 
   public editStack: Array<any>
   public expressionTestCache: Object

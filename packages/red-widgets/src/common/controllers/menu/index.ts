@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { IRED, TYPES, lazyInject, $ } from '../../base';
+import { Context, $ } from '../../base';
 
-export class Menu {
+export class Menu extends Context {
   menuItems: any;
-  @lazyInject(TYPES.RED) RED: IRED;
   constructor(options) {
+    super()
+
     this.menuItems = {};
     var menuParent = $('#' + options.id);
     var topMenu = $('<ul/>', {

@@ -12,3 +12,7 @@ export default settings
 export {
   controllers
 }
+
+export const {
+  UserSettings
+} = controllers

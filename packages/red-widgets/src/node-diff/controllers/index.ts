@@ -1,14 +1,13 @@
 import {
-  Diff
-}
-from './diff'
+  Diff as NodeDiff
+} from './diff'
 
 export const controllers = {
-  Diff
+  NodeDiff
 }
 
 export default controllers
 
 export {
-  Diff
+  NodeDiff
 }

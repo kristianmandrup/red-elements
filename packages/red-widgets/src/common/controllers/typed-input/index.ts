@@ -14,16 +14,11 @@
  * limitations under the License.
  **/
 // jQuery
-import { IRED, TYPES, lazyInject } from '../../base'
+import { Context } from '../../base'
 import { Widget } from './widget'
 
-export class TypedInput {
-  @lazyInject(TYPES.RED) RED: IRED
-  public widget: any
-
-  constructor() {
-    this.widget = new Widget(this.RED)
-  }
+export class TypedInput extends Context {
+  public widget = new Widget(this.RED)
 }
 
 

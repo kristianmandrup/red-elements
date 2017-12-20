@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import * as $ from 'jquery';
-
 import {
-  Context
-} from '../context'
+  Context,
+  $
+} from '../../base'
 
 export class Stack extends Context {
   container: any;
   entries: any;
   visible: any;
   constructor(private options: any = {}) {
-    super(options)
+    super()
+
     if (!options.container) {
       this.handleError(`Stack must take a container: option that is a jQuery element`, {
         options

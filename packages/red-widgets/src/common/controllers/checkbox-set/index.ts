@@ -1,13 +1,8 @@
-import { IRED, TYPES, lazyInject } from '../../base'
+import { Context } from '../context'
 import { Widget } from './widget'
 
-export class CheckboxSet {
-  @lazyInject(TYPES.RED) RED: IRED
-  public widget: any
-
-  constructor() {
-    this.widget = new Widget(this.RED)
-  }
+export class CheckboxSet extends Context {
+  public widget = new Widget(this.RED)
 }
 
 

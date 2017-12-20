@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { IRED, TYPES, lazyInject, $ } from '../../base'
-
-import { Context } from '../context'
+import { Context } from '../../base'
 
 const {
   log
@@ -36,9 +34,8 @@ export class Tabs extends Context {
   currentTabWidth: any;
   currentActiveTabWidth: any;
 
-  @lazyInject(TYPES.RED) RED: IRED;
   constructor(options) {
-    super(options)
+    super()
     this.options = options || {}
     if (typeof options !== 'object') {
       this.handleError('Tabs must take an options object', {

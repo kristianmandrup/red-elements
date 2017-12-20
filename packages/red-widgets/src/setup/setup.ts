@@ -6,6 +6,13 @@ import 'reflect-metadata';
 let container = new Container();
 export let TYPES = { RED: 'IRED' };
 export interface IRED {
+  i18n: any;
+  comms: any;
+  deploy: any;
+  diff: any;
+  notifications: any;
+  search: any;
+  library: any;
   settings: any;
   actions: any;
   palette: any,
@@ -30,7 +37,7 @@ export interface IRED {
   touch: any;
   keyboard: any;
   menu: any;
-  notify(func, node);
+  notify(func, node, withTimeout?, timeout?);
   clipboard: any
 }
 
@@ -38,6 +45,14 @@ export interface IRED {
 export class RED implements IRED {
   public palette: any
   public stack: any
+  public comms: any
+  public library = {
+    loadFlowLibrary() { }
+  }
+
+  public i18n = {
+    loadCatalog() { }
+  }
 
   public settings = {
     theme(id) { },

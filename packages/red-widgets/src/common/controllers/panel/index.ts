@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { $ } from '../../base'
+import { Context, $ } from '../../base'
 
-export class Panel {
+export class Panel extends Context {
   modifiedHeights: any;
   resize: any;
   constructor(options) {
+    super()
     var container = options.container || $("#" + options.id);
     var children = container.children();
 

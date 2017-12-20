@@ -16,6 +16,7 @@
   "dependencies": {
     "@tecla5/red-shared": "^0.0.1",
     "@types/jest": "^21.1.8",
+    "@types/jquery": "^3.2.16",
     "ace-builds": "^1.2.8",
     "bootstrap": "^3.3.7",
     "bootstrap-select": "^1.12.4",
@@ -36,7 +37,6 @@
     "ts-jest": "^21.2.4"
   },
   "devDependencies": {
-    "@types/jquery": "^3.2.16",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
     "babel-jest": "^21.2.0",

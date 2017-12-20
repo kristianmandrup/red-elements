@@ -4,19 +4,20 @@ import {
   from './canvas'
 
 import {
-  common
-}
-  from './common'
+  common,
+  Tabs,
+  Stack
+} from './common'
 
 import {
   header
-}
-  from './header'
+} from './header'
 
 import {
-  library
-}
-  from './library'
+  library,
+  Library,
+  LibraryUI
+} from './library'
 
 // import {
 //   mainContainer
@@ -24,24 +25,43 @@ import {
 // from './main-container'
 
 import {
-  nodeDiff
-}
-  from './node-diff'
+  nodeDiff,
+  NodeDiff
+} from './node-diff'
 
 import {
-  nodeEditor
+  nodeEditor,
+  Editor
 }
   from './node-editor'
 
 import {
+  workspaces,
+  Workspaces
+} from './workspaces'
+
+import {
   palette,
+  Palette,
   PaletteEditor
 } from './palette'
 
 import {
+  sidebar,
+  Sidebar,
+  SidebarTabConfig,
+  SidebarTabInfo,
+} from './sidebar'
+
+import {
+  settings,
+  UserSettings
+} from './settings'
+
+import {
+  tray,
   Tray
-}
-  from './tray'
+} from './tray'
 
 
 export const widgets = {
@@ -54,17 +74,25 @@ export const widgets = {
   // search,
   // settings,
   // sidebar,
-  Tray,
   // workspaces
 }
 
 export default widgets
 
-// export {
-//   Palette,
-//   PaletteEditor,
-//   Tray
-// }
+export {
+  Editor,
+  Palette,
+  PaletteEditor,
+  NodeDiff,
+  Library,
+  LibraryUI,
+  Tray,
+  Sidebar,
+  SidebarTabConfig,
+  SidebarTabInfo,
+  UserSettings,
+  Workspaces
+}
 
 // export {
 //   // canvas,

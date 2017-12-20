@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { $ } from '../../base'
+import { Context, $ } from '../../base'
 
 var deltaSizes = {
   'default': {
@@ -28,7 +28,7 @@ var deltaSizes = {
   }
 }
 
-export class Popover {
+export class Popover extends Context {
 
   public static create(ctx) {
     return new Popover(ctx)
@@ -57,6 +57,8 @@ export class Popover {
   timer: any;
   div: any;
   constructor(options) {
+    super()
+
     if (!options.target) {
       throw new Error('Popover must take a target: option that is a jQuery element')
     }

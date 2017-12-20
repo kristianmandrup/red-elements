@@ -1,5 +1,6 @@
 import {
-  jQuery
+  jQuery,
+  jQuery as $
 } from '../jquery-ui'
 
 export function Widget(RED) {

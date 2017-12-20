@@ -12,3 +12,9 @@ export default sidebar
 export {
   controllers
 }
+
+export const {
+  Sidebar,
+  SidebarTabConfig,
+  SidebarTabInfo
+} = controllers
