@@ -14,7 +14,7 @@ One "ring" to rule them all!!!
 
 This [lerna](https://lernajs.io/) project contains the following packages:
 
-- `_red-shared` shared assets, styles and utility scripts
+- `red-shared` shared assets, styles and utility scripts
 - `red-stencil` stencil app with stencil custom elements (native browser elements)
 - `red-vue` Vue components, wrapping custom elements
 - `red-widgets` original jQuery elements/widgets from node red

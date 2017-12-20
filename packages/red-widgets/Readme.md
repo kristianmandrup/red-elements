@@ -2,6 +2,14 @@
 
 The goal is  update the widget tests and include as much test cases as we can for individual components.
 
+## Lerna project
+
+*red-widgets* is a lerna package, part of a [lerna](https://lernajs.io/) project.
+
+The full UI project contains multiple related packages that can be managed as a unit.
+
+See [Lerna Getting Started](https://lernajs.io/#getting-started) for typical development workflow.
+
 ## Getting started
 
 Run the `lerna:update` to ensure all dependency modules are installed, including `@tecla5/red-shared` a Lerna package (part of the Lerna project).
