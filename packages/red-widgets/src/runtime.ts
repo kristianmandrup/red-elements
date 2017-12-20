@@ -9,5 +9,6 @@ export {
   state,
   Subflow,
   TypeSearch,
+  RadialMenu,
   Utils,
-} from '@tecla5/red-runtime'
+} from '@tecla5/red-shared/src'

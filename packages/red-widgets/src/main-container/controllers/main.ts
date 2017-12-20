@@ -29,6 +29,7 @@ import {
   state,
   Subflow,
   TypeSearch,
+  RadialMenu,
   Utils,
 } from '../../runtime'
 
@@ -71,8 +72,9 @@ export class Main extends Context {
         document.title = document.title + " : " + window.location.hostname;
       }
 
-      // TODO: Fix using normal require?
-      ace.require('ace/ext/language_tools');
+      // Fix: using normal require: https://github.com/thlorenz/brace/tree/master/ext
+      // ace.require
+      require('brace/ext/language_tools');
 
       RED.i18n.init(function () {
         RED.settings.init(loadEditor);
