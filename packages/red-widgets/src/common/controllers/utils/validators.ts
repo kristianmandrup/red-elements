@@ -19,6 +19,47 @@ import {
 
 import { Utils } from './utils'
 
+function validateNumber(v) {
+  return /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(v);
+}
+
+function validateJson(v) {
+  try {
+    JSON.parse(v);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+class TypedInputValidator extends Context {
+  constructor(protected v, protected ptype) {
+    super()
+  }
+
+  validate(v) {
+    if (this.isNumber) return validateNumber(v)
+    if (this.isJson) return validateJson(v)
+    if (this.isProp) return this.validateProp(v)
+  }
+
+  validateProp(v) {
+    return this.RED.utils.validatePropertyExpression(v);
+  }
+
+  get isProp() {
+    return !!['msg', 'flow', 'global'].indexOf(this.ptype)
+  }
+
+  get isNumber() {
+    return this.ptype === 'num'
+  }
+
+  get isJson() {
+    return this.ptype === 'json'
+  }
+}
+
 export class Validators extends Context {
   constructor() {
     super()
@@ -38,23 +79,16 @@ export class Validators extends Context {
   }
 
   typedInput(ptypeName, isConfig) {
-    const { RED } = this
+    const {
+      RED
+    } = this
+
+    var ptype = $('#node-' + (isConfig ? 'config-' : '') + 'input-' + ptypeName).val() || this[ptypeName];
     return (v) => {
-      var ptype = $('#node-' + (isConfig ? 'config-' : '') + 'input-' + ptypeName).val() || this[ptypeName];
-      if (ptype === 'json') {
-        try {
-          JSON.parse(v);
-          return true;
-        } catch (err) {
-          return false;
-        }
-      } else if (ptype === 'msg' || ptype === 'flow' || ptype === 'global') {
-        return RED.utils.validatePropertyExpression(v);
-      } else if (ptype === 'num') {
-        return /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(v);
-      }
-      return true;
+      const validator = new TypedInputValidator(ptype, v)
+      return validator.validate(v)
     }
   }
+
 
 }
