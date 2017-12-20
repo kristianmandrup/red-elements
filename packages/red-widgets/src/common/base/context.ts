@@ -25,7 +25,10 @@ export class BaseContext {
   rebind(varNames, ctx?) {
     ctx = ctx || this
     return varNames.reduce((acc, name) => {
-      ctx[name] = ctx[name].bind(ctx)
+      const fun = ctx[name]
+      if (typeof fun === 'function') {
+        ctx[name] = fun.bind(ctx)
+      }
       acc[name] = ctx[name]
       return acc
     }, {})

@@ -32,13 +32,10 @@ export {
   PaletteEditor
 } from './editor'
 
-import { IRED, TYPES, lazyInject, Context, $ } from '../../common'
+import { Context, $ } from '../../common'
 
 export class Palette extends Context {
   public categoryContainers: Object
-
-  @lazyInject(TYPES.RED) RED: IRED;
-
   constructor() {
     super()
     this.categoryContainers = {};

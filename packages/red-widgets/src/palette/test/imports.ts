@@ -8,8 +8,7 @@ export {
   RED,
   readPage,
   ctx
-}
-from '../../test/_setup'
+} from '../../test/setup'
 
 const {
   Palette,

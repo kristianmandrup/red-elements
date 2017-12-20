@@ -118,17 +118,19 @@ test('Editor: refreshFilteredItems', () => {
   expect(refreshed).toBeDefined()
 })
 
+const today = new Date()
+
 let modules = {
   A: {
     info: {
       id: 'a',
-      timestamp: new Date()
+      timestamp: today
     }
   },
   B: {
     info: {
       id: 'b',
-      timestamp: new Date() - 100
+      timestamp: today.getMilliseconds() - 100
     }
   }
 }

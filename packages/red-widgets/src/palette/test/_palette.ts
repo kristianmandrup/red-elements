@@ -25,14 +25,14 @@ let nodes = {
   }
 }
 let events = {
-  on() {}
+  on() { }
 }
 let actions = {
-  add() {}
+  add() { }
 }
 
 let settings = {
-  theme() {}
+  theme() { }
 }
 
 let view = {
@@ -50,12 +50,12 @@ let text = {
 }
 
 let userSettings = {
-  add() {}
+  add() { }
 }
 
 import {
   common
-} from '../../_index'
+} from '../../common'
 
 const {
   Popover,
@@ -71,8 +71,8 @@ let popover = {
 }
 
 let tabs = {
-  create(ctx, RED) {
-    return Tabs.create(ctx, RED)
+  create(options) {
+    return Tabs.create(options)
   }
 }
 
@@ -89,18 +89,18 @@ let ctx = Object.assign({
 }, baseCtx)
 
 
-function createPalette(ctx) {
-  return new Palette(ctx)
+function createPalette() {
+  return new Palette()
 }
 
-function createEditor(ctx) {
-  return new PaletteEditor(ctx)
+function createEditor() {
+  return new PaletteEditor()
 }
 
 let palette, editor
 beforeEach(() => {
-  palette = createPalette(ctx)
-  editor = createEditor(ctx)
+  palette = createPalette()
+  editor = createEditor()
 })
 
 export {
