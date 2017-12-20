@@ -11,8 +11,9 @@
     "test:watch": "jest --watch",
     "lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-widgets",
     "lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
+    "lerna:update:win": "npm run lerna:clean:win && npm run lerna:bootstrap",
     "lerna:clean": "rm -f package.json.lock 2> /dev/null && echo y | lerna clean --scope @tecla5/red-widgets",
-    "lerna:clean:win": "rm -f package.json.lock | lerna clean --scope @tecla5/red-widgets"
+    "lerna:clean:win": "del /s /f /q package-lock.json | lerna clean --scope @tecla5/red-widgets"
   },
   "dependencies": {
     "@tecla5/red-shared": "^0.0.1",
