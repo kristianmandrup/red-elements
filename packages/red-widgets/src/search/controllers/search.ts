@@ -46,6 +46,8 @@ export class Search extends Context {
 
   constructor() {
     super()
+    const { ctx } = this
+
     this.disabled = false;
     this.dialog = null;
     // searchInput;

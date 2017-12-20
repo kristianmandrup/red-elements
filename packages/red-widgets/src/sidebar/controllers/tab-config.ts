@@ -21,10 +21,24 @@ import {
   I18n
 } from '@tecla5/red-shared/src/i18n'
 
+interface I18nWidget extends JQuery<HTMLElement> {
+  i18n: Function
+}
+
 export class SidebarTabConfig extends Context {
+  public content: HTMLElement
+  public toolbar: JQuery<HTMLElement>
+  public globalCategories: JQuery<HTMLElement>
+  public flowCategories: JQuery<HTMLElement>
+  public subflowCategories: JQuery<HTMLElement>
+  public category: JQuery<HTMLElement>
+
+  public showUnusedOnly: Boolean
+  public categories: Object
+
   constructor() {
     super()
-    const RED = this.RED
+    const { RED } = this
     var content = document.createElement("div");
     this.content = content
     content.className = "sidebar-node-config";
@@ -58,8 +72,11 @@ export class SidebarTabConfig extends Context {
   init() {
     let {
       RED,
-      categories
-    } = this
+      categories,
+      showUnusedOnly
+    } = this.rebind([
+        'showUnusedOnly'
+      ])
 
     let refreshConfigNodeList = this.refreshConfigNodeList.bind(this)
 
@@ -117,12 +134,16 @@ export class SidebarTabConfig extends Context {
     });
   }
 
-  getOrCreateCategory(name, parent, label) {
+  getOrCreateCategory(name, parent?, label?) {
+    let {
+      category
+    } = this
+
     name = name.replace(/\./i, "-");
     let categories = this.categories
 
     if (!categories[name]) {
-      var container = $('<div class="palette-category workspace-config-node-category" id="workspace-config-node-category-' + name + '"></div>').appendTo(parent);
+      var container = <I18nWidget>$('<div class="palette-category workspace-config-node-category" id="workspace-config-node-category-' + name + '"></div>').appendTo(parent);
       var header = $('<div class="workspace-config-node-tray-header palette-header"><i class="fa fa-angle-down expanded"></i></div>').appendTo(container);
       if (label) {
         $('<span class="config-node-label"/>').text(label).appendTo(header);
@@ -139,7 +160,7 @@ export class SidebarTabConfig extends Context {
         size: () => {
           return result.list.find("li:not(.config_node_none)").length
         },
-        open: (snap) => {
+        open: (snap?) => {
           if (!icon.hasClass("expanded")) {
             icon.addClass("expanded");
             if (snap) {
@@ -149,7 +170,7 @@ export class SidebarTabConfig extends Context {
             }
           }
         },
-        close: (snap) => {
+        close: (snap?) => {
           if (icon.hasClass("expanded")) {
             icon.removeClass("expanded");
             if (snap) {
@@ -182,10 +203,13 @@ export class SidebarTabConfig extends Context {
   }
 
   createConfigNodeList(id, nodes) {
-    let RED = this.ctx
+    let {
+      RED,
+      getOrCreateCategory
+    } = this
     let showUnusedOnly = this.showUnusedOnly
 
-    var category = this.getOrCreateCategory(id.replace(/\./i, "-"))
+    var category = getOrCreateCategory(id.replace(/\./i, "-"))
     var list = category.list;
 
     nodes.sort(function (A, B) {
@@ -215,7 +239,8 @@ export class SidebarTabConfig extends Context {
     }
     list.empty();
     if (nodes.length === 0) {
-      $('<li class="config_node_none" data-i18n="sidebar.config.none">NONE</li>').i18n().appendTo(list);
+      let sidebarConfig = <I18nWidget>$('<li class="config_node_none" data-i18n="sidebar.config.none">NONE</li>')
+      sidebarConfig.i18n().appendTo(list);
       category.close(true);
     } else {
       var currentType = "";
@@ -273,6 +298,8 @@ export class SidebarTabConfig extends Context {
     let {
       categories,
       globalCategories,
+      flowCategories,
+      subflowCategories,
       RED
     } = this
 

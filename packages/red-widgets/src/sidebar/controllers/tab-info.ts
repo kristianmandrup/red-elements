@@ -37,12 +37,21 @@ export class SidebarTabInfo extends Context {
     return new Stack(options)
   }
 
-  constructor(ctx) {
-    super(ctx)
-    let RED = ctx
+  public tips: Tips
+  public content: JQuery<HTMLElement>
+  public sections: JQuery<HTMLElement>;
+  public nodeSection: any; // JQuery<HTMLElement>;
+  public infoSection: any; // JQuery<HTMLElement>;
+  public tipBox: JQuery<HTMLElement>;
+  public expandedSections: any; // JQuery<HTMLElement>;
+
+  constructor() {
+    super()
+    const { RED } = this
+
     // FIX: ensure that _ is set to i18n translate (ie. key lookup) function
     let i18n = new I18n(RED)
-    this.tips = new Tips(ctx)
+    this.tips = new Tips()
 
     // FIX: when i18n is initialized (translation map loaded), we can continue constructor in init
     i18n.initCb(this.init.bind(this))
@@ -51,11 +60,18 @@ export class SidebarTabInfo extends Context {
   init(i18n) {
     let {
       RED,
-      show
-    } = this
-
-    // configure aliases
-    show = show.bind(this)
+      show,
+      tips,
+      refresh,
+      clear,
+      content,
+      sections,
+      nodeSection,
+      infoSection,
+      tipBox
+    } = this.rebind([
+        'show'
+      ])
 
     marked.setOptions({
       renderer: new marked.Renderer(),
@@ -67,12 +83,6 @@ export class SidebarTabInfo extends Context {
       smartLists: true,
       smartypants: false
     });
-
-    var content;
-    var sections;
-    var nodeSection;
-    var infoSection;
-    var tipBox;
 
     // TODO: make into properties (ie. instance vars)
 
@@ -208,20 +218,25 @@ export class SidebarTabInfo extends Context {
   }
 
   refresh(node) {
-    let sections = this.sections
-    let nodeSection = this.nodeSection
-    let infoSection = this.infoSection
-    let RED = this.ctx
+    let {
+      sections,
+      nodeSection,
+      infoSection,
+      expandedSections,
+      RED
+    } = this
 
     sections.show();
-    $(nodeSection.content).empty();
-    $(infoSection.content).empty();
+
+    $(nodeSection.contents).empty();
+    $(infoSection.contents).empty();
 
     var table = $('<table class="node-info"></table>');
     var tableBody = $('<tbody>').appendTo(table);
     var propRow;
     var subflowNode;
     if (node.type === "tab") {
+
       nodeSection.title.html(RED._("sidebar.info.flow"));
       propRow = $('<tr class="node-info-node-row"><td>' + RED._("sidebar.info.tabName") + '</td><td></td></tr>').appendTo(tableBody);
       $(propRow.children()[1]).html('&nbsp;' + (node.label || ""))
@@ -230,7 +245,9 @@ export class SidebarTabInfo extends Context {
       propRow = $('<tr class="node-info-node-row"><td>' + RED._("sidebar.info.status") + '</td><td></td></tr>').appendTo(tableBody);
       $(propRow.children()[1]).html((!!!node.disabled) ? RED._("sidebar.info.enabled") : RED._("sidebar.info.disabled"))
     } else {
+
       nodeSection.title.html(RED._("sidebar.info.node"));
+
       if (node.type !== "subflow" && node.name) {
         $('<tr class="node-info-node-row"><td>' + RED._("common.label.name") + '</td><td>&nbsp;<span class="bidiAware" dir="' + RED.text.bidi.resolveBaseTextDir(node.name) + '">' + node.name + '</span></td></tr>').appendTo(tableBody);
       }
@@ -352,6 +369,14 @@ export class SidebarTabInfo extends Context {
   }
 
   setInfoText(infoText) {
+    const {
+      RED,
+      addTargetToExternalLinks,
+      infoSection
+    } = this.rebind([
+        'addTargetToExternalLinks'
+      ])
+
     var info = addTargetToExternalLinks($('<div class="node-help"><span class="bidiAware" dir=\"' + RED.text.bidi.resolveBaseTextDir(infoText) + '">' + infoText + '</span></div>')).appendTo(infoSection.content);
     info.find(".bidiAware").contents().filter(function () {
       return this.nodeType === 3 && this.textContent.trim() !== ""
