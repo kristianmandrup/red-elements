@@ -9,7 +9,7 @@ export {
   readPage,
   ctx
 }
-from '../../test/_setup'
+  from '../../test/setup'
 
 const {
   Editor,
@@ -17,5 +17,5 @@ const {
 
 export {
   // nightmare,
-  Editor,
+  Editor
 }

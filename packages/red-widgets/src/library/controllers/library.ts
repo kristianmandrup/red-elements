@@ -27,6 +27,7 @@ export class Library extends Context {
 
   constructor() {
     super()
+    const { ctx } = this
 
     const required = ['actions', 'events', 'settings']
     required.map(name => {

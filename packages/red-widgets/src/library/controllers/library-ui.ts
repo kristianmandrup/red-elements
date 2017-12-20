@@ -7,15 +7,17 @@ var ace = require('brace');
 require('brace/mode/javascript');
 require('brace/theme/monokai');
 
+const { log } = console
+
 export class LibraryUI extends Context {
   libraryEditor: any;
   selectedLibraryItem: any;
 
   constructor(public options) {
-    super(options.ctx || options);
+    super();
     this.selectedLibraryItem = options.selectedLibraryItem || {};
+    const { ctx } = this
 
-    const ctx = options.ctx || options;
     $('#node-input-name').css("width", "66%").after(
       '<div class="btn-group" style="margin-left: 5px;">' +
       '<a id="node-input-' + options.type + '-lookup" class="editor-button" data-toggle="dropdown"><i class="fa fa-book"></i> <i class="fa fa-caret-down"></i></a>' +
@@ -24,6 +26,9 @@ export class LibraryUI extends Context {
       '<li><a id="node-input-' + options.type + '-menu-save-library" tabindex="-1" href="#">' + ctx._("library.saveToLibrary") + '</a></li>' +
       '</ul></div>'
     );
+
+    const that = this
+
     let {
       buildFileList
     } = this.rebind([
@@ -105,53 +110,60 @@ export class LibraryUI extends Context {
     });
     this.libraryEditor.renderer.$cursorLayer.element.style.opacity = 0;
     this.libraryEditor.$blockScrolling = Infinity;
+
+    // TODO: fix - ensure this is still correct (ie. class instance) context
+    log({
+      CONTEXT: this,
+      THAT: that
+    })
+
     let {
-      saveToLibrary } = this;
-    } = this.rebind([
+      saveToLibrary
+    } = that.rebind([
         'saveToLibrary'
       ])
 
-      (<any>$("#node-dialog-library-lookup")).dialog({
-      title: ctx._("library.typeLibrary", {
-        type: options.type
-      }),
-      modal: true,
-      autoOpen: false,
-      width: 800,
-      height: 450,
-      buttons: [{
-        text: ctx._("common.label.cancel"),
-        click: () => {
-          (<any>$(this)).dialog("close");
-        }
-      },
-      {
-        text: ctx._("common.label.load"),
-        class: "primary",
-        click: function () {
-          if (this.selectedLibraryItem) {
-            for (var i = 0; i < options.fields.length; i++) {
-              var field = options.fields[i];
-              $("#node-input-" + field).val(this.selectedLibraryItem[field]);
+        (<any>$("#node-dialog-library-lookup")).dialog({
+          title: ctx._("library.typeLibrary", {
+            type: options.type
+          }),
+          modal: true,
+          autoOpen: false,
+          width: 800,
+          height: 450,
+          buttons: [{
+            text: ctx._("common.label.cancel"),
+            click: () => {
+              (<any>$(this)).dialog("close");
             }
-            options.editor.setValue(this.libraryEditor.getValue(), -1);
+          },
+          {
+            text: ctx._("common.label.load"),
+            class: "primary",
+            click: function () {
+              if (this.selectedLibraryItem) {
+                for (var i = 0; i < options.fields.length; i++) {
+                  var field = options.fields[i];
+                  $("#node-input-" + field).val(this.selectedLibraryItem[field]);
+                }
+                options.editor.setValue(this.libraryEditor.getValue(), -1);
+              }
+              (<any>$(this)).dialog("close");
+            }
           }
-          (<any>$(this)).dialog("close");
-        }
-      }
-      ],
-      open: function (e) {
-        var form = $("form", this);
-        form.height(form.parent().height() - 30);
-        $("#node-select-library-text").height("100%");
-        $(".form-row:last-child", form).children().height(form.height() - 60);
-      },
-      resize: function (e) {
-        var form = $("form", this);
-        form.height(form.parent().height() - 30);
-        $(".form-row:last-child", form).children().height(form.height() - 60);
-      }
-    });
+          ],
+          open: function (e) {
+            var form = $("form", this);
+            form.height(form.parent().height() - 30);
+            $("#node-select-library-text").height("100%");
+            $(".form-row:last-child", form).children().height(form.height() - 60);
+          },
+          resize: function (e) {
+            var form = $("form", this);
+            form.height(form.parent().height() - 30);
+            $(".form-row:last-child", form).children().height(form.height() - 60);
+          }
+        });
 
 
     (<any>$("#node-dialog-library-save-confirm")).dialog({
