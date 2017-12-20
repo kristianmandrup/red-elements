@@ -1,22 +1,18 @@
 import {
   Menu
-}
-  from './menu'
+} from './menu'
 import {
   Panel
-}
-  from './panel'
+} from './panel'
 import {
   Popover
 } from './pop-over'
 import {
   Stack
-}
-  from './stack'
+} from './stack'
 import {
   Tabs
-}
-  from './tabs'
+} from './tabs'
 import {
   CheckboxSet
 } from './checkbox-set'

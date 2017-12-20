@@ -11,8 +11,7 @@ export {
   IRED,
   TYPES,
   $
-}
-  from './base'
+} from './base'
 
 export const common = {
   controllers
@@ -25,6 +24,14 @@ export {
 }
 
 export const {
+  Menu,
+  Panel,
+  Popover,
+  Stack,
   Tabs,
-  Stack
+  TypedInput,
+  EditableList,
+  Searchbox,
+  Validators,
+  CheckboxSet
 } = controllers

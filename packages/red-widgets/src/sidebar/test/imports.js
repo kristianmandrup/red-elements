@@ -9,11 +9,11 @@ export {
   readPage,
   ctx,
 }
-from '../../test/setup/_index'
+from '../../test/setup'
 
 import {
   common
-} from '../../common/_index'
+} from '../../common'
 
 const {
   Menu

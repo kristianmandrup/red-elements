@@ -29,9 +29,6 @@ const $ = require('jquery');
 const fs = require('fs')
 
 global.$ = $
-// log({
-//   $: global.$
-// })
 
 global.jQuery = global.$
 require('jquery-ui-dist/jquery-ui')

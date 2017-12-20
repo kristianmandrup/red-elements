@@ -17,6 +17,7 @@
     "@tecla5/red-shared": "^0.0.1",
     "@types/jest": "^21.1.8",
     "@types/jquery": "^3.2.16",
+    "@types/jqueryui": "^1.11.37",
     "ace-builds": "^1.2.8",
     "bootstrap": "^3.3.7",
     "bootstrap-select": "^1.12.4",

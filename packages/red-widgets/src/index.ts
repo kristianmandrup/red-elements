@@ -63,18 +63,23 @@ import {
   Tray
 } from './tray'
 
+import {
+  search,
+  Search,
+  TypeSearch
+} from './search'
 
 export const widgets = {
-  // canvas,
+  canvas,
   common,
-  // library,
-  // nodeEditor,
-  // nodeDiff
-  // palette,
-  // search,
-  // settings,
-  // sidebar,
-  // workspaces
+  library,
+  nodeEditor,
+  nodeDiff,
+  palette,
+  search,
+  settings,
+  sidebar,
+  workspaces
 }
 
 export default widgets
@@ -90,6 +95,8 @@ export {
   Sidebar,
   SidebarTabConfig,
   SidebarTabInfo,
+  Search,
+  TypeSearch,
   UserSettings,
   Workspaces
 }

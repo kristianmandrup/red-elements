@@ -20,9 +20,9 @@ import {
 import { Utils } from './utils'
 
 export class Validators extends Context {
-  constructor(ctx) {
-    super(ctx)
-    ctx.utils = new Utils()
+  constructor() {
+    super()
+    this.RED.utils = new Utils()
   }
 
   number(blankAllowed) {
@@ -38,7 +38,7 @@ export class Validators extends Context {
   }
 
   typedInput(ptypeName, isConfig) {
-    const ctx = this.ctx;
+    const { RED } = this
     return (v) => {
       var ptype = $('#node-' + (isConfig ? 'config-' : '') + 'input-' + ptypeName).val() || this[ptypeName];
       if (ptype === 'json') {
@@ -49,7 +49,7 @@ export class Validators extends Context {
           return false;
         }
       } else if (ptype === 'msg' || ptype === 'flow' || ptype === 'global') {
-        return ctx.utils.validatePropertyExpression(v);
+        return RED.utils.validatePropertyExpression(v);
       } else if (ptype === 'num') {
         return /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(v);
       }

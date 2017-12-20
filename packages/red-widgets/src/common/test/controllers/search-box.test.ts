@@ -17,7 +17,7 @@ const {
 
 beforeAll(() => {
   // create jquery UI widget via factory (ie. make available on jQuery elements)
-  Searchbox(RED)
+  new Searchbox()
 
   // load document with placeholder elements to create widgets (for testing)
   document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');

@@ -2,15 +2,19 @@ import {
   readPage,
   ctx,
   RED,
-  controllers
+  // controllers
 } from '../../imports'
 
-const {
-    Validators
-  } = controllers
+// const {
+//     Validators
+// } = controllers
+
+import {
+  Validators
+} from '../../../controllers/utils'
 
 function create(ctx) {
-  return new Validators(ctx)
+  return new Validators()
 }
 
 test('validators: create', () => {
