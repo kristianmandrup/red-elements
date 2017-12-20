@@ -19,6 +19,7 @@ import {
 } from '../../common'
 
 import { LibraryUI } from '../controllers/library-ui'
+const { log } = console
 
 export class Library extends Context {
   exportToLibraryDialog: any;
@@ -35,6 +36,10 @@ export class Library extends Context {
       this.handleError(`Library: Missing ${name} object`, {
         ctx
       })
+    })
+
+    log('Library', {
+      rebind: this.rebind
     })
 
     let {
@@ -235,7 +240,7 @@ export class Library extends Context {
   }
 
   exportFlow() {
-    let ctx = this.ctx
+    const { ctx } = this
 
     if (typeof ctx.nodes !== 'object') {
       this.handleError('exportFlow: ctx bad or missing .nodes property', {

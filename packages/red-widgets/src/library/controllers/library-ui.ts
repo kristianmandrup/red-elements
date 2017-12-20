@@ -27,8 +27,6 @@ export class LibraryUI extends Context {
       '</ul></div>'
     );
 
-    const that = this
-
     let {
       buildFileList
     } = this.rebind([
@@ -112,14 +110,13 @@ export class LibraryUI extends Context {
     this.libraryEditor.$blockScrolling = Infinity;
 
     // TODO: fix - ensure this is still correct (ie. class instance) context
-    log({
-      CONTEXT: this,
-      THAT: that
+    log('ui', {
+      rebind: this.rebind
     })
 
     let {
       saveToLibrary
-    } = that.rebind([
+    } = this.rebind([
         'saveToLibrary'
       ])
 

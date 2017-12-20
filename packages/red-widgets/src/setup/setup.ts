@@ -69,7 +69,8 @@ export class RED implements IRED {
     emit(elm) { }
   }
   public view = {
-    focus() { }
+    focus() { },
+    selection() { }
   }
   public text = {
     bidi: {
