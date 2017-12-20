@@ -14,11 +14,8 @@
  * limitations under the License.
  **/
 
-import { IRED, TYPES, lazyInject } from '../../base';
-import * as $ from 'jquery';
-export class Utils {
-  constructor() { }
-  @lazyInject(TYPES.RED) RED: IRED
+import { Context, $ } from '../../base';
+export class Utils extends Context {
   public Utils: any;
 
   public formatString(str) {
