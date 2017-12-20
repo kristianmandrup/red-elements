@@ -1,4 +1,3 @@
-// import { bottle } from "../../../setup/setup"
 import {
   readPage,
   ctx,

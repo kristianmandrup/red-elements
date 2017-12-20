@@ -1,6 +1,6 @@
-// export {
-//   controllers
-// } from '../controllers'
+export {
+  controllers
+} from '../controllers'
 
 export {
   RED,

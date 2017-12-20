@@ -1,12 +1,13 @@
 import {
   readPage,
   ctx,
-  RED
+  RED,
+  controllers
 } from '../imports';
 
-import {
+const {
   CheckboxSet
-} from '../../controllers/checkbox-set';
+} = controllers
 
 const clazz = CheckboxSet
 
