@@ -14,44 +14,45 @@
  * limitations under the License.
  **/
 import {
-    Context
+  Context,
+  $
 } from './context'
 
 export class Validators extends Context {
-    constructor(ctx) {
-        super(ctx)
-    }
+  constructor() {
+    super()
+  }
 
-    number(blankAllowed) {
-        return function (v) {
-            return (blankAllowed && (v === '' || v === undefined)) || (v !== '' && !isNaN(v));
-        }
+  number(blankAllowed) {
+    return function (v) {
+      return (blankAllowed && (v === '' || v === undefined)) || (v !== '' && !isNaN(v));
     }
+  }
 
-    regex(re) {
-        return function (v) {
-            return re.test(v);
-        }
+  regex(re) {
+    return function (v) {
+      return re.test(v);
     }
+  }
 
-    typedInput(ptypeName, isConfig) {
-        const ctx = this.ctx;
-        return function (v) {
-            var ptype = $('#node-' + (isConfig ? 'config-' : '') + 'input-' + ptypeName).val() || this[ptypeName];
-            if (ptype === 'json') {
-                try {
-                    JSON.parse(v);
-                    return true;
-                } catch (err) {
-                    return false;
-                }
-            } else if (ptype === 'msg' || ptype === 'flow' || ptype === 'global') {
-                return ctx.utils.validatePropertyExpression(v);
-            } else if (ptype === 'num') {
-                return /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(v);
-            }
-            return true;
+  typedInput(ptypeName, isConfig) {
+    const ctx = this.ctx;
+    return function (v) {
+      var ptype = $('#node-' + (isConfig ? 'config-' : '') + 'input-' + ptypeName).val() || this[ptypeName];
+      if (ptype === 'json') {
+        try {
+          JSON.parse(v);
+          return true;
+        } catch (err) {
+          return false;
         }
+      } else if (ptype === 'msg' || ptype === 'flow' || ptype === 'global') {
+        return ctx.utils.validatePropertyExpression(v);
+      } else if (ptype === 'num') {
+        return /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(v);
+      }
+      return true;
     }
+  }
 
 }

@@ -5,6 +5,7 @@ export let TYPES = { RED: 'IRED' };
 export interface IRED {
   i18n: any;
   comms: any;
+  user: any;
   deploy: any;
   diff: any;
   notifications: any;
@@ -34,7 +35,7 @@ export interface IRED {
   touch: any;
   keyboard: any;
   menu: any;
-  notify(func, node, withTimeout?, timeout?);
+  notify(func, node?, withTimeout?, timeout?);
   clipboard: any
 }
 
@@ -43,6 +44,11 @@ export class RED implements IRED {
   public palette: any
   public stack: any
   public comms: any
+  public user: any
+  public deploy: any
+  public diff: any
+  public notifications: any
+  public search: any
   public library = {
     loadFlowLibrary() { }
   }
@@ -142,7 +148,7 @@ export class RED implements IRED {
   public menu = {
     setDisabled() { }
   }
-  notify(func, node) { }
+  notify(func, node?, a?, b?) { }
   public clipboard = {
     copyText(key, copyPath, msgPath) { }
   }

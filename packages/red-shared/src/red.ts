@@ -28,13 +28,13 @@ import {
   // TextFormat,
   // Bidi,
 }
-from '.'
+  from '.'
 
 import {
   TextFormat,
   Bidi
 }
-from './text'
+  from './text'
 
 
 console.log({
@@ -52,10 +52,10 @@ console.log({
   Bidi,
 })
 
-var ctx = {};
+var ctx: any = {};
 ctx.text = {
-  bidi: new Bidi(ctx),
-  format: new TextFormat(ctx)
+  bidi: new Bidi(),
+  format: new TextFormat()
 }
 ctx.history = new History(ctx)
 // ctx.nodes = new Nodes(ctx)
@@ -87,9 +87,9 @@ ctx.history = new History(ctx)
 // RED.nodes.init();
 // RED.comms.connect();
 
-ctx.i18n = new I18n(ctx)
-ctx.events = new Events(ctx)
-ctx.comms = new Communications(ctx)
+ctx.i18n = new I18n()
+ctx.events = new Events()
+ctx.comms = new Communications()
 ctx.settings = new Settings(ctx)
 ctx.user = new User(ctx)
 ctx.validators = new Validators(ctx)

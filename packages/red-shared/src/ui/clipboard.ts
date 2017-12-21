@@ -14,12 +14,30 @@
  * limitations under the License.
  **/
 import {
-  Context
+  Context,
+  $
 } from '../context'
 
 export class Clipboard extends Context {
-  constructor(ctx) {
-    super(ctx)
+  public disabled: Boolean
+  public dialog: any // JQuery<HTMLElement>
+  public dialogContainer: any
+  public exportNodesDialog: any
+  public importNodesDialog: any
+
+  constructor() {
+    super()
+    let {
+      ctx,
+      disabled,
+      exportNodes,
+      importNodes,
+      hideDropTarget
+    } = this.rebind([
+        'exportNodes',
+        'importNodes',
+        'hideDropTarget'
+      ])
 
     this.disabled = false;
 
@@ -74,11 +92,11 @@ export class Clipboard extends Context {
     });
 
     $('#dropTarget').on("dragover", function (event) {
-        if ($.inArray("text/plain", event.originalEvent.dataTransfer.types) != -1 ||
-          $.inArray("Files", event.originalEvent.dataTransfer.types) != -1) {
-          event.preventDefault();
-        }
-      })
+      if ($.inArray("text/plain", event.originalEvent.dataTransfer.types) != -1 ||
+        $.inArray("Files", event.originalEvent.dataTransfer.types) != -1) {
+        event.preventDefault();
+      }
+    })
       .on("dragleave", function (event) {
         hideDropTarget();
       })
@@ -107,6 +125,14 @@ export class Clipboard extends Context {
   }
 
   setupDialogs() {
+    let {
+      ctx,
+      dialog,
+      dialogContainer,
+      exportNodesDialog,
+      importNodesDialog
+    } = this
+
     dialog = $('<div id="clipboard-dialog" class="hide node-red-dialog"><form class="dialog-form form-horizontal"></form></div>')
       .appendTo("body")
       .dialog({
@@ -115,46 +141,46 @@ export class Clipboard extends Context {
         width: 500,
         resizable: false,
         buttons: [{
-            id: "clipboard-dialog-cancel",
-            text: ctx._("common.label.cancel"),
-            click: function () {
-              $(this).dialog("close");
-            }
-          },
-          {
-            id: "clipboard-dialog-close",
-            class: "primary",
-            text: ctx._("common.label.close"),
-            click: function () {
-              $(this).dialog("close");
-            }
-          },
-          {
-            id: "clipboard-dialog-copy",
-            class: "primary",
-            text: ctx._("clipboard.export.copy"),
-            click: function () {
-              $("#clipboard-export").select();
-              document.execCommand("copy");
-              document.getSelection().removeAllRanges();
-              ctx.notify(ctx._("clipboard.nodesExported"));
-              $(this).dialog("close");
-            }
-          },
-          {
-            id: "clipboard-dialog-ok",
-            class: "primary",
-            text: ctx._("common.label.import"),
-            click: function () {
-              ctx.view.importNodes($("#clipboard-import").val(), $("#import-tab > a.selected").attr('id') === 'import-tab-new');
-              $(this).dialog("close");
-            }
+          id: "clipboard-dialog-cancel",
+          text: ctx._("common.label.cancel"),
+          click: function () {
+            $(this).dialog("close");
           }
+        },
+        {
+          id: "clipboard-dialog-close",
+          class: "primary",
+          text: ctx._("common.label.close"),
+          click: function () {
+            $(this).dialog("close");
+          }
+        },
+        {
+          id: "clipboard-dialog-copy",
+          class: "primary",
+          text: ctx._("clipboard.export.copy"),
+          click: function () {
+            $("#clipboard-export").select();
+            document.execCommand("copy");
+            document.getSelection().removeAllRanges();
+            ctx.notify(ctx._("clipboard.nodesExported"));
+            $(this).dialog("close");
+          }
+        },
+        {
+          id: "clipboard-dialog-ok",
+          class: "primary",
+          text: ctx._("common.label.import"),
+          click: function () {
+            ctx.view.importNodes($("#clipboard-import").val(), $("#import-tab > a.selected").attr('id') === 'import-tab-new');
+            $(this).dialog("close");
+          }
+        }
         ],
         open: function (e) {
           $(this).parent().find(".ui-dialog-titlebar-close").hide();
         },
-        close: function (e) {}
+        close: function (e) { }
       });
 
     dialogContainer = dialog.children(".dialog-form");
@@ -210,6 +236,17 @@ export class Clipboard extends Context {
   }
 
   importNodes() {
+    const {
+      ctx,
+      disabled,
+      dialog,
+      dialogContainer,
+      importNodesDialog,
+      validateImport
+    } = this.rebind([
+        'validateImport'
+      ])
+
     if (disabled) {
       return;
     }
@@ -240,6 +277,14 @@ export class Clipboard extends Context {
   }
 
   exportNodes() {
+    const {
+      ctx,
+      disabled,
+      dialog,
+      dialogContainer,
+      exportNodesDialog,
+    } = this
+
     if (disabled) {
       return;
     }
@@ -355,11 +400,18 @@ export class Clipboard extends Context {
   }
 
   hideDropTarget() {
+    const {
+      ctx
+    } = this
     $("#dropTarget").hide();
     ctx.keyboard.remove("escape");
   }
 
   copyText(value, element, msg) {
+    const {
+      ctx
+    } = this
+
     var truncated = false;
     if (typeof value !== "string") {
       value = JSON.stringify(value, function (key, value) {

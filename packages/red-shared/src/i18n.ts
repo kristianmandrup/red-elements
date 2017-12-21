@@ -21,11 +21,9 @@ import i18n from 'i18next'
 export class I18n extends Context {
   public i18n: any
 
-  constructor(ctx) {
-    super(ctx)
-    console.log({
-      i18n
-    })
+  constructor() {
+    super()
+    const { ctx } = this
     ctx._ = () => {
       return i18n.t.apply(null, arguments);
     }

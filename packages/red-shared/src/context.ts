@@ -8,6 +8,10 @@ export {
   lazyInject
 }
 
+import * as _jQuery from 'jquery';
+export const jQuery = _jQuery
+export const $ = _jQuery
+
 export class Context {
   @lazyInject(TYPES.RED) RED: IRED;
 

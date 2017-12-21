@@ -28,15 +28,27 @@ export class Communications extends Context {
   public reconnectAttempts: number = 0;
   public active: Boolean = false
   public location: any
+  public ws: any
 
   constructor() {
     super()
   }
 
   connect() {
-    const {
-      RED
-    } = this
+    let {
+      RED,
+      pendingAuth,
+      reconnectAttempts,
+      errornotification,
+      clearErrorTimer,
+      active,
+      ws,
+      connectWS,
+      connectCountdown,
+      connectCountdownTimer
+    } = this.rebind([
+        'connectWS'
+      ])
 
     this.active = true;
     let location = this.location // fix
@@ -64,7 +76,7 @@ export class Communications extends Context {
         }
       }
     }
-    let ws = this.ws
+
     ws = new WebSocket(path);
     ws.onopen = function () {
       reconnectAttempts = 0;
@@ -156,6 +168,10 @@ export class Communications extends Context {
   }
 
   subscribe(topic, callback) {
+    const {
+      ws
+    } = this
+
     let subscription = this.subscriptions[topic]
     if (subscription === null) {
       subscription = [];
@@ -169,6 +185,10 @@ export class Communications extends Context {
   }
 
   unsubscribe(topic, callback) {
+    let {
+      subscriptions
+    } = this
+
     let subscription = this.subscriptions[topic]
     if (subscription) {
       for (var i = 0; i < subscription.length; i++) {

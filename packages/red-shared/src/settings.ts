@@ -14,16 +14,15 @@
  * limitations under the License.
  **/
 import {
-  Context
+  Context,
+  $
 } from './context'
-
-import * as $ from 'jquery'
 
 export class Settings extends Context {
   public loadedSettings: any
 
-  constructor(ctx) {
-    super(ctx)
+  constructor() {
+    super()
     this.loadedSettings = {};
   }
 
