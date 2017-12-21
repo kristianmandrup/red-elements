@@ -88,7 +88,8 @@ export class TypeSearch extends Context {
       RED
     } = this.rebind([
         'search',
-        'ensureSelectedIsVisible'
+        'ensureSelectedIsVisible',
+        'RED'
       ])
 
 
@@ -248,7 +249,7 @@ export class TypeSearch extends Context {
   handleMouseActivity(evt) {
     let {
       visible
-    } = this
+    } = this.rebind(['visible'])
     if (visible) {
       var t = $(evt.target);
       while (t.prop('nodeName').toLowerCase() !== 'body') {
@@ -272,8 +273,14 @@ export class TypeSearch extends Context {
       handleMouseActivity,
       RED
     } = this.rebind([
+        'visible',
+        'searchResultsDiv',
+        'searchInput',
+        'dialog',
+        'createDialog',
+        'addCallback',
         'handleMouseActivity',
-
+        'RED'
       ])
     createDialog = createDialog.bind(this)
     if (!visible) {
@@ -297,6 +304,7 @@ export class TypeSearch extends Context {
     addCallback = opts.add;
     RED.events.emit("type-search:open");
     //shade.show();
+    console.log(dialog)
     dialog.css({
       left: opts.x + "px",
       top: opts.y + "px"
@@ -314,15 +322,19 @@ export class TypeSearch extends Context {
       searchResultsDiv,
       searchInput,
       RED
-    } = this
-
+    } = this.rebind([
+        'visible',
+        'searchResultsDiv',
+        'searchInput',
+        'RED'
+      ])
     if (visible) {
       RED.keyboard.remove("escape");
       visible = false;
       if (this.dialog !== null) {
         searchResultsDiv.slideUp(fast ? 50 : 200, () => {
           this.dialog.hide();
-          searchInput.searchBox('value', '');
+          searchInput.searchBox().searchBox('value', '');
         });
         //shade.hide();
       }
@@ -357,7 +369,13 @@ export class TypeSearch extends Context {
       getTypeLabel,
       RED
     } = this.rebind([
-        'getTypeLabel'
+        'getTypeLabel',
+        'searchResultsDiv',
+        'searchResults',
+        'searchInput',
+        'selected',
+        'getTypeLabel',
+        'RED'
       ])
 
     var i;

@@ -101,8 +101,10 @@ export class RED implements IRED {
     registry: {
       getModule() {
         return 'test'
-      }
-    }
+      },
+      getNodeTypes() { return [] }
+    },
+    getType() { }
   }
   public sidebar = {
     info: {
@@ -167,10 +169,6 @@ export class RED implements IRED {
   public clipboard = {
     copyText(key, copyPath, msgPath) { }
   }
-  public deploy = {}
-  public diff = {}
-  public notifications = {}
-  public search = {}
 }
 container.bind<IRED>(TYPES.RED).to(RED);
 export { container };

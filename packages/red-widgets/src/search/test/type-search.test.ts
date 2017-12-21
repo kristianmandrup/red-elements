@@ -68,17 +68,17 @@ const _ctx = Object.assign({
   }
 }, ctx)
 function create(ctx) {
-  return new TypeSearch(ctx)
+  return new TypeSearch()
 }
 
 let ts
 beforeEach(() => {
-  ts = new TypeSearch(ctx)
+  ts = new TypeSearch()
 })
 
 beforeAll(() => {
-  Searchbox(RED)
-  EditableList(RED)
+  new Searchbox()
+  new EditableList()
   document.documentElement.innerHTML = readPage('../red-widgets/src/search/test/app/search');
 })
 function getSerachResult() {
@@ -122,7 +122,7 @@ test('TypeSearch: createDialog', () => {
 test('TypeSearch: createDialog', () => {
   var input = $(':input');
   ts.searchResults = $('#searchResult4');
-  var e = $.Event('keydown');
+  var e: any = $.Event('keydown');
   e.keyCode = 40; // 'down arrow'
   input.trigger(e);
   expect(typeof ts.createDialog).toBe('function');
@@ -169,6 +169,8 @@ test('TypeSearch: handleMouseActivity', () => {
   var evt = $.Event('click');
   var input = $('#searchResult4');
   input.trigger(evt);
+  ts.searchResultsDiv = $("<div></div>");
+  ts.searchInput = $("<input/>");
   ts.handleMouseActivity(evt);
   expect(typeof ts.handleMouseActivity).toBe('function');
 })
@@ -192,13 +194,14 @@ test('TypeSearch: show', () => {
     {
       searchBox(val, txt) { }
     };
+    console.log(ts.dialog)
   ts.show(opts)
   // use nightmare
 })
 test('TypeSearch: show', () => {
   ts = create(_ctx)
   let opts = {};
-  ts.dialog = null;
+  ts.dialog = $("#dialog");;
   ts.searchResultsDiv = $("#searchResultDiv");
   ts.searchResults = getSerachResult();
   ts.searchInput =

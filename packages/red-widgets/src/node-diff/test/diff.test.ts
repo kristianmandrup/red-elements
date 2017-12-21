@@ -2,7 +2,7 @@ import {
   RED,
   readPage,
   ctx as baseCtx,
-  Diff,
+  NodeDiff,
   EditableList
 } from './imports'
 import { setTimeout } from 'timers';
@@ -86,7 +86,7 @@ let ctx = Object.assign({
 
 
 function create(ctx) {
-  return new Diff()
+  return new NodeDiff()
 }
 
 let diff
@@ -94,7 +94,7 @@ beforeEach(() => {
 })
 
 beforeAll(() => {
-  EditableList(RED)
+  new EditableList()
   diff = create(ctx)
   // load document with placeholder elements to create widgets (for testing)
   document.documentElement.innerHTML = readPage('../red-widgets/src/node-diff/test/app/diff');

@@ -12,19 +12,19 @@ export {
   from '../../test/setup'
 
 import {
-  common
+  widgets
 } from '../../index'
 
 const {
   EditableList
-} = common.controllers
+} = widgets.common.controllers
 
 const {
-  Diff
+  NodeDiff
 } = controllers
 
 export {
   // nightmare,
-  Diff,
+  NodeDiff,
   EditableList
 }
