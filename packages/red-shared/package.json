@@ -15,6 +15,11 @@
   "author": "Kristian Mandrup",
   "license": "ISC",
   "dependencies": {
-    "i18next": "^9.0.1"
+    "i18next": "^9.0.1",
+    "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "inversify": "^4.9.0",
+    "inversify-inject-decorators": "^3.0.2"
   }
 }

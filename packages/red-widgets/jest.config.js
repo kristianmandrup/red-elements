@@ -13,11 +13,8 @@ module.exports = {
     '^.+\\.(css|scss)$': 'identity-obj-proxy'
   },
   "transform": {
-    // "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
-    // "^.+\\.(ts|tsx)$": "<rootDir>/preprocessor.js",
+    "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
     "^.+\\.(ts|js|jsx|tsx)$": "<rootDir>/preprocessor.js"
-    // "^.+\\.(ts|js|jsx|tsx)$": "<rootDir>node_modules/ts-jest/preprocessor.js"
-    // ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
   },
   "transformIgnorePatterns": [
     "<rootDir>/node_modules/(?!@tecla5)",
