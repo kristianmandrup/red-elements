@@ -13,7 +13,11 @@
     "lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
     "lerna:update:win": "npm run lerna:clean:win && npm run lerna:bootstrap",
     "lerna:clean": "rm -f package.json.lock 2> /dev/null && echo y | lerna clean --scope @tecla5/red-widgets",
-    "lerna:clean:win": "del /s /f /q package-lock.json | lerna clean --scope @tecla5/red-widgets"
+    "lerna:clean:win": "npm run clean:lock | lerna clean --scope @tecla5/red-widgets",
+    "clean:win": "npm run clean:lock | clean:modules",
+    "clean:lock": "del /s /f /q package-lock.json.lock",
+    "clean:modules": "del /s /f /q node_modules/*",
+    "link:shared": "npm link @tecla5/red-widgets"
   },
   "dependencies": {
     "@tecla5/red-shared": "^0.0.1",

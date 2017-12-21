@@ -1,4 +1,13 @@
-import { IRED, TYPES, lazyInject } from '../../common/base'
+import { IRED, TYPES, container } from '../../setup/setup';
+import getDecorators from 'inversify-inject-decorators';
+const { lazyInject } = getDecorators(container);
+
+export {
+  IRED,
+  TYPES,
+  lazyInject
+}
+
 export class BaseContext {
   @lazyInject(TYPES.RED) RED: IRED;
 
@@ -26,6 +35,8 @@ export class BaseContext {
     ctx = ctx || this
     return varNames.reduce((acc, name) => {
       const fun = ctx[name]
+
+      // IMPORTANT: ensure we only rebind functions
       if (typeof fun === 'function') {
         ctx[name] = fun.bind(ctx)
       }

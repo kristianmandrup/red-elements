@@ -10,6 +10,34 @@ The full UI project contains multiple related packages that can be managed as a 
 
 See [Lerna Getting Started](https://lernajs.io/#getting-started) for typical development workflow.
 
+The essential `lerna` npm scripts:
+
+```json
+"lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-widgets",
+"lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
+```
+
+## Windows setup
+
+We have included the following scripts for Windows users.
+
+```json
+"clean:win": "npm run clean:lock | clean:modules",
+"clean:lock": "del /s /f /q package-lock.json.lock",
+"clean:modules": "del /s /f /q node_modules/*",
+"link:shared": "npm link @tecla5/red-widgets"
+```
+
+You need to somehow clean the project, by removing `package.json.lock` and all module folders under `node_modules` and then run `lerna:bootstrap`
+
+```bash
+$ npm run clean:win
+...
+
+$ npm run lerna:bootstrap
+... bootstrapped
+```
+
 ## Getting started
 
 Run the `lerna:update` to ensure all dependency modules are installed, including `@tecla5/red-shared` a Lerna package (part of the Lerna project).
