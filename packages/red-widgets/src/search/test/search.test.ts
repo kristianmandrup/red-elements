@@ -7,7 +7,7 @@ import {
 } from './imports'
 
 function create(ctx) {
-  return new Search(ctx)
+  return new Search()
 }
 
 let events = {
@@ -56,7 +56,7 @@ beforeEach(() => {
 })
 
 beforeAll(() => {
-  Searchbox(RED)
+  new Searchbox()
   // EditableList(RED)
   document.documentElement.innerHTML = readPage('../red-widgets/src/search/test/app/search');
 })

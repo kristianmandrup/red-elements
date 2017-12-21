@@ -13,13 +13,13 @@ export {
   from '../../test/setup'
 
 import {
-  common
+  widgets
 } from '../../index'
 
 const {
   Searchbox,
   EditableList
-} = common.controllers
+} = widgets.common.controllers
 
 const {
   Search,
