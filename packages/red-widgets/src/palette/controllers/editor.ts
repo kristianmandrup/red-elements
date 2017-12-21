@@ -66,7 +66,6 @@ export class PaletteEditor extends Context {
     if (RED.settings.theme('palette.editable') === false) {
       return;
     }
-
     let {
       createSettingsPane,
       getSettingsPane

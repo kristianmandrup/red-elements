@@ -74,7 +74,11 @@ export class RED implements IRED {
   }
   public view = {
     focus() { },
-    selection() { },
+    selection() {
+      return {
+        nodes: {}
+      }
+    },
     calculateTextWidth() { }
   }
   public text = {
@@ -104,7 +108,8 @@ export class RED implements IRED {
       },
       getNodeTypes() { return [] }
     },
-    getType() { }
+    getType() { },
+    createExportableNodeSet() { }
   }
   public sidebar = {
     info: {

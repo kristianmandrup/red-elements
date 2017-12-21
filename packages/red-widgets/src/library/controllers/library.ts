@@ -38,9 +38,9 @@ export class Library extends Context {
       })
     })
 
-    log('Library', {
-      rebind: this.rebind
-    })
+    // log('Library', {
+    //   rebind: this.rebind
+    // })
 
     let {
       exportFlow,
@@ -134,8 +134,6 @@ export class Library extends Context {
    */
   loadFlowLibrary(done) {
     $.getJSON("library/flows", (data) => {
-      //console.log(data);
-
       var buildMenu = (data, root) => {
         var i;
         var li;
@@ -241,7 +239,6 @@ export class Library extends Context {
 
   exportFlow() {
     const { ctx } = this
-
     if (typeof ctx.nodes !== 'object') {
       this.handleError('exportFlow: ctx bad or missing .nodes property', {
         ctx,
