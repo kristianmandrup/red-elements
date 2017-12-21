@@ -13,24 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  Context,
-  $
-} from '../../common'
-
-const {
-  log
-} = console
+import { Context, $ } from '../../common'
 
 interface ISearchTerm extends JQuery<HTMLElement> {
-
 }
 
 interface IDialogWidget extends JQuery<HTMLElement> {
   dialog: Function
 }
+interface ISearchResults extends JQuery<HTMLElement> {
+  editableList: Function
+}
 
+import { IRED, TYPES, container } from '../../setup/setup';
+import getDecorators from 'inversify-inject-decorators';
+import { Container, injectable, tagged, named } from 'inversify';
+let { lazyInject } = getDecorators(container);
+const {
+  log
+} = console
 export class PaletteEditor extends Context {
+  @lazyInject(TYPES.RED) RED: IRED;
   public disabled: Boolean = false
   public loadedList: Array<any> = [];
   public filteredList: Array<any> = [];
@@ -44,7 +47,7 @@ export class PaletteEditor extends Context {
   public editorTabs: any;
   public filterInput: any;
   public searchInput: any;
-  public nodeList: any;
+  public nodeList: ISearchResults;
   public packageList: any;
 
   public settingsPane: any;
@@ -592,6 +595,7 @@ export class PaletteEditor extends Context {
     }
   }
 
+
   initInstallTab() {
     let {
       searchInput,
@@ -745,16 +749,16 @@ export class PaletteEditor extends Context {
       nodeEntries,
       installNodeModule,
       formatUpdatedAt,
-      removeNodeModule,
-      RED
+      removeNodeModule
     } = this.rebind([
         'changeNodeState',
         'refreshNodeModule',
         'refreshFilteredItems',
-        'installNodeModule'
+        'installNodeModule',
+        "initInstallTab",
+        "editorTabs",
+        "nodeList"
       ])
-
-    initInstallTab = initInstallTab.bind(this)
 
     settingsPane = $('<div id="user-settings-tab-palette"></div>');
     var content = $('<div id="palette-editor">' +
@@ -786,7 +790,7 @@ export class PaletteEditor extends Context {
       },
       minimumActiveTabWidth: 110
     }
-    editorTabs = RED.tabs.create(options, RED);
+    editorTabs = this.RED.tabs.create(options, this.RED);
     this.editorTabs = editorTabs
 
     var modulesTab = $('<div>', {
@@ -795,7 +799,7 @@ export class PaletteEditor extends Context {
 
     editorTabs.addTab({
       id: 'nodes',
-      label: RED._('palette.editor.tab-nodes'),
+      label: this.RED._('palette.editor.tab-nodes'),
       content: modulesTab
     })
 
@@ -813,7 +817,7 @@ export class PaletteEditor extends Context {
     });
     this.filterInput = filterInput
 
-    nodeList = $('<ol>', {
+    nodeList = <ISearchResults>$('<ol>', {
       id: "palette-module-list",
       style: "position: absolute;top: 35px;bottom: 0;left: 0;right: 0px;"
     }).appendTo(modulesTab)
@@ -850,7 +854,7 @@ export class PaletteEditor extends Context {
             class: "palette-module-button-group"
           }).appendTo(buttonRow);
 
-          var updateButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(RED._('palette.editor.update')).appendTo(buttonGroup);
+          var updateButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(this.RED._('palette.editor.update')).appendTo(buttonGroup);
           updateButton.attr('id', 'up_' + Math.floor(Math.random() * 1000000000));
           updateButton.click((evt) => {
             evt.preventDefault();
@@ -862,8 +866,8 @@ export class PaletteEditor extends Context {
             $("#palette-module-install-confirm").data('shade', shade);
 
             $("#palette-module-install-confirm-body").html(entry.local ?
-              RED._("palette.editor.confirm.update.body") :
-              RED._("palette.editor.confirm.cannotUpdate.body")
+              this.RED._("palette.editor.confirm.update.body") :
+              this.RED._("palette.editor.confirm.cannotUpdate.body")
             );
             $(".palette-module-install-confirm-button-install").hide();
             $(".palette-module-install-confirm-button-remove").hide();
@@ -875,32 +879,32 @@ export class PaletteEditor extends Context {
 
             const dialogWidget = <IDialogWidget>$("#palette-module-install-confirm")
 
-            dialogWidget.dialog('option', 'title', RED._("palette.editor.confirm.update.title"))
+            dialogWidget.dialog('option', 'title', this.RED._("palette.editor.confirm.update.title"))
             dialogWidget.dialog('open');
           })
 
 
-          var removeButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(RED._('palette.editor.remove')).appendTo(buttonGroup);
+          var removeButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(this.RED._('palette.editor.remove')).appendTo(buttonGroup);
           removeButton.attr('id', 'up_' + Math.floor(Math.random() * 1000000000));
-          removeButton.click(function (evt) {
+          removeButton.click((evt) => {
             evt.preventDefault();
 
             $("#palette-module-install-confirm").data('module', entry.name);
             $("#palette-module-install-confirm").data('shade', shade);
-            $("#palette-module-install-confirm-body").html(RED._("palette.editor.confirm.remove.body"));
+            $("#palette-module-install-confirm-body").html(this.RED._("palette.editor.confirm.remove.body"));
             $(".palette-module-install-confirm-button-install").hide();
             $(".palette-module-install-confirm-button-remove").show();
             $(".palette-module-install-confirm-button-update").hide();
             const dialogWidget = <IDialogWidget>$("#palette-module-install-confirm")
 
             dialogWidget
-              .dialog('option', 'title', RED._("palette.editor.confirm.remove.title"))
+              .dialog('option', 'title', this.RED._("palette.editor.confirm.remove.title"))
               .dialog('open');
           })
           if (!entry.local) {
             removeButton.hide();
           }
-          var enableButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(RED._('palette.editor.disableall')).appendTo(buttonGroup);
+          var enableButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(this.RED._('palette.editor.disableall')).appendTo(buttonGroup);
 
           var contentRow = $('<div>', {
             class: "palette-module-content"
@@ -957,13 +961,13 @@ export class PaletteEditor extends Context {
             enableButton.click((evt) => {
               evt.preventDefault();
               if (object.setUseCount[setName] === 0) {
-                var currentSet = RED.nodes.registry.getNodeSet(set.id);
+                var currentSet = this.RED.nodes.registry.getNodeSet(set.id);
                 shade.show();
                 var newState = !currentSet.enabled
                 changeNodeState(set.id, newState, shade, function (xhr) {
                   if (xhr) {
                     if (xhr.responseJSON) {
-                      RED.notify(RED._('palette.editor.errors.' + (newState ? 'enable' : 'disable') + 'Failed', {
+                      this.RED.notify(this.RED._('palette.editor.errors.' + (newState ? 'enable' : 'disable') + 'Failed', {
                         module: id,
                         message: xhr.responseJSON.message
                       }));
@@ -985,7 +989,7 @@ export class PaletteEditor extends Context {
               changeNodeState(entry.name, (container.hasClass('disabled')), shade, function (xhr) {
                 if (xhr) {
                   if (xhr.responseJSON) {
-                    RED.notify(RED._('palette.editor.errors.installFailed', {
+                    this.RED.notify(this.RED._('palette.editor.errors.installFailed', {
                       module: id,
                       message: xhr.responseJSON.message
                     }));
@@ -998,7 +1002,7 @@ export class PaletteEditor extends Context {
         } else {
           $('<div>', {
             class: "red-ui-search-empty"
-          }).html(RED._('search.empty')).appendTo(container);
+          }).html(this.RED._('search.empty')).appendTo(container);
         }
       }
     });
@@ -1011,7 +1015,7 @@ export class PaletteEditor extends Context {
 
     editorTabs.addTab({
       id: 'install',
-      label: RED._('palette.editor.tab-install'),
+      label: this.RED._('palette.editor.tab-install'),
       content: installTab
     })
 
@@ -1053,7 +1057,7 @@ export class PaletteEditor extends Context {
     });
 
 
-    $('<span>').html(RED._("palette.editor.sort") + ' ').appendTo(toolBar);
+    $('<span>').html(this.RED._("palette.editor.sort") + ' ').appendTo(toolBar);
     var sortGroup = $('<span class="button-group"></span>').appendTo(toolBar);
     var sortAZ = $('<a href="#" class="sidebar-header-button-toggle selected" data-i18n="palette.editor.sortAZ"></a>').appendTo(sortGroup);
     var sortRecent = $('<a href="#" class="sidebar-header-button-toggle" data-i18n="palette.editor.sortRecent"></a>').appendTo(sortGroup);
@@ -1101,7 +1105,7 @@ export class PaletteEditor extends Context {
         if (object.count) {
           $('<div>', {
             class: "red-ui-search-empty"
-          }).html(RED._('palette.editor.moduleCount', {
+          }).html(this.RED._('palette.editor.moduleCount', {
             count: object.count
           })).appendTo(container);
           return
@@ -1111,7 +1115,7 @@ export class PaletteEditor extends Context {
           var moreRow = $('<div>', {
             class: "palette-module-header palette-module"
           }).appendTo(container);
-          var moreLink = $('<a href="#"></a>').html(RED._('palette.editor.more', {
+          var moreLink = $('<a href="#"></a>').html(this.RED._('palette.editor.more', {
             count: object.more
           })).appendTo(moreRow);
           moreLink.click(function (e) {
@@ -1154,27 +1158,27 @@ export class PaletteEditor extends Context {
             class: "palette-module-button-group"
           }).appendTo(buttonRow);
           var shade = $('<div class="palette-module-shade hide"><img src="red/images/spin.svg" class="palette-spinner"/></div>').appendTo(container);
-          var installButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(RED._('palette.editor.install')).appendTo(buttonGroup);
-          installButton.click(function (e) {
+          var installButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(this.RED._('palette.editor.install')).appendTo(buttonGroup);
+          installButton.click((e) => {
             e.preventDefault();
             if (!$(this).hasClass('disabled')) {
               $("#palette-module-install-confirm").data('module', entry.id);
               $("#palette-module-install-confirm").data('version', entry.version);
               $("#palette-module-install-confirm").data('url', entry.url);
               $("#palette-module-install-confirm").data('shade', shade);
-              $("#palette-module-install-confirm-body").html(RED._("palette.editor.confirm.install.body"));
+              $("#palette-module-install-confirm-body").html(this.RED._("palette.editor.confirm.install.body"));
               $(".palette-module-install-confirm-button-install").show();
               $(".palette-module-install-confirm-button-remove").hide();
               $(".palette-module-install-confirm-button-update").hide();
               const dialogWidget = <IDialogWidget>$("#palette-module-install-confirm")
               dialogWidget
-                .dialog('option', 'title', RED._("palette.editor.confirm.install.title"))
+                .dialog('option', 'title', this.RED._("palette.editor.confirm.install.title"))
                 .dialog('open');
             }
           })
           if (nodeEntries.hasOwnProperty(entry.id)) {
             installButton.addClass('disabled');
-            installButton.html(RED._('palette.editor.installed'));
+            installButton.html(this.RED._('palette.editor.installed'));
           }
 
           object.elements = {
@@ -1183,7 +1187,7 @@ export class PaletteEditor extends Context {
         } else {
           $('<div>', {
             class: "red-ui-search-empty"
-          }).html(RED._('search.empty')).appendTo(container);
+          }).html(this.RED._('search.empty')).appendTo(container);
         }
       }
     });
@@ -1195,20 +1199,20 @@ export class PaletteEditor extends Context {
     $('<div id="palette-module-install-confirm" class="hide"><form class="form-horizontal"><div id="palette-module-install-confirm-body" class="node-dialog-confirm-row"></div></form></div>').appendTo(document.body);
     const dialogWidget = <IDialogWidget>$("#palette-module-install-confirm")
     dialogWidget.dialog({
-      title: RED._('palette.editor.confirm.title'),
+      title: this.RED._('palette.editor.confirm.title'),
       modal: true,
       autoOpen: false,
       width: 550,
       height: "auto",
       buttons: [{
-        text: RED._("common.label.cancel"),
+        text: this.RED._("common.label.cancel"),
         click: () => {
           const dialogWidget = <IDialogWidget>$(this)
           dialogWidget.dialog("close");
         }
       },
       {
-        text: RED._("palette.editor.confirm.button.review"),
+        text: this.RED._("palette.editor.confirm.button.review"),
         class: "primary palette-module-install-confirm-button-install",
         click: () => {
           var url = $(this).data('url');
@@ -1216,7 +1220,7 @@ export class PaletteEditor extends Context {
         }
       },
       {
-        text: RED._("palette.editor.confirm.button.install"),
+        text: this.RED._("palette.editor.confirm.button.install"),
         class: "primary palette-module-install-confirm-button-install",
         click: () => {
           var id = $(this).data('module');
@@ -1225,7 +1229,7 @@ export class PaletteEditor extends Context {
           installNodeModule(id, version, shade, function (xhr) {
             if (xhr) {
               if (xhr.responseJSON) {
-                RED.notify(RED._('palette.editor.errors.installFailed', {
+                this.RED.notify(this.RED._('palette.editor.errors.installFailed', {
                   module: id,
                   message: xhr.responseJSON.message
                 }));
@@ -1237,7 +1241,7 @@ export class PaletteEditor extends Context {
         }
       },
       {
-        text: RED._("palette.editor.confirm.button.remove"),
+        text: this.RED._("palette.editor.confirm.button.remove"),
         class: "primary palette-module-install-confirm-button-remove",
         click: () => {
           var id = $(this).data('module');
@@ -1247,7 +1251,7 @@ export class PaletteEditor extends Context {
             shade.hide();
             if (xhr) {
               if (xhr.responseJSON) {
-                RED.notify(RED._('palette.editor.errors.removeFailed', {
+                this.RED.notify(this.RED._('palette.editor.errors.removeFailed', {
                   module: id,
                   message: xhr.responseJSON.message
                 }));
@@ -1259,7 +1263,7 @@ export class PaletteEditor extends Context {
         }
       },
       {
-        text: RED._("palette.editor.confirm.button.update"),
+        text: this.RED._("palette.editor.confirm.button.update"),
         class: "primary palette-module-install-confirm-button-update",
         click: () => {
           var id = $(this).data('module');
@@ -1269,7 +1273,7 @@ export class PaletteEditor extends Context {
           installNodeModule(id, version, shade, (xhr) => {
             if (xhr) {
               if (xhr.responseJSON) {
-                RED.notify(RED._('palette.editor.errors.updateFailed', {
+                this.RED.notify(this.RED._('palette.editor.errors.updateFailed', {
                   module: id,
                   message: xhr.responseJSON.message
                 }));

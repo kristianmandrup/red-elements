@@ -37,8 +37,8 @@ export interface IRED {
   touch: any;
   keyboard: any;
   menu: any;
-  notify(func, node, withTimeout?, timeout?);
-  clipboard: any
+  notify(func, node?, withTimeout?, timeout?);
+  clipboard: any;
 }
 
 @injectable()
@@ -70,7 +70,8 @@ export class RED implements IRED {
   }
   public view = {
     focus() { },
-    selection() { }
+    selection() { },
+    calculateTextWidth() { }
   }
   public text = {
     bidi: {
@@ -89,7 +90,8 @@ export class RED implements IRED {
   public nodes = {
     subflow(index) { },
     addLink(link) { },
-    removeLink(link) { }
+    removeLink(link) { },
+    eachSubflow() { }
   }
   public sidebar = {
     info: {
@@ -102,7 +104,11 @@ export class RED implements IRED {
     show() { }
   }
   public tabs = {
-    create(obj) { }
+    create(obj) {
+      return {
+        addTab(obj) { }
+      }
+    }
   }
   public history = {
     push(event) { }
@@ -111,7 +117,8 @@ export class RED implements IRED {
     validateNode(node) { }
   }
   public userSettings = {
-    toggle(elem) { }
+    toggle(elem) { },
+    add(id) { }
   }
   public workspaces = {
     active() { }
@@ -149,6 +156,10 @@ export class RED implements IRED {
   public clipboard = {
     copyText(key, copyPath, msgPath) { }
   }
+  public deploy = {}
+  public diff = {}
+  public notifications = {}
+  public search = {}
 }
 container.bind<IRED>(TYPES.RED).to(RED);
 export { container };

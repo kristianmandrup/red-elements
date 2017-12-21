@@ -2,12 +2,14 @@ import {
   palette,
   RED,
   Searchbox,
+  EditableList,
   readPage
 } from './_palette'
 
 beforeAll(() => {
   // widgets that need to be available
-  Searchbox(RED)
+  new Searchbox()
+  new EditableList()
   // load document with placeholder elements to create widgets (for testing)
   document.documentElement.innerHTML = readPage('../red-widgets/src/palette/test/app/palette');
 })
@@ -92,6 +94,6 @@ test('Palette: filterChange(val)', () => {
 
 // TODO: uses marked package for converting to node info to markdown format
 test('Palette: marked', () => {
-  const filtered = palette.filterChange()
+  const filtered = palette.filterChange("test")
   expect(filtered).toBeDefined()
 })
