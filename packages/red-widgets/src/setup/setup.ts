@@ -47,7 +47,9 @@ export class RED implements IRED {
   public diff = {};
   public notifications = {};
   public search = {};
-  public palette: any
+  public palette = {
+    refresh() { }
+  }
   public stack: any
   public comms: any
   public library = {
@@ -79,7 +81,8 @@ export class RED implements IRED {
         nodes: {}
       }
     },
-    calculateTextWidth() { }
+    calculateTextWidth() { },
+    redraw() { }
   }
   public text = {
     bidi: {
@@ -109,11 +112,23 @@ export class RED implements IRED {
       getNodeTypes() { return [] }
     },
     getType() { },
-    createExportableNodeSet() { }
+    createExportableNodeSet() { },
+    workspace(id) { return true; },
+    node(id) { },
+    createCompleteNodeSet() { },
+    dirty() { },
+    version() { },
+    clear() { },
+    import() {
+      return [[{ id: 1 }]];
+    }
   }
   public sidebar = {
     info: {
       set(text) { }
+    },
+    config: {
+      refresh() { }
     }
   }
   public _ = function () { }
@@ -139,7 +154,8 @@ export class RED implements IRED {
     add(id) { }
   }
   public workspaces = {
-    active() { }
+    active() { },
+    refresh() { }
   }
   public subflow = {
     refresh(val) { }

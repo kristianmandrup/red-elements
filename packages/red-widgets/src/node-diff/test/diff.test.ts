@@ -501,6 +501,9 @@ test('Diff: createNodeConflictRadioBoxes', () => {
   let propertiesTable = {}
   let hide = true
   let state = {}
+  diff.currentDiff = {
+    conflicts: { 'undefined': undefined }
+  }
   diff.createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state)
   $("#node-diff-selectbox-test-str22trrr-props-remote").change();
   $("#node-diff-selectbox-test-str22trrr-props-local").change();

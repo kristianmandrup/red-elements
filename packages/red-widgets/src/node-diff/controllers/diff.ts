@@ -980,7 +980,7 @@ export class Diff extends Context {
   createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state) {
     let {
       value
-    } = this
+    } = this.rebind(['value'])
 
     var safeNodeId = "node-diff-selectbox-" + node.id.replace(/\./g, '-') + (propertiesTable ? "-props" : "");
     var className = "";
