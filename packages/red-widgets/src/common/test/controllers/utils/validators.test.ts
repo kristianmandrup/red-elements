@@ -42,24 +42,22 @@ test('validators: regex', () => {
 })
 test('validators: typedInput - number', () => {
   let v = create(ctx)
-  v.num = 'num';
   let num = v.typedInput('num', false);
-  var numTest = num('2');
+  var numTest = num(2);
   expect(numTest).toBe(true);
 })
 
 test('validators: typedInput - flow', () => {
   let v = create(ctx)
-  v.flow = 'flow';
   let flow = v.typedInput('flow', false)
   var flowTest = flow('2');
-  expect(flowTest).toBe(false)
+  expect(flowTest).toBe(true)
 })
 
 test('validators: typedInput - json', () => {
   let v = create(ctx)
-  v.json = 'json';
-  let json = v.typedInput('json', false)
-  var jsonTest = json('2');
-  expect(jsonTest).toBe(false)
+  let json = v.typedInput('json', false);
+  const jsonVal = { 'value': 2 };
+  var jsonTest = json(jsonVal);
+  expect(jsonTest).toBe(true)
 })

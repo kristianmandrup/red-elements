@@ -33,7 +33,7 @@ function validateJson(v) {
 }
 
 class TypedInputValidator extends Context {
-  constructor(protected v, protected ptype) {
+  constructor(protected ptype, protected v) {
     super()
   }
 
@@ -86,7 +86,8 @@ export class Validators extends Context {
     var ptype = $('#node-' + (isConfig ? 'config-' : '') + 'input-' + ptypeName).val() || this[ptypeName];
     return (v) => {
       const validator = new TypedInputValidator(ptype, v)
-      return validator.validate(v)
+      let res = validator.validate(v)
+      return res;
     }
   }
 
