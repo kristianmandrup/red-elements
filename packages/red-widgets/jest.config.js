@@ -6,12 +6,16 @@ module.exports = {
   snapshotSerializers: [
     '<rootDir>/node_modules/enzyme-to-json/serializer'
   ],
+  "unmockedModulePathPatterns": [
+    "babel-core"
+  ],
   moduleNameMapper: {
     '^.+\\.(css|scss)$': 'identity-obj-proxy'
   },
   "transform": {
-    "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
-    "^.+\\.(ts|tsx)$": "<rootDir>/preprocessor.js"
+    // "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
+    // "^.+\\.(ts|tsx)$": "<rootDir>/preprocessor.js",
+    "^.+\\.(ts|js|jsx|tsx)$": "<rootDir>/preprocessor.js"
   },
   "transformIgnorePatterns": [
     "node_modules/(@tecla5)"

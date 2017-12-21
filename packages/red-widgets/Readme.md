@@ -63,6 +63,19 @@ Make sure you use the `jest.config.js` file to configure your Jest settings.
 
 Then just run `jest` normally and it should transpile using your settings before running.
 
+## Babel config
+
+If you get Syntax error on `import`, try adding `transform-runtime` to `.babelrc`
+
+```json
+  "plugins": [
+    ["transform-runtime", {
+      "polyfill": false,
+      "regenerator": true
+    }]
+  ]
+```
+
 ## Q & A
 
 Where is the code logic of all the components of which we are about to write jest tests? Like header’s path is `red-widget/src/header`
