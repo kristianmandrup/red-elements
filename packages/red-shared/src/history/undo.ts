@@ -4,10 +4,27 @@
 // NEVER have nested if/else
 // NEVER rely on globals
 
-function createUndoEvent(ctx) {
-  const nodes = ctx.nodes;
+import {
+  Context,
+  $
+} from '../context'
 
-  return function undoEvent(ev) {
+export class UndoEvent extends Context {
+  public nodes: any
+
+  constructor() {
+    super()
+    const { ctx } = this
+    this.nodes = ctx
+  }
+
+
+  undoEvent(ev) {
+    const {
+      ctx,
+      nodes
+    } = this
+
     var i;
     var len;
     var node;
@@ -17,7 +34,8 @@ function createUndoEvent(ctx) {
       if (ev.t == 'multi') {
         len = ev.events.length;
         for (i = len - 1; i >= 0; i--) {
-          undoEvent(ev.events[i]);
+          // WATHC OUT!!! recursive
+          this.undoEvent(ev.events[i]);
         }
       } else if (ev.t == 'replace') {
         nodes.clear();

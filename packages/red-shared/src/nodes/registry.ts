@@ -1,45 +1,62 @@
-// NOTE: this is likely a factory function
-export function registry() {
-  var moduleList = {};
-  var nodeList = [];
-  var nodeSets = {};
-  var typeToId = {};
-  var nodeDefinitions = {};
-
-  nodeDefinitions['tab'] = {
-    defaults: {
-      label: {
-        value: ""
-      },
-      disabled: {
-        value: false
-      },
-      info: {
-        value: ""
-      }
-    }
-  };
-}
+import {
+  Context,
+  $
+} from '../context'
 
 export class NodesRegistry extends Context {
-  constructor(ctx) {
-    super(ctx)
+  public moduleList = {};
+  public nodeList = [];
+  public nodeSets = {};
+  public typeToId = {};
+  public nodeDefinitions = {};
+
+  constructor() {
+    super()
+
+    this.nodeDefinitions['tab'] = {
+      defaults: {
+        label: {
+          value: ""
+        },
+        disabled: {
+          value: false
+        },
+        info: {
+          value: ""
+        }
+      }
+    };
   }
 
   setModulePendingUpdated(module, version) {
-    this.moduleList[module].pending_version = version;
+    const {
+      RED,
+      moduleList
+    } = this
+
+    moduleList[module].pending_version = version;
     RED.events.emit("registry:module-updated", {
       module: module,
       version: version
     });
   }
 
-  getModule(module) {
-    return this.moduleList[module];
+  getModule(moduleId) {
+    const {
+      moduleList
+    } = this
+    return moduleList[moduleId];
   }
 
   getNodeSetForType(nodeType) {
-    return exports.getNodeSet(this.typeToId[nodeType]);
+    const {
+      getNodeSet,
+      typeToId
+    } = this.rebind([
+        'getNodeSet'
+      ])
+
+    return getNodeSet(typeToId[nodeType]);
   }
 
   getModuleList() {
@@ -55,14 +72,25 @@ export class NodesRegistry extends Context {
   }
 
   setNodeList(list) {
-    this.nodeList = [];
+    let {
+      nodeList,
+      addNodeSet
+    } = this.rebind([
+        'addNodeSet'
+      ])
+
+    nodeList = [];
     for (var i = 0; i < list.length; i++) {
       var ns = list[i];
-      exports.addNodeSet(ns);
+      addNodeSet(ns);
     }
   }
 
   addNodeSet(ns) {
+    const {
+      RED
+    } = this
+
     ns.added = false;
     this.nodeSets[ns.id] = ns;
     for (var j = 0; j < ns.types.length; j++) {
@@ -84,6 +112,10 @@ export class NodesRegistry extends Context {
   }
 
   removeNodeSet(id) {
+    const {
+      RED
+    } = this
+
     var ns = this.nodeSets[id];
     for (var j = 0; j < ns.types.length; j++) {
       delete this.typeToId[ns.types[j]];
@@ -108,18 +140,31 @@ export class NodesRegistry extends Context {
   }
 
   enableNodeSet(id) {
+    const {
+      RED
+    } = this
+
     var ns = this.nodeSets[id];
     ns.enabled = true;
     RED.events.emit("registry:node-set-enabled", ns);
   }
 
   disableNodeSet(id) {
+    const {
+      RED
+    } = this
+
     var ns = this.nodeSets[id];
     ns.enabled = false;
     RED.events.emit("registry:node-set-disabled", ns);
   }
 
   registerNodeType(nt, def) {
+    const {
+      RED,
+      typeToId
+    } = this
+
     this.nodeDefinitions[nt] = def;
     def.type = nt;
     if (def.category != "subflows") {
@@ -152,11 +197,16 @@ export class NodesRegistry extends Context {
   }
 
   removeNodeType(nt) {
+    let {
+      RED,
+      nodeDefinitions
+    } = this
+
     if (nt.substring(0, 8) != "subflow:") {
       // NON-NLS - internal debug message
-      throw new Error("this api is subflow only. called with:", nt);
+      throw new Error(`this api is subflow only. called with: ${nt}`);
     }
-    delete this.nodeDefinitions[nt];
+    delete nodeDefinitions[nt];
     RED.events.emit("registry:node-type-removed", nt);
   }
 
