@@ -97,7 +97,12 @@ export class RED implements IRED {
     subflow(index) { },
     addLink(link) { },
     removeLink(link) { },
-    eachSubflow() { }
+    eachSubflow() { },
+    registry: {
+      getModule() {
+        return 'test'
+      }
+    }
   }
   public sidebar = {
     info: {
