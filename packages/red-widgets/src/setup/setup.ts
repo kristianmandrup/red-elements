@@ -43,6 +43,10 @@ export interface IRED {
 
 @injectable()
 export class RED implements IRED {
+  public deploy = {};
+  public diff = {};
+  public notifications = {};
+  public search = {};
   public palette: any
   public stack: any
   public comms: any
@@ -81,7 +85,9 @@ export class RED implements IRED {
     }
   }
   public utils = {
-    getNodeIcon(def) { }
+    getNodeIcon(def) { },
+    eachWorkspace(indexNode) { },
+    getNodeLabel(l) { return l; }
   }
   public popover = {
     create(obj) { }
