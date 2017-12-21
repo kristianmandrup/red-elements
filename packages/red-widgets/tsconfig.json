@@ -1,23 +1,24 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "sourceMap": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "lib": [
-            "es6",
-            "dom"
-        ],
-        "outDir": "./dist",
-        "allowJs": true,
-        "types": [
-            "node",
-            "jest",
-            "jest-jquery-matchers"
-        ]
-    },
-    "exclude": [
-        "node_modules"
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "outDir": "./dist",
+    "allowJs": true,
+    "types": [
+      "node",
+      "jest",
+      "jest-jquery-matchers"
     ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

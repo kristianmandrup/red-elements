@@ -1,4 +1,4 @@
 node_modules
 *.log
 *.lerna_backup
-dist
+test

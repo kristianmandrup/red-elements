@@ -13,6 +13,9 @@ module.exports = {
     "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
     "^.+\\.(ts|tsx)$": "<rootDir>/preprocessor.js"
   },
+  "transformIgnorePatterns": [
+    "node_modules/(@tecla5)"
+  ],
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
   moduleFileExtensions: [
     "ts",
@@ -25,5 +28,5 @@ module.exports = {
     "node_modules",
     "src"
   ],
- 
+
 }

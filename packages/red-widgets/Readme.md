@@ -50,6 +50,19 @@ lerna success Bootstrapped 1 packages
 
 Now you should have a `@tecla5/red-shared` in `node_modules`
 
+## Jest with TypeScript
+
+We will be using [ts-jest](https://www.npmjs.com/package/ts-jest) to run Jest tests written in TypeScript
+
+Please note the following Gotchas!
+
+- [using es2015 features in javascript files](https://www.npmjs.com/package/ts-jest#using-es2015-features-in-javascript-files)
+- [importing packages written in typescript](https://www.npmjs.com/package/ts-jest#importing-packages-written-in-typescript)
+
+Make sure you use the `jest.config.js` file to configure your Jest settings.
+
+Then just run `jest` normally and it should transpile using your settings before running.
+
 ## Q & A
 
 Where is the code logic of all the components of which we are about to write jest tests? Like header’s path is `red-widget/src/header`
