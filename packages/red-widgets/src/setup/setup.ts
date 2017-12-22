@@ -101,7 +101,12 @@ export class RED implements IRED {
     create(obj) { }
   }
   public nodes = {
-    subflow(index) { },
+    subflow(index) {
+      return {
+        valid: true,
+        changed: true
+      }
+    },
     addLink(link) { },
     removeLink(link) { },
     eachSubflow() { },

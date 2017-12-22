@@ -9,10 +9,10 @@ import {
 // inject RED singleton instead
 let nodes = {}
 let events = {
-  on() {}
+  on() { }
 }
 let actions = {
-  add() {}
+  add() { }
 }
 
 let ctx = Object.assign({
@@ -27,7 +27,7 @@ let ctx = Object.assign({
 
 
 function create(ctx) {
-  return new Editor(ctx)
+  return new Editor()
 }
 
 
@@ -41,7 +41,7 @@ beforeAll(() => {
   // EditableList(RED)
 
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/node-editor/test/app/editor');  
+  document.documentElement.innerHTML = readPage('../red-widgets/src/node-editor/test/app/editor');
 })
 
 test('Editor: create', () => {
@@ -56,7 +56,10 @@ test('Editor: getCredentialsURL', () => {
 test('Editor: validateNode', () => {
   // TODO: use real (or better mock) node
   let node = {
-    id: 'x'
+    id: 'x',
+    type: 'subflow:',
+    valid: true,
+    changed: true
   }
   let valid = editor.validateNode(node)
   expect(valid).toBeTruthy()
@@ -76,20 +79,29 @@ test('Editor: validateNodeProperty', () => {
   let node = {
     id: 'x'
   }
-  let definition = {}
+  let definition = {
+    name: {
+      "required": true
+    }
+  }
   let properties = {}
   let value = 'a'
+  let property = "name";
   let valid = editor.validateNodeProperty(node, definition, property, value)
   expect(valid).toBeTruthy()
 })
 
 test('Editor: validateNodeEditor', () => {
   let node = {
-    id: 'x'
+    id: 'x',
+    _def: {
+      defaults: [],
+      credentials: []
+    }
   }
   let prefix = 'a'
   let valid = editor.validateNodeEditor(node, prefix)
-  expect(valid).toBeTruthy()
+  expect(valid).not.toBeTruthy()
 })
 
 test('Editor: validateNodeEditorProperty', () => {
@@ -108,7 +120,7 @@ test('Editor: updateNodeProperties', () => {
     id: 'x'
   }
   let output = {}
-  let removedLinks = editor.updateNodeProperties(node, outputMap)
+  let removedLinks = editor.updateNodeProperties(node, {})
   expect(removedLinks).toBeTruthy()
 })
 
@@ -210,6 +222,7 @@ test('Editor: buildEditForm', () => {
   let definition = {}
   let formId = 'a'
   let ns = {}
+  let type = "text";
   editor.buildEditForm(container, formId, type, ns)
   // use nightmare
 })
@@ -230,7 +243,7 @@ test('Editor: buildLabelRow', () => {
   let index = 0
   let value = 'hello'
   let placeholder = 'my-io'
-  editor.buildLabelRow(type, index, value, placeHolder)
+  editor.buildLabelRow(type, index, value, placeholder)
   // use nightmare
 })
 
