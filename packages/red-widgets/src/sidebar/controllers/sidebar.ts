@@ -54,11 +54,9 @@ export class Sidebar extends Context {
   sidebar_tabs: any;
   constructor(ctx) {
     super()
-
     this.sidebarSeparator = {};
     this.knownTabs = {};
     //$('#sidebar').tabs();
-    log('creating sidebar tabs...')
 
     // create Tabs
 
@@ -76,6 +74,7 @@ export class Sidebar extends Context {
         }
       },
       onremove: (tab) => {
+        console.log("TABSS", tab);
         $(tab.wrapper).hide();
         if (tab.onremove) {
           tab.onremove.call(tab);
@@ -218,7 +217,6 @@ export class Sidebar extends Context {
       $(options.toolbar).hide();
     }
     var id = options.id;
-
     ctx.menu.addItem("menu-item-view-menu", {
       id: "menu-item-view-menu-" + options.id,
       label: options.name,
@@ -239,7 +237,6 @@ export class Sidebar extends Context {
     let ctx = this.ctx
     let sidebar_tabs = this.sidebar_tabs
     let knownTabs = this.knownTabs
-
     sidebar_tabs.removeTab(id);
     $(knownTabs[id].wrapper).remove();
     if (knownTabs[id].footer) {

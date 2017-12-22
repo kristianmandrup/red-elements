@@ -184,7 +184,10 @@ export class RED implements IRED {
    *  setDisabled
    */
   public menu = {
-    setDisabled() { }
+    setDisabled() { },
+    setSelected() { },
+    addItem() { },
+    removeItem() { }
   }
   notify(func, node) { }
   public clipboard = {

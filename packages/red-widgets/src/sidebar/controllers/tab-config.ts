@@ -63,7 +63,7 @@ export class SidebarTabConfig extends Context {
 
     this.categories = {};
 
-    let i18n = new I18n(RED)
+    let i18n = new I18n()
     // FIX: when i18n is initialized (translation map loaded), we can continue constructor in init
     i18n.initCb(this.init.bind(this))
   }
