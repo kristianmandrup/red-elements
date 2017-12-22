@@ -238,9 +238,12 @@ test('Tabs: contains - no such tab: false', () => {
   expect(contained).toBe(false)
 })
 
-test.skip('Tabs: contains - has tab with id: true', () => {
+test('Tabs: contains - has tab with id: true', () => {
   let id = 'first'
-  let contained = widgetElem.contains(id)
+  const tab = new Tabs({
+    element: $("<div><a href='#first'></a></div>")
+  })
+  let contained = tab.contains(id)
   expect(contained).toBeTruthy()
 })
 
@@ -255,7 +258,7 @@ test('Tabs: renameTab(id, label) - no such tab', () => {
 })
 
 // TODO: Add actual tabs for one to be removed
-test.skip('Tabs: renameTab(id, label) - has such a tab', () => {
+test('Tabs: renameTab(id, label) - has such a tab', () => {
   const tab1 = {
     id: 'tab1'
   }
