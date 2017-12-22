@@ -97,6 +97,9 @@ export class Workspaces extends Context {
       RED,
       workspace_tabs,
       workspaceIndex,
+    } = this
+
+    const {
       workspaceTabAt
     } = this.rebind([
         'workspaceTabAt'
@@ -174,6 +177,7 @@ export class Workspaces extends Context {
       ])
 
     var workspace = RED.nodes.workspace(id);
+
     RED.view.state(RED.state.EDITING);
     var tabflowEditor;
     var trayOptions = {

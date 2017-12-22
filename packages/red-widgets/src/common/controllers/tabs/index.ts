@@ -59,7 +59,6 @@ export class Tabs extends Context {
     var scrollLeft;
     var scrollRight;
 
-
     let {
       onTabClick,
       onTabDblClick,
@@ -384,7 +383,19 @@ export class Tabs extends Context {
       ], this)
 
 
+    if (!tab || !tab.id) {
+      this.handleError('addTab: tab to add must have an id', {
+        tab
+      })
+    }
+
     tabs[tab.id] = tab;
+
+    log('addTab', {
+      id: tab.id,
+      tabs
+    })
+
     var li: any = $("<li/>", {
       class: "red-ui-tab"
     }).appendTo(ul);

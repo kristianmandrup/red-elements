@@ -24,8 +24,10 @@ test('Workspaces: create', () => {
   expect(ws.activeWorkspace).toBe(0)
 })
 
-test('Workspaces: addWorkspace', () => {
-  let wsTab = {}
+test.only('Workspaces: addWorkspace', () => {
+  let wsTab = {
+    id: 'tab1'
+  }
   let skipHistoryEntry = false
   ws.addWorkspace(wsTab, skipHistoryEntry)
   expect(ws.workspace_tabs).toBe(0)
