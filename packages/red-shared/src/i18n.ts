@@ -16,7 +16,7 @@
 import {
   Context
 } from './context'
-import i18n from 'i18next'
+import * as i18n from 'i18next'
 
 export class I18n extends Context {
   public i18n: any
