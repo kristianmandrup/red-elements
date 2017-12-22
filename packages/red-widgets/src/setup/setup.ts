@@ -119,7 +119,11 @@ export class RED implements IRED {
     },
     getType() { },
     createExportableNodeSet() { },
-    workspace(id) { return true; },
+    workspace(id) {
+      return {
+        id: 'abra-cadabra'
+      }
+    },
     node(id) { },
     createCompleteNodeSet() { },
     dirty() { },
@@ -190,6 +194,7 @@ export class RED implements IRED {
    *  setDisabled
    */
   public menu = {
+    setAction() { },
     setDisabled() { },
     setSelected() { },
     addItem() { },

@@ -1,22 +1,18 @@
 import {
   RED,
   readPage,
-  ctx,
   Workspaces
 } from './imports'
-const ctx = {}
 
-function create(ctx) {
-  return new Workspaces(ctx)
+function create() {
+  return new Workspaces()
 }
 
-const ctx = Object.assign({
-  // menu
-}, baseCtx)
+const { log } = console
 
 let ws
 beforeEach(() => {
-  ws = create(ctx)
+  ws = create()
 })
 
 beforeAll(() => {
@@ -28,8 +24,10 @@ test('Workspaces: create', () => {
   expect(ws.activeWorkspace).toBe(0)
 })
 
-test('Workspaces: addWorkspace', () => {
-  let wsTab = {}
+test.only('Workspaces: addWorkspace', () => {
+  let wsTab = {
+    id: 'tab1'
+  }
   let skipHistoryEntry = false
   ws.addWorkspace(wsTab, skipHistoryEntry)
   expect(ws.workspace_tabs).toBe(0)
