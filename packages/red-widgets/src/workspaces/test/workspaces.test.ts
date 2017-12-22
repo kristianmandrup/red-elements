@@ -1,22 +1,16 @@
 import {
   RED,
   readPage,
-  ctx,
   Workspaces
 } from './imports'
-const ctx = {}
 
-function create(ctx) {
-  return new Workspaces(ctx)
+function create() {
+  return new Workspaces()
 }
-
-const ctx = Object.assign({
-  // menu
-}, baseCtx)
 
 let ws
 beforeEach(() => {
-  ws = create(ctx)
+  ws = create()
 })
 
 beforeAll(() => {
