@@ -1,7 +1,7 @@
 import {
   RED,
   readPage,
-  ctx,
+  ctx as baseCtx,
   Sidebar,
 } from '../imports'
 
@@ -10,9 +10,9 @@ function create(ctx) {
 }
 
 let menu = {
-  isSelected() {},
+  isSelected() { },
 
-  setSelected(id) {}
+  setSelected(id) { }
 }
 
 const ctx = Object.assign({
@@ -23,7 +23,7 @@ const ctx = Object.assign({
   // tray
 }, baseCtx)
 
-let sidebar
+let sidebar: any;
 beforeEach(() => {
   sidebar = create(ctx)
 })

@@ -9,7 +9,7 @@ export {
   readPage,
   ctx,
 }
-from '../../test/setup'
+  from '../../test/setup'
 
 import {
   common
@@ -21,8 +21,8 @@ const {
 
 const {
   Sidebar,
-  TabConfig,
-  TabInfo,
+  SidebarTabConfig,
+  SidebarTabInfo,
   Tips
 } = controllers
 
@@ -30,7 +30,7 @@ export {
   // nightmare,
   Menu,
   Sidebar,
-  TabConfig,
-  TabInfo,
+  SidebarTabConfig,
+  SidebarTabInfo,
   Tips
 }

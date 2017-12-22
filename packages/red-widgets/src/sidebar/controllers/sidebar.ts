@@ -15,7 +15,8 @@
  **/
 import {
   Context,
-  $
+  $,
+  Tabs
 } from '../../common'
 
 import {
@@ -27,13 +28,9 @@ import {
 }
   from './tab-info'
 
-import 'jquery-ui-dist/jquery-ui'
+// import 'jquery-ui-dist/jquery-ui'
 
 const log = console.log
-
-import {
-  Tabs
-} from '../../common'
 
 import {
   Actions
@@ -51,9 +48,12 @@ export class Sidebar extends Context {
     // legacy: ctx.actions.add
     return new Actions(options)
   }
-
+  sidebarSeparator: any;
+  knownTabs: any;
+  tabs: any;
+  sidebar_tabs: any;
   constructor(ctx) {
-    super(ctx)
+    super()
 
     this.sidebarSeparator = {};
     this.knownTabs = {};
@@ -61,6 +61,7 @@ export class Sidebar extends Context {
     log('creating sidebar tabs...')
 
     // create Tabs
+
     ctx.tabs = this.createTabs({
       id: "sidebar-tabs",
       onchange: (tab) => {
@@ -83,18 +84,18 @@ export class Sidebar extends Context {
       minimumActiveTabWidth: 110
     });
 
-    $("#sidebar-separator").draggable({
+    (<any>$("#sidebar-separator")).draggable({
       axis: "x",
       start: (event, ui) => {
-        sidebarSeparator.closing = false;
-        sidebarSeparator.opening = false;
+        this.sidebarSeparator.closing = false;
+        this.sidebarSeparator.opening = false;
         var winWidth = $(window).width();
-        sidebarSeparator.start = ui.position.left;
-        sidebarSeparator.chartWidth = $("#workspace").width();
-        sidebarSeparator.chartRight = winWidth - $("#workspace").width() - $("#workspace").offset().left - 2;
+        this.sidebarSeparator.start = ui.position.left;
+        this.sidebarSeparator.chartWidth = $("#workspace").width();
+        this.sidebarSeparator.chartRight = winWidth - $("#workspace").width() - $("#workspace").offset().left - 2;
 
         if (!ctx.menu.isSelected("menu-item-sidebar")) {
-          sidebarSeparator.opening = true;
+          this.sidebarSeparator.opening = true;
           var newChartRight = 7;
           $("#sidebar").addClass("closing");
           $("#workspace").css("right", newChartRight);
@@ -103,39 +104,39 @@ export class Sidebar extends Context {
           ctx.menu.setSelected("menu-item-sidebar", true);
           ctx.events.emit("sidebar:resize");
         }
-        sidebarSeparator.width = $("#sidebar").width();
+        this.sidebarSeparator.width = $("#sidebar").width();
       },
       drag: (event, ui) => {
-        var d = ui.position.left - sidebarSeparator.start;
-        var newSidebarWidth = sidebarSeparator.width - d;
-        if (sidebarSeparator.opening) {
+        var d = ui.position.left - this.sidebarSeparator.start;
+        var newSidebarWidth = this.sidebarSeparator.width - d;
+        if (this.sidebarSeparator.opening) {
           newSidebarWidth -= 3;
         }
 
         if (newSidebarWidth > 150) {
-          if (sidebarSeparator.chartWidth + d < 200) {
-            ui.position.left = 200 + sidebarSeparator.start - sidebarSeparator.chartWidth;
-            d = ui.position.left - sidebarSeparator.start;
-            newSidebarWidth = sidebarSeparator.width - d;
+          if (this.sidebarSeparator.chartWidth + d < 200) {
+            ui.position.left = 200 + this.sidebarSeparator.start - this.sidebarSeparator.chartWidth;
+            d = ui.position.left - this.sidebarSeparator.start;
+            newSidebarWidth = this.sidebarSeparator.width - d;
           }
         }
 
         if (newSidebarWidth < 150) {
-          if (!sidebarSeparator.closing) {
+          if (!this.sidebarSeparator.closing) {
             $("#sidebar").addClass("closing");
-            sidebarSeparator.closing = true;
+            this.sidebarSeparator.closing = true;
           }
-          if (!sidebarSeparator.opening) {
+          if (!this.sidebarSeparator.opening) {
             newSidebarWidth = 150;
-            ui.position.left = sidebarSeparator.width - (150 - sidebarSeparator.start);
-            d = ui.position.left - sidebarSeparator.start;
+            ui.position.left = this.sidebarSeparator.width - (150 - this.sidebarSeparator.start);
+            d = ui.position.left - this.sidebarSeparator.start;
           }
-        } else if (newSidebarWidth > 150 && (sidebarSeparator.closing || sidebarSeparator.opening)) {
-          sidebarSeparator.closing = false;
+        } else if (newSidebarWidth > 150 && (this.sidebarSeparator.closing || this.sidebarSeparator.opening)) {
+          this.sidebarSeparator.closing = false;
           $("#sidebar").removeClass("closing");
         }
 
-        var newChartRight = sidebarSeparator.chartRight - d;
+        var newChartRight = this.sidebarSeparator.chartRight - d;
         $("#workspace").css("right", newChartRight);
         $("#editor-stack").css("right", newChartRight + 1);
         $("#sidebar").width(newSidebarWidth);
@@ -144,7 +145,7 @@ export class Sidebar extends Context {
         ctx.events.emit("sidebar:resize");
       },
       stop: (event, ui) => {
-        if (sidebarSeparator.closing) {
+        if (this.sidebarSeparator.closing) {
           $("#sidebar").removeClass("closing");
           ctx.menu.setSelected("menu-item-sidebar", false);
           if ($("#sidebar").width() < 180) {
@@ -162,17 +163,17 @@ export class Sidebar extends Context {
     this.sidebar_tabs = ctx.tabs
 
     // add Actions
-    ctx.actions = this.createActions("core:toggle-sidebar", (state) => {
+    ctx.actions = this.createActions((state) => {
       if (state === undefined) {
         ctx.menu.toggleSelected("menu-item-sidebar");
       } else {
-        toggleSidebar(state);
+        this.toggleSidebar(state);
       }
     });
 
     this.showSidebar();
-    ctx.sidebar.info = new SidebarTabInfo(ctx);
-    ctx.sidebar.config = new SidebarTabConfig(ctx);
+    ctx.sidebar.info = new SidebarTabInfo();
+    ctx.sidebar.config = new SidebarTabConfig();
     // hide info bar at start if screen rather narrow...
     if ($(window).width() < 600) {
       ctx.menu.setSelected("menu-item-sidebar", false);
@@ -261,14 +262,14 @@ export class Sidebar extends Context {
     ctx.events.emit("sidebar:resize");
   }
 
-  showSidebar(id) {
+  showSidebar(id?) {
     let {
       sidebar_tabs,
       ctx
     } = this
     if (id) {
-      if (!containsTab(id)) {
-        sidebar_tabs.addTab(knownTabs[id]);
+      if (!this.containsTab(id)) {
+        sidebar_tabs.addTab(this.knownTabs[id]);
       }
       sidebar_tabs.activateTab(id);
       if (!ctx.menu.isSelected("menu-item-sidebar")) {

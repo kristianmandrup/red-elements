@@ -49,7 +49,6 @@ export class Tips extends Context {
       cycleTips,
       cycleDelay
     } = this
-
     var r = Math.floor(Math.random() * tipCount);
     var tip = RED._("infotips:info.tip" + r);
 

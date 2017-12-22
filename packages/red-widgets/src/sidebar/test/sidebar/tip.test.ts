@@ -2,13 +2,11 @@ import {
   RED,
   readPage,
   ctx as baseCtx,
-  Tip
+  Tips
 } from '../imports'
 
-const ctx = {}
-
 function createTip(ctx) {
-  return new Tip(ctx)
+  return new Tips()
 }
 
 const ctx = Object.assign({
@@ -22,46 +20,58 @@ const ctx = Object.assign({
 
 let tip
 beforeEach(() => {
-  tip = create(ctx)
+  tip = createTip(ctx)
 })
 
 beforeAll(() => {
-  // Searchbox(RED)
-  // EditableList(RED)
+  // new Searchbox(RED)
+  // new EditableList(RED)
   document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');
 })
 
 test('Tip: create', () => {
   let tip = createTip(ctx)
-  t.truthy(tip.enabled)
+  // tip.truthy(tip.enabled)
+  expect(tip).toBeDefined();
 })
 
 test('Tip: setTip', () => {
-  let tip = createTip(ctx)
+  let tip = createTip(ctx);
+  tip.tipBox = $("#tipBox");
   tip.setTip()
   // use nightmare to test UI
+  expect(typeof tip.setTip).toBe('function');
 })
 
 test('Tip: cycleTips', () => {
   let tip = createTip(ctx)
-  tip.cycleTips()
+  tip.tipBox = $("#tipBox");
+  tip.cycleTips();
+  expect(typeof tip.cycleTips).toBe('function');
   // use nightmare to test UI
 })
 
-test('Tip: startTips', () => {
-  let tip = createTip(ctx)
-  tip.startTips()
-  // use nightmare to test UI
-})
+// test('Tip: startTips', () => {
+//   let tip = createTip(ctx)
+//   tip.tipBox = $("#tipBox");
+//   tip.startTips()
+//   expect(typeof tip.startTips).toBe('function');
+
+//   // use nightmare to test UI
+// })
 
 test('Tip: stopTips', () => {
   let tip = createTip(ctx)
+  tip.tipBox = $("#tipBox");
   tip.stopTips()
+  expect(typeof tip.stopTips).toBe('function');
   // use nightmare to test UI
 })
 
 test('Tip: nextTip', () => {
   let tip = createTip(ctx)
+  tip.tipBox = $("#tipBox");
   tip.nextTip()
+  expect(typeof tip.nextTip).toBe('function');
   // use nightmare to test UI
 })
