@@ -79,6 +79,7 @@ export class Editor extends Context {
       validateNode,
       validateNodeProperties
     } = this.rebind([
+        'ctx',
         'validateNode',
         'validateNodeProperties'
       ])
@@ -89,8 +90,7 @@ export class Editor extends Context {
 
     var subflow;
     var isValid;
-    var hasChanged;
-
+    var hasChanged;    
     if (node.type.indexOf("subflow:") === 0) {
       subflow = ctx.nodes.subflow(node.type.substring(8));
       isValid = subflow.valid;
