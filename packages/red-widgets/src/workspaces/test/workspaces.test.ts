@@ -18,7 +18,7 @@ beforeAll(() => {
   // EditableList(RED)
   document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple')
 })
-test('Workspaces: create', () => {
+test.only('Workspaces: create', () => {
   expect(ws.activeWorkspace).toBe(0)
 })
 
