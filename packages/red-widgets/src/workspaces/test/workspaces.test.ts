@@ -8,6 +8,8 @@ function create() {
   return new Workspaces()
 }
 
+const { log } = console
+
 let ws
 beforeEach(() => {
   ws = create()
@@ -18,7 +20,7 @@ beforeAll(() => {
   // EditableList(RED)
   document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple')
 })
-test.only('Workspaces: create', () => {
+test('Workspaces: create', () => {
   expect(ws.activeWorkspace).toBe(0)
 })
 

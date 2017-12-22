@@ -692,27 +692,26 @@ DeprecationWarning: Unhandled promise rejections are deprecated. In the future, 
 ## Workspaces
 
 ```bash
-$ jest src/workspaces/test/workspaces.test.js
-$ jest src/workspaces/test/workspaces.test.ts
+jest src/workspaces/test/workspaces.test.ts
  FAIL  src/workspaces/test/workspaces.test.ts
-  ✕ Workspaces: create (8ms)
+  ✓ Workspaces: create (14ms)
   ✕ Workspaces: addWorkspace (3ms)
   ✕ Workspaces: deleteWorkspace (2ms)
-  ✕ Workspaces: showRenameWorkspaceDialog (1ms)
-  ✕ Workspaces: createWorkspaceTabs (2ms)
-  ✕ Workspaces: editWorkspace (1ms)
-  ✕ Workspaces: removeWorkspace (2ms)
-  ✕ Workspaces: setWorkspaceOrder (1ms)
-  ✕ Workspaces: contains - true when exists (2ms)
-  ✕ Workspaces: contains - false when not (2ms)
-  ✕ Workspaces: count (2ms)
-  ✕ Workspaces: active (1ms)
+  ✕ Workspaces: showRenameWorkspaceDialog (4ms)
+  ✕ Workspaces: createWorkspaceTabs (11ms)
+  ✕ Workspaces: editWorkspace (8ms)
+  ✕ Workspaces: removeWorkspace (4ms)
+  ✕ Workspaces: setWorkspaceOrder (2ms)
+  ✕ Workspaces: contains - true when exists (3ms)
+  ✓ Workspaces: contains - false when not (3ms)
+  ✓ Workspaces: count (2ms)
+  ✓ Workspaces: active (3ms)
   ✕ Workspaces: show (2ms)
-  ✕ Workspaces: refresh (1ms)
+  ✕ Workspaces: refresh (2ms)
   ✕ Workspaces: resize (2ms)
 
 Test Suites: 1 failed, 1 total
-Tests:       15 failed, 15 total
+Tests:       11 failed, 4 passed, 15 total
 ```
 
 ```bash

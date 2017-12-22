@@ -190,6 +190,7 @@ export class RED implements IRED {
    *  setDisabled
    */
   public menu = {
+    setAction() { },
     setDisabled() { },
     setSelected() { },
     addItem() { },

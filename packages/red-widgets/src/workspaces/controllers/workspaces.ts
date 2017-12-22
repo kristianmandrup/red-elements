@@ -39,32 +39,30 @@ export class Workspaces extends Context {
   constructor() {
     super()
     const { RED } = this
+    this.createWorkspaceTabs();
 
     let {
       workspace_tabs,
-      activeWorkspace,
+      activeWorkspace
     } = this
 
     const {
       addWorkspace,
       editWorkspace,
       removeWorkspace,
-      createWorkspaceTabs,
       deleteWorkspace
     } = this.rebind([
         'addWorkspace',
         'editWorkspace',
         'removeWorkspace',
-        'createWorkspaceTabs',
         'deleteWorkspace',
         'createWorkspaceTabs'
       ])
 
-    // FIX! should add to this.workspace_tabs
-    createWorkspaceTabs();
-
     if (typeof workspace_tabs !== 'object') {
-      throw new Error('createWorkspaceTabs needs to create workspace_tabs')
+      this.handleError('createWorkspaceTabs needs to create workspace_tabs', {
+        workspace_tabs
+      })
     }
 
     RED.events.on("sidebar:resize", workspace_tabs.resize);
@@ -83,6 +81,8 @@ export class Workspaces extends Context {
     RED.actions.add("core:add-flow", addWorkspace);
     RED.actions.add("core:edit-flow", editWorkspace);
     RED.actions.add("core:remove-flow", removeWorkspace);
+
+    log('Workspaces created')
   }
 
   workspaceTabAt(workspaceIndex) {
@@ -139,12 +139,15 @@ export class Workspaces extends Context {
   deleteWorkspace(ws) {
     const {
       RED,
+      workspace_tabs
+    } = this
+
+    const {
       removeWorkspace
     } = this.rebind([
         'removeWorkspace'
       ])
 
-    let workspace_tabs = this.workspace_tabs
     if (workspace_tabs.count() == 1) {
       return;
     }
@@ -159,9 +162,12 @@ export class Workspaces extends Context {
   }
 
   showRenameWorkspaceDialog(id) {
-    const {
+    let {
       RED,
       workspace_tabs,
+    } = this
+
+    const {
       deleteWorkspace
     } = this.rebind([
         'deleteWorkspace'
@@ -335,7 +341,7 @@ export class Workspaces extends Context {
     let {
       RED,
       activeWorkspace,
-      workspace_tabs,
+      workspace_tabs
     } = this
 
     const {
@@ -353,7 +359,7 @@ export class Workspaces extends Context {
     // see ui/common/tabs
     workspace_tabs = createTabs({
       id: "workspace-tabs",
-      onchange: function (tab) {
+      onchange: (tab) => {
         var event = {
           old: activeWorkspace,
           workspace: null
@@ -366,27 +372,27 @@ export class Workspaces extends Context {
         RED.sidebar.config.refresh();
         RED.view.focus();
       },
-      onclick: function (tab) {
+      onclick: (tab) => {
         RED.view.focus();
       },
-      ondblclick: function (tab) {
+      ondblclick: (tab) => {
         if (tab.type != "subflow") {
           showRenameWorkspaceDialog(tab.id);
         } else {
           RED.editor.editSubflow(RED.nodes.subflow(tab.id));
         }
       },
-      onadd: function (tab) {
+      onadd: (tab) => {
         $('<span class="workspace-disabled-icon"><i class="fa fa-ban"></i> </span>').prependTo("#red-ui-tab-" + (tab.id.replace(".", "-")) + " .red-ui-tab-label");
         if (tab.disabled) {
           $("#red-ui-tab-" + (tab.id.replace(".", "-"))).addClass('workspace-disabled');
         }
         RED.menu.setDisabled("menu-item-workspace-delete", workspace_tabs.count() == 1);
       },
-      onremove: function (tab) {
+      onremove: (tab) => {
         RED.menu.setDisabled("menu-item-workspace-delete", workspace_tabs.count() == 1);
       },
-      onreorder: function (oldOrder, newOrder) {
+      onreorder: (oldOrder, newOrder) => {
         RED.history.push({
           t: 'reorder',
           order: oldOrder,
@@ -397,10 +403,12 @@ export class Workspaces extends Context {
       },
       minimumActiveTabWidth: 150,
       scrollable: true,
-      addButton: function () {
+      addButton: () => {
         addWorkspace();
       }
     });
+
+    this.workspace_tabs = workspace_tabs
 
     RED.tabs = workspace_tabs
   }
@@ -480,10 +488,10 @@ export class Workspaces extends Context {
 
   refresh() {
     const {
-      RED
+      RED,
+      workspace_tabs
     } = this
 
-    let workspace_tabs = this.workspace_tabs
     RED.nodes.eachWorkspace(function (ws) {
       workspace_tabs.renameTab(ws.id, ws.label);
 
