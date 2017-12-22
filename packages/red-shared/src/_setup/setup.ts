@@ -86,7 +86,8 @@ export class RED implements IRED {
   public utils = {
     getNodeIcon(def) { },
     eachWorkspace(indexNode) { },
-    getNodeLabel(l) { return l; }
+    getNodeLabel(l) { return l; },
+    validatePropertyExpression() { return true; }
   }
   public popover = {
     create(obj) { }
