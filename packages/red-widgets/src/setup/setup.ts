@@ -204,6 +204,7 @@ export class RED implements IRED {
    *  setDisabled
    */
   public menu = {
+    isSelected() { },
     setAction() { },
     setDisabled() { },
     setSelected() { },

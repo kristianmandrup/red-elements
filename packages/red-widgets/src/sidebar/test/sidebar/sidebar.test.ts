@@ -1,12 +1,11 @@
 import {
   RED,
   readPage,
-  ctx as baseCtx,
   Sidebar,
 } from '../imports'
 
-function create(ctx) {
-  return new Sidebar(ctx)
+function create() {
+  return new Sidebar()
 }
 
 let menu = {
@@ -17,17 +16,8 @@ let menu = {
 }
 let sidebar: any = {};
 
-let ctx: any = Object.assign({
-  menu,
-  sidebar
-  // events,
-  // actions,
-  // view,
-  // tray
-}, baseCtx)
-
 beforeEach(() => {
-  sidebar = create(ctx)
+  sidebar = create()
 })
 
 beforeAll(() => {
@@ -49,51 +39,81 @@ test('Sidebar: knownTabs', () => {
   expect(sidebar.knownTabs).toEqual({})
 })
 
-test('Sidebar: addTab - adds a tab', () => {
+test('Sidebar: addTab - when not visible does not (really) add a tab', () => {
+  let id = 'xyz-invisible'
   let title = 'abc'
-  let content = 'xyz'
+  let content = {
+    id
+  }
   let closeable = false
   let visible = false
   let tabCount = 2;
   sidebar.addTab(title, content, closeable, visible)
-  expect(typeof sidebar.addTab).toBe('function')
+
+  let ids = sidebar.sidebar_tabs.ids
+  expect(ids).not.toContain(id)
 })
 
-// test('Sidebar: removeTab - if no tabs, ignore', () => {
-//   // let sidebar = create(ctx)
-//   let title = 'abc'
-//   let content = 'xyz'
-//   let closeable = false
-//   let visible = false
-//   let id = 'x'
-//   let tabCount = 0;
-//   sidebar.knownTabs = {
-//     x: {
-//       wrapper: "#wrapper"
-//     }
-//   }
+test('Sidebar: addTab - when visible really does add a tab', () => {
+  let id = 'xyz'
+  let title = 'abc'
+  let content = {
+    id
+  }
+  let closeable = false
+  let visible = true
+  let tabCount = 2;
+  sidebar.addTab(title, content, closeable, visible)
 
-//   sidebar.removeTab(id)
-//   expect(typeof sidebar.removeTab).toBe('function')
-// })
+  let ids = sidebar.sidebar_tabs.ids
+  expect(ids).toContain(id)
+})
 
-// test('Sidebar: removeTab - removes a tab', () => {
-//   let sidebar = create(ctx)
-//   let title = 'abc'
-//   let content = 'xyz'
-//   let closeable = false
-//   let visible = false
-//   let id = 'x';
-//   sidebar.knownTabs = {
-//     x: {
-//       wrapper: '#wrapper'
-//     }
-//   }
-//   sidebar.addTab(title, content, closeable, visible)
-//   let tabCount = 0;
-//   sidebar.removeTab(id)
-//   expect(typeof sidebar.removeTab).toBe('function')
-// })
+test('Sidebar: removeTab - if no such tab registered, ignore remove', () => {
+  let id = 'xyz'
+  let title = 'abc'
+  let content = {
+    id
+  }
+  let closeable = false
+  let visible = true
+  let tabCount = 0;
+  sidebar.knownTabs = {
+    xyz: {
+      wrapper: "#wrapper"
+    }
+  }
+
+  sidebar.addTab(title, content, closeable, visible)
+  let ids = sidebar.sidebar_tabs.ids
+  expect(ids).toContain(id)
+
+  visible = false
+  sidebar.removeTab('unknown')
+  ids = sidebar.sidebar_tabs.ids
+  expect(ids).toContain(id)
+})
+
+test('Sidebar: removeTab - removes tab if registered', () => {
+  let id = 'xyz'
+  let title = 'abc'
+  let content = {
+    id
+  }
+  let closeable = false
+  let visible = true
+  let tabCount = 0;
+  sidebar.knownTabs = {
+    xyz: {
+      wrapper: "#wrapper"
+    }
+  }
+
+  sidebar.addTab(title, content, closeable, visible)
+  sidebar.removeTab(id)
+  let ids = sidebar.sidebar_tabs.ids
+  expect(ids).not.toContain(id)
+})
 
 test('Sidebar: toggleSidebar', () => {
   let state = {}
@@ -106,12 +126,48 @@ test('Sidebar: toggleSidebar', () => {
 })
 
 test('Sidebar: showSidebar', () => {
-  let id = 'x'
+  let id = 'xyz'
+  let title = 'abc'
+  let content = {
+    id
+  }
+  let closeable = false
+  let visible = true
+  let tabCount = 0;
+  sidebar.knownTabs = {
+    xyz: {
+      wrapper: "#wrapper"
+    }
+  }
+
+  sidebar.addTab(title, content, closeable, visible)
+  let ids = sidebar.sidebar_tabs.ids
+  expect(ids).toContain(id)
+
   sidebar.showSidebar(id)
-  expect(sidebar.sidebar_tabs.isActivated(id)).toBeTruthy()
+  let activated = sidebar.sidebar_tabs.isActivated(id)
+  expect(activated).toBeTruthy()
 })
 
-// test('Sidebar: containsTab', () => {
-//   let id = 'x'
-//   sidebar.containsTab(id)
-// })
+test('Sidebar: containsTab', () => {
+  let id = 'xyz'
+  let title = 'abc'
+  let content = {
+    id
+  }
+  let closeable = false
+  let visible = true
+  let tabCount = 0;
+  sidebar.knownTabs = {
+    xyz: {
+      wrapper: "#wrapper"
+    }
+  }
+
+  sidebar.addTab(title, content, closeable, visible)
+  let ids = sidebar.sidebar_tabs.ids
+  expect(ids).toContain(id)
+
+  let contained = sidebar.containsTab(id)
+  expect(contained).toBeTruthy()
+})

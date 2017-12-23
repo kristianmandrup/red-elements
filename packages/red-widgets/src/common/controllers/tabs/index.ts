@@ -35,6 +35,7 @@ export class Tabs extends Context {
   currentActiveTabWidth: any;
   existingTabMap: any
   tabOrder: string[] = []
+  activeTabId: string
 
   constructor(options) {
     super()
@@ -231,6 +232,10 @@ export class Tabs extends Context {
     return false;
   }
 
+  isActivated(id) {
+    return this.activeTabId === id
+  }
+
   activateTab(link) {
     const {
       updateTabWidths,
@@ -240,12 +245,24 @@ export class Tabs extends Context {
       tabs
     } = this
 
+    let tabId = link
     if (typeof link === "string") {
       link = ul.find("a[href='#" + link + "']");
+    } else {
+      tabId = link.prop('id')
     }
     if (link.length === 0) {
       return this;
     }
+
+    if (!tabId) {
+      this.logWarning('activateTab: tab to activate is not identifiable', {
+        link
+      })
+    } else {
+      this.activeTabId = tabId
+    }
+
     if (!link.parent().hasClass("active")) {
       ul.children().removeClass("active");
       ul.children().css({
@@ -388,8 +405,17 @@ export class Tabs extends Context {
       this.activateTab(tab.find("a"));
     }
     li.remove();
+    let tabToRemove = tabs[id]
+    if (!tabToRemove) {
+      this.logWarning(`Tabs:removeTab no such tab to remove ${id}`, {
+        id,
+        tabs
+      })
+      return
+    }
+
     if (options.onremove) {
-      options.onremove(tabs[id]);
+      options.onremove(tabToRemove);
     }
     delete tabs[id];
     this.updateTabWidths()
@@ -440,7 +466,8 @@ export class Tabs extends Context {
 
     let nli = li.appendTo(ul);
 
-    this.ul = ul
+    // this.ul = ul
+    // this.tabs = tabs
 
     li.attr('id', "red-ui-tab-" + (tab.id.replace(".", "-")));
     li.data("tabId", tab.id);

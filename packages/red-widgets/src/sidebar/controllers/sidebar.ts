@@ -48,14 +48,16 @@ export class Sidebar extends Context {
     // legacy: ctx.actions.add
     return new Actions(options)
   }
-  sidebarSeparator: any;
-  knownTabs: any;
-  tabs: any;
-  sidebar_tabs: any;
-  constructor(ctx) {
+
+  sidebarSeparator: any = {}
+  knownTabs: any = {}
+  tabs: any
+  sidebar_tabs: any
+
+  constructor() {
     super()
-    this.sidebarSeparator = {};
-    this.knownTabs = {};
+
+    let { ctx } = this
     //$('#sidebar').tabs();
 
     // create Tabs
@@ -65,16 +67,35 @@ export class Sidebar extends Context {
       onchange: (tab) => {
         $("#sidebar-content").children().hide();
         $("#sidebar-footer").children().hide();
+
         if (tab.onchange) {
           tab.onchange.call(tab);
         }
+
+        if (!tab.wrapper) {
+          this.handleError('Sidebar: tabs.onchange(tab) - tab missing wrapper', {
+            tab
+          })
+        }
+
         $(tab.wrapper).show();
         if (tab.toolbar) {
           $(tab.toolbar).show();
         }
       },
       onremove: (tab) => {
-        console.log("TABSS", tab);
+        if (!tab) {
+          this.handleError('Sidebar: tabs.onremove(tab) - tab missing!', {
+            tab
+          })
+        }
+
+        if (!tab.wrapper) {
+          this.handleError('Sidebar: tabs.onremove(tab) - tab missing wrapper', {
+            tab
+          })
+        }
+
         $(tab.wrapper).hide();
         if (tab.onremove) {
           tab.onremove.call(tab);
@@ -181,12 +202,20 @@ export class Sidebar extends Context {
   }
 
   addTab(title, content, closeable, visible) {
-    let sidebar_tabs = this.sidebar_tabs
-    let knownTabs = this.knownTabs
-    let ctx = this.ctx
+    let {
+      ctx,
+      sidebar_tabs,
+      knownTabs
+    } = this
 
     var options;
-    if (typeof title === "string") {
+    if (typeof title === 'string') {
+      if (!content.id) {
+        this.handleError('addTab: content argument must be an Object with id of tab to add', {
+          content
+        })
+      }
+
       // TODO: legacy support in case anyone uses this...
       options = {
         id: content.id,
@@ -196,7 +225,7 @@ export class Sidebar extends Context {
         closeable: closeable,
         visible: visible
       }
-    } else if (typeof title === "object") {
+    } else if (typeof title === 'object') {
       options = title;
     }
 
@@ -217,6 +246,14 @@ export class Sidebar extends Context {
       $(options.toolbar).hide();
     }
     var id = options.id;
+
+    if (!id) {
+      this.handleError('addTab: options must have id of tab to add', {
+        id,
+        options
+      })
+    }
+
     ctx.menu.addItem("menu-item-view-menu", {
       id: "menu-item-view-menu-" + options.id,
       label: options.name,
@@ -226,21 +263,60 @@ export class Sidebar extends Context {
       group: "sidebar-tabs"
     });
 
-    knownTabs[options.id] = options;
+    let tabId = options.id
+    knownTabs[tabId] = options;
 
     if (options.visible !== false) {
-      sidebar_tabs.addTab(knownTabs[options.id]);
+      let knownTab = knownTabs[tabId]
+      if (knownTab) {
+        sidebar_tabs.addTab(knownTab);
+      } else {
+        this.logWarning('addTab: no such known tab', {
+          knownTabs,
+          tabId
+        })
+      }
+    } else {
+      this.logWarning('invisible so no tab added', {
+        tabId,
+        ids: sidebar_tabs.ids,
+        tabs: sidebar_tabs.tabs
+      })
     }
+    this.sidebar_tabs = sidebar_tabs
+    this.knownTabs = knownTabs
   }
 
   removeTab(id) {
-    let ctx = this.ctx
-    let sidebar_tabs = this.sidebar_tabs
-    let knownTabs = this.knownTabs
+    let {
+      ctx,
+      sidebar_tabs,
+      knownTabs
+    } = this
+
     sidebar_tabs.removeTab(id);
-    $(knownTabs[id].wrapper).remove();
-    if (knownTabs[id].footer) {
-      knownTabs[id].footer.remove();
+    let knownTab = knownTabs[id]
+
+    if (!knownTab) {
+      this.logWarning(`removeTab: no known tab registered named ${id}`, {
+        id,
+        knownTabs
+      })
+      return
+    }
+
+    if (!knownTab.wrapper) {
+      this.handleError(`removeTab: knownTab missing wrapper`, {
+        id,
+        knownTab,
+        knownTabs
+      })
+    }
+
+    $(knownTab.wrapper).remove();
+    let footer = knownTab.footer
+    if (footer) {
+      footer.remove();
     }
     delete knownTabs[id];
     ctx.menu.removeItem("menu-item-view-menu-" + id);
