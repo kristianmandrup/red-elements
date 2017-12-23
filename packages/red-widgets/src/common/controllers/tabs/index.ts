@@ -34,6 +34,7 @@ export class Tabs extends Context {
   currentTabWidth: any;
   currentActiveTabWidth: any;
   existingTabMap: any
+  tabOrder: string[] = []
 
   constructor(options) {
     super()
@@ -395,10 +396,20 @@ export class Tabs extends Context {
     return this
   }
 
+  get ids(): string[] {
+    return Object.keys(this.tabs || {})
+  }
+
+  addTabs(...tabs: Array<Object>) {
+    tabs.map(tab => this.addTab(tab))
+    return this
+  }
+
   addTab(tab) {
     let {
       ul,
       tabs,
+      tabOrder,
       options,
       updateTabWidths,
       scrollContainer
@@ -420,16 +431,7 @@ export class Tabs extends Context {
     }
 
     tabs[tab.id] = tab;
-
-    // Approach 1 : $container.append($widget)
-    // Approach 2 : $widget.appendTo($container)
-    // The key difference is what gets returned.
-    // In the first case, $container is returned
-    // in second case, $widget is returned.
-
-    // ul = $('<div/>', {
-    //   id: 'container'
-    // })
+    tabOrder[tabOrder.length] = tab.id
 
     let li: any = $("<li/>", {
       id: 'added',
@@ -633,9 +635,7 @@ export class Tabs extends Context {
     // TODO:
     // don't rely on page order, rely on internal map stored on object instead
     // this would allow us to have multiple instances of tabs on the same page and it would still work
-    var existingTabOrder = $.makeArray(ul.children().map(() => {
-      return $(this).data('tabId');
-    }));
+    var existingTabOrder = this.tabOrder
 
     if (existingTabOrder.length !== order.length) {
       return this
@@ -660,6 +660,7 @@ export class Tabs extends Context {
     for (i = 0; i < order.length; i++) {
       existingTabMap[order[i]].appendTo(ul);
     }
+    this.tabOrder = order
     this.existingTabMap = existingTabMap
     return existingTabMap
   }

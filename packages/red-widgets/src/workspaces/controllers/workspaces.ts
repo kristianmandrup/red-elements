@@ -88,7 +88,7 @@ export class Workspaces extends Context {
   }
 
   get tabIds(): string[] {
-    return Object.keys(this.tabs || {})
+    return this.workspace_tabs.tabIds
   }
 
   hasTabId(id) {

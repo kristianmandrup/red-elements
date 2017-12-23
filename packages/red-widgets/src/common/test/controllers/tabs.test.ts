@@ -218,7 +218,7 @@ test('Tabs: removeTab', () => {
   expect(updated).toBe(widgetElem)
 })
 
-test('Tabs: addTab(tab) returns added and increases tab count', () => {
+test('Tabs: addTab(tab) - returns added and increases tab count', () => {
   let tab = {
     id: 'xtraTab'
   }
@@ -233,6 +233,45 @@ test('Tabs: addTab(tab) returns added and increases tab count', () => {
   expect(newCount).toBe(1)
 })
 
+test('Tabs: addTab(tab) - add duplicate ignored', () => {
+  let tab1 = {
+    id: 'xtraTab'
+  }
+  let tab2 = {
+    id: 'xtraTab'
+  }
+
+  let beforeCount = widgetElem.count()
+  expect(beforeCount).toBe(0)
+
+  widgetElem.addTab(tab1)
+  widgetElem.addTab(tab2)
+
+  let newCount = widgetElem.count()
+  expect(newCount).toBeGreaterThan(beforeCount)
+  expect(newCount).toBe(1)
+})
+
+
+test('Tabs: addTabs(tabs) - returns added and increases tab count', () => {
+  let tab1 = {
+    id: 'tab1'
+  }
+  let tab2 = {
+    id: 'tab2'
+  }
+
+  let beforeCount = widgetElem.count()
+  expect(beforeCount).toBe(0)
+
+  let added = widgetElem.addTabs(tab1, tab2)
+  expect(added).toBe(widgetElem)
+
+  let newCount = widgetElem.count()
+  expect(newCount).toBeGreaterThan(beforeCount)
+  expect(newCount).toBe(2)
+})
+
 test('Tabs: count', () => {
   widgetElem = new Tabs({
     id: 'empty-tabs'
@@ -243,27 +282,18 @@ test('Tabs: count', () => {
     id
   }
   let beforeCount = widgetElem.count()
-  log({
-    beforeCount
-  })
   expect(beforeCount).toBe(0)
 
   let added = widgetElem.addTab(tab)
   expect(added).toBe(widgetElem)
 
   let addCount = widgetElem.count()
-  log({
-    addCount
-  })
 
   expect(addCount).toBeGreaterThan(beforeCount)
   expect(addCount).toBe(1)
 
   let removed = widgetElem.removeTab(id)
   let removeCount = widgetElem.count()
-  log({
-    removeCount
-  })
   expect(removeCount).toBeLessThan(addCount)
   expect(removeCount).toBe(0)
 })
@@ -312,18 +342,69 @@ test('Tabs: renameTab(id, label) - has such a tab', () => {
   expect(renamedTab.label).toBe(label)
 })
 
+test('Tabs: ids', () => {
+  let id1 = 'tab1', id2 = 'tab2'
+  let tab1 = {
+    id: id1
+  }
+  let tab2 = {
+    id: id2
+  }
+
+  widgetElem
+    .addTab(tab1)
+    .addTab(tab2)
+
+  expect(widgetElem.ids).toContain(id1)
+  expect(widgetElem.ids).toContain(id2)
+})
+
+
+test('Tabs: existingTabOrder', () => {
+  let id1 = 'tab1', id2 = 'tab2'
+  let tab1 = {
+    id: id1
+  }
+  let tab2 = {
+    id: id2
+  }
+
+  widgetElem
+    .addTab(tab1)
+    .addTab(tab2)
+
+  let { tabOrder } = widgetElem
+  expect(tabOrder[0]).toBe(id1)
+  expect(tabOrder[1]).toBe(id2)
+})
+
+
 test('Tabs: order', () => {
   // TODO: set to real tabs in Tabs
-  let firstTab = {}
-  let secondTab = {}
+  let id1 = 'tab1', id2 = 'tab2'
+  let tab1 = {
+    id: id1
+  }
+  let tab2 = {
+    id: id2
+  }
 
-  let order = [
-    firstTab,
-    secondTab
-  ]
+  widgetElem
+    .addTab(tab1)
+    .addTab(tab2)
+
+  let { tabOrder } = widgetElem
+
+  expect(tabOrder[0]).toBe(id1)
+  expect(tabOrder[1]).toBe(id2)
+
+  // reverse order
+  let order = [id2, id1]
   let ordered = widgetElem.order(order)
-  expect(ordered).toBe(widgetElem)
-  // test new order was set
+
+  let newTabOrder = widgetElem.tabOrder
+  expect(newTabOrder[0]).toBe(id2)
+  expect(newTabOrder[1]).toBe(id1)
 })
 
 
