@@ -33,9 +33,11 @@ export class Tabs extends Context {
   wrapper: any;
   currentTabWidth: any;
   currentActiveTabWidth: any;
+  existingTabMap: any
 
   constructor(options) {
     super()
+
     this.options = options || {}
     if (typeof options !== 'object') {
       this.handleError('Tabs must take an options object', {
@@ -53,7 +55,21 @@ export class Tabs extends Context {
       })
     }
 
-    var ul = options.element || $("#" + options.id);
+    if (!options.element && !options.id) {
+      this.handleError('Tabs: unable to create tabs container element, missing element or id option', {
+        options
+      })
+    }
+
+    var ul = options.element || $("#" + options.id)
+
+    if (ul.length === 0) {
+      this.handleError('Tabs: no tabs container found on page', {
+        options,
+        ul
+      })
+    }
+
     var wrapper = ul.wrap("<div>").parent();
     var scrollContainer = ul.wrap("<div>").parent();
     var scrollLeft;
@@ -93,7 +109,8 @@ export class Tabs extends Context {
       scrollRight.on('mousedown', (evt) => this.scrollEventHandler(evt, '+=150'))
         .on('click', this.handleScrollMoveMouseClickEvent);
     }
-    const instVars = {
+
+    let instVars = {
       tabs,
       currentTabWidth,
       currentActiveTabWidth,
@@ -107,14 +124,27 @@ export class Tabs extends Context {
     Object.keys(instVars).map(key => {
       this[key] = instVars[key]
     })
+
     ul.children().first().addClass("active");
+
     ul.children().addClass("red-ui-tab");
 
     ul.find("li.red-ui-tab a").on("click", onTabClick).on("dblclick", onTabDblClick);
     setTimeout(function () {
       updateTabWidths();
     }, 0);
+  }
 
+  nextTab() {
+    this.activateNextTab()
+  }
+
+  previousTab() {
+    this.activatePreviousTab()
+  }
+
+  resize() {
+    this.updateTabWidths()
   }
 
   scrollEventHandler(evt, dir) {
@@ -351,7 +381,7 @@ export class Tabs extends Context {
     var li = ul.find("a[href='#" + id + "']").parent();
     if (li.hasClass("active")) {
       var tab = li.prev();
-      if (tab.size() === 0) {
+      if (tab.length === 0) {
         tab = li.next();
       }
       this.activateTab(tab.find("a"));
@@ -366,7 +396,7 @@ export class Tabs extends Context {
   }
 
   addTab(tab) {
-    const {
+    let {
       ul,
       tabs,
       options,
@@ -391,14 +421,25 @@ export class Tabs extends Context {
 
     tabs[tab.id] = tab;
 
-    log('addTab', {
-      id: tab.id,
-      tabs
+    // Approach 1 : $container.append($widget)
+    // Approach 2 : $widget.appendTo($container)
+    // The key difference is what gets returned.
+    // In the first case, $container is returned
+    // in second case, $widget is returned.
+
+    // ul = $('<div/>', {
+    //   id: 'container'
+    // })
+
+    let li: any = $("<li/>", {
+      id: 'added',
+      class: "red-ui-tab"
     })
 
-    var li: any = $("<li/>", {
-      class: "red-ui-tab"
-    }).appendTo(ul);
+    let nli = li.appendTo(ul);
+
+    this.ul = ul
+
     li.attr('id', "red-ui-tab-" + (tab.id.replace(".", "-")));
     li.data("tabId", tab.id);
     var link = $("<a/>", {
@@ -411,6 +452,7 @@ export class Tabs extends Context {
     var span = $('<span/>', {
       class: "bidiAware"
     }).text(tab.label).appendTo(link);
+
     if (!(this.RED.text && this.RED.text.bidi && this.RED.text.bidi.resolveBaseTextDir)) {
       this.handleError('addTab: mising RED.text.bidi.resolveBaseTextDir', {
         text: this.RED.text,
@@ -536,6 +578,10 @@ export class Tabs extends Context {
   }
 
   count() {
+    return Object.keys(this.tabs).length
+  }
+
+  countOnPage() {
     const {
       ul
     } = this
@@ -578,15 +624,27 @@ export class Tabs extends Context {
       ul
     } = this
 
+    if (!Array.isArray(order)) {
+      this.handleError('order: order must be an array of indexes in sorted order', {
+        order
+      })
+    }
+
+    // TODO:
+    // don't rely on page order, rely on internal map stored on object instead
+    // this would allow us to have multiple instances of tabs on the same page and it would still work
     var existingTabOrder = $.makeArray(ul.children().map(() => {
       return $(this).data('tabId');
     }));
+
     if (existingTabOrder.length !== order.length) {
       return this
     }
     var i;
     var match = true;
     for (i = 0; i < order.length; i++) {
+      order[i] !== existingTabOrder[i]
+
       if (order[i] !== existingTabOrder[i]) {
         match = false;
         break;
@@ -602,7 +660,8 @@ export class Tabs extends Context {
     for (i = 0; i < order.length; i++) {
       existingTabMap[order[i]].appendTo(ul);
     }
-    return this
+    this.existingTabMap = existingTabMap
+    return existingTabMap
   }
 
   handleAddButtonClickedEvent(evt, options) {

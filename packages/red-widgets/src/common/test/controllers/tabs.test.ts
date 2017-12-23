@@ -193,7 +193,6 @@ test('Tabs: activateTab', () => {
     id: "tabs",
     scrollable: true
   });
-  console.log("from function")
   let activated = ele.activateTab(li.find("a"));
   expect(activated).toBe(ele)
 })
@@ -219,17 +218,54 @@ test('Tabs: removeTab', () => {
   expect(updated).toBe(widgetElem)
 })
 
-test('Tabs: addTab(tab)', () => {
+test('Tabs: addTab(tab) returns added and increases tab count', () => {
   let tab = {
     id: 'xtraTab'
   }
+  let beforeCount = widgetElem.count()
+  expect(beforeCount).toBe(0)
+
   let added = widgetElem.addTab(tab)
   expect(added).toBe(widgetElem)
+
+  let newCount = widgetElem.count()
+  expect(newCount).toBeGreaterThan(beforeCount)
+  expect(newCount).toBe(1)
 })
 
 test('Tabs: count', () => {
-  let count = widgetElem.count()
-  expect(count).toBe(1)
+  widgetElem = new Tabs({
+    id: 'empty-tabs'
+  })
+
+  let id = 'xtraTab'
+  let tab = {
+    id
+  }
+  let beforeCount = widgetElem.count()
+  log({
+    beforeCount
+  })
+  expect(beforeCount).toBe(0)
+
+  let added = widgetElem.addTab(tab)
+  expect(added).toBe(widgetElem)
+
+  let addCount = widgetElem.count()
+  log({
+    addCount
+  })
+
+  expect(addCount).toBeGreaterThan(beforeCount)
+  expect(addCount).toBe(1)
+
+  let removed = widgetElem.removeTab(id)
+  let removeCount = widgetElem.count()
+  log({
+    removeCount
+  })
+  expect(removeCount).toBeLessThan(addCount)
+  expect(removeCount).toBe(0)
 })
 
 test('Tabs: contains - no such tab: false', () => {
@@ -276,7 +312,7 @@ test('Tabs: renameTab(id, label) - has such a tab', () => {
   expect(renamedTab.label).toBe(label)
 })
 
-test('Tabs: count', () => {
+test('Tabs: order', () => {
   // TODO: set to real tabs in Tabs
   let firstTab = {}
   let secondTab = {}

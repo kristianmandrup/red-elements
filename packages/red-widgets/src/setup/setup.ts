@@ -75,6 +75,7 @@ export class RED implements IRED {
     emit(elm) { }
   }
   public view = {
+    state() { },
     focus() { },
     selection() {
       return {
@@ -102,6 +103,15 @@ export class RED implements IRED {
     create(obj) { }
   }
   public nodes = {
+    eachWorkspace() {
+      return {}
+    },
+    setWorkspaceOrder() {
+
+    },
+    removeWorkspace() {
+      return {}
+    },
     subflow(index) {
       return {
         valid: true,

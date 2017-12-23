@@ -74,15 +74,25 @@ export class Workspaces extends Context {
       deleteWorkspace(RED.nodes.workspace(activeWorkspace));
     });
 
-    $(window).resize(function () {
+    $(window).resize(() => {
       workspace_tabs.resize();
     });
 
     RED.actions.add("core:add-flow", addWorkspace);
     RED.actions.add("core:edit-flow", editWorkspace);
     RED.actions.add("core:remove-flow", removeWorkspace);
+  }
 
-    log('Workspaces created')
+  get tabs() {
+    return this.workspace_tabs.tabs
+  }
+
+  get tabIds(): string[] {
+    return Object.keys(this.tabs || {})
+  }
+
+  hasTabId(id) {
+    return this.tabIds.indexOf(id) > -1
   }
 
   workspaceTabAt(workspaceIndex) {
@@ -92,7 +102,12 @@ export class Workspaces extends Context {
     }) + "']")
   }
 
-  addWorkspace(ws, skipHistoryEntry) {
+  // useful for activating last added Workspace
+  private activateLastWorkspace() {
+    this.activeWorkspace = this.count() > 0 ? this.count() - 1 : 0
+  }
+
+  addWorkspace(ws, skipHistoryEntry?) {
     let {
       RED,
       workspace_tabs,
@@ -123,6 +138,7 @@ export class Workspaces extends Context {
           number: workspaceIndex
         })
       };
+
       RED.nodes.addWorkspace(ws);
       workspace_tabs.addTab(ws);
       workspace_tabs.activateTab(tabId);
@@ -136,6 +152,10 @@ export class Workspaces extends Context {
       }
     }
     RED.view.focus();
+
+    // make it active?
+    // this.activateLastWorkspace()
+
     return ws;
   }
 
@@ -151,7 +171,8 @@ export class Workspaces extends Context {
         'removeWorkspace'
       ])
 
-    if (workspace_tabs.count() == 1) {
+    // abort if no tabs to delete
+    if (workspace_tabs.count() === 0) {
       return;
     }
     removeWorkspace(ws);
@@ -162,6 +183,7 @@ export class Workspaces extends Context {
     RED.history.push(historyEvent);
     RED.nodes.dirty(true);
     RED.sidebar.config.refresh();
+    return this
   }
 
   showRenameWorkspaceDialog(id) {
@@ -253,7 +275,7 @@ export class Workspaces extends Context {
         }
       }
       ],
-      resize: function (dimensions) {
+      resize: (dimensions) => {
         var rows = $("#dialog-form>div:not(.node-text-editor-row)");
         var editorRow = $("#dialog-form>div.node-text-editor-row");
         var height = $("#dialog-form").height();
@@ -266,7 +288,7 @@ export class Workspaces extends Context {
         $(".node-text-editor").css("height", height + "px");
         tabflowEditor.resize();
       },
-      open: function (tray) {
+      open: (tray) => {
         var trayBody = tray.find('.editor-tray-body');
         var dialogForm = <IDialogForm>$('<form id="dialog-form" class="form-horizontal"></form>').appendTo(trayBody);
 
@@ -293,7 +315,7 @@ export class Workspaces extends Context {
 
         $('<div class="form-tips" data-i18n="editor:workspace.tip"></div>').appendTo(dialogForm);
 
-        dialogForm.find('#node-input-disabled-btn').on("click", function (e) {
+        dialogForm.find('#node-input-disabled-btn').on("click", (e) => {
           var i = $(this).find("i");
           if (i.hasClass('fa-toggle-off')) {
             i.addClass('fa-toggle-on');
@@ -322,7 +344,7 @@ export class Workspaces extends Context {
         }
 
         $('<input type="text" style="display: none;" />').prependTo(dialogForm);
-        dialogForm.submit(function (e) {
+        dialogForm.submit((e) => {
           e.preventDefault();
         });
         $("#node-input-name").val(workspace.label);
@@ -330,7 +352,7 @@ export class Workspaces extends Context {
         tabflowEditor.getSession().setValue(workspace.info || "", -1);
         dialogForm.i18n();
       },
-      close: function () {
+      close: () => {
         if (RED.view.state() != RED.state.IMPORT_DRAGGING) {
           RED.view.state(RED.state.DEFAULT);
         }
@@ -339,6 +361,7 @@ export class Workspaces extends Context {
       }
     }
     RED.tray.show(trayOptions);
+    return this
   }
 
   createWorkspaceTabs() {
@@ -415,13 +438,15 @@ export class Workspaces extends Context {
     this.workspace_tabs = workspace_tabs
 
     RED.tabs = workspace_tabs
+    return this
   }
 
-  editWorkspace(id) {
+  editWorkspace(id?) {
     let {
       activeWorkspace
     } = this
     this.showRenameWorkspaceDialog(id || activeWorkspace);
+    return this
   }
 
   removeWorkspace(ws) {
@@ -429,31 +454,36 @@ export class Workspaces extends Context {
       RED,
       activeWorkspace
     } = this
+    const { id } = ws
 
     let workspace_tabs = this.workspace_tabs
     if (!ws) {
       this.deleteWorkspace(RED.nodes.workspace(activeWorkspace));
     } else {
-      if (workspace_tabs.contains(ws.id)) {
-        workspace_tabs.removeTab(ws.id);
+      if (this.hasTabId(id)) {
+        workspace_tabs.removeTab(id);
+      } else {
+        this.logWarning(`removeWorkspace: tab with id ${id} not found`)
       }
     }
+    return this
   }
 
   setWorkspaceOrder(order) {
     const {
-      RED
+      RED,
+      workspace_tabs
     } = this
 
-    let workspace_tabs = this.workspace_tabs
     RED.nodes.setWorkspaceOrder(order.filter(function (id) {
       return RED.nodes.workspace(id) !== undefined;
     }));
     workspace_tabs.order(order);
+    return this
   }
 
   contains(id) {
-    return this.workspace_tabs.contains(id);
+    return this.hasTabId(id);
   }
 
   count() {
@@ -464,30 +494,42 @@ export class Workspaces extends Context {
     return this.activeWorkspace
   }
 
+  // also activates it via activateTab
   show(id) {
     const {
       RED,
+      workspace_tabs
+    } = this
+
+    const {
       addWorkspace
     } = this.rebind([
         'addWorkspace'
       ])
 
-    let workspace_tabs = this.workspace_tabs
-    if (!workspace_tabs.contains(id)) {
+
+    const hasTab = workspace_tabs.contains(id)
+    // if we don't have the tab try to add it as a subflow
+    if (!hasTab) {
       var sf = RED.nodes.subflow(id);
-      if (sf) {
-        addWorkspace({
-          type: "subflow",
-          id: id,
-          icon: "red/images/subflow_tab.png",
-          label: sf.name,
-          closeable: true
-        });
-      } else {
-        return;
-      }
+      log('add subflow to workspace', {
+        sf
+      })
+
+      if (!sf) return
+      addWorkspace({
+        type: "subflow",
+        id: id,
+        icon: "red/images/subflow_tab.png",
+        label: sf.name,
+        closeable: true
+      });
     }
+    log('activate tab', {
+      id
+    })
     workspace_tabs.activateTab(id);
+    return this
   }
 
   refresh() {
@@ -506,9 +548,11 @@ export class Workspaces extends Context {
       }
     });
     RED.sidebar.config.refresh();
+    return this
   }
 
   resize() {
     this.workspace_tabs.resize();
+    return this
   }
 }
