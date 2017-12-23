@@ -1,39 +1,17 @@
 import {
   RED,
   readPage,
-  ctx as baseCtx,
   Editor
 } from './imports'
 
-// use instances from red-runtime
-// inject RED singleton instead
-let nodes = {}
-let events = {
-  on() { }
-}
-let actions = {
-  add() { }
-}
-
-let ctx = Object.assign({
-  actions,
-  // keyboard,
-  // utils,
-  events,
-  // settings,
-  nodes,
-  // view
-}, baseCtx)
-
-
-function create(ctx) {
+function create() {
   return new Editor()
 }
 
 
 let editor
 beforeEach(() => {
-  editor = create(ctx)
+  editor = create()
 })
 
 beforeAll(() => {
@@ -41,7 +19,7 @@ beforeAll(() => {
   // EditableList(RED)
 
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/node-editor/test/app/editor');
+  document.documentElement.innerHTML = readPage('editor', __dirname);
 })
 
 test('Editor: create', () => {

@@ -11,7 +11,7 @@ beforeAll(() => {
   new Searchbox()
   new EditableList()
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/palette/test/app/palette');
+  document.documentElement.innerHTML = readPage('palette', __dirname);
 })
 
 test('Palette: created', () => {

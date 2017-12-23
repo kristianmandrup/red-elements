@@ -1,5 +1,3 @@
-// const Nightmare = require('nightmare')
-// const nightmare = new Nightmare()
 import {
   controllers
 } from '../controllers'
@@ -18,11 +16,9 @@ const {
 } = widgets.common.controllers
 
 const {
-  NodeDiff
+  Main
 } = controllers
 
 export {
-  // nightmare,
-  NodeDiff,
-  EditableList
+  Main
 }
