@@ -5,8 +5,8 @@ import {
   Tray
 } from './imports'
 
-function create(ctx) {
-  return new Tray(ctx)
+function create() {
+  return new Tray()
 }
 let events = {
   on(property, callback) { },
@@ -15,25 +15,16 @@ let events = {
 let view = {
   focus() { }
 }
-let ctx = (<any>Object).assign({
-  //actions,
-  //keyboard,
-  //utils,
-  events,
-  // settings,
-  //nodes,
-  view
-}, baseCtx)
 
 let tray
 beforeEach(() => {
-  tray = create(ctx)
+  tray = create()
 })
 
 beforeAll(() => {
   // Searchbox(RED)
   // EditableList(RED)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/tray/test/app/tray')
+  document.documentElement.innerHTML = readPage('tray')
 })
 
 let button = {
@@ -73,7 +64,6 @@ test('Tray: create has openingTray to be false', () => {
 
 // calls showTray
 test('Tray: show', () => {
-  var tray = create(ctx);
   tray.show(options.basic)
   expect(tray).toBeDefined()
 })

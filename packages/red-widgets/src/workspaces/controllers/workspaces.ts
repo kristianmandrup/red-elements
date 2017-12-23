@@ -18,7 +18,7 @@ import {
 } from '../../common'
 import {
   Tabs
-} from '../../common/controllers'
+} from '../../common'
 
 const { log } = console
 

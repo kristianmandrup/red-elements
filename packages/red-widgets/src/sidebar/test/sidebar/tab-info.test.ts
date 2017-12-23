@@ -1,38 +1,27 @@
 import {
   RED,
   readPage,
-  ctx as baseCtx,
   Tips,
   SidebarTabInfo
 } from '../imports'
 
-function createTip(ctx) {
+function createTip() {
   return new Tips()
 }
 
-function create(ctx) {
+function create() {
   return new SidebarTabInfo()
 }
 
-const ctx = Object.assign({
-  // menu,
-  // sidebar
-
-  // events,
-  // actions,
-  // view,
-  // tray
-}, baseCtx)
-
 let tabInfo
 beforeEach(() => {
-  tabInfo = create(ctx)
+  tabInfo = create()
 })
 
 beforeAll(() => {
   // Searchbox(RED)
   // EditableList(RED)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');
+  document.documentElement.innerHTML = readPage('simple')
 })
 
 test('Sidebar TabInfo: create', () => {

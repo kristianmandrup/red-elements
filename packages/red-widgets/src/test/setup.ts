@@ -34,12 +34,19 @@ global.jQuery = global.$
 require('jquery-ui-dist/jquery-ui')
 
 function readPage(name, basePath?) {
-  // basePath = basePath || __dirname
-  // console.log(__dirname);
-  // console.log(`basepath is ${basePath}`)
-  const filePath = path.join('', `${name}.html`)
+  const filePath = path.resolve(basePath || __dirname, 'app', `${name}.html`)
+  log('readPage', {
+    filePath
+  })
+  let html = fs.readFileSync(filePath).toString();
 
-  return fs.readFileSync(filePath).toString();
+  if (!html) {
+    throw new Error(`readPage: Page (DOM) could not be loaded from file: ${filePath}`)
+  } else {
+    log(html)
+  }
+
+  return html
 }
 
 

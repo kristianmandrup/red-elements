@@ -23,7 +23,7 @@ beforeEach(() => {
 beforeAll(() => {
   // Searchbox(RED)
   // EditableList(RED)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple')
+  document.documentElement.innerHTML = readPage('simple')
 })
 
 test('Sidebar: create', () => {

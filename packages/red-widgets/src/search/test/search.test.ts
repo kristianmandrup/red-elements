@@ -58,7 +58,7 @@ beforeEach(() => {
 beforeAll(() => {
   new Searchbox()
   // EditableList(RED)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/search/test/app/search');
+  document.documentElement.innerHTML = readPage('search', __dirname);
 })
 
 test('Search: created', () => {

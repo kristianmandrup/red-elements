@@ -1,51 +1,34 @@
 import {
   RED,
   readPage,
-  ctx as baseCtx,
   Menu,
   Sidebar,
   SidebarTabConfig
 } from '../imports'
 
-function create(ctx) {
+function create() {
   return new SidebarTabConfig()
 }
-let menu = new Menu({
-  id: 'menu',
-  options: [
-    'a',
-    'b'
-  ]
-})
-let sidebar = new Sidebar({
-  id: 'menu',
-  options: [
-    'a',
-    'b'
-  ]
-})
-const ctx = Object.assign({
-  menu,
-  sidebar
 
-  // events,
-  // actions,
-  // view,
-  // tray
-}, baseCtx)
-
-
-
-
-let tc
+let tc, sidebar, menu
 beforeEach(() => {
-  tc = create(ctx)
+  menu = new Menu({
+    id: 'menu',
+    options: [
+      'a',
+      'b'
+    ]
+  })
+
+  sidebar = new Sidebar()
+  tc = create()
 })
 
 beforeAll(() => {
   // Searchbox(RED)
   // EditableList(RED)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');
+  let html = readPage('simple');
+  document.documentElement.innerHTML = html
 })
 
 test('Sidebar TabConfig: create', () => {
@@ -87,7 +70,6 @@ test('TabConfig: refreshConfigNodeList', () => {
 })
 
 test('TabConfig: show', () => {
-  let tc = create(ctx)
   let id = 'x'
   tc.show(id)
   // TODO

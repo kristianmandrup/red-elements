@@ -49,24 +49,27 @@ export class Tabs extends Context {
     var tabs = {};
     var currentTabWidth;
     var currentActiveTabWidth = 0;
-    if (!(options.id || options.element)) {
+    var id = options.id
+    if (!(id || options.element)) {
       this.handleError('Tabs must take an id: or element: option for target element', {
-        id: options.id,
+        id,
         element: options.element,
         options
       })
     }
 
-    if (!options.element && !options.id) {
+    if (!options.element && !id) {
       this.handleError('Tabs: unable to create tabs container element, missing element or id option', {
+        id,
         options
       })
     }
 
-    var ul = options.element || $("#" + options.id)
+    var ul = options.element || $("#" + id)
 
     if (ul.length === 0) {
       this.handleError('Tabs: no tabs container found on page', {
+        id,
         options,
         ul
       })

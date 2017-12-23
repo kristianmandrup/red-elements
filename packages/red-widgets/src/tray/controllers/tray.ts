@@ -14,25 +14,18 @@
  * limitations under the License.
  **/
 import {
-  Context
-} from './context'
-import * as $ from "jquery";
-import { IRED, TYPES, container } from "../../setup/setup";
-import getDecorators from "inversify-inject-decorators";
-import { Container, injectable, tagged, named } from "inversify";
-let { lazyInject } = getDecorators(container);
+  Context,
+  $
+} from '../../common'
 
 export class Tray extends Context {
-  @lazyInject(TYPES.RED) RED: IRED;
-  stack: any;
-  editorStack: any;
-  openingTray: boolean;
-  constructor(ctx) {
-    super(ctx)
-    const RED = this.RED;
-    this.stack = [];
-    this.editorStack = $("#editor-stack");
-    this.openingTray = false;
+  stack: any = []
+  editorStack: any = $("#editor-stack")
+  openingTray: boolean = false
+
+  constructor() {
+    super()
+    const { RED } = this
 
     // FIX: use instance vars
     let handleWindowResize = this.handleWindowResize.bind(this)

@@ -55,17 +55,18 @@ export class SidebarTabConfig extends Context {
       '<a class="sidebar-footer-button" id="workspace-config-node-expand-all" href="#"><i class="fa fa-angle-double-down"></i></a>' +
       '</div>');
 
-    this.globalCategories = $("<div>").appendTo(content);
-    this.flowCategories = $("<div>").appendTo(content);
-    this.subflowCategories = $("<div>").appendTo(content);
+    this.globalCategories = $("<div/>").appendTo(content);
+    this.flowCategories = $("<div/>").appendTo(content);
+    this.subflowCategories = $("<div/>").appendTo(content);
 
     this.showUnusedOnly = false;
 
     this.categories = {};
 
     let i18n = new I18n()
+    let init = this.init.bind(this)
     // FIX: when i18n is initialized (translation map loaded), we can continue constructor in init
-    i18n.initCb(this.init.bind(this))
+    i18n.initCb(init)
   }
 
   // only called after i18n is initialized
