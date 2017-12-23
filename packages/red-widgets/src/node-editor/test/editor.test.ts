@@ -8,6 +8,7 @@ function create() {
   return new Editor()
 }
 
+const { log } = console
 
 let editor
 beforeEach(() => {
@@ -64,9 +65,20 @@ test('Editor: validateNodeProperty', () => {
   }
   let properties = {}
   let value = 'a'
-  let property = "name";
+  let property = 'name';
   let valid = editor.validateNodeProperty(node, definition, property, value)
   expect(valid).toBeTruthy()
+})
+
+test('Editor: validateNodeEditorProperty', () => {
+  let node = {
+    id: 'x'
+  }
+  let defaults = {}
+  let property = 'name';
+  let prefix = 'a'
+  let valid = editor.validateNodeEditorProperty(node, defaults, property, prefix)
+  expect(valid).toBeDefined()
 })
 
 test('Editor: validateNodeEditor', () => {
@@ -79,18 +91,7 @@ test('Editor: validateNodeEditor', () => {
   }
   let prefix = 'a'
   let valid = editor.validateNodeEditor(node, prefix)
-  expect(valid).not.toBeTruthy()
-})
-
-test('Editor: validateNodeEditorProperty', () => {
-  let node = {
-    id: 'x'
-  }
-  let defaults = {}
-  let property = {}
-  let prefix = 'a'
-  let valid = editor.validateNodeEditorProperty(node, defaults, property, prefix)
-  expect(valid).toBeTruthy()
+  expect(valid).toBeDefined()
 })
 
 test('Editor: updateNodeProperties', () => {
@@ -107,10 +108,10 @@ test('Editor: prepareConfigNodeSelect', () => {
     id: 'x'
   }
   let type = 'io'
-  let property = {}
+  let property = 'name'
   let prefix = 'a'
   let prepared = editor.prepareConfigNodeSelect(node, property, type, prefix)
-  expect(prepared).toBeTruthy()
+  expect(prepared).toBeDefined()
 })
 
 test('Editor: prepareConfigNodeButton', () => {
@@ -119,10 +120,10 @@ test('Editor: prepareConfigNodeButton', () => {
     id: 'x'
   }
   let type = 'io'
-  let property = {}
+  let property = 'name'
   let prefix = 'a'
   let prepared = editor.prepareConfigNodeButton(node, property, type, prefix)
-  expect(prepared).toBeTruthy()
+  expect(prepared).toBeDefined()
 })
 
 test('Editor: preparePropertyEditor', () => {
@@ -131,7 +132,7 @@ test('Editor: preparePropertyEditor', () => {
     id: 'x'
   }
   let definition = {}
-  let property = {}
+  let property = 'name'
   let prefix = 'a'
   let prepared = editor.preparePropertyEditor(node, property, prefix, definition)
   expect(prepared).toBeTruthy()
@@ -143,7 +144,7 @@ test('Editor: attachPropertyChangeHandler', () => {
     id: 'x'
   }
   let definition = {}
-  let property = {}
+  let property = 'name'
   let prefix = 'a'
   let prepared = editor.attachPropertyChangeHandler(node, definition, property, prefix)
   expect(prepared).toBeTruthy()
@@ -179,12 +180,14 @@ test('Editor: prepareEditDialog', () => {
   let node = {
     id: 'x'
   }
-  let definition = {}
+  let definition = {
+    defaults: {
+      // some default props
+    }
+  }
   let prefix = 'a'
-  editor.prepareEditDialog(node, definition, prefix, () => {
-    // use nightmare
-    // t.is()
-  })
+  let done = editor.prepareEditDialog(node, definition, prefix)
+  expect(done).toBeDefined()
 })
 
 test('Editor: getEditStackTitle', () => {
@@ -205,14 +208,17 @@ test('Editor: buildEditForm', () => {
   // use nightmare
 })
 
-test('Editor: refreshLabelForm', () => {
+test.only('Editor: refreshLabelForm', () => {
 
   let container = $('#container')
   let node = {
-    id: 'x'
+    id: 'x',
+    _def: {
+
+    }
   }
-  editor.refreshLabelForm(container, node)
-  // use nightmare
+  let refreshed = editor.refreshLabelForm(container, node)
+  expect(refreshed).toBeDefined()
 })
 
 test('Editor: buildLabelRow', () => {

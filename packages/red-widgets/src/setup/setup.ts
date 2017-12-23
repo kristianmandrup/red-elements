@@ -16,6 +16,7 @@ export interface IRED {
   settings: any;
   actions: any;
   palette: any,
+  panels: any,
   stack: any,
   text: any;
   events: any;
@@ -47,6 +48,7 @@ export class RED implements IRED {
   public diff = {};
   public notifications = {};
   public search = {};
+  public panels = {}
   public palette = {
     refresh() { }
   }

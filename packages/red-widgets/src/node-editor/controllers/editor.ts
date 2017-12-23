@@ -90,7 +90,7 @@ export class Editor extends Context {
 
     var subflow;
     var isValid;
-    var hasChanged;    
+    var hasChanged;
     if (node.type.indexOf("subflow:") === 0) {
       subflow = ctx.nodes.subflow(node.type.substring(8));
       isValid = subflow.valid;
@@ -209,12 +209,22 @@ export class Editor extends Context {
     return valid;
   }
 
+  private validateStr(value, name) {
+    if (typeof value !== 'string') {
+      this.handleError(`validateNodeEditor: ${name} must be a string`, {
+        [name]: value
+      })
+    }
+  }
+
 
   validateNodeEditor(node, prefix) {
     let {
       validateNodeEditorProperty
-    } = this
-    validateNodeEditorProperty = validateNodeEditorProperty.bind(this)
+    } = this.rebind([
+        'validateNodeEditorProperty'
+      ])
+    this.validateStr(prefix, 'prefix')
 
     for (var prop in node._def.defaults) {
       if (node._def.defaults.hasOwnProperty(prop)) {
@@ -228,6 +238,7 @@ export class Editor extends Context {
         }
       }
     }
+    return this
   }
 
   validateNodeEditorProperty(node, defaults, property, prefix) {
@@ -235,6 +246,9 @@ export class Editor extends Context {
       validateNodeProperty
     } = this
     validateNodeProperty = validateNodeProperty.bind(this)
+
+    this.validateStr(prefix, 'prefix')
+    this.validateStr(property, 'property')
 
     var input = $("#" + prefix + "-" + property);
     if (input.length > 0) {
@@ -248,6 +262,7 @@ export class Editor extends Context {
         input.removeClass("input-error");
       }
     }
+    return this
   }
 
   /**
@@ -312,17 +327,27 @@ export class Editor extends Context {
    */
   prepareConfigNodeSelect(node, property, type, prefix) {
     const {
+      ctx
+    } = this
+
+    const {
       updateConfigNodeSelect,
       showEditConfigNodeDialog,
-      ctx
     } = this.rebind([
         'updateConfigNodeSelect',
         'showEditConfigNodeDialog'
       ])
 
-    var input = $("#" + prefix + "-" + property);
+    this.validateStr(prefix, 'prefix')
+    this.validateStr(property, 'property')
+
+    var selector = "#" + prefix + "-" + property
+    var input = $(selector);
     if (input.length === 0) {
-      return;
+      this.logWarning('prepareConfigNodeSelect: no such input found', {
+        selector
+      })
+      return this;
     }
     var newWidth: string | number = input.width();
     var attrStyle = input.attr('style');
@@ -370,6 +395,8 @@ export class Editor extends Context {
       label = ctx.utils.getNodeLabel(configNode, configNode.id);
     }
     input.val(label);
+
+    return this
   }
 
   /**
@@ -381,12 +408,27 @@ export class Editor extends Context {
   prepareConfigNodeButton(node, property, type, prefix) {
     const {
       ctx,
+    } = this
+
+    const {
       showEditConfigNodeDialog
     } = this.rebind([
         'showEditConfigNodeDialog'
       ])
 
+    this.validateStr(prefix, 'prefix')
+    this.validateStr(property, 'property')
+
     var input = $("#" + prefix + "-" + property);
+    var selector = "#" + prefix + "-" + property
+    var input = $(selector);
+    if (input.length === 0) {
+      this.logWarning('prepareConfigNodeButton: no such input', {
+        selector
+      })
+      return this;
+    }
+
     input.val(node[property]);
     input.attr("type", "hidden");
 
@@ -406,6 +448,7 @@ export class Editor extends Context {
       showEditConfigNodeDialog(property, type, input.val() || "_ADD_", prefix);
       e.preventDefault();
     });
+    return this
   }
 
   /**
@@ -420,9 +463,16 @@ export class Editor extends Context {
       ctx
     } = this
 
-    var input = $("#" + prefix + "-" + property);
+    this.validateStr(prefix, 'prefix')
+    this.validateStr(property, 'property')
+
+    var selector = "#" + prefix + "-" + property
+    var input = $(selector);
     if (input.length === 0) {
-      return;
+      this.logWarning('preparePropertyEditor: no such element', {
+        selector
+      })
+      return this;
     }
     if (input.attr('type') === "checkbox") {
       input.prop('checked', node[property]);
@@ -441,6 +491,7 @@ export class Editor extends Context {
         }
       }
     }
+    return this
   }
 
   /**
@@ -457,7 +508,20 @@ export class Editor extends Context {
         'validateNodeEditor'
       ])
 
+    this.validateStr(prefix, 'prefix')
+    this.validateStr(property, 'property')
+
     var input = $("#" + prefix + "-" + property);
+
+    var selector = "#" + prefix + "-" + property
+    var input = $(selector);
+    if (input.length === 0) {
+      this.logWarning('attachPropertyChangeHandler: no such input', {
+        selector
+      })
+      return this;
+    }
+
     if (definition !== undefined && "format" in definition[property] && definition[property].format !== "" && input[0].nodeName === "DIV") {
       $("#" + prefix + "-" + property).on('change keyup', function (event, skipValidation) {
         if (!skipValidation) {
@@ -471,6 +535,7 @@ export class Editor extends Context {
         }
       });
     }
+    return this
   }
 
   /**
@@ -481,8 +546,9 @@ export class Editor extends Context {
    * @param prefix
    */
   populateCredentialsInputs(node, credDef, credData, prefix) {
-    var cred;
-    for (cred in credDef) {
+    this.validateStr(prefix, 'prefix')
+
+    for (let cred in credDef) {
       if (credDef.hasOwnProperty(cred)) {
         if (credDef[cred].type == 'password') {
           if (credData[cred]) {
@@ -509,6 +575,8 @@ export class Editor extends Context {
    */
   updateNodeCredentials(node, credDefinition, prefix) {
     var changed = false;
+    this.validateStr(prefix, 'prefix')
+
     if (!node.credentials) {
       node.credentials = {
         _: {}
@@ -544,7 +612,10 @@ export class Editor extends Context {
    */
   prepareEditDialog(node, definition, prefix, done) {
     const {
-      ctx,
+      ctx
+    } = this
+
+    const {
       prepareConfigNodeButton,
       prepareConfigNodeSelect,
       preparePropertyEditor,
@@ -561,6 +632,21 @@ export class Editor extends Context {
         'populateCredentialsInputs',
         'getCredentialsURL'
       ])
+
+    this.validateStr(prefix, 'prefix')
+
+    if (!definition) {
+      this.handleError('prepareEditDialog: definition missing', {
+        definition
+      })
+    }
+
+    if (typeof definition.defaults !== 'object') {
+      this.handleError('prepareEditDialog: definition missing .defaults property', {
+        definition,
+        defaults: definition.defaults
+      })
+    }
 
     for (var d in definition.defaults) {
       if (definition.defaults.hasOwnProperty(d)) {
@@ -606,25 +692,23 @@ export class Editor extends Context {
       }
       validateNodeEditor(node, prefix);
       if (done) {
-        done();
+        done(true);
       }
+      return this
     }
 
     if (definition.credentials) {
       if (node.credentials) {
         populateCredentialsInputs(node, definition.credentials, node.credentials, prefix);
-        completePrepare();
       } else {
         $.getJSON(getCredentialsURL(node.type, node.id), function (data) {
           node.credentials = data;
           node.credentials._ = $.extend(true, {}, data);
           populateCredentialsInputs(node, definition.credentials, node.credentials, prefix);
-          completePrepare();
         });
       }
-    } else {
-      completePrepare();
     }
+    return completePrepare();
   }
 
   getEditStackTitle() {
@@ -711,15 +795,29 @@ export class Editor extends Context {
   }
 
   refreshLabelForm(container, node) {
-    const {
+    let {
       ctx,
-      formInputs,
+    } = this
+
+    const {
       buildLabelRow,
       updateNodeProperties
     } = this.rebind([
         'buildLabelRow',
         'updateNodeProperties'
       ])
+
+    if (typeof node !== 'object') {
+      this.handleError('refreshLabelForm: node must be a Node object', {
+        node
+      })
+    }
+
+    if (typeof node._def !== 'object') {
+      this.handleError('refreshLabelForm: node must have a ._def definitions property object', {
+        node
+      })
+    }
 
     var inputPlaceholder = node._def.inputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
     var outputPlaceholder = node._def.outputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
@@ -823,6 +921,7 @@ export class Editor extends Context {
         buildLabelRow().appendTo(outputsDiv);
       }
     }
+    return this
   }
 
   buildLabelRow(type, index, value, placeHolder) {
@@ -902,7 +1001,11 @@ export class Editor extends Context {
 
   showEditDialog(node) {
     let {
+      ctx,
       editStack,
+    } = this
+
+    let {
       getEditStackTitle,
       updateNodeCredentials,
       updateNodeProperties,
@@ -912,7 +1015,6 @@ export class Editor extends Context {
       buildEditForm,
       buildLabelForm,
       prepareEditDialog,
-      ctx
     } = this.rebind([
         'getEditStackTitle',
         'updateNodeCredentials',
@@ -1328,9 +1430,12 @@ export class Editor extends Context {
    * prefix - the input prefix of the parent property
    */
   showEditConfigNodeDialog(name, type, id, prefix) {
-    let {
+    const {
       ctx,
       editStack,
+    } = this
+
+    const {
       getEditStackTitle,
       buildEditForm,
       prepareEditDialog,
@@ -1347,6 +1452,9 @@ export class Editor extends Context {
         'updateNodeCredentials',
         'updateConfigNodeSelect'
       ])
+
+    this.validateStr(prefix, 'prefix')
+
     var adding = (id == "_ADD_");
     var node_def = ctx.nodes.getType(type);
     var editing_config_node = ctx.nodes.node(id);
@@ -2396,15 +2504,21 @@ export class Editor extends Context {
   }
 
   editBuffer(options) {
-    const {
+    let {
       ctx,
       editStack,
+    } = this
+
+    const {
+      buildEditForm,
       getEditStackTitle,
       editTrayWidthCache,
-      buildEditForm,
       stringToUTF8Array
     } = this.rebind([
-        'buildEditForm'
+        'buildEditForm',
+        'getEditStackTitle',
+        'editTrayWidthCache',
+        'stringToUTF8Array'
       ])
 
     var value = options.value;
