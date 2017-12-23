@@ -20,7 +20,7 @@ beforeAll(() => {
   new Searchbox()
 
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');
+  document.documentElement.innerHTML = readPage('simple');
 })
 
 test('Searchbox: is a class', () => {

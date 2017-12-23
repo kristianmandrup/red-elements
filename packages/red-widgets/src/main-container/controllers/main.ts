@@ -56,6 +56,8 @@ interface IBody extends JQuery<HTMLElement> {
 }
 
 export class Main extends Context {
+  loaded: any = {}
+
   constructor() {
     super();
 
@@ -90,9 +92,12 @@ export class Main extends Context {
       },
       cache: false,
       url: 'nodes',
-      success: function (data) {
+      success: (data) => {
         RED.nodes.setNodeList(data);
         RED.i18n.loadNodeCatalogs(loadNodes);
+        this.loaded.nodeList = {
+          time: new Date()
+        }
       }
     });
   }
@@ -112,6 +117,9 @@ export class Main extends Context {
         $(".palette-scroll").removeClass("hide");
         $("#palette-search").removeClass("hide");
         this.loadFlows();
+        this.loaded.nodes = {
+          time: new Date()
+        }
       }
     });
   }
@@ -136,6 +144,10 @@ export class Main extends Context {
         RED.view.redraw(true);
         if (/^#flow\/.+$/.test(currentHash)) {
           RED.workspaces.show(currentHash.substring(6));
+        }
+
+        this.loaded.flows = {
+          time: new Date()
         }
 
         var persistentNotifications = {};
@@ -428,14 +440,14 @@ export class Main extends Context {
     RED.keyboard = new Keyboard(RED)
     RED.library = new Library()
     RED.notifications = new Notifications(RED)
-    RED.search = new Search(RED)
-    RED.subflow = new Subflow(RED)
-    RED.tray = new Tray(RED)
-    RED.typeSearch = new TypeSearch(RED)
+    RED.search = new Search()
+    RED.subflow = new Subflow()
+    RED.tray = new Tray()
+    RED.typeSearch = new TypeSearch()
     RED.userSettings = new UserSettings()
     RED.utils = new Utils(RED)
     RED.workspaces = new Workspaces()
-    RED.sidebar = new Sidebar(RED)
+    RED.sidebar = new Sidebar()
 
     RED.palette = new Palette()
 
@@ -447,7 +459,7 @@ export class Main extends Context {
     RED.touch = {
       radialMenu: new RadialMenu(RED)
     }
-    RED.nodes = new Nodes(RED)
+    RED.nodes = new Nodes()
 
     // RED.view.init();
     // RED.userSettings.init();
@@ -482,5 +494,13 @@ export class Main extends Context {
     $(".header-toolbar").show();
 
     this.loadNodeList();
+
+    this.loaded.editor = {
+      time: new Date()
+    }
+  }
+
+  resetLoaded() {
+    this.loaded = {}
   }
 }

@@ -414,7 +414,7 @@ export class Tabs extends Context {
         id,
         tabs
       })
-      return
+      return this
     }
 
     if (options.onremove) {

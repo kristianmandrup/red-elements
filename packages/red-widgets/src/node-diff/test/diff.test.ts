@@ -26,7 +26,6 @@ beforeAll(() => {
   document.documentElement.innerHTML = readPage('diff', __dirname);
 })
 
-
 test('Diff: create', () => {
   expect(diff.currentDiff).toEqual({})
   expect(diff.diffVisible).toBeFalsy()
@@ -79,8 +78,6 @@ test('Diff: formatWireProperty', () => {
   let wires = []
   let allNodes = []
   diff.formatWireProperty(wires, allNodes)
-
-  // use nightmare
 })
 
 test('Diff: createNodeIcon', () => {
@@ -88,8 +85,6 @@ test('Diff: createNodeIcon', () => {
   let node = {}
   let def = {}
   diff.createNodeIcon(node, def)
-
-  // use nightmare
 })
 
 test('Diff: createNode', () => {
@@ -97,8 +92,6 @@ test('Diff: createNode', () => {
   let node = {}
   let def = {}
   diff.createNode(node, def)
-
-  // use nightmare
 })
 
 function Stat() {
@@ -110,8 +103,6 @@ function Stat() {
 }
 
 test('Diff: createNodeDiffRow', () => {
-  // TODO: real data
-  var diff = create(ctx);
   let node = {
     id: '25test.stt'
   }
@@ -133,8 +124,6 @@ test('Diff: createNodeDiffRow', () => {
     resolutions: []
   }
   diff.createNodeDiffRow(node, stats)
-
-  // use nightmare
 })
 
 test('Diff: createNodePropertiesTable', () => {
@@ -144,16 +133,13 @@ test('Diff: createNodePropertiesTable', () => {
   let localNodeObj = {}
   let remoteNodeObj = {}
   diff.createNodePropertiesTable(def, node, localNodeObj, remoteNodeObj)
-
-  // use nightmare
 })
-
 
 
 // test('Diff: refreshConflictHeader', () => {
 //   diff.refreshConflictHeader()
 
-//   // use nightmare
+//
 // })
 
 test('Diff: getRemoteDiff', () => {
@@ -161,19 +147,16 @@ test('Diff: getRemoteDiff', () => {
     return 'x'
   }
   diff.getRemoteDiff(cb)
-  // use nightmare
 })
 
 test('Diff: showRemoteDiff', () => {
   let difference = {}
   diff.showRemoteDiff(difference)
-  // use nightmare
 })
 
 test('Diff: showRemoteDiff', () => {
   let difference = {}
   diff.showRemoteDiff(difference)
-  // use nightmare
 })
 
 test('Diff: parseNodes', () => {
@@ -208,7 +191,6 @@ test('Diff: parseNodes', () => {
   ]
   var parseNode = diff.parseNodes(nodeList)
   expect(typeof parseNode).toBe('object')
-  // use nightmare
 })
 
 test('Diff: generateDiff', () => {
@@ -244,7 +226,7 @@ test('Diff: generateDiff', () => {
   let currentNodes = nodeList
   let newNodes = nodeList
   diff.generateDiff(currentNodes, newNodes)
-  // use nightmare
+
 })
 
 test('Diff: resolveDiffs', () => {
@@ -265,7 +247,7 @@ test('Diff: resolveDiffs', () => {
     added: []
   }
   diff.resolveDiffs(localDiff, remoteDiff)
-  // use nightmare
+
 })
 
 test('Diff: showDiff', () => {
@@ -292,7 +274,7 @@ test('Diff: showDiff', () => {
     resolutions: []
   }
   diff.showDiff(difference)
-  // use nightmare
+
 })
 
 test('Diff: mergeDiff', () => {
@@ -317,7 +299,7 @@ test('Diff: mergeDiff', () => {
     resolutions: []
   }
   diff.mergeDiff(difference)
-  // use nightmare
+
 })
 test('Diff: buildDiffPanel with out contanier can not create panel', () => {
   let panel;
@@ -385,7 +367,7 @@ test('Diff: showDiff', () => {
     resolutions: []
   }
   diff.showDiff(difference)
-  // use nightmare
+
 })
 test('Diff: can click tray options merge button', () => {
   if (trayOptions) {
@@ -414,7 +396,7 @@ test('Diff: mergeDiff', () => {
     resolutions: ['1', '3']
   }
   diff.mergeDiff(difference)
-  // use nightmare
+
 })
 test('Diff: createNodeConflictRadioBoxes', () => {
   let node = {

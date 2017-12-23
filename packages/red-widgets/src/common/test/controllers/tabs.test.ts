@@ -19,7 +19,7 @@ beforeAll(() => {
   // Popover has no widget factory, just a class
 
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');
+  document.documentElement.innerHTML = readPage('simple');
 })
 
 let widgetElem
@@ -215,7 +215,7 @@ test('Tabs: updateTabWidths', () => {
 test('Tabs: removeTab', () => {
   let id = 'first'
   let updated = widgetElem.removeTab(id)
-  expect(updated).toBe(widgetElem)
+  expect(updated).toBeDefined()
 })
 
 test('Tabs: addTab(tab) - returns added and increases tab count', () => {

@@ -442,11 +442,15 @@ export class Diff extends Context {
 
   createNodeDiffRow(node, stats) {
     let {
-      currentDiff,
       RED,
-      createNode
+      currentDiff,
     } = this
-    createNode = createNode.bind(this)
+
+    const {
+      createNode
+    } = this.rebind([
+        'createNode'
+      ])
 
     var localDiff = currentDiff.localDiff || {};
     var remoteDiff = currentDiff.remoteDiff || {};

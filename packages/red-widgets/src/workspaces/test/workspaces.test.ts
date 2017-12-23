@@ -18,12 +18,59 @@ beforeEach(() => {
 beforeAll(() => {
   // Searchbox(RED)
   // EditableList(RED)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple')
+  // document.documentElement.innerHTML = readPage('workspaces', __dirname)
+  document.documentElement.innerHTML = readPage('simple')
 })
 
 test('Workspaces: create', () => {
   expect(ws.activeWorkspace).toBeDefined()
   expect(ws.workspace_tabs).toBeDefined()
+})
+
+
+test('tabs', () => {
+  let tabs = ws.tabs
+  expect(tabs).toBeEmpty()
+})
+
+test('tabs - when have tabs, not empty', () => {
+  let tabs = ws.tabs
+  let id = 'tab1'
+  let wsTab = {
+    id
+  }
+  ws.addWorkspace(wsTab)
+  expect(tabs).not.toBeEmpty()
+})
+
+test('tabIds - no tabs then no ids', () => {
+  let ids = ws.tabIds
+  expect(ids).toBeEmpty()
+})
+
+test('tabIds', () => {
+  let id = 'tab1'
+  let wsTab = {
+    id
+  }
+  ws.addWorkspace(wsTab)
+  let ids = ws.tabIds
+  expect(ids).toContain(id)
+})
+
+test('hasTabId - no tabs, has none matching on id', () => {
+  let id = 'tab1'
+  expect(ws.hasTabId('tab1')).toBeFalsy()
+})
+
+
+test('hasTabId - found when has tab with matching id', () => {
+  let id = 'tab1'
+  let wsTab = {
+    id
+  }
+  ws.addWorkspace(wsTab)
+  expect(ws.hasTabId(id)).toBeTruthy()
 })
 
 test('Workspaces: addWorkspace', () => {
