@@ -47,7 +47,7 @@ export class Editor extends Context {
     this.editTrayWidthCache = {};
 
     // fix: use class
-    ctx.tray = new Tray(ctx);
+    ctx.tray = new Tray();
 
     if (typeof ctx.actions !== 'object') {
       throw new Error('ctx.actions must be an Actions object')
@@ -209,22 +209,13 @@ export class Editor extends Context {
     return valid;
   }
 
-  private validateStr(value, name) {
-    if (typeof value !== 'string') {
-      this.handleError(`validateNodeEditor: ${name} must be a string`, {
-        [name]: value
-      })
-    }
-  }
-
-
   validateNodeEditor(node, prefix) {
     let {
       validateNodeEditorProperty
     } = this.rebind([
         'validateNodeEditorProperty'
       ])
-    this.validateStr(prefix, 'prefix')
+    this.validateStr(prefix, 'prefix', 'validateNodeEditor')
 
     for (var prop in node._def.defaults) {
       if (node._def.defaults.hasOwnProperty(prop)) {
@@ -247,8 +238,8 @@ export class Editor extends Context {
     } = this
     validateNodeProperty = validateNodeProperty.bind(this)
 
-    this.validateStr(prefix, 'prefix')
-    this.validateStr(property, 'property')
+    this.validateStr(prefix, 'prefix', 'validateNodeEditorProperty')
+    this.validateStr(property, 'property', 'validateNodeEditorProperty')
 
     var input = $("#" + prefix + "-" + property);
     if (input.length > 0) {
@@ -338,8 +329,8 @@ export class Editor extends Context {
         'showEditConfigNodeDialog'
       ])
 
-    this.validateStr(prefix, 'prefix')
-    this.validateStr(property, 'property')
+    this.validateStr(prefix, 'prefix', 'prepareConfigNodeSelect')
+    this.validateStr(property, 'property', 'prepareConfigNodeSelect')
 
     var selector = "#" + prefix + "-" + property
     var input = $(selector);
@@ -416,8 +407,8 @@ export class Editor extends Context {
         'showEditConfigNodeDialog'
       ])
 
-    this.validateStr(prefix, 'prefix')
-    this.validateStr(property, 'property')
+    this.validateStr(prefix, 'prefix', 'prepareConfigNodeButton')
+    this.validateStr(property, 'property', 'prepareConfigNodeButton')
 
     var input = $("#" + prefix + "-" + property);
     var selector = "#" + prefix + "-" + property
@@ -463,8 +454,9 @@ export class Editor extends Context {
       ctx
     } = this
 
-    this.validateStr(prefix, 'prefix')
-    this.validateStr(property, 'property')
+    this.validateStr(prefix, 'prefix', 'preparePropertyEditor')
+    this.validateStr(property, 'property', 'preparePropertyEditor')
+    this.validateObj(property, 'definition', 'preparePropertyEditor')
 
     var selector = "#" + prefix + "-" + property
     var input = $(selector);
@@ -508,8 +500,9 @@ export class Editor extends Context {
         'validateNodeEditor'
       ])
 
-    this.validateStr(prefix, 'prefix')
-    this.validateStr(property, 'property')
+    this.validateStr(prefix, 'prefix', 'attachPropertyChangeHandler')
+    this.validateStr(property, 'property', 'attachPropertyChangeHandler')
+    this.validateObj(property, 'definition', 'attachPropertyChangeHandler')
 
     var input = $("#" + prefix + "-" + property);
 
@@ -546,7 +539,7 @@ export class Editor extends Context {
    * @param prefix
    */
   populateCredentialsInputs(node, credDef, credData, prefix) {
-    this.validateStr(prefix, 'prefix')
+    this.validateStr(prefix, 'prefix', 'populateCredentialsInputs')
 
     for (let cred in credDef) {
       if (credDef.hasOwnProperty(cred)) {
@@ -575,7 +568,7 @@ export class Editor extends Context {
    */
   updateNodeCredentials(node, credDefinition, prefix) {
     var changed = false;
-    this.validateStr(prefix, 'prefix')
+    this.validateStr(prefix, 'prefix', 'updateNodeCredentials')
 
     if (!node.credentials) {
       node.credentials = {
@@ -633,7 +626,7 @@ export class Editor extends Context {
         'getCredentialsURL'
       ])
 
-    this.validateStr(prefix, 'prefix')
+    this.validateStr(prefix, 'prefix', 'prepareEditDialog')
 
     if (!definition) {
       this.handleError('prepareEditDialog: definition missing', {
@@ -807,17 +800,7 @@ export class Editor extends Context {
         'updateNodeProperties'
       ])
 
-    if (typeof node !== 'object') {
-      this.handleError('refreshLabelForm: node must be a Node object', {
-        node
-      })
-    }
-
-    if (typeof node._def !== 'object') {
-      this.handleError('refreshLabelForm: node must have a ._def definitions property object', {
-        node
-      })
-    }
+    this.validateNodeDef(node, 'node', 'refreshLabelForm')
 
     var inputPlaceholder = node._def.inputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
     var outputPlaceholder = node._def.outputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
@@ -932,10 +915,14 @@ export class Editor extends Context {
     var result = $('<div>', {
       class: "node-label-form-row"
     });
+
     if (type === undefined) {
       $('<span>').html(ctx._("editor.noDefaultLabel")).appendTo(result);
       result.addClass("node-label-form-none");
     } else {
+      this.validateStr(type, 'type', 'buildLabelRow')
+      this.validateStrOrNum(index, 'index', 'buildLabelRow')
+
       result.addClass("");
       var id = "node-label-form-" + type + "-" + index;
       $('<label>', {
@@ -957,13 +944,18 @@ export class Editor extends Context {
 
   buildLabelForm(container, node) {
     const {
-      ctx,
+      ctx
+    } = this
+
+    const {
       buildLabelRow
     } = this.rebind([
         'buildLabelRow'
       ])
 
     var dialogForm = $('<form class="dialog-form form-horizontal" autocomplete="off"></form>').appendTo(container);
+
+    this.validateNodeDef(node, 'node', 'buildLabelForm')
 
     var inputCount = node.inputs || node._def.inputs || 0;
     var outputCount = node.outputs || node._def.outputs || 0;
@@ -1439,7 +1431,6 @@ export class Editor extends Context {
       getEditStackTitle,
       buildEditForm,
       prepareEditDialog,
-      newScope,
       validateNode,
       updateNodeCredentials,
       updateConfigNodeSelect
@@ -1447,13 +1438,12 @@ export class Editor extends Context {
         'getEditStackTitle',
         'buildEditForm',
         'prepareEditDialog',
-        'newScope',
         'validateNode',
         'updateNodeCredentials',
         'updateConfigNodeSelect'
       ])
 
-    this.validateStr(prefix, 'prefix')
+    this.validateStr(prefix, 'prefix', 'showEditConfigNodeDialog')
 
     var adding = (id == "_ADD_");
     var node_def = ctx.nodes.getType(type);
@@ -1787,6 +1777,7 @@ export class Editor extends Context {
     }
 
     ctx.tray.show(trayOptions);
+    return this
   }
 
   defaultConfigNodeSort(A, B) {
@@ -1856,6 +1847,7 @@ export class Editor extends Context {
         }, 50);
       }
     }
+    return this
   }
 
   showEditSubflowDialog(subflow) {
@@ -2044,6 +2036,7 @@ export class Editor extends Context {
       show: function () { }
     }
     ctx.tray.show(trayOptions);
+    return this
   }
 
   editExpression(options) {
@@ -2384,6 +2377,7 @@ export class Editor extends Context {
       trayOptions.width = editTrayWidthCache[type];
     }
     ctx.tray.show(trayOptions);
+    return this
   }
 
 
@@ -2474,6 +2468,7 @@ export class Editor extends Context {
       trayOptions.width = editTrayWidthCache[type];
     }
     ctx.tray.show(trayOptions);
+    return this
   }
 
   stringToUTF8Array(str) {
@@ -2682,6 +2677,7 @@ export class Editor extends Context {
       trayOptions.width = editTrayWidthCache[type];
     }
     ctx.tray.show(trayOptions);
+    return this
   }
 
   createEditor(options) {

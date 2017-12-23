@@ -178,7 +178,10 @@ test('Editor: updateNodeCredentials', () => {
 test('Editor: prepareEditDialog', () => {
 
   let node = {
-    id: 'x'
+    id: 'x',
+    _def: {
+
+    }
   }
   let definition = {
     defaults: {
@@ -208,7 +211,7 @@ test('Editor: buildEditForm', () => {
   // use nightmare
 })
 
-test.only('Editor: refreshLabelForm', () => {
+test('Editor: refreshLabelForm', () => {
 
   let container = $('#container')
   let node = {
@@ -235,7 +238,10 @@ test('Editor: buildLabelForm', () => {
 
   let container = $('#container')
   let node = {
-    id: 'x'
+    id: 'x',
+    _def: {
+
+    }
   }
   editor.buildLabelForm(container, node)
   // use nightmare
@@ -244,7 +250,10 @@ test('Editor: buildLabelForm', () => {
 test('Editor: showEditDialog', () => {
 
   let node = {
-    id: 'x'
+    id: 'x',
+    _def: {
+
+    }
   }
   editor.showEditDialog(node)
   // use nightmare
@@ -253,7 +262,10 @@ test('Editor: showEditDialog', () => {
 test('Editor: showEditConfigNodeDialog', () => {
 
   let node = {
-    id: 'x'
+    id: 'x',
+    _def: {
+
+    }
   }
   let type = 'io'
   let id = 'x'

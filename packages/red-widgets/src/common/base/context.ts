@@ -16,6 +16,43 @@ export class BaseContext {
     this.ctx = this.RED;
   }
 
+  protected validateArray(value, name, methodName) {
+    if (!Array.isArray(value)) {
+      this.handleError(`${methodName}: ${name} must be an Array`, {
+        [name]: value
+      })
+    }
+  }
+
+  protected validateObj(value, name, methodName) {
+    if (typeof value !== 'object') {
+      this.handleError(`${methodName}: ${name} must be an Object`, {
+        [name]: value
+      })
+    }
+  }
+
+  protected validateStr(value, name, methodName) {
+    if (typeof value !== 'string') {
+      this.handleError(`${methodName}: ${name} must be a string`, {
+        [name]: value
+      })
+    }
+  }
+
+  protected validateNodeDef(node, name, methodName) {
+    this.validateObj(node, name, methodName)
+    this.validateObj(node._def, `${name}._def`, methodName)
+  }
+
+  protected validateStrOrNum(value, name, methodName) {
+    if (typeof value !== 'string' && typeof value !== 'number') {
+      this.handleError(`${methodName}: ${name} must be a string or number`, {
+        [name]: value
+      })
+    }
+  }
+
   logWarning(msg, data?) {
     console.log(msg, data)
   }
