@@ -18,15 +18,54 @@ import {
 } from '../../tray'
 
 import marked from 'marked'
-import jsonata from 'jsonata'
+import { jsonata } from './formatter'
 import * as ace from 'brace'
-
-// TODO See how this is configure in original node-red editor code!!
-// See jsonata code: https://github.com/jsonata-js/jsonata/blob/master/jsonata.js
-jsonata.functions = jsonata()
 
 const { log } = console
 
+// TODO See how this is configure in original node-red editor code!!
+// https://github.com/node-red/node-red/blob/master/editor/js/ui/editor.js
+
+// See jsonata code: https://github.com/jsonata-js/jsonata/blob/master/jsonata.js
+// 1.3 version: https://github.com/jsonata-js/jsonata/blob/20e04942ec78fc0b8ada1d6caf22ad3936466d7d/jsonata.js
+
+// please see Issue raised here: https://github.com/node-red/node-red/issues/1534
+
+// apparently jsonata is configured in formatter.js of vendor/jsonata
+// https://github.com/node-red/node-red/tree/master/editor/vendor/jsonata
+
+
+// jsonata.functions =
+//   {
+//     '$append': { args: ['array', 'array'] },
+//     '$average': { args: ['value'] },
+//     '$boolean': { args: ['value'] },
+//     '$contains': { args: ['str', 'pattern'] },
+//     '$count': { args: ['array'] },
+//     '$exists': { args: ['value'] },
+//     '$join': { args: ['array', 'separator'] },
+//     '$keys': { args: ['object'] },
+//     '$length': { args: ['string'] },
+//     '$lookup': { args: ['object', 'key'] },
+//     '$lowercase': { args: ['string'] },
+//     '$match': { args: ['str', 'pattern', 'limit'] },
+//     '$map': { args: [] },
+//     '$max': { args: ['array'] },
+//     '$min': { args: ['array'] },
+//     '$not': { args: ['value'] },
+//     '$number': { args: ['value'] },
+//     '$reduce': { args: [] },
+//     '$replace': { args: ['str', 'pattern', 'replacement', 'limit'] },
+//     '$split': { args: ['string', 'separator', 'limit'] },
+//     '$spread': { args: ['object'] },
+//     '$string': { args: ['value'] },
+//     '$substring': { args: ['string', 'start', 'length'] },
+//     '$substringAfter': { args: ['string', 'chars'] },
+//     '$substringBefore': { args: ['string', 'chars'] },
+//     '$sum': { args: ['array'] },
+//     '$trim': { args: ['str'] },
+//     '$uppercase': { args: ['string'] }
+//   }
 import { Context } from '../../common/base'
 
 interface ITabSelect extends JQuery<HTMLElement> {
