@@ -24,7 +24,7 @@ export class BaseContext {
     }
   }
 
-  protected validateObj(value, name, methodName) {
+  protected _validateObj(value, name, methodName) {
     if (typeof value !== 'object') {
       this.handleError(`${methodName}: ${name} must be an Object`, {
         [name]: value
@@ -32,7 +32,7 @@ export class BaseContext {
     }
   }
 
-  protected validateStr(value, name, methodName) {
+  protected _validateStr(value, name, methodName) {
     if (typeof value !== 'string') {
       this.handleError(`${methodName}: ${name} must be a string`, {
         [name]: value
@@ -40,22 +40,42 @@ export class BaseContext {
     }
   }
 
-  protected validateJQ(obj, name, methodName) {
+  protected _validateJQ(obj, name, methodName) {
     if (obj instanceof jQuery) return true
     this.handleError(`${methodName}: ${name} must be a $ (jQuery) element`, {
       [name]: obj
     })
   }
 
-  protected validateNodeDef(node, name, methodName) {
-    this.validateObj(node, name, methodName)
-    this.validateObj(node._def, `${name}._def`, methodName)
-    this.validateObj(node._def, `${name}._def`, methodName)
-    this.validateObj(node.in, `${name}.in`, methodName)
-    this.validateObj(node.out, `${name}.out`, methodName)
+  protected _validateDefined(value, name, methodName, context?) {
+    if (value !== undefined && value !== null) return true
+    this.handleError(`${methodName}: ${name} must be defined`, {
+      [name]: value,
+      context
+    })
   }
 
-  protected validateStrOrNum(value, name, methodName) {
+  protected _validateProps(obj, props, methodName) {
+    props.map(prop => this._validateDefined(obj[prop], prop, methodName, obj))
+  }
+
+  protected _validateNode(node, name, methodName) {
+    this._validateObj(node, name, methodName)
+    // this._validateStr(node.id, `${name}.id`, methodName)
+    this._validateStr(node.type, `${name}.type`, methodName)
+
+    // this._validateObj(node.in, `${name}.in`, methodName)
+    // this._validateObj(node.out, `${name}.out`, methodName)
+    // this._validateNodeDef(node._def, `${name}._def`, methodName)
+  }
+
+  protected _validateNodeDef(def, name, methodName) {
+    this._validateDefined(def, name, methodName)
+    this._validateObj(def.defaults, `${name}.defaults`, methodName)
+    this._validateObj(def.set, `${name}.set`, methodName)
+  }
+
+  protected _validateStrOrNum(value, name, methodName) {
     if (typeof value !== 'string' && typeof value !== 'number') {
       this.handleError(`${methodName}: ${name} must be a string or number`, {
         [name]: value

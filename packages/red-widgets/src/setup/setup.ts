@@ -1,10 +1,9 @@
-// import { Bottle } from "../../node_modules/bottlejs/dist/bottle";
-
 import { Menu } from '../common/controllers';
 import { Container, injectable, tagged, named } from 'inversify';
 import 'reflect-metadata';
 let container = new Container();
 export let TYPES = { RED: 'IRED' };
+
 export interface IRED {
   i18n: any;
   comms: any;
@@ -48,7 +47,9 @@ export class RED implements IRED {
   public diff = {};
   public notifications = {};
   public search = {};
-  public panels = {}
+  public panels = {
+    create() { }
+  }
   public palette = {
     refresh() { }
   }
@@ -104,6 +105,7 @@ export class RED implements IRED {
   }
   public text = {
     bidi: {
+      prepareInput() { },
       // for renameTab
       resolveBaseTextDir(label) {
         return label;
@@ -120,6 +122,15 @@ export class RED implements IRED {
     create(obj) { }
   }
   public nodes = {
+    id() {
+      return 'xyz'
+    },
+    eachNode() {
+      return {}
+    },
+    eachConfig() {
+      return {}
+    },
     eachWorkspace() {
       return {}
     },
@@ -144,7 +155,16 @@ export class RED implements IRED {
       },
       getNodeTypes() { return [] }
     },
-    getType() { },
+    getType() {
+      return {
+        set: {
+          module: 'node-red'
+        },
+        defaults: {
+
+        }
+      }
+    },
     createExportableNodeSet() { },
     workspace(id) {
       return {
@@ -185,6 +205,21 @@ export class RED implements IRED {
     push(event) { }
   }
   public editor = {
+    createEditor() {
+      return {
+        getValue() {
+          return 'xyz'
+        },
+        setValue() { },
+        resize() { },
+        getSession() {
+          return {
+            on() { },
+            setValue() { }
+          }
+        }
+      }
+    },
     validateNode(node) { }
   }
   public userSettings = {

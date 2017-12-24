@@ -18,6 +18,8 @@ import {
   $
 } from '../../common'
 
+const { log } = console
+
 export class Tray extends Context {
   stack: any = []
   editorStack: any = $("#editor-stack")
@@ -25,10 +27,14 @@ export class Tray extends Context {
 
   constructor() {
     super()
-    const { RED } = this
-
-    // FIX: use instance vars
-    let handleWindowResize = this.handleWindowResize.bind(this)
+    const {
+      RED
+    } = this
+    const {
+      handleWindowResize
+    } = this.rebind([
+        'handleWindowResize'
+      ])
 
     $(window).resize(handleWindowResize);
     RED.events.on("sidebar:resize", handleWindowResize);
@@ -43,9 +49,10 @@ export class Tray extends Context {
   }
 
   show(options) {
-    // fix
-    let stack = this.stack
-    let showTray = this.showTray
+    let { stack, showTray } = this
+    log('Tray: show', {
+      options
+    })
 
     if (stack.length > 0) {
       var oldTray = stack[stack.length - 1];
@@ -64,8 +71,9 @@ export class Tray extends Context {
   }
 
   async close() {
-    // fix
-    let stack = this.stack
+    // log('close')
+
+    let { stack } = this
     if (stack.length > 0) {
       var tray = stack.pop();
       tray.tray.css({
@@ -108,6 +116,8 @@ export class Tray extends Context {
   resize() { }
 
   showTray(options) {
+    log('showTray', options)
+
     var editor;
     var el = <any>$('<div class="editor-tray"></div>');
     var header = $('<div class="editor-tray-header"></div>').appendTo(el);
@@ -127,6 +137,10 @@ export class Tray extends Context {
     var buttonBar = $('<div class="editor-tray-toolbar"></div>').appendTo(header);
     var primaryButton;
     if (options.buttons) {
+      log('do buttons', {
+        buttons: options.buttons
+      })
+
       for (var i = 0; i < options.buttons.length; i++) {
         var button = options.buttons[i];
         var b = (<any>$('<button>')).button().appendTo(buttonBar);
@@ -164,10 +178,16 @@ export class Tray extends Context {
       preferredWidth: 0,
       width: 0
     };
+
     this.stack.push(tray);
+
     let handleWindowResize = this.handleWindowResize.bind(this);
+
     let openingTray = this.openingTray;
+
     if (!options.maximized) {
+      log('adjust size')
+
       let editorStack = this.editorStack;
       el.draggable({
         handle: resizer,
@@ -176,6 +196,10 @@ export class Tray extends Context {
           el.width('auto');
         },
         drag: function (event, ui) {
+          // log('drag', {
+          //   ui
+          // })
+
           var absolutePosition = editorStack.position().left + ui.position.left
           if (absolutePosition < 7) {
             ui.position.left += 7 - absolutePosition;
@@ -192,6 +216,10 @@ export class Tray extends Context {
           tray.width = -ui.position.left;
         },
         stop: function (event, ui) {
+          // log('stop', {
+          //   ui
+          // })
+
           el.width(-ui.position.left);
           el.css({
             left: ''
@@ -206,9 +234,9 @@ export class Tray extends Context {
       });
     }
 
-    function finishBuild() {
-      // fix
-      // let tray = tray
+    let finishBuild = () => {
+      log('finishBuild')
+
       $("#header-shade").show();
       $("#editor-shade").show();
       $("#palette-shade").show();
@@ -218,10 +246,17 @@ export class Tray extends Context {
       body.css({
         "minWidth": tray.preferredWidth - 40
       });
-
+      // TODO: should be general utility function to select and validate is found
+      let editorStack = $('#editor-stack')
+      if (editorStack.length < 1) {
+        this.handleError('#editor-stack element not found', {
+          editorStack
+        })
+      }
+      let stackPos = editorStack.position()
       if (options.width) {
-        if (options.width > $("#editor-stack").position().left - 8) {
-          options.width = $("#editor-stack").position().left - 8;
+        if (options.width > stackPos.left - 8) {
+          options.width = stackPos.left - 8;
         }
         el.width(options.width);
       } else {
@@ -269,20 +304,33 @@ export class Tray extends Context {
       }, 0);
     }
 
+    log('finally')
+
     if (options.open) {
+      log('open', {
+        open: options.open
+      })
+
       if (options.open.length === 1) {
+        log('open:1', el)
         options.open(el);
         finishBuild();
       } else {
+        log('open:1', {
+          el,
+          finishBuild
+        })
         options.open(el, finishBuild);
       }
     } else {
+      log('just finish')
       finishBuild();
     }
   }
 
   handleWindowResize() {
-    // fix
+    // log('handleWindowResize')
+
     let stack = this.stack
     if (stack.length > 0) {
       var tray = stack[stack.length - 1];

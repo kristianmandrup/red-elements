@@ -23,6 +23,26 @@ beforeAll(() => {
   document.documentElement.innerHTML = readPage('editor', __dirname);
 })
 
+function merge(a, b) {
+  return Object.assign(a, b)
+}
+
+function fakeNode(override = {}) {
+  return Object.assign({
+    id: 'x',
+    in: {},
+    out: {},
+    type: 'subflow',
+    _def: {
+      credentials: {},
+      defaults: {},
+      set: {
+        module: 'node-red'
+      }
+    }
+  }, override)
+}
+
 test('Editor: create', () => {
   expect(editor.editStack).toEqual([])
 })
@@ -34,30 +54,25 @@ test('Editor: getCredentialsURL', () => {
 
 test('Editor: validateNode', () => {
   // TODO: use real (or better mock) node
-  let node = {
-    id: 'x',
+  let node = merge(fakeNode(), {
     type: 'subflow:',
     valid: true,
     changed: true
-  }
+  })
   let valid = editor.validateNode(node)
   expect(valid).toBeTruthy()
 })
 
 test('Editor: validateNodeProperties', () => {
-  let node = {
-    id: 'x'
-  }
-  let definition = {}
+  let node = fakeNode()
+  let definition = node._def
   let properties = {}
   let valid = editor.validateNodeProperties(node, definition, properties)
   expect(valid).toBeTruthy()
 })
 
 test('Editor: validateNodeProperty', () => {
-  let node = {
-    id: 'x'
-  }
+  let node = fakeNode()
   let definition = {
     name: {
       "required": true
@@ -71,9 +86,7 @@ test('Editor: validateNodeProperty', () => {
 })
 
 test('Editor: validateNodeEditorProperty', () => {
-  let node = {
-    id: 'x'
-  }
+  let node = fakeNode()
   let defaults = {}
   let property = 'name';
   let prefix = 'a'
@@ -82,31 +95,21 @@ test('Editor: validateNodeEditorProperty', () => {
 })
 
 test('Editor: validateNodeEditor', () => {
-  let node = {
-    id: 'x',
-    _def: {
-      defaults: [],
-      credentials: []
-    }
-  }
+  let node = fakeNode()
   let prefix = 'a'
   let valid = editor.validateNodeEditor(node, prefix)
   expect(valid).toBeDefined()
 })
 
 test('Editor: updateNodeProperties', () => {
-  let node = {
-    id: 'x'
-  }
+  let node = fakeNode()
   let output = {}
   let removedLinks = editor.updateNodeProperties(node, {})
   expect(removedLinks).toBeTruthy()
 })
 
 test('Editor: prepareConfigNodeSelect', () => {
-  let node = {
-    id: 'x'
-  }
+  let node = fakeNode()
   let type = 'io'
   let property = 'name'
   let prefix = 'a'
@@ -115,9 +118,7 @@ test('Editor: prepareConfigNodeSelect', () => {
 })
 
 test('Editor: prepareConfigNodeButton', () => {
-  let node = {
-    id: 'x'
-  }
+  let node = fakeNode()
   let type = 'io'
   let property = 'name'
   let prefix = 'a'
@@ -126,9 +127,7 @@ test('Editor: prepareConfigNodeButton', () => {
 })
 
 test('Editor: preparePropertyEditor', () => {
-  let node = {
-    id: 'x'
-  }
+  let node = fakeNode()
   let definition = {}
   let property = 'name'
   let prefix = 'a'
@@ -137,9 +136,7 @@ test('Editor: preparePropertyEditor', () => {
 })
 
 test('Editor: attachPropertyChangeHandler', () => {
-  let node = {
-    id: 'x'
-  }
+  let node = fakeNode()
   let definition = {}
   let property = 'name'
   let prefix = 'a'
@@ -148,9 +145,7 @@ test('Editor: attachPropertyChangeHandler', () => {
 })
 
 test('Editor: populateCredentialsInputs', () => {
-  let node = {
-    id: 'x'
-  }
+  let node = fakeNode()
   let credDef = {}
   let credData = {}
   let prefix = 'a'
@@ -160,9 +155,7 @@ test('Editor: populateCredentialsInputs', () => {
 })
 
 test('Editor: updateNodeCredentials', () => {
-  let node = {
-    id: 'x'
-  }
+  let node = fakeNode()
   let credDef = {}
   let prefix = 'a'
   editor.updateNodeCredentials(node, credDef, prefix)
@@ -171,24 +164,16 @@ test('Editor: updateNodeCredentials', () => {
 })
 
 test('Editor: prepareEditDialog', () => {
-  let node = {
-    id: 'x',
-    _def: {
-
-    }
-  }
-  let definition = {
-    defaults: {
-      // some default props
-    }
-  }
+  let node = fakeNode()
+  let definition = node._def
   let prefix = 'a'
-  let done = editor.prepareEditDialog(node, definition, prefix)
-  expect(done).toBeDefined()
+  let done = editor.prepareEditDialog(node, definition, prefix, (result) => {
+    expect(result).toBeDefined()
+  })
 })
 
 test('Editor: getEditStackTitle', () => {
-  let expected = 'my-title'
+  let expected = '<ul class=\"editor-tray-breadcrumbs\"></ul>'
   let title = editor.getEditStackTitle()
   expect(title).toBe(expected)
 })
@@ -205,12 +190,7 @@ test('Editor: buildEditForm', () => {
 
 test('Editor: refreshLabelForm', () => {
   let container = $('#container')
-  let node = {
-    id: 'x',
-    _def: {
-
-    }
-  }
+  let node = fakeNode()
   let refreshed = editor.refreshLabelForm(container, node)
   expect(refreshed).toBeDefined()
 })
@@ -227,42 +207,19 @@ test('Editor: buildLabelRow', () => {
 test('Editor: buildLabelForm', () => {
 
   let container = $('#container')
-  let node = {
-    id: 'x',
-    _def: {
-
-    }
-  }
+  let node = fakeNode()
   editor.buildLabelForm(container, node)
   // use nightmare
 })
 
-test.only('Editor: showEditDialog - subflow', () => {
-  let node = {
-    id: 'x',
-    in: {},
-    out: {},
-    type: 'subflow',
-    _def: {
-      defaults: {
-
-      },
-      set: {
-        module: 'node-red'
-      }
-    }
-  }
+test('Editor: showEditDialog - subflow', () => {
+  let node = fakeNode()
   let shown = editor.showEditDialog(node)
   expect(shown).toBeDefined()
 })
 
 test('Editor: showEditConfigNodeDialog', () => {
-  let node = {
-    id: 'x',
-    _def: {
-
-    }
-  }
+  let node = fakeNode()
   let type = 'io'
   let id = 'x'
   let prefix = 'my-'
@@ -270,7 +227,6 @@ test('Editor: showEditConfigNodeDialog', () => {
 })
 
 test('Editor: defaultConfigNodeSort', () => {
-
   let A = {
     id: 'a'
   }
@@ -281,7 +237,6 @@ test('Editor: defaultConfigNodeSort', () => {
 })
 
 test('Editor: updateConfigNodeSelect', () => {
-
   let name = 'x'
   let type = 'io'
   let value = '2'
@@ -290,37 +245,65 @@ test('Editor: updateConfigNodeSelect', () => {
 })
 
 test('Editor: showEditSubflowDialog', () => {
-
-  let subflow = {}
-  editor.showEditSubflowDialog(subflow)
+  let subflow = fakeNode()
+  let shown = editor.showEditSubflowDialog(subflow)
+  expect(shown).toBeDefined()
 })
 
-test('Editor: editExpression', () => {
+test.only('Editor: editExpression', () => {
+  let options = {
+    value: {
 
-  let options = {}
+    },
+    complete() { }
+  }
+
   editor.editExpression(options)
 })
 
 test('Editor: editJSON', () => {
+  let options = {
+    value: {
 
-  let options = {}
+    },
+    complete() { }
+  }
   editor.editJSON(options)
 })
 
-test('Editor: stringToUTF8Array', () => {
-
+test('Editor: stringToUTF8Array - string', () => {
   let str = 'abc'
-  editor.stringToUTF8Array(str)
+  let buffer = editor.stringToUTF8Array(str)
+  log({
+    buffer
+  })
+  expect(buffer).toBeDefined()
+})
+
+test('Editor: stringToUTF8Array - undefined', () => {
+  expect(() => editor.stringToUTF8Array()).toThrowError()
 })
 
 test('Editor: editBuffer', () => {
+  let options = {
+    value: {
 
-  let options = {}
-  editor.editBuffer(options)
+    },
+    complete() { }
+  }
+
+  // FIX: jsonata.functions not defined
+  let result = editor.editBuffer(options)
+  expect(result).toBeDefined()
 })
 
 test('Editor: createEditor', () => {
+  let options = {
+    value: {
 
-  let options = {}
-  editor.createEditor(options)
+    },
+    complete() { }
+  }
+  let result = editor.createEditor(options)
+  expect(result).toBeDefined()
 })

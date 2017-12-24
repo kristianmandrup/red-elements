@@ -49,6 +49,18 @@ function readPage(name, basePath?) {
   return html
 }
 
+// FIX: add i18n jQuery Widget factory
+(function ($) {
+  $['widget']('nodered.i18n', {
+    _create: function () {
+    },
+    _destroy: function () {
+    }
+  })
+})(jQuery)
+
+log('TEST: using mock i18n widget added to all jQuery elements')
+// $('<div />').i18n()
 
 export {
   RED,

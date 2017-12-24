@@ -21,6 +21,10 @@ import marked from 'marked'
 import jsonata from 'jsonata'
 import * as ace from 'brace'
 
+// TODO See how this is configure in original node-red editor code!!
+// See jsonata code: https://github.com/jsonata-js/jsonata/blob/master/jsonata.js
+jsonata.functions = jsonata()
+
 const { log } = console
 
 import { Context } from '../../common/base'
@@ -78,13 +82,17 @@ export class Editor extends Context {
   validateNode(node) {
     const {
       ctx,
+    } = this
+
+    let {
       validateNode,
       validateNodeProperties
     } = this.rebind([
-        'ctx',
         'validateNode',
         'validateNodeProperties'
       ])
+
+    this._validateNode(node, 'node', 'validateNode')
 
     var oldValue = node.valid;
     var oldChanged = node.changed;
@@ -197,7 +205,7 @@ export class Editor extends Context {
       try {
         valid = definition[property].validate.call(node, value);
       } catch (err) {
-        console.log("Validation error:", node.type, node.id, "property: " + property, "value:", value, err);
+        log("Validation error:", node.type, node.id, "property: " + property, "value:", value, err);
       }
     }
     if (valid && definition[property].type && ctx.nodes.getType(definition[property].type) && !("validate" in definition[property])) {
@@ -217,7 +225,7 @@ export class Editor extends Context {
     } = this.rebind([
         'validateNodeEditorProperty'
       ])
-    this.validateStr(prefix, 'prefix', 'validateNodeEditor')
+    this._validateStr(prefix, 'prefix', 'validateNodeEditor')
 
     for (var prop in node._def.defaults) {
       if (node._def.defaults.hasOwnProperty(prop)) {
@@ -240,8 +248,8 @@ export class Editor extends Context {
     } = this
     validateNodeProperty = validateNodeProperty.bind(this)
 
-    this.validateStr(prefix, 'prefix', 'validateNodeEditorProperty')
-    this.validateStr(property, 'property', 'validateNodeEditorProperty')
+    this._validateStr(prefix, 'prefix', 'validateNodeEditorProperty')
+    this._validateStr(property, 'property', 'validateNodeEditorProperty')
 
     var input = $("#" + prefix + "-" + property);
     if (input.length > 0) {
@@ -331,8 +339,8 @@ export class Editor extends Context {
         'showEditConfigNodeDialog'
       ])
 
-    this.validateStr(prefix, 'prefix', 'prepareConfigNodeSelect')
-    this.validateStr(property, 'property', 'prepareConfigNodeSelect')
+    this._validateStr(prefix, 'prefix', 'prepareConfigNodeSelect')
+    this._validateStr(property, 'property', 'prepareConfigNodeSelect')
 
     var selector = "#" + prefix + "-" + property
     var input = $(selector);
@@ -409,8 +417,8 @@ export class Editor extends Context {
         'showEditConfigNodeDialog'
       ])
 
-    this.validateStr(prefix, 'prefix', 'prepareConfigNodeButton')
-    this.validateStr(property, 'property', 'prepareConfigNodeButton')
+    this._validateStr(prefix, 'prefix', 'prepareConfigNodeButton')
+    this._validateStr(property, 'property', 'prepareConfigNodeButton')
 
     var input = $("#" + prefix + "-" + property);
     var selector = "#" + prefix + "-" + property
@@ -456,9 +464,9 @@ export class Editor extends Context {
       ctx
     } = this
 
-    this.validateStr(prefix, 'prefix', 'preparePropertyEditor')
-    this.validateStr(property, 'property', 'preparePropertyEditor')
-    this.validateObj(property, 'definition', 'preparePropertyEditor')
+    this._validateStr(prefix, 'prefix', 'preparePropertyEditor')
+    this._validateStr(property, 'property', 'preparePropertyEditor')
+    this._validateObj(definition, 'definition', 'preparePropertyEditor')
 
     var selector = "#" + prefix + "-" + property
     var input = $(selector);
@@ -502,9 +510,10 @@ export class Editor extends Context {
         'validateNodeEditor'
       ])
 
-    this.validateStr(prefix, 'prefix', 'attachPropertyChangeHandler')
-    this.validateStr(property, 'property', 'attachPropertyChangeHandler')
-    this.validateObj(property, 'definition', 'attachPropertyChangeHandler')
+    this._validateStr(prefix, 'prefix', 'attachPropertyChangeHandler')
+    this._validateStr(property, 'property', 'attachPropertyChangeHandler')
+
+    this._validateObj(definition, 'definition', 'attachPropertyChangeHandler')
 
     var input = $("#" + prefix + "-" + property);
 
@@ -541,7 +550,7 @@ export class Editor extends Context {
    * @param prefix
    */
   populateCredentialsInputs(node, credDef, credData, prefix) {
-    this.validateStr(prefix, 'prefix', 'populateCredentialsInputs')
+    this._validateStr(prefix, 'prefix', 'populateCredentialsInputs')
 
     for (let cred in credDef) {
       if (credDef.hasOwnProperty(cred)) {
@@ -570,7 +579,7 @@ export class Editor extends Context {
    */
   updateNodeCredentials(node, credDefinition, prefix) {
     var changed = false;
-    this.validateStr(prefix, 'prefix', 'updateNodeCredentials')
+    this._validateStr(prefix, 'prefix', 'updateNodeCredentials')
 
     if (!node.credentials) {
       node.credentials = {
@@ -628,20 +637,8 @@ export class Editor extends Context {
         'getCredentialsURL'
       ])
 
-    this.validateStr(prefix, 'prefix', 'prepareEditDialog')
-
-    if (!definition) {
-      this.handleError('prepareEditDialog: definition missing', {
-        definition
-      })
-    }
-
-    if (typeof definition.defaults !== 'object') {
-      this.handleError('prepareEditDialog: definition missing .defaults property', {
-        definition,
-        defaults: definition.defaults
-      })
-    }
+    this._validateStr(prefix, 'prefix', 'prepareEditDialog')
+    this._validateNodeDef(definition, 'definition', 'prepareEditDialog')
 
     for (var d in definition.defaults) {
       if (definition.defaults.hasOwnProperty(d)) {
@@ -654,7 +651,7 @@ export class Editor extends Context {
               prepareConfigNodeSelect(node, d, definition.defaults[d].type, prefix);
             }
           } else {
-            console.log("Unknown type:", definition.defaults[d].type);
+            log("Unknown type:", definition.defaults[d].type);
             preparePropertyEditor(node, d, prefix, definition.defaults);
           }
         } else {
@@ -668,7 +665,7 @@ export class Editor extends Context {
         try {
           definition.oneditprepare.call(node);
         } catch (err) {
-          console.log("oneditprepare", node.id, node.type, err.toString());
+          log("oneditprepare", node.id, node.type, err.toString());
         }
       }
       // Now invoke any change handlers added to the fields - passing true
@@ -715,6 +712,12 @@ export class Editor extends Context {
     var title = '<ul class="editor-tray-breadcrumbs">';
     for (var i = 0; i < editStack.length; i++) {
       var node = editStack[i];
+      // log('getEditStackTitle:iterate', {
+      //   editStack,
+      //   node
+      // })
+      this._validateNode(node, 'node', 'getEditStackTitle:iterate')
+
       var label = node.type;
       if (node.type === '_expression') {
         label = ctx._("expressionEditor.title");
@@ -736,7 +739,7 @@ export class Editor extends Context {
           try {
             label = (typeof node._def.paletteLabel === "function" ? node._def.paletteLabel.call(node._def) : node._def.paletteLabel) || "";
           } catch (err) {
-            console.log("Definition error: " + node.type + ".paletteLabel", err);
+            log("Definition error: " + node.type + ".paletteLabel", err);
           }
         }
         if (i === editStack.length - 1) {
@@ -759,7 +762,7 @@ export class Editor extends Context {
 
   buildEditForm(container, formId, type, ns) {
     let form = $('<form id="' + formId + '" class="form-horizontal" autocomplete="off"></form>')
-    this.validateJQ(container, 'container', 'buildEditForm')
+    this._validateJQ(container, 'container', 'buildEditForm')
 
     var dialogForm = form.appendTo(container);
 
@@ -807,7 +810,7 @@ export class Editor extends Context {
         'updateNodeProperties'
       ])
 
-    this.validateNodeDef(node, 'node', 'refreshLabelForm')
+    this._validateNode(node, 'node', 'refreshLabelForm')
 
     var inputPlaceholder = node._def.inputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
     var outputPlaceholder = node._def.outputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
@@ -927,8 +930,8 @@ export class Editor extends Context {
       $('<span>').html(ctx._("editor.noDefaultLabel")).appendTo(result);
       result.addClass("node-label-form-none");
     } else {
-      this.validateStr(type, 'type', 'buildLabelRow')
-      this.validateStrOrNum(index, 'index', 'buildLabelRow')
+      this._validateStr(type, 'type', 'buildLabelRow')
+      this._validateStrOrNum(index, 'index', 'buildLabelRow')
 
       result.addClass("");
       var id = "node-label-form-" + type + "-" + index;
@@ -962,8 +965,8 @@ export class Editor extends Context {
 
     var dialogForm = $('<form class="dialog-form form-horizontal" autocomplete="off"></form>').appendTo(container);
 
-    this.validateJQ(container, 'container', 'buildLabelForm')
-    this.validateNodeDef(node, 'node', 'buildLabelForm')
+    this._validateJQ(container, 'container', 'buildLabelForm')
+    this._validateNode(node, 'node', 'buildLabelForm')
 
     var inputCount = node.inputs || node._def.inputs || 0;
     var outputCount = node.outputs || node._def.outputs || 0;
@@ -1032,7 +1035,7 @@ export class Editor extends Context {
     ctx.view.state(ctx.state.EDITING);
 
     let type = node.type;
-    this.validateStr(type, 'node.type', 'showEditDialog')
+    this._validateStr(type, 'node.type', 'showEditDialog')
 
     if (type.substring(0, 8) === "subflow:") {
       type = "subflow";
@@ -1354,7 +1357,7 @@ export class Editor extends Context {
         var trayBody = tray.find('.editor-tray-body');
         trayBody.parent().css('overflow', 'hidden');
 
-        this.validateObj(ctx.stack, 'ctx.stack', 'showEditDialog trayOptions:open')
+        this._validateObj(ctx.stack, 'ctx.stack', 'showEditDialog trayOptions:open')
 
         var stack = ctx.stack.create({
           container: trayBody,
@@ -1379,7 +1382,7 @@ export class Editor extends Context {
         }
         var ns;
         const { set } = node._def
-        this.validateObj(set, 'node._def.set', 'showEditDialog trayOptions:open')
+        this._validateObj(set, 'node._def.set', 'showEditDialog trayOptions:open')
 
         if (!(set.module || set.id)) {
           this.handleError('showEditDialog trayOptions:open node._def.set must have a module or id property', {
@@ -1392,19 +1395,16 @@ export class Editor extends Context {
         } else {
           ns = set.id;
         }
-        this.validateStr(ns, 'node._def.set', 'showEditDialog trayOptions:open')
+        this._validateStr(ns, 'node._def.set', 'showEditDialog trayOptions:open')
 
-        log('buildEditForm', nodeProperties.content)
         buildEditForm(nodeProperties.content, "dialog-form", type, ns);
 
-        log('buildLabelForm')
         buildLabelForm(portLabels.content, node);
 
-        log('prepareEditDialog')
         prepareEditDialog(node, node._def, "node-input", function () {
           // TODO: i18n jQuery Widget must be instantiated
           // to have i18n factory function avail on all jQuery elements
-          trayBody.i18n();
+          trayBody.i18n()
           done();
         });
       },
@@ -1473,11 +1473,13 @@ export class Editor extends Context {
         'updateConfigNodeSelect'
       ])
 
-    this.validateStr(prefix, 'prefix', 'showEditConfigNodeDialog')
+    this._validateStr(prefix, 'prefix', 'showEditConfigNodeDialog')
 
     var adding = (id == "_ADD_");
     var node_def = ctx.nodes.getType(type);
     var editing_config_node = ctx.nodes.node(id);
+
+    this._validateNodeDef(node_def, 'node_def', 'showEditConfigNodeDialog')
 
     var ns;
     if (node_def.set.module === "node-red") {
@@ -1520,7 +1522,7 @@ export class Editor extends Context {
               height: form.height()
             });
           } catch (err) {
-            console.log("oneditresize", editing_config_node.id, editing_config_node.type, err.toString());
+            log("oneditresize", editing_config_node.id, editing_config_node.type, err.toString());
           }
         }
       },
@@ -1581,9 +1583,10 @@ export class Editor extends Context {
               }
             });
           }
-          tabSelect.i18n();
 
+          tabSelect.i18n();
           dialogForm.i18n();
+
           if (node_def.hasUsers !== false) {
             $("#node-config-dialog-user-count").find("span").html(ctx._("editor.nodesUse", {
               count: editing_config_node.users.length
@@ -1619,7 +1622,7 @@ export class Editor extends Context {
               try {
                 configTypeDef.oneditcancel.call(cn, false);
               } catch (err) {
-                console.log("oneditcancel", cn.id, cn.type, err.toString());
+                log("oneditcancel", cn.id, cn.type, err.toString());
               }
             } else {
               try {
@@ -1627,7 +1630,7 @@ export class Editor extends Context {
                   id: configId
                 }, true);
               } catch (err) {
-                console.log("oneditcancel", configId, configType, err.toString());
+                log("oneditcancel", configId, configType, err.toString());
               }
             }
           }
@@ -1653,7 +1656,7 @@ export class Editor extends Context {
           try {
             configTypeDef.oneditsave.call(editing_config_node);
           } catch (err) {
-            console.log("oneditsave", editing_config_node.id, editing_config_node.type, err.toString());
+            log("oneditsave", editing_config_node.id, editing_config_node.type, err.toString());
           }
         }
 
@@ -1763,14 +1766,14 @@ export class Editor extends Context {
 
             if (configTypeDef.ondelete) {
               // Deprecated: never documented but used by some early nodes
-              console.log("Deprecated API warning: config node type ", configType, " has an ondelete function - should be oneditdelete");
+              log("Deprecated API warning: config node type ", configType, " has an ondelete function - should be oneditdelete");
               configTypeDef.ondelete.call(editing_config_node);
             }
             if (configTypeDef.oneditdelete) {
               configTypeDef.oneditdelete.call(editing_config_node);
             }
           } catch (err) {
-            console.log("oneditdelete", editing_config_node.id, editing_config_node.type, err.toString());
+            log("oneditdelete", editing_config_node.id, editing_config_node.type, err.toString());
           }
 
           var historyEvent = {
@@ -1861,7 +1864,7 @@ export class Editor extends Context {
         try {
           configNodes.sort(configSortFn);
         } catch (err) {
-          console.log("Definition error: " + node_def.type + ".sort", err);
+          log("Definition error: " + node_def.type + ".sort", err);
         }
 
         configNodes.forEach(function (cn) {
@@ -1884,11 +1887,15 @@ export class Editor extends Context {
     let {
       ctx,
       editStack,
+    } = this
+
+    let {
       getEditStackTitle,
       buildEditForm,
       updateNodeProperties,
       buildLabelForm
     } = this.rebind([
+        'getEditStackTitle',
         'buildEditForm',
         'updateNodeProperties',
         'buildLabelForm'
@@ -1896,12 +1903,16 @@ export class Editor extends Context {
 
 
     var editing_node = subflow;
+
+    this.validateArray(editStack, 'editStack', 'showEditSubflowDialog')
+
     editStack.push(subflow);
     ctx.view.state(ctx.state.EDITING);
     var subflowEditor;
 
+    var title = getEditStackTitle()
     var trayOptions = {
-      title: getEditStackTitle(),
+      title,
       buttons: [{
         id: "node-dialog-cancel",
         text: ctx._("common.label.cancel"),
@@ -2073,19 +2084,27 @@ export class Editor extends Context {
     const {
       ctx,
       editStack,
-      getEditStackTitle,
       editTrayWidthCache,
+    } = this
+
+    const {
+      getEditStackTitle,
       buildEditForm,
       expressionTestCache
     } = this.rebind([
         'getEditStackTitle',
-        'buildEditForm'
+        'buildEditForm',
+        'expressionTestCache'
       ])
 
     var expressionTestCacheId = "_";
     if (editStack.length > 0) {
       expressionTestCacheId = editStack[editStack.length - 1].id;
     }
+
+    this._validateProps(options, ['value', 'complete'], 'editExpression')
+
+    log('editStack push')
 
     var value = options.value;
     var onComplete = options.complete;
@@ -2098,6 +2117,8 @@ export class Editor extends Context {
     var testDataEditor;
     var testResultEditor
     var panels;
+
+    log('build trayOptions')
 
     var trayOptions = {
       width: null,
@@ -2138,13 +2159,22 @@ export class Editor extends Context {
 
       },
       open: function (tray) {
+        log('open', {
+          tray
+        })
         var trayBody = tray.find('.editor-tray-body');
         trayBody.addClass("node-input-expression-editor")
         var dialogForm = buildEditForm(tray.find('.editor-tray-body'), 'dialog-form', '_expression', 'editor');
         var funcSelect = $("#node-input-expression-func");
+
+        log('iterate jsonata functions', {
+          functions: jsonata.functions
+        })
+
         Object.keys(jsonata.functions).forEach(function (f) {
           funcSelect.append($("<option></option>").val(f).text(f));
         })
+
         funcSelect.change(function (e) {
           var f = $(this).val();
           var args = ctx._('jsonata:' + f + ".args", {
@@ -2209,7 +2239,7 @@ export class Editor extends Context {
                   if (next) {
                     if (type === 'keyword') {
                       scopedFunction = rowTokens[p];
-                      // console.log("HIT",scopedFunction);
+                      // log("HIT",scopedFunction);
                       break;
                     }
                     next = false;
@@ -2223,7 +2253,7 @@ export class Editor extends Context {
                     next = true;
                     depth = 0;
                   }
-                  // console.log(r,p,depth,next,rowTokens[p]);
+                  // log(r,p,depth,next,rowTokens[p]);
                   p--;
                 }
                 if (!scopedFunction) {
@@ -2233,7 +2263,7 @@ export class Editor extends Context {
             }
             expressionEditor.session.removeMarker(currentFunctionMarker);
             if (scopedFunction) {
-              //console.log(token,.map(function(t) { return t.type}));
+              //log(token,.map(function(t) { return t.type}));
               funcSelect.val(scopedFunction.value).change();
             }
           }
@@ -2403,9 +2433,17 @@ export class Editor extends Context {
       },
       show: function () { }
     }
+
+    log('set trayOptions width', {
+      type,
+      editTrayWidthCache
+    })
+
     if (editTrayWidthCache.hasOwnProperty(type)) {
+      log('set width')
       trayOptions.width = editTrayWidthCache[type];
     }
+    log('show tray')
     ctx.tray.show(trayOptions);
     return this
   }
@@ -2415,13 +2453,18 @@ export class Editor extends Context {
     const {
       ctx,
       editStack,
-      editTrayWidthCache,
+      editTrayWidthCache
+    } = this
+
+    const {
       getEditStackTitle,
       buildEditForm
     } = this.rebind([
         'getEditStackTitle',
         'buildEditForm'
       ])
+
+    this._validateProps(options, ['value', 'complete'], 'editExpression')
 
     var value = options.value;
     var onComplete = options.complete;
@@ -2502,6 +2545,7 @@ export class Editor extends Context {
   }
 
   stringToUTF8Array(str) {
+    this._validateStr(str, 'str', 'stringToUTF8Array')
     var data = [];
     var i = 0,
       l = str.length;
@@ -2532,23 +2576,25 @@ export class Editor extends Context {
     let {
       ctx,
       editStack,
+      editTrayWidthCache,
     } = this
 
     const {
       buildEditForm,
       getEditStackTitle,
-      editTrayWidthCache,
       stringToUTF8Array
     } = this.rebind([
         'buildEditForm',
         'getEditStackTitle',
-        'editTrayWidthCache',
         'stringToUTF8Array'
       ])
+
+    this._validateProps(options, ['value', 'complete'], 'editExpression')
 
     var value = options.value;
     var onComplete = options.complete;
     var type = "_buffer"
+
     editStack.push({
       type: type
     });
@@ -2585,7 +2631,7 @@ export class Editor extends Context {
           panels.resize(height);
         }
       },
-      open: function (tray) {
+      open: (tray) => {
         var trayBody = tray.find('.editor-tray-body');
         var dialogForm = buildEditForm(tray.find('.editor-tray-body'), 'dialog-form', type, 'editor');
 
@@ -2605,15 +2651,21 @@ export class Editor extends Context {
         });
 
         var changeTimer;
-        var buildBuffer = function (data) {
+        var buildBuffer = (data) => {
+          if (!data) {
+            this.handleError('editBuffer:trayOptions:buildBuffer(data) data is invalid', {
+              data
+            })
+          }
           var valid = true;
           var isString = typeof data === 'string';
           var binBuffer = [];
-          if (isString) {
-            bufferBinValue = stringToUTF8Array(data);
-          } else {
-            bufferBinValue = data;
-          }
+          bufferBinValue = isString ? stringToUTF8Array(data) : data
+          log({
+            data,
+            bufferBinValue
+          })
+
           var i = 0,
             l = bufferBinValue.length;
           var c = 0;

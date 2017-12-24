@@ -30,7 +30,7 @@ import {
 
 export function Widget(RED) {
   (function ($) {
-    $.widget("nodered.checkboxSet", {
+    $['widget']("nodered.checkboxSet", {
       _create: function () {
         this.uiElement = this.element.wrap("<span>").parent();
         this.uiElement.addClass("red-ui-checkboxSet");
