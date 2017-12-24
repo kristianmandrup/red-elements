@@ -40,9 +40,19 @@ export class BaseContext {
     }
   }
 
+  protected validateJQ(obj, name, methodName) {
+    if (obj instanceof jQuery) return true
+    this.handleError(`${methodName}: ${name} must be a $ (jQuery) element`, {
+      [name]: obj
+    })
+  }
+
   protected validateNodeDef(node, name, methodName) {
     this.validateObj(node, name, methodName)
     this.validateObj(node._def, `${name}._def`, methodName)
+    this.validateObj(node._def, `${name}._def`, methodName)
+    this.validateObj(node.in, `${name}.in`, methodName)
+    this.validateObj(node.out, `${name}.out`, methodName)
   }
 
   protected validateStrOrNum(value, name, methodName) {

@@ -52,7 +52,22 @@ export class RED implements IRED {
   public palette = {
     refresh() { }
   }
-  public stack: any
+  public stack = {
+    create() {
+      return {
+        add() {
+          return {
+            get content() {
+              // fake jQuery element
+              return $('</div>')
+            }
+          }
+        },
+        content: 'x'
+      }
+    },
+    add() { }
+  }
   public comms: any
   public library = {
     loadFlowLibrary() { }
@@ -147,7 +162,8 @@ export class RED implements IRED {
   }
   public sidebar = {
     info: {
-      set(text) { }
+      set(text) { },
+      refresh() { }
     },
     config: {
       refresh() { }

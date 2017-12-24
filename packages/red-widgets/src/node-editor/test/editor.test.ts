@@ -115,7 +115,6 @@ test('Editor: prepareConfigNodeSelect', () => {
 })
 
 test('Editor: prepareConfigNodeButton', () => {
-
   let node = {
     id: 'x'
   }
@@ -127,7 +126,6 @@ test('Editor: prepareConfigNodeButton', () => {
 })
 
 test('Editor: preparePropertyEditor', () => {
-
   let node = {
     id: 'x'
   }
@@ -139,7 +137,6 @@ test('Editor: preparePropertyEditor', () => {
 })
 
 test('Editor: attachPropertyChangeHandler', () => {
-
   let node = {
     id: 'x'
   }
@@ -151,7 +148,6 @@ test('Editor: attachPropertyChangeHandler', () => {
 })
 
 test('Editor: populateCredentialsInputs', () => {
-
   let node = {
     id: 'x'
   }
@@ -164,7 +160,6 @@ test('Editor: populateCredentialsInputs', () => {
 })
 
 test('Editor: updateNodeCredentials', () => {
-
   let node = {
     id: 'x'
   }
@@ -176,7 +171,6 @@ test('Editor: updateNodeCredentials', () => {
 })
 
 test('Editor: prepareEditDialog', () => {
-
   let node = {
     id: 'x',
     _def: {
@@ -194,14 +188,12 @@ test('Editor: prepareEditDialog', () => {
 })
 
 test('Editor: getEditStackTitle', () => {
-
   let expected = 'my-title'
   let title = editor.getEditStackTitle()
   expect(title).toBe(expected)
 })
 
 test('Editor: buildEditForm', () => {
-
   let container = $('#container')
   let definition = {}
   let formId = 'a'
@@ -212,7 +204,6 @@ test('Editor: buildEditForm', () => {
 })
 
 test('Editor: refreshLabelForm', () => {
-
   let container = $('#container')
   let node = {
     id: 'x',
@@ -225,7 +216,6 @@ test('Editor: refreshLabelForm', () => {
 })
 
 test('Editor: buildLabelRow', () => {
-
   let type = 'io'
   let index = 0
   let value = 'hello'
@@ -247,20 +237,26 @@ test('Editor: buildLabelForm', () => {
   // use nightmare
 })
 
-test('Editor: showEditDialog', () => {
-
+test.only('Editor: showEditDialog - subflow', () => {
   let node = {
     id: 'x',
+    in: {},
+    out: {},
+    type: 'subflow',
     _def: {
+      defaults: {
 
+      },
+      set: {
+        module: 'node-red'
+      }
     }
   }
-  editor.showEditDialog(node)
-  // use nightmare
+  let shown = editor.showEditDialog(node)
+  expect(shown).toBeDefined()
 })
 
 test('Editor: showEditConfigNodeDialog', () => {
-
   let node = {
     id: 'x',
     _def: {
@@ -271,7 +267,6 @@ test('Editor: showEditConfigNodeDialog', () => {
   let id = 'x'
   let prefix = 'my-'
   editor.showEditConfigNodeDialog(name, type, id, prefix)
-  // use nightmare
 })
 
 test('Editor: defaultConfigNodeSort', () => {

@@ -21,6 +21,8 @@ import marked from 'marked'
 import jsonata from 'jsonata'
 import * as ace from 'brace'
 
+const { log } = console
+
 import { Context } from '../../common/base'
 
 interface ITabSelect extends JQuery<HTMLElement> {
@@ -756,10 +758,15 @@ export class Editor extends Context {
   }
 
   buildEditForm(container, formId, type, ns) {
-    var dialogForm = $('<form id="' + formId + '" class="form-horizontal" autocomplete="off"></form>').appendTo(container);
+    let form = $('<form id="' + formId + '" class="form-horizontal" autocomplete="off"></form>')
+    this.validateJQ(container, 'container', 'buildEditForm')
+
+    var dialogForm = form.appendTo(container);
+
     dialogForm.html($("script[data-template-name='" + type + "']").html());
     ns = ns || "node-red";
-    dialogForm.find('[data-i18n]').each(function () {
+    let i18nFields = dialogForm.find('[data-i18n]')
+    i18nFields.each(function () {
       var current = $(this).attr("data-i18n");
       var keys = current.split(";");
       for (var i = 0; i < keys.length; i++) {
@@ -955,6 +962,7 @@ export class Editor extends Context {
 
     var dialogForm = $('<form class="dialog-form form-horizontal" autocomplete="off"></form>').appendTo(container);
 
+    this.validateJQ(container, 'container', 'buildLabelForm')
     this.validateNodeDef(node, 'node', 'buildLabelForm')
 
     var inputCount = node.inputs || node._def.inputs || 0;
@@ -1022,8 +1030,11 @@ export class Editor extends Context {
     var editing_node = node;
     editStack.push(node);
     ctx.view.state(ctx.state.EDITING);
-    var type = node.type;
-    if (node.type.substring(0, 8) == "subflow:") {
+
+    let type = node.type;
+    this.validateStr(type, 'node.type', 'showEditDialog')
+
+    if (type.substring(0, 8) === "subflow:") {
       type = "subflow";
     }
     var trayOptions = {
@@ -1033,7 +1044,7 @@ export class Editor extends Context {
         id: "node-dialog-delete",
         class: 'leftButton',
         text: ctx._("common.label.delete"),
-        click: function () {
+        click: () => {
           var startDirty = ctx.nodes.dirty();
           var removedNodes = [];
           var removedLinks = [];
@@ -1059,13 +1070,13 @@ export class Editor extends Context {
       {
         id: "node-dialog-cancel",
         text: ctx._("common.label.cancel"),
-        click: function () {
+        click: () => {
           if (editing_node._def) {
             if (editing_node._def.oneditcancel) {
               try {
                 editing_node._def.oneditcancel.call(editing_node);
               } catch (err) {
-                console.log("oneditcancel", editing_node.id, editing_node.type, err.toString());
+                log("oneditcancel", editing_node.id, editing_node.type, err.toString());
               }
             }
 
@@ -1096,7 +1107,7 @@ export class Editor extends Context {
         id: "node-dialog-ok",
         text: ctx._("common.label.done"),
         class: "primary",
-        click: function () {
+        click: () => {
           var changes: any = {};
           var changed = false;
           var wasDirty = ctx.nodes.dirty();
@@ -1122,7 +1133,7 @@ export class Editor extends Context {
                 changed = true;
               }
             } catch (err) {
-              console.log("oneditsave", editing_node.id, editing_node.type, err.toString());
+              log("oneditsave", editing_node.id, editing_node.type, err.toString());
             }
 
             for (d in editing_node._def.defaults) {
@@ -1334,14 +1345,16 @@ export class Editor extends Context {
               height: form.height()
             });
           } catch (err) {
-            console.log("oneditresize", editing_node.id, editing_node.type, err.toString());
+            log("oneditresize", editing_node.id, editing_node.type, err.toString());
           }
         }
       },
-      open: function (tray, done) {
+      open: (tray, done) => {
         var trayFooter = tray.find(".editor-tray-footer");
         var trayBody = tray.find('.editor-tray-body');
         trayBody.parent().css('overflow', 'hidden');
+
+        this.validateObj(ctx.stack, 'ctx.stack', 'showEditDialog trayOptions:open')
 
         var stack = ctx.stack.create({
           container: trayBody,
@@ -1361,25 +1374,41 @@ export class Editor extends Context {
         });
         portLabels.content.addClass("editor-tray-content");
 
-
         if (editing_node) {
           ctx.sidebar.info.refresh(editing_node);
         }
         var ns;
-        if (node._def.set.module === "node-red") {
+        const { set } = node._def
+        this.validateObj(set, 'node._def.set', 'showEditDialog trayOptions:open')
+
+        if (!(set.module || set.id)) {
+          this.handleError('showEditDialog trayOptions:open node._def.set must have a module or id property', {
+            set
+          })
+        }
+
+        if (set.module === "node-red") {
           ns = "node-red";
         } else {
-          ns = node._def.set.id;
+          ns = set.id;
         }
+        this.validateStr(ns, 'node._def.set', 'showEditDialog trayOptions:open')
+
+        log('buildEditForm', nodeProperties.content)
         buildEditForm(nodeProperties.content, "dialog-form", type, ns);
+
+        log('buildLabelForm')
         buildLabelForm(portLabels.content, node);
 
+        log('prepareEditDialog')
         prepareEditDialog(node, node._def, "node-input", function () {
+          // TODO: i18n jQuery Widget must be instantiated
+          // to have i18n factory function avail on all jQuery elements
           trayBody.i18n();
           done();
         });
       },
-      close: function () {
+      close: () => {
         if (ctx.view.state() != ctx.state.IMPORT_DRAGGING) {
           ctx.view.state(ctx.state.DEFAULT);
         }
@@ -1390,7 +1419,7 @@ export class Editor extends Context {
         ctx.view.redraw(true);
         editStack.pop();
       },
-      show: function () {
+      show: () => {
         if (editing_node) {
           ctx.sidebar.info.refresh(editing_node);
         }
@@ -1406,7 +1435,7 @@ export class Editor extends Context {
         id,
         class: 'leftButton',
         text: ctx._("subflow.edit"),
-        click: function () {
+        click: () => {
           ctx.workspaces.show(id);
           $("#node-dialog-ok").click();
         }
@@ -1414,6 +1443,7 @@ export class Editor extends Context {
     }
 
     ctx.tray.show(trayOptions);
+    return this
   }
   /**
    * name - name of the property that holds this config node
