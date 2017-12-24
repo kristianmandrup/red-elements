@@ -18,6 +18,8 @@ import {
 } from '../../tray'
 
 import marked from 'marked'
+
+// TODO: alternatively, load from red-shared/vendor/jsonata
 import { jsonata } from './formatter'
 import * as ace from 'brace'
 
