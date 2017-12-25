@@ -93,6 +93,7 @@ export class RED implements IRED {
     emit(elm) { }
   }
   public view = {
+    reveal() { },
     state() { },
     focus() { },
     selection() {
@@ -115,7 +116,9 @@ export class RED implements IRED {
   public utils = {
     getNodeIcon(def) { },
     eachWorkspace(indexNode) { },
-    getNodeLabel(l) { return l; },
+    getNodeLabel(node) {
+      return 'my-label';
+    },
     validatePropertyExpression() { return true; }
   }
   public popover = {

@@ -32,10 +32,11 @@ export class BaseContext {
     }
   }
 
-  protected _validateStr(value, name, methodName) {
+  protected _validateStr(value, name, methodName, context?) {
     if (typeof value !== 'string') {
       this.handleError(`${methodName}: ${name} must be a string`, {
-        [name]: value
+        [name]: value,
+        context
       })
     }
   }

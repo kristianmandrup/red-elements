@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { Context, $ } from '../../common'
+import { Context, $, EditableList } from '../../common'
 
 // TODO: Find I18n constructor in node-red
 // import {
 //   I18n
 // } from 'i18n'
+
+const { log } = console
 
 interface ISearchResults extends JQuery<HTMLElement> {
   editableList: Function
@@ -48,10 +50,11 @@ export class Search extends Context {
     super()
     const { ctx } = this
 
+    // to ensure that searchResults can be converted to EditableList jQuery Widget
+    new EditableList()
+
     this.disabled = false;
     this.dialog = null;
-    // searchInput;
-    // searchResults;
     this.selected = -1;
     this.visible = false;
 
@@ -114,43 +117,46 @@ export class Search extends Context {
     this.disabled = false;
   }
 
-  indexNode(n) {
+  indexNode(node) {
     const {
       ctx,
       index
     } = this
 
-    if (!ctx.utils) {
-      this.handleError('indexNode: ctx missing utils object', {
-        ctx
-      })
-    }
+    this._validateObj(ctx.utils, 'ctx.utils', 'indexNode')
 
-    var l = ctx.utils.getNodeLabel(n);
-    if (l) {
-      l = ("" + l).toLowerCase();
-      index[l] = index[l] || {};
-      index[l][n.id] = {
-        node: n,
-        label: l
+    var label = ctx.utils.getNodeLabel(node);
+
+    this._validateStr(label, 'label', 'indexNode')
+    if (label) {
+      label = ("" + label).toLowerCase();
+      index[label] = index[label] || {};
+      index[label][node.id] = {
+        node,
+        label
       }
     }
-    l = l || n.label || n.name || n.id || "";
-
+    label = label || node.label || node.name || node.id || "";
 
     var properties = ['id', 'type', 'name', 'label', 'info'];
-    if (n._def && n._def.defaults) {
-      properties = properties.concat(Object.keys(n._def.defaults));
+    if (node._def && node._def.defaults) {
+      properties = properties.concat(Object.keys(node._def.defaults));
     }
     for (var i = 0; i < properties.length; i++) {
-      if (n.hasOwnProperty(properties[i])) {
-        var v = n[properties[i]];
+      let prop = properties[i]
+      if (node.hasOwnProperty(prop)) {
+        var v = node[prop];
         if (typeof v === 'string' || typeof v === 'number') {
           v = ("" + v).toLowerCase();
+
+          let id = node.id
+          this._validateStr(v, 'v', 'indexNode', prop)
+          this._validateStr(id, 'node.id', 'indexNode', node)
+
           index[v] = index[v] || {};
-          index[v][n.id] = {
-            node: n,
-            label: l
+          index[v][node.id] = {
+            node,
+            label
           };
         }
       }
@@ -294,6 +300,8 @@ export class Search extends Context {
       }
     });
 
+    this.searchInput = searchInput
+
     searchInput.on('keydown', (evt) => {
       var children;
       if (results.length > 0) {
@@ -348,6 +356,12 @@ export class Search extends Context {
       style: "position: absolute;top: 5px;bottom: 5px;left: 5px;right: 5px;"
     })
     searchResults.appendTo(searchResultsDiv)
+
+    if (!searchResults.editableList) {
+      this.handleError('createDialog: searchResults missing editableList. Call createDialog to init searchResults', {
+        searchResults
+      })
+    }
 
     searchResults.editableList({
       addButton: false,
@@ -423,18 +437,33 @@ export class Search extends Context {
   reveal(node) {
     this.hide();
     this.ctx.view.reveal(node.id);
+    return this
   }
 
   show() {
-    const {
-      hide
+    let {
+      ctx,
+      dialog,
+      disabled,
+      visible,
+      searchInput
     } = this
 
-    if (this.disabled) {
-      return;
+    const {
+      hide,
+      createDialog,
+      indexWorkspace
+    } = this.rebind([
+        'indexWorkspace',
+        'hide',
+        'createDialog'
+      ])
+
+    if (disabled) {
+      return this;
     }
-    if (!this.visible) {
-      this.ctx.keyboard.add("*", "escape", function () {
+    if (!visible) {
+      ctx.keyboard.add("*", "escape", function () {
         hide()
       });
       $("#header-shade").show();
@@ -442,33 +471,47 @@ export class Search extends Context {
       $("#palette-shade").show();
       $("#sidebar-shade").show();
       $("#sidebar-separator").hide();
-      this.indexWorkspace();
-      if (this.dialog === null) {
-        this.createDialog();
+      indexWorkspace();
+      if (dialog === null) {
+        createDialog();
       }
-      this.dialog.slideDown(300);
-      this.ctx.events.emit("search:open");
-      this.visible = true;
+      dialog.slideDown(300);
+      ctx.events.emit("search:open");
+      visible = true;
     }
-    this.searchInput.focus();
+    if (!searchInput) {
+      createDialog()
+      searchInput = this.searchInput
+    }
+
+    this._validateObj(searchInput, 'searchInput', 'show')
+
+    searchInput.focus();
+    return this
   }
 
   hide() {
-    if (this.visible) {
-      this.ctx.keyboard.remove("escape");
-      this.visible = false;
+    let {
+      ctx,
+      dialog,
+      visible,
+      searchInput
+    } = this
+
+    if (visible) {
+      ctx.keyboard.remove("escape");
+      visible = false;
       $("#header-shade").hide();
       $("#editor-shade").hide();
       $("#palette-shade").hide();
       $("#sidebar-shade").hide();
       $("#sidebar-separator").show();
-      if (this.dialog !== null) {
-        this.dialog.slideUp(200, () => {
-          this.searchInput.searchBox('value', '');
+      if (dialog !== null) {
+        dialog.slideUp(200, () => {
+          searchInput.searchBox('value', '');
         });
       }
-      this.ctx.events.emit("search:close");
+      ctx.events.emit("search:close");
     }
   }
-
 }

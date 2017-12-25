@@ -10,6 +10,8 @@ function create(ctx) {
   return new Search()
 }
 
+const { log } = console
+
 let events = {
   on() { },
   emit(id) { }
@@ -82,13 +84,13 @@ test('Search: enable()', () => {
 
 
 test('Search: indexNode', () => {
-  let n = {
+  let node = {
     id: 'x',
     label: 'abc'
   }
-  search.indexNode(n)
-  // fix
-  let indexed = search.index[n.label]
+  search.indexNode(node)
+
+  let indexed = search.index[node.label]
   expect(indexed).toEqual({
     "x": {
       "label": "my-label",
@@ -131,19 +133,21 @@ test('Search: ensureSelectedIsVisible', () => {
 // })
 
 test('Search: reveal', () => {
-  search.reveal({ id: 102 });
+  let revealed = search.reveal({ id: 102 });
+  expect(revealed).toBeDefined()
 })
-test('Search: can hide when dialog is null', () => {
+test('Search: hide - can hide when dialog is null', () => {
   search.dialog = null;
   search.hide();
 })
-test('Search: can show when dialog is defined', () => {
+test('Search: show - can show when dialog is defined', () => {
   search.dialog = {
     slideDown(int) { }
   }
-  search.show();
+  let shown = search.show();
+  expect(shown).toBeDefined()
 })
-test('Search: can show with disabled true', () => {
+test('Search: show - can show with disabled true', () => {
   search.disabled = true;
   search.show();
 })
@@ -152,7 +156,7 @@ test('Search: can show when visible true', () => {
   search.show();
 })
 
-test('Search: can hide when visible true', () => {
+test('Search: hide - can hide when visible true', () => {
   search.visible = true;
   search.dialog = {
     slideUp(int) { }
