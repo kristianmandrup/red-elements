@@ -40,10 +40,11 @@ export class BaseContext {
     }
   }
 
-  protected _validateJQ(obj, name, methodName) {
+  protected _validateJQ(obj, name, methodName, context?) {
     if (obj instanceof jQuery) return true
     this.handleError(`${methodName}: ${name} must be a $ (jQuery) element`, {
-      [name]: obj
+      [name]: obj,
+      context
     })
   }
 

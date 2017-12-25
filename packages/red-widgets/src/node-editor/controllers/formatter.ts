@@ -1,4 +1,4 @@
-import { $jsonata } from 'jsonata'
+import * as $jsonata from 'jsonata'
 
 export const jsonata = (function (jsonata) {
   function indentLine(str, length) {

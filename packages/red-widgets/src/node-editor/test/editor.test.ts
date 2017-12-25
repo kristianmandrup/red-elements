@@ -250,7 +250,7 @@ test('Editor: showEditSubflowDialog', () => {
   expect(shown).toBeDefined()
 })
 
-test.only('Editor: editExpression', () => {
+test('Editor: editExpression', () => {
   let options = {
     value: {
 
@@ -274,9 +274,6 @@ test('Editor: editJSON', () => {
 test('Editor: stringToUTF8Array - string', () => {
   let str = 'abc'
   let buffer = editor.stringToUTF8Array(str)
-  log({
-    buffer
-  })
   expect(buffer).toBeDefined()
 })
 
@@ -299,9 +296,8 @@ test('Editor: editBuffer', () => {
 
 test('Editor: createEditor', () => {
   let options = {
-    value: {
-
-    },
+    id: 'editor',
+    value: 'hello',
     complete() { }
   }
   let result = editor.createEditor(options)

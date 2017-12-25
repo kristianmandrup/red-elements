@@ -753,10 +753,6 @@ export class Editor extends Context {
     var title = '<ul class="editor-tray-breadcrumbs">';
     for (var i = 0; i < editStack.length; i++) {
       var node = editStack[i];
-      // log('getEditStackTitle:iterate', {
-      //   editStack,
-      //   node
-      // })
       this._validateNode(node, 'node', 'getEditStackTitle:iterate')
 
       var label = node.type;
@@ -2145,8 +2141,6 @@ export class Editor extends Context {
 
     this._validateProps(options, ['value', 'complete'], 'editExpression')
 
-    log('editStack push')
-
     var value = options.value;
     var onComplete = options.complete;
     var type = "_expression"
@@ -2158,8 +2152,6 @@ export class Editor extends Context {
     var testDataEditor;
     var testResultEditor
     var panels;
-
-    log('build trayOptions')
 
     var trayOptions = {
       width: null,
@@ -2200,17 +2192,10 @@ export class Editor extends Context {
 
       },
       open: function (tray) {
-        log('open', {
-          tray
-        })
         var trayBody = tray.find('.editor-tray-body');
         trayBody.addClass("node-input-expression-editor")
         var dialogForm = buildEditForm(tray.find('.editor-tray-body'), 'dialog-form', '_expression', 'editor');
         var funcSelect = $("#node-input-expression-func");
-
-        log('iterate jsonata functions', {
-          functions: jsonata.functions
-        })
 
         Object.keys(jsonata.functions).forEach(function (f) {
           funcSelect.append($("<option></option>").val(f).text(f));
@@ -2475,16 +2460,9 @@ export class Editor extends Context {
       show: function () { }
     }
 
-    log('set trayOptions width', {
-      type,
-      editTrayWidthCache
-    })
-
     if (editTrayWidthCache.hasOwnProperty(type)) {
-      log('set width')
       trayOptions.width = editTrayWidthCache[type];
     }
-    log('show tray')
     ctx.tray.show(trayOptions);
     return this
   }
@@ -2702,11 +2680,6 @@ export class Editor extends Context {
           var isString = typeof data === 'string';
           var binBuffer = [];
           bufferBinValue = isString ? stringToUTF8Array(data) : data
-          log({
-            data,
-            bufferBinValue
-          })
-
           var i = 0,
             l = bufferBinValue.length;
           var c = 0;
@@ -2804,9 +2777,19 @@ export class Editor extends Context {
   }
 
   createEditor(options) {
-    var editor = ace.edit(options.id);
+    const { id } = options
+
+    // validate that we provide ID option with name of ACE editor element
+    this._validateStr(id, 'options.id', 'createEditor')
+
+    // validate that an element with that ID exists on page
+    let elem = $('#' + id)
+    this._validateJQ(elem, 'ace.editor', 'createEditor', 'missing ace editor element on page')
+
+    var editor = ace.edit(id);
     editor.setTheme("ace/theme/tomorrow");
     var session: any = editor.getSession();
+
     if (options.mode) {
       session.setMode(options.mode);
     }
@@ -2839,6 +2822,13 @@ export class Editor extends Context {
     }
     editor.$blockScrolling = Infinity;
     if (options.value) {
+      // note: the ace editor needs to be linked
+      // to an input field on the page where the editor session value
+      // can be read from and written to
+
+      // make sure value we are setting is a string (ie. some source code)
+      this._validateStr(options.value, 'options.value', 'createEditor')
+
       session.setValue(options.value, -1);
     }
     if (options.globals) {

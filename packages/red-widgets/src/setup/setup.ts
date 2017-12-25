@@ -207,6 +207,7 @@ export class RED implements IRED {
   public editor = {
     createEditor() {
       return {
+        on() { },
         getValue() {
           return 'xyz'
         },
