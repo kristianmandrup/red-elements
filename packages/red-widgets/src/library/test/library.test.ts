@@ -42,7 +42,7 @@ let ctx = (<any>Object).assign({
 }, baseCtx)
 
 function create(ctx) {
-  document.body.innerHTML = readPage('../red-widgets/src/library/test/app/library');
+  document.body.innerHTML = readPage('library');
   return new Library()
 }
 
