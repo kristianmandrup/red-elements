@@ -79,7 +79,7 @@ beforeEach(() => {
 beforeAll(() => {
   new Searchbox()
   new EditableList()
-  document.documentElement.innerHTML = readPage('../red-widgets/src/search/test/app/search');
+  document.documentElement.innerHTML = readPage('search', __dirname);
 })
 function getSerachResult() {
   return $("#searchResults");
@@ -194,7 +194,7 @@ test('TypeSearch: show', () => {
     {
       searchBox(val, txt) { }
     };
-    console.log(ts.dialog)
+  console.log(ts.dialog)
   ts.show(opts)
   // use nightmare
 })
