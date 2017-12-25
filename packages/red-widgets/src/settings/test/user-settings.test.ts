@@ -1,12 +1,11 @@
 import {
   readPage,
-  ctx as baseCtx,
   UserSettings
 } from './imports'
 
 
-function create(ctx) {
-  return new UserSettings(ctx)
+function create() {
+  return new UserSettings()
 }
 
 let events = {
@@ -37,24 +36,16 @@ let tray = {
   show() { }
 }
 
-const ctx = (<any>Object).assign({
-  events,
-  actions,
-  settings: Settings(),
-  view,
-  tray
-}, baseCtx)
-
 let settings
 beforeEach(() => {
-  settings = create(ctx)
+  settings = create()
 })
 
 beforeAll(() => {
   // Searchbox(RED)
   // EditableList(RED)
 
-  document.documentElement.innerHTML = readPage('../red-widgets/src/test/app/simple');
+  document.documentElement.innerHTML = readPage('simple');
 })
 
 test('UserSettings: create', () => {

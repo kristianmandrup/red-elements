@@ -401,91 +401,12 @@ Test Suites: 1 failed, 1 total
 Tests:       4 failed, 26 passed, 30 total
 ```
 
-## Node Editor
-
-```bash
-$ jest src/node-editor/test/editor.test.ts
- FAIL  src/node-editor/test/editor.test.ts
-  ✓ Editor: create (10ms)
-  ✓ Editor: getCredentialsURL (1ms)
-  ✓ Editor: validateNode (1ms)
-  ✓ Editor: validateNodeProperties
-  ✓ Editor: validateNodeProperty (1ms)
-  ✓ Editor: validateNodeEditor (1ms)
-  ✕ Editor: validateNodeEditorProperty (7ms)
-  ✓ Editor: updateNodeProperties (1ms)
-  ✕ Editor: prepareConfigNodeSelect
-  ✕ Editor: prepareConfigNodeButton (1ms)
-  ✕ Editor: preparePropertyEditor
-  ✕ Editor: attachPropertyChangeHandler (1ms)
-  ✓ Editor: populateCredentialsInputs (1ms)
-  ✓ Editor: updateNodeCredentials
-  ✕ Editor: prepareEditDialog (1ms)
-  ✕ Editor: getEditStackTitle (2ms)
-  ✓ Editor: buildEditForm (4ms)
-  ✕ Editor: refreshLabelForm (1ms)
-  ✓ Editor: buildLabelRow (3ms)
-  ✕ Editor: buildLabelForm (1ms)
-  ✕ Editor: showEditDialog (2ms)
-  ✕ Editor: showEditConfigNodeDialog (2ms)
-  ✓ Editor: defaultConfigNodeSort (1ms)
-  ✕ Editor: updateConfigNodeSelect (1ms)
-  ✕ Editor: showEditSubflowDialog (2ms)
-  ✕ Editor: editExpression (1ms)
-  ✕ Editor: editJSON
-  ✓ Editor: stringToUTF8Array (1ms)
-  ✕ Editor: editBuffer (1ms)
-  ✓ Editor: createEditor (28ms)
-
-Test Suites: 1 failed, 1 total
-Tests:       16 failed, 14 passed, 30 total
-```
-
-Some string concatenation gone wrong :P
-
-```bash
-Syntax error, unrecognized expression: #a-[object Object]
-
-at Editor.validateNodeEditorProperty (src/node-editor/controllers/editor.ts:200:73)
-
-at Editor.prepareConfigNodeSelect (src/node-editor/controllers/editor.ts:277:73)
-
-at Editor.prepareConfigNodeButton (src/node-editor/controllers/editor.ts:337:73)
-
-at Editor.preparePropertyEditor (src/node-editor/controllers/editor.ts:365:73)
-
-at Editor.attachPropertyChangeHandler (src/node-editor/controllers/editor.ts:400:73)
-```
-
-`undefined` errors
-
-```bash
-   TypeError: Cannot read property 'defaults' of undefined
-
-      at Editor.validateNodeEditor (src/node-editor/controllers/editor.ts:184:36)
-
-    TypeError: Cannot read property 'inputLabels' of undefined
-
-      at Editor.refreshLabelForm (src/node-editor/controllers/editor.ts:652:94)
-
-    TypeError: Cannot read property 'inputs' of undefined
-
-      at Editor.buildLabelForm (src/node-editor/controllers/editor.ts:787:214)
-
-    TypeError: Cannot read property 'nodes' of undefined
-
-      at Editor.showEditConfigNodeDialog (src/node-editor/controllers/editor.ts:1234:80)
-
-    TypeError: Cannot read property 'length' of undefined
-
-      at Editor.editExpression (src/node-editor/controllers/editor.ts:1789:23)
-
-    TypeError: Cannot read property 'push' of undefined
-
-      at Editor.editJSON (src/node-editor/controllers/editor.ts:2115:19)
-```
-
 ## Palette
+
+- palette
+- palette editor
+
+### Main Palette
 
 ```bash
 $ jest src/palette/test/palette.test.ts
@@ -507,32 +428,74 @@ Test Suites: 1 passed, 1 total
 Tests:       12 passed, 12 total
 ```
 
-```bash
-$ jest src/palette/test/palette-editor.test.ts
- FAIL  src/palette/test/palette-editor.test.ts (6.611s)
-  ✓ Editor: semVerCompare (302ms)
-  ✓ Editor: delayCallback(start, callback) (239ms)
-  ✓ Editor: changeNodeState(id, state, shade, callback) (250ms)
-  ✓ Editor: installNodeModule(id, version, shade, callback) (244ms)
-  ✓ Editor: removeNodeModule(id, callback) (272ms)
-  ✓ Editor: refreshNodeModuleList() (259ms)
-  ✓ Editor: refreshNodeModule(module) (240ms)
-  ✓ Editor: getContrastingBorder(rgbColor) (241ms)
-  ✓ Editor: formatUpdatedAt (258ms)
-  ✓ Editor: _refreshNodeModule(module) (295ms)
-  ✓ Editor: filterChange(val) (264ms)
-  ✕ Editor: handleCatalogResponse(err, catalog, index, v) (244ms)
-  ✓ Editor: initInstallTab() (264ms)
-  ✕ Editor: initInstallTab() (293ms)
-  ✓ Editor: refreshFilteredItems (259ms)
-  ✓ Editor: sortModulesAZ(A, B) (271ms)
-  ✓ Editor: sortModulesRecent(A, B) (253ms)
-  ✓ Editor: getSettingsPane() - fails without createSettingsPane (261ms)
-  ✓ Editor: createSettingsPane (505ms)
-  ✓ Editor: getSettingsPane() - works after createSettingsPane (267ms)
+### Palette Editor
 
-Test Suites: 1 failed, 1 total
-Tests:       2 failed, 18 passed, 20 total
+```
+$ jest src/palette/test/palette-editor.test.ts
+ PASS  src/palette/test/palette-editor.test.ts (5.902s)
+  ✓ Editor: semVerCompare (299ms)
+  ✓ Editor: delayCallback(start, callback) (246ms)
+  ✓ Editor: changeNodeState(id, state, shade, callback) (252ms)
+  ✓ Editor: installNodeModule(id, version, shade, callback) (247ms)
+  ✓ Editor: removeNodeModule(id, callback) (247ms)
+  ✓ Editor: refreshNodeModuleList() (249ms)
+  ✓ Editor: refreshNodeModule(module) (242ms)
+  ✓ Editor: getContrastingBorder(rgbColor) (252ms)
+  ✓ Editor: formatUpdatedAt (241ms)
+  ✓ Editor: _refreshNodeModule(module) (245ms)
+  ✓ Editor: filterChange(val) (247ms)
+  ✓ Editor: handleCatalogResponse(err, catalog, index, v) (249ms)
+  ✓ Editor: initInstallTab() (253ms)
+  ✓ Editor: refreshFilteredItems (250ms)
+  ✓ Editor: sortModulesAZ(A, B) (243ms)
+  ✓ Editor: sortModulesRecent(A, B) (243ms)
+  ✓ Editor: getSettingsPane() - fails without createSettingsPane (233ms)
+  ✓ Editor: createSettingsPane (493ms)
+  ✓ Editor: getSettingsPane() - works after createSettingsPane (247ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       19 passed, 19 total
+```
+
+## Node Editor
+
+```bash
+$ jest src/node-editor/test/editor.test.ts
+ PASS  src/node-editor/test/editor.test.ts
+  ✓ Editor: create (11ms)
+  ✓ Editor: getCredentialsURL (2ms)
+  ✓ Editor: validateNode (1ms)
+  ✓ Editor: validateNodeProperties (1ms)
+  ✓ Editor: validateNodeProperty (1ms)
+  ✓ Editor: validateNodeEditorProperty
+  ✓ Editor: validateNodeEditor (1ms)
+  ✓ Editor: updateNodeProperties (1ms)
+  ✓ Editor: prepareConfigNodeSelect (1ms)
+  ✓ Editor: prepareConfigNodeButton (1ms)
+  ✓ Editor: preparePropertyEditor
+  ✓ Editor: attachPropertyChangeHandler (1ms)
+  ✓ Editor: populateCredentialsInputs (1ms)
+  ✓ Editor: updateNodeCredentials
+  ✓ Editor: prepareEditDialog (7ms)
+  ✓ Editor: getEditStackTitle (1ms)
+  ✓ Editor: buildEditForm (6ms)
+  ✓ Editor: refreshLabelForm (2ms)
+  ✓ Editor: buildLabelRow (4ms)
+  ✓ Editor: buildLabelForm (3ms)
+  ✓ Editor: showEditDialog - subflow (298ms)
+  ✓ Editor: showEditConfigNodeDialog (241ms)
+  ✓ Editor: defaultConfigNodeSort
+  ✓ Editor: updateConfigNodeSelect (1ms)
+  ✓ Editor: showEditSubflowDialog (228ms)
+  ✓ Editor: editExpression (237ms)
+  ✓ Editor: editJSON (227ms)
+  ✓ Editor: stringToUTF8Array - string (1ms)
+  ✓ Editor: stringToUTF8Array - undefined
+  ✓ Editor: editBuffer (221ms)
+  ✓ Editor: createEditor (27ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       31 passed, 31 total
 ```
 
 ```bash
@@ -549,26 +512,58 @@ Tests:       2 failed, 18 passed, 20 total
 
 ## Search
 
+- search
+- type search
+
+### Main Search
+
 ```bash
 $ jest src/search/test/search.test.ts
- FAIL  src/search/test/search.test.ts
-  ✓ Search: created (5ms)
+ PASS  src/search/test/search.test.ts
+  ✓ Search: created (6ms)
   ✓ Search: disabled (1ms)
-  ✓ Search: disable()
-  ✓ Search: enable() (1ms)
-  ✕ Search: indexNode (6ms)
-  ✕ Search: indexWorkspace()
+  ✓ Search: disable() (1ms)
+  ✓ Search: enable()
+  ✓ Search: indexNode (2ms)
+  ✓ Search: indexWorkspace() (1ms)
   ✓ Search: search(val) - no searchResults, throws (1ms)
-  ✓ Search: ensureSelectedIsVisible (116ms)
-  ✕ Search: reveal (1ms)
-  ✓ Search: can hide when dialog is null
-  ✕ Search: can show when dialog is defined (1ms)
-  ✓ Search: can show with disabled true
-  ✕ Search: can show when visible true
-  ✓ Search: can hide when visible true
+  ✓ Search: ensureSelectedIsVisible (118ms)
+  ✓ Search: reveal (1ms)
+  ✓ Search: hide - can hide when dialog is null (1ms)
+  ✓ Search: show - can show when dialog is defined (102ms)
+  ✓ Search: show - can show with disabled true
+  ✓ Search: can show when visible true (90ms)
+  ✓ Search: hide - can hide when visible true
 
-Test Suites: 1 failed, 1 total
-Tests:       5 failed, 9 passed, 14 total
+Test Suites: 1 passed, 1 total
+Tests:       14 passed, 14 total
+```
+
+### Type Search
+
+```
+$ jest src/search/test/type-search.test.ts
+ PASS  src/search/test/type-search.test.ts
+  ✓ TypeSearch: create (3ms)
+  ✓ TypeSearch: search (1ms)
+  ✓ TypeSearch: ensureSelectedIsVisible (121ms)
+  ✓ TypeSearch: ensureSelectedIsVisible (54ms)
+  ✓ TypeSearch: ensureSelectedIsVisible
+  ✓ TypeSearch: createDialog (114ms)
+  ✓ TypeSearch: createDialog (3ms)
+  ✓ TypeSearch: confirm
+  ✓ TypeSearch: handleMouseActivity (1ms)
+  ✓ TypeSearch: handleMouseActivity (2ms)
+  ✓ TypeSearch: handleMouseActivity (70ms)
+  ✓ TypeSearch: handleMouseActivity (1ms)
+  ✓ TypeSearch: show (22ms)
+  ✓ TypeSearch: show (6ms)
+  ✓ TypeSearch: show (7ms)
+  ✓ TypeSearch: getTypeLabel
+  ✓ TypeSearch: with paletteLabel undefine
+
+Test Suites: 1 passed, 1 total
+Tests:       17 passed, 17 total
 ```
 
 ## User settings
@@ -603,47 +598,55 @@ Tests:       11 passed, 11 total
 
 ```bash
 $ jest src/sidebar/test/sidebar/sidebar.test.ts
- FAIL  src/sidebar/test/sidebar/sidebar.test.ts
-  ✓ Sidebar: create (17ms)
-  ✓ Sidebar: sidebarSeparator (4ms)
-  ✓ Sidebar: knownTabs (3ms)
-  ✓ Sidebar: addTab - adds a tab (4ms)
+ PASS  src/sidebar/test/sidebar/sidebar.test.ts
+  ✓ Sidebar: create (20ms)
+  ✓ Sidebar: sidebarSeparator (5ms)
+  ✓ Sidebar: knownTabs (4ms)
+  ✓ Sidebar: addTab - when not visible does not (really) add a tab (5ms)
+  ✓ Sidebar: addTab - when visible really does add a tab (72ms)
+  ✓ Sidebar: removeTab - if no such tab registered, ignore remove (18ms)
+  ✓ Sidebar: removeTab - removes tab if registered (27ms)
   ✓ Sidebar: toggleSidebar (4ms)
-  ✕ Sidebar: showSidebar (4ms)
+  ✓ Sidebar: showSidebar (27ms)
+  ✓ Sidebar: containsTab (15ms)
 
-Test Suites: 1 failed, 1 total
-Tests:       1 failed, 5 passed, 6 total
-```
-
-```bash
-    TypeError: Cannot read property 'id' of undefined
-
-      at Tabs.addTab (src/common/controllers/tabs/index.ts:300:18)
+Test Suites: 1 passed, 1 total
+Tests:       10 passed, 10 total
 ```
 
 ### Tab config
 
 ```bash
 $ jest src/sidebar/test/sidebar/tab-config.test.ts
+ PASS  src/sidebar/test/sidebar/tab-config.test.ts
+  ✓ Sidebar TabConfig: create (25ms)
+  ✓ Sidebar TabConfig: categories (10ms)
+  ✓ TabConfig: getOrCreateCategory (14ms)
+  ✓ TabConfig: createConfigNodeList (11ms)
+  ✓ TabConfig: refreshConfigNodeList (15ms)
+  ✓ TabConfig: show (13ms)
 
-Test Suites: 1 failed, 1 total
-```
-
-```bash
-    TypeError: Cannot set property 'info' of undefined
-
-      at new Sidebar (src/sidebar/controllers/sidebar.ts:144:26)
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
 ```
 
 ### Tab info
 
 ```bash
 $ jest src/sidebar/test/sidebar/tab-info.test.ts
- PASS  src/sidebar/test/sidebar/tab-info.test.ts
-  ✓ Sidebar TabInfo: create (13ms)
+ FAIL  src/sidebar/test/sidebar/tab-info.test.ts
+  ✓ Sidebar TabInfo: create (11ms)
+  ✓ TabInfo: show (1ms)
+  ✓ TabInfo: jsonFilter - empty key (1ms)
+  ✓ TabInfo: jsonFilter (1ms)
+  ✓ TabInfo: addTargetToExternalLinks (2ms)
+  ✕ TabInfo: refresh (1ms)
+  ✕ TabInfo: setInfoText (1ms)
+  ✕ TabInfo: clear (1ms)
+  ✕ TabInfo: set```
 
-Test Suites: 1 passed, 1 total
-Tests:       1 passed, 1 total
+Test Suites: 1 failed, 1 total
+Tests:       4 failed, 5 passed, 9 total
 ```
 
 ### Tip
@@ -651,14 +654,15 @@ Tests:       1 passed, 1 total
 ```bash
 $ jest src/sidebar/test/sidebar/tip.test.ts
  PASS  src/sidebar/test/sidebar/tip.test.ts
-  ✓ Tip: create (7ms)
-  ✓ Tip: setTip (47ms)
-  ✓ Tip: cycleTips (24ms)
-  ✓ Tip: stopTips (2ms)
-  ✓ Tip: nextTip
+  ✓ Tips: create (8ms)
+  ✓ Tips: setTip (39ms)
+  ✓ Tips: cycleTips (17ms)
+  ✓ Tips: startTips (3ms)
+  ✓ Tips: stopTips (1ms)
+  ✓ Tips: nextTip
 
 Test Suites: 1 passed, 1 total
-Tests:       5 passed, 5 total
+Tests:       6 passed, 6 total
 ```
 
 ## Tray
@@ -692,60 +696,33 @@ DeprecationWarning: Unhandled promise rejections are deprecated. In the future, 
 ## Workspaces
 
 ```bash
-jest src/workspaces/test/workspaces.test.ts
- FAIL  src/workspaces/test/workspaces.test.ts
-  ✓ Workspaces: create (14ms)
-  ✕ Workspaces: addWorkspace (3ms)
-  ✕ Workspaces: deleteWorkspace (2ms)
-  ✕ Workspaces: showRenameWorkspaceDialog (4ms)
-  ✕ Workspaces: createWorkspaceTabs (11ms)
-  ✕ Workspaces: editWorkspace (8ms)
-  ✕ Workspaces: removeWorkspace (4ms)
-  ✕ Workspaces: setWorkspaceOrder (2ms)
-  ✕ Workspaces: contains - true when exists (3ms)
-  ✓ Workspaces: contains - false when not (3ms)
-  ✓ Workspaces: count (2ms)
-  ✓ Workspaces: active (3ms)
-  ✕ Workspaces: show (2ms)
-  ✕ Workspaces: refresh (2ms)
-  ✕ Workspaces: resize (2ms)
+$ jest src/workspaces/test/workspaces.test.ts
+ PASS  src/workspaces/test/workspaces.test.ts
+  ✓ Workspaces: create (16ms)
+  ✓ tabs (4ms)
+  ✓ tabs - when have tabs, not empty (221ms)
+  ✓ tabIds - no tabs then no ids (4ms)
+  ✓ tabIds (49ms)
+  ✓ hasTabId - no tabs, has none matching on id (3ms)
+  ✓ hasTabId - found when has tab with matching id (48ms)
+  ✓ Workspaces: addWorkspace (49ms)
+  ✓ Workspaces: deleteWorkspace (55ms)
+  ✓ Workspaces: showRenameWorkspaceDialog (5ms)
+  ✓ Workspaces: createWorkspaceTabs (8ms)
+  ✓ Workspaces: editWorkspace (3ms)
+  ✓ Workspaces: editWorkspace default: activeWorkspace (4ms)
+  ✓ Workspaces: removeWorkspace (55ms)
+  ✓ Workspaces: setWorkspaceOrder (98ms)
+  ✓ Workspaces: contains - true when exists (54ms)
+  ✓ Workspaces: contains - false when not (51ms)
+  ✓ Workspaces: count - adds one after workspace added (105ms)
+  ✓ Workspaces: active - with no workspace returns 0 (4ms)
+  ✓ Workspaces: active - with activeWorkspace returns active workspace index (207ms)
+  ✓ Workspaces: show - ignore if not exist (305ms)
+  ✓ Workspaces: show - activate when exists (205ms)
+  ✓ Workspaces: refresh (4ms)
+  ✓ Workspaces: resize (62ms)
 
-Test Suites: 1 failed, 1 total
-Tests:       11 failed, 4 passed, 15 total
-```
-
-```bash
-   TypeError: Cannot set property 'tabs' of undefined
-
-      at Workspaces.createWorkspaceTabs (src/workspaces/controllers/workspaces.ts:291:85)
-
-    TypeError: Cannot read property 'deleteWorkspace' of undefined
-
-      at Object.<anonymous>.test (src/workspaces/test/workspaces.test.ts:27:8)
-
-    TypeError: Cannot read property 'showRenameWorkspaceDialog' of undefined
-
-      at Object.<anonymous>.test (src/workspaces/test/workspaces.test.ts:32:8)
-
-    TypeError: Cannot read property 'createWorkspaceTabs' of undefined
-
-      at Object.<anonymous>.test (src/workspaces/test/workspaces.test.ts:36:8)
-
-   TypeError: Cannot read property 'editWorkspace' of undefined
-
-      at Object.<anonymous>.test (src/workspaces/test/workspaces.test.ts:41:8)
-
-    TypeError: Cannot read property 'removeWorkspace' of undefined
-
-      at Object.<anonymous>.test (src/workspaces/test/workspaces.test.ts:46:8)
-
-    TypeError: Cannot read property 'setWorkspaceOrder' of undefined
-
-      at Object.<anonymous>.test (src/workspaces/test/workspaces.test.ts:51:8)
-
-    TypeError: Cannot read property 'contains' of undefined
-
-      at Object.<anonymous>.test (src/workspaces/test/workspaces.test.ts:56:24)
-
-  ....
+Test Suites: 1 passed, 1 total
+Tests:       24 passed, 24 total
 ```
