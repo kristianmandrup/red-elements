@@ -4,46 +4,51 @@ import {
   Tips
 } from '../imports'
 
-function createTip() {
+function create() {
   return new Tips()
 }
 
-let tip
+let tips
 beforeEach(() => {
-  tip = createTip()
+  tips = create()
 })
 
 beforeAll(() => {
   // new Searchbox(RED)
   // new EditableList(RED)
-  document.documentElement.innerHTML = readPage('simple')
+  document.documentElement.innerHTML = readPage('tips', __dirname);
 })
 
-test('Tip: create', () => {
-  expect(tip).toBeDefined();
+test('Tips: create', () => {
+  expect(tips).toBeDefined();
 })
 
-test('Tip: setTip', () => {
-  tip.tipBox = $("#tipBox");
-  tip.setTip()
+test('Tips: setTip', () => {
+  tips.tipBox = $("#tipBox");
+  const wasSet = tips.setTip()
+  expect(wasSet).toBeDefined()
 })
 
-test('Tip: cycleTips', () => {
-  tip.tipBox = $("#tipBox");
-  tip.cycleTips();
+test('Tips: cycleTips', () => {
+  tips.tipBox = $("#tipBox");
+  const cycled = tips.cycleTips();
+  expect(cycled).toBeDefined()
 })
 
-test('Tip: startTips', () => {
-  tip.tipBox = $("#tipBox");
-  tip.startTips()
+test.skip('Tips: startTips', () => {
+  tips.tipBox = $("#tipBox");
+  const started = tips.startTips()
+  expect(started).toBeDefined()
 })
 
-test('Tip: stopTips', () => {
-  tip.tipBox = $("#tipBox");
-  tip.stopTips()
+test('Tips: stopTips', () => {
+  tips.tipBox = $("#tipBox");
+  const stopped = tips.stopTips()
+  expect(stopped).toBeDefined()
 })
 
-test('Tip: nextTip', () => {
-  tip.tipBox = $("#tipBox");
-  tip.nextTip()
+test('Tips: nextTip', () => {
+  tips.tipBox = $("#tipBox");
+  const next = tips.nextTip()
+  expect(next).toBeDefined()
 })

@@ -2,6 +2,8 @@ import {
   Context
 } from '../../common'
 
+const { log } = console
+
 export class Tips extends Context {
   public enabled: Boolean = true
   public startDelay: number = 1000
@@ -17,7 +19,8 @@ export class Tips extends Context {
       RED,
       enabled
     } = this
-    let {
+
+    const {
       startTips,
       stopTips
     } = this.rebind([
@@ -25,7 +28,11 @@ export class Tips extends Context {
         'stopTips'
       ])
 
-    RED.actions.add("core:toggle-show-tips", function (state) {
+    RED.actions.add("core:toggle-show-tips", (state) => {
+      log('configure tips', {
+        state
+      })
+
       if (state === undefined) {
         RED.userSettings.toggle("view-show-tips");
       } else {
@@ -37,6 +44,7 @@ export class Tips extends Context {
         }
       }
     });
+    // log('Tips: created')
   }
 
   setTip() {
@@ -47,7 +55,8 @@ export class Tips extends Context {
       startTimeout,
       refreshTimeout,
     } = this
-    let {
+
+    const {
       cycleTips,
       cycleDelay
     } = this.rebind([
@@ -73,9 +82,10 @@ export class Tips extends Context {
     }
     tipBox.html(tip).fadeIn(200);
     if (startTimeout) {
-      startTimeout = null;
-      refreshTimeout = setInterval(cycleTips, cycleDelay);
+      this.startTimeout = null;
+      this.refreshTimeout = setInterval(cycleTips, cycleDelay);
     }
+    return this
   }
 
   cycleTips() {
@@ -85,9 +95,12 @@ export class Tips extends Context {
     tipBox.fadeOut(300, () => {
       this.setTip();
     })
+    return this
   }
 
   startTips() {
+    log('startTips')
+
     let {
       RED,
       enabled,
@@ -99,20 +112,29 @@ export class Tips extends Context {
     const {
       setTip,
     } = this.rebind([
-        'setTip',
+        'setTip'
       ])
 
-    $(".sidebar-node-info").addClass('show-tips');
+    let sidebarNodeInfoElem = $(".sidebar-node-info")
+    this._validateDefined(sidebarNodeInfoElem, 'sidebarNodeInfoElem', 'stopTips')
+
+    sidebarNodeInfoElem.addClass('show-tips');
+
     if (enabled) {
+      log('startTips', {
+        enabled
+      })
       if (!startTimeout && !refreshTimeout) {
         if (tipCount === -1) {
           do {
             tipCount++;
           } while (RED._("infotips:info.tip" + tipCount) !== "infotips:info.tip" + tipCount);
         }
-        startTimeout = setTimeout(setTip, startDelay);
+        this.startTimeout = setTimeout(setTip, startDelay);
       }
+      this.tipCount = tipCount
     }
+    return this
   }
 
   stopTips() {
@@ -124,11 +146,16 @@ export class Tips extends Context {
         'refreshTimeout'
       ])
 
-    $(".sidebar-node-info").removeClass('show-tips');
+    let sidebarNodeInfoElem = $(".sidebar-node-info")
+    this._validateDefined(sidebarNodeInfoElem, 'sidebarNodeInfoElem', 'stopTips')
+
+    sidebarNodeInfoElem.removeClass('show-tips');
     clearInterval(refreshTimeout);
     clearTimeout(startTimeout);
-    refreshTimeout = null;
-    startTimeout = null;
+
+    this.refreshTimeout = null;
+    this.startTimeout = null;
+    return this
   }
 
   nextTip() {
