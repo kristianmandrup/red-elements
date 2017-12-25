@@ -23,7 +23,7 @@ let view
 // })
 
 beforeAll(() => {
-  document.documentElement.innerHTML = readPage('../red-widgets/src/canvas/test/app/canvas');
+  document.documentElement.innerHTML = readPage('canvas');
 })
 
 // use jest
