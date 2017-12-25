@@ -13,9 +13,11 @@ export class Tips extends Context {
 
   constructor() {
     super()
-    const RED = this.RED
     let {
-      enabled,
+      RED,
+      enabled
+    } = this
+    let {
       startTips,
       stopTips
     } = this.rebind([
@@ -38,17 +40,22 @@ export class Tips extends Context {
   }
 
   setTip() {
-    const {
-      RED,
-     } = this
     let {
+      RED,
       tipCount,
       tipBox,
       startTimeout,
       refreshTimeout,
+    } = this
+    let {
       cycleTips,
       cycleDelay
-    } = this
+    } = this.rebind([
+        'cycleTips',
+        'cycleDelay'
+      ])
+
+
     var r = Math.floor(Math.random() * tipCount);
     var tip = RED._("infotips:info.tip" + r);
 
@@ -81,17 +88,19 @@ export class Tips extends Context {
   }
 
   startTips() {
-    const {
-      enabled,
-      refreshTimeout,
-      setTip,
-      startDelay,
-      RED
-    } = this
     let {
-    tipCount,
-      startTimeout
-  } = this
+      RED,
+      enabled,
+      startDelay,
+      tipCount,
+      startTimeout,
+      refreshTimeout,
+    } = this
+    const {
+      setTip,
+    } = this.rebind([
+        'setTip',
+      ])
 
     $(".sidebar-node-info").addClass('show-tips');
     if (enabled) {
@@ -110,7 +119,10 @@ export class Tips extends Context {
     let {
       startTimeout,
       refreshTimeout
-    } = this
+    } = this.rebind([
+        'startTimeout',
+        'refreshTimeout'
+      ])
 
     $(".sidebar-node-info").removeClass('show-tips');
     clearInterval(refreshTimeout);
@@ -123,9 +135,12 @@ export class Tips extends Context {
     let {
       startTimeout,
       refreshTimeout,
+    } = this
+
+    const {
       setTip
     } = this.rebind([
-        'setTip'
+        'setTip',
       ])
 
     clearInterval(refreshTimeout);
