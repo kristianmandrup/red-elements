@@ -12,6 +12,7 @@ export class Tips extends Context {
   public startTimeout: any;
   public refreshTimeout: any;
   public tipBox: any
+  public maxTipCount = 20
 
   constructor() {
     super()
@@ -99,8 +100,7 @@ export class Tips extends Context {
   }
 
   startTips() {
-    log('startTips')
-
+    // log('startTips')
     let {
       RED,
       enabled,
@@ -108,6 +108,7 @@ export class Tips extends Context {
       tipCount,
       startTimeout,
       refreshTimeout,
+      maxTipCount
     } = this
     const {
       setTip,
@@ -126,9 +127,16 @@ export class Tips extends Context {
       })
       if (!startTimeout && !refreshTimeout) {
         if (tipCount === -1) {
-          do {
+          while (true) {
             tipCount++;
-          } while (RED._("infotips:info.tip" + tipCount) !== "infotips:info.tip" + tipCount);
+            let i18nlabel = RED._("infotips:info.tip" + tipCount)
+            let label = "infotips:info.tip" + tipCount
+            let matchingLabel = i18nlabel === label
+            if (!matchingLabel || tipCount > maxTipCount) break;
+            // log({
+            //   tipCount
+            // })
+          }
         }
         this.startTimeout = setTimeout(setTip, startDelay);
       }

@@ -8,6 +8,8 @@ function create() {
   return new Tips()
 }
 
+const { log } = console
+
 let tips
 beforeEach(() => {
   tips = create()
@@ -35,7 +37,7 @@ test('Tips: cycleTips', () => {
   expect(cycled).toBeDefined()
 })
 
-test.skip('Tips: startTips', () => {
+test('Tips: startTips', () => {
   tips.tipBox = $("#tipBox");
   const started = tips.startTips()
   expect(started).toBeDefined()
