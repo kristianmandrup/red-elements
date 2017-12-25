@@ -1,26 +1,47 @@
 # Test stats
 
+## Issues
+
+- Canvas
+  x Needs fix to missing `d3.event`
+- Main container
+  x all broken due to `red.js` in `@tecla5/red-shared`
+- Node diff
+  ✕ Diff: mergeDiff (2ms)
+  ✕ Diff: createNodeConflictRadioBoxes (5ms)
+  ✕ Diff: createNodeConflictRadioBoxes (2ms)
+  ✕ Diff: createNodeConflictRadioBoxes (2ms)
+
 ## Canvas
 
 ```bash
+$ jest src/canvas/test/canvas.test.ts
+ FAIL  src/canvas/test/canvas.test.ts
+  ✓ View: create (9ms)
+  ✓ View: configureD3 (15ms)
+  ✓ View: configureHandlers (5ms)
+  ✓ View: configureActions
+  ✓ View: configureEvents (1ms)
+  ✓ View: configure (2ms)
+  ✕ View: showDragLines (2ms)
+
 Test Suites: 1 failed, 1 total
 Tests:       1 failed, 6 passed, 7 total
 ```
 
-## Canvas
-
 ```bash
-Test Suites: 1 failed, 1 total
-Tests:       1 failed, 6 passed, 7 total
-```
+  ● View: showDragLines
 
-`d3 missing event object { event: null }`
+    handleOuterTouchStartEvent: d3 missing event object
+```
 
 ## Common
 
 ```bash
+$ jest src/common/test/controllers/
+
 Test Suites: 1 failed, 21 passed, 22 total
-Tests:       3 failed, 4 skipped, 361 passed, 368 total
+Tests:       3 failed, 2 skipped, 367 passed, 372 total
 ```
 
 `TypeError: this.RED.utils.validatePropertyExpression is not a function`
@@ -296,68 +317,72 @@ Tests:       12 passed, 12 total
 ```bash
 $ jest src/common/test/controllers/tabs.test.ts
  PASS  src/common/test/controllers/tabs.test.ts
-  ✓ Tabs: is a class (10ms)
-  ✓ Tabs: widget can NOT be created without id: or element: option (5ms)
+  ✓ Tabs: is a class (12ms)
+  ✓ Tabs: widget can NOT be created without id: or element: option (3ms)
   ✓ Tabs: widget can NOT be created without option type object (1ms)
   ✓ Tabs: widget can be created with element: option (2ms)
-  ✓ Tabs: widget can set RED as 2nd option (3ms)
+  ✓ Tabs: widget can set RED as 2nd option (2ms)
   ✓ Tabs: widget can be created from target elem (1ms)
-  ✓ Tabs: widget can be created from different options (10ms)
+  ✓ Tabs: widget can be created from different options (15ms)
   ✓ Tabs: handle add tab click event without options (2ms)
   ✓ Tabs: handle add tab click event without options add button (1ms)
-  ✓ Tabs: scrollEventHandler (47ms)
+  ✓ Tabs: scrollEventHandler (45ms)
   ✓ Tabs: onTabClick (13ms)
-  ✓ Tabs: updateScroll (25ms)
-  ✓ Tabs: updateScroll with blank div (6ms)
+  ✓ Tabs: updateScroll (21ms)
+  ✓ Tabs: updateScroll with blank div (5ms)
   ✓ Tabs: updateScroll with scroll left (33ms)
-  ✓ Tabs: onTabDblClick (1ms)
-  ✓ Tabs: activateTab (5ms)
-  ✓ Tabs: activateTab (79ms)
-  ✓ Tabs: activatePreviousTab (3ms)
-  ✓ Tabs: activateNextTab (2ms)
-  ✓ Tabs: updateTabWidths (11ms)
-  ✓ Tabs: removeTab (10ms)
-  ✓ Tabs: addTab(tab) (27ms)
-  ✓ Tabs: count (2ms)
+  ✓ Tabs: onTabDblClick (2ms)
+  ✓ Tabs: activateTab (3ms)
+  ✓ Tabs: activateTab (78ms)
+  ✓ Tabs: activatePreviousTab (2ms)
+  ✓ Tabs: activateNextTab (1ms)
+  ✓ Tabs: updateTabWidths (10ms)
+  ✓ Tabs: removeTab (2ms)
+  ✓ Tabs: addTab(tab) - returns added and increases tab count (28ms)
+  ✓ Tabs: addTab(tab) - add duplicate ignored (23ms)
+  ✓ Tabs: addTabs(tabs) - returns added and increases tab count (29ms)
+  ✓ Tabs: count (40ms)
   ✓ Tabs: contains - no such tab: false (2ms)
+  ✓ Tabs: contains - has tab with id: true (3ms)
   ✓ Tabs: renameTab(id, label) - no such tab (2ms)
-  ✓ Tabs: count (2ms)
-  ○ skipped 2 tests
+  ✓ Tabs: renameTab(id, label) - has such a tab (37ms)
+  ✓ Tabs: ids (24ms)
+  ✓ Tabs: existingTabOrder (24ms)
+  ✓ Tabs: order (26ms)
 
 Test Suites: 1 passed, 1 total
-Tests:       2 skipped, 26 passed, 28 total
+Tests:       32 passed, 32 total
 ```
 
 Note: *2 tests skipped*
 
 ## Library
 
+```bash
+$ jest src/library/test/library.test.ts
+ PASS  src/library/test/library.test.ts
+  ✓ Library: create (102ms)
+  ✓ Library: loadFlowLibrary (34ms)
+  ✓ Library: createUI (138ms)
+  ✓ Library: exportFlow (148ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       4 passed, 4 total
+```
+
 ## Main container
-
-
 
 ```bash
 $ jest src/main-container/test/main.test.js
 
- FAIL  src/main-container/test/main.test.js
-  ● Test suite failed to run
-
-    ReferenceError: regeneratorRuntime is not defined
-
-  ✓ main: create (4ms)
-  ✕ main: loadNodeList (1ms)
-  ✕ main: loadNodes
-  ✕ main: loadFlows
-  ✕ main: showAbout
-  ✕ main: loadEditor (1ms)
-
-Test Suites: 2 failed, 2 total
-Tests:       5 failed, 1 passed, 6 total
+Test Suites: 1 failed, 1 total
 ```
 
-`ReferenceError: regeneratorRuntime is not defined`
-
-`regeneratorRuntime is not defined` is a problem with Babel missing polyfill and runtime transformation!
+```bash
+TypeError: _1.History is not a constructor
+  at Object.<anonymous> (node_modules/@tecla5/red-shared/src/red.ts:38:15)
+  at Object.<anonymous> (node_modules/@tecla5/red-shared/src/index.ts:3:13)
+```
 
 ## Node diff
 
