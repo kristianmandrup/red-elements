@@ -190,7 +190,8 @@ export class RED implements IRED {
     },
     config: {
       refresh() { }
-    }
+    },
+    show(id) { }
   }
   public _ = function () { }
   public tray = {
