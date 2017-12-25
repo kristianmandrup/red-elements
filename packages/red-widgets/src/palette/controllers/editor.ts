@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { Context, $ } from '../../common'
+import { Context, $, EditableList, Searchbox } from '../../common'
 
 interface ISearchTerm extends JQuery<HTMLElement> {
 }
@@ -25,15 +25,10 @@ interface ISearchResults extends JQuery<HTMLElement> {
   editableList: Function
 }
 
-import { IRED, TYPES, container } from '../../setup/setup';
-import getDecorators from 'inversify-inject-decorators';
-import { Container, injectable, tagged, named } from 'inversify';
-let { lazyInject } = getDecorators(container);
 const {
   log
 } = console
 export class PaletteEditor extends Context {
-  @lazyInject(TYPES.RED) RED: IRED;
   public disabled: Boolean = false
   public loadedList: Array<any> = [];
   public filteredList: Array<any> = [];
@@ -44,13 +39,13 @@ export class PaletteEditor extends Context {
   public eventTimers: Object = {};
   public activeFilter: Object = '';
 
-  public editorTabs: any;
-  public filterInput: any;
-  public searchInput: any;
+  public editorTabs: any; // jQuery element
+  public filterInput: any; // jQuery element
+  public searchInput: any; // jQuery element
   public nodeList: ISearchResults;
-  public packageList: any;
+  public packageList: any; // jQuery element
 
-  public settingsPane: any;
+  public settingsPane: any; // jQuery element ?
   public catalogueCount: any;
 
   public catalogueLoadStatus: Array<any> = [];
@@ -62,6 +57,13 @@ export class PaletteEditor extends Context {
   constructor() {
     super()
     const RED = this.RED
+
+    // to make sure
+    // searchBox jQuery widget factory is available on searchInput element
+    new Searchbox()
+
+    // editableList jQuery widget factory is available on packageList element
+    new EditableList()
 
     if (RED.settings.theme('palette.editable') === false) {
       return;
@@ -544,11 +546,12 @@ export class PaletteEditor extends Context {
       loadedIndex,
       loadedList,
       searchInput
+    } = this
+
+    const {
+      createSettingsPane
     } = this.rebind([
-        'catalogueLoadStatus',
-        'loadedIndex',
-        'loadedList',
-        'searchInput'
+        'createSettingsPane'
       ])
 
     catalogueLoadStatus.push(err || v);
@@ -575,8 +578,18 @@ export class PaletteEditor extends Context {
         })
         loadedList = loadedList.concat(v.modules);
       }
-      console.log("SEARCH INPUT", this.searchInput)
-      this.searchInput.searchBox('count', loadedList.length);
+
+      if (!searchInput) {
+        createSettingsPane()
+        searchInput = this.searchInput
+      }
+
+      log({
+        searchInput
+      })
+      this._validateObj(searchInput, 'searchInput', 'handleCatalogResponse')
+
+      searchInput.searchBox('count', loadedList.length);
     } else {
       catalogueLoadErrors = true;
     }
@@ -608,13 +621,14 @@ export class PaletteEditor extends Context {
       catalogueLoadErrors,
       catalogueLoadStart,
       catalogueCount,
+    } = this
+
+    const {
       handleCatalogResponse,
       refreshNodeModuleList,
     } = this.rebind([
         'handleCatalogResponse',
-        'refreshNodeModuleList',
-        'loadedList',
-        'packageList'
+        'refreshNodeModuleList'
       ])
 
     if (loadedList.length === 0) {
@@ -1036,6 +1050,8 @@ export class PaletteEditor extends Context {
     }).appendTo(installTab);
     searchInput = $('<input type="text" data-i18n="[placeholder]palette.search"></input>')
       .appendTo(searchDiv)
+
+    this.searchInput = searchInput
 
     searchInput.searchBox({
       delay: 300,
