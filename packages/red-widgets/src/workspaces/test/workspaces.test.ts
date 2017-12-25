@@ -186,16 +186,18 @@ test('Workspaces: contains - true when exists', () => {
   ws.addWorkspace({
     id
   })
-  let contained = ws.tabIds.find(x => x.id === id);
+  let contained = ws.tabIds.find(x => x === id);
   expect(contained).toBeTruthy()
 })
 
 test('Workspaces: contains - false when not', () => {
   let id = 'unknown'
+  ws.tabs.ids = [];
+  addFakeTabs();
   ws.addWorkspace({
     id: 'tab1'
   })
-  let contained = ws.contains(id)
+  let contained = ws.tabIds.find(x => x === id);
   expect(contained).toBeFalsy()
 })
 
