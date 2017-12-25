@@ -148,7 +148,6 @@ export class Tips extends Context {
 
     let sidebarNodeInfoElem = $(".sidebar-node-info")
     this._validateDefined(sidebarNodeInfoElem, 'sidebarNodeInfoElem', 'stopTips')
-
     sidebarNodeInfoElem.removeClass('show-tips');
     clearInterval(refreshTimeout);
     clearTimeout(startTimeout);
@@ -172,6 +171,6 @@ export class Tips extends Context {
 
     clearInterval(refreshTimeout);
     startTimeout = true;
-    setTip();
+    return setTip();
   }
 }
