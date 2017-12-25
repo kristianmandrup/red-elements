@@ -17,7 +17,7 @@ beforeAll(() => {
   new Searchbox()
 
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('../red-widgets/src/palette/test/app/palette-editor');
+  document.documentElement.innerHTML = readPage('palette-editor', __dirname);
 })
 
 test('Editor: semVerCompare', () => {
@@ -112,11 +112,6 @@ test('Editor: handleCatalogResponse(err, catalog, index, v)', () => {
 
 })
 test('Editor: initInstallTab()', () => {
-  let initialized = editor.initInstallTab()
-  expect(initialized).toBeDefined()
-})
-test('Editor: initInstallTab()', () => {
-  editor.packageList = {};
   let initialized = editor.initInstallTab()
   expect(initialized).toBeDefined()
 })
