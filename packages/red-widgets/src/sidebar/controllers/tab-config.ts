@@ -332,7 +332,7 @@ export class SidebarTabConfig extends Context {
       validList[sf.id.replace(/\./g, "-")] = true;
       this.getOrCreateCategory(sf.id, subflowCategories, sf.name);
     })
-    $(".workspace-config-node-category").each(() => {
+    $(".workspace-config-node-category").each(function () {
       var id = $(this).attr('id').substring("workspace-config-node-category-".length);
       if (!validList[id]) {
         $(this).remove();

@@ -54,6 +54,7 @@ test('TabConfig: createConfigNodeList', () => {
   let id = 'abc'
   let node = {
     id: 'x',
+    users: [],
     _def: {
       hasUsers() {
         return true
@@ -65,7 +66,6 @@ test('TabConfig: createConfigNodeList', () => {
   ]
   let expected = {}
   tc.createConfigNodeList(id, nodes)
-  // expect(category).toBe(expected)
 })
 
 test('TabConfig: refreshConfigNodeList', () => {
