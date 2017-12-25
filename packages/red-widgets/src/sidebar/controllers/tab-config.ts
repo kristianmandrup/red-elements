@@ -214,9 +214,15 @@ export class SidebarTabConfig extends Context {
   createConfigNodeList(id, nodes) {
     let {
       RED,
-      getOrCreateCategory
+      showUnusedOnly
+
     } = this
-    let showUnusedOnly = this.showUnusedOnly
+
+    const {
+      getOrCreateCategory
+    } = this.rebind([
+        'getOrCreateCategory'
+      ])
 
     var category = getOrCreateCategory(id.replace(/\./i, "-"))
     var list = category.list;

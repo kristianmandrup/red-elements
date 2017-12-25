@@ -40,21 +40,25 @@ test('Sidebar TabConfig: categories', () => {
   expect(tc.categories).toEqual({})
 })
 
-// fix
-test('TabConfig: getOrCreateCategory', () => {
-  let name = 'abc',
-    parent = {},
-    label = 'xyz'
 
-  let expected = {}
+test('TabConfig: getOrCreateCategory', () => {
+  let name = 'abc'
+  const parent = $('#sidebar')
+  let label = 'xyz'
+
   let category = tc.getOrCreateCategory(name, parent, label)
-  expect(category).toBe(expected)
+  expect(category).toBeDefined()
 })
 
 test('TabConfig: createConfigNodeList', () => {
   let id = 'abc'
   let node = {
-    id: 'x'
+    id: 'x',
+    _def: {
+      hasUsers() {
+        return true
+      }
+    }
   }
   let nodes = [
     node
