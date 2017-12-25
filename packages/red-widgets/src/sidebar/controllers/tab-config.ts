@@ -140,6 +140,14 @@ export class SidebarTabConfig extends Context {
       category
     } = this
 
+    this._validateStr(name, 'name', 'getOrCreateCategory')
+    if (parent) {
+      this._validateJQ(parent, 'parent', 'getOrCreateCategory')
+    }
+    if (label) {
+      this._validateStr(label, 'label', 'getOrCreateCategory')
+    }
+
     name = name.replace(/\./i, "-");
     let categories = this.categories
 
