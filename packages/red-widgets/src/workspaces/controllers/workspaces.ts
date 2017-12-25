@@ -119,7 +119,6 @@ export class Workspaces extends Context {
     } = this.rebind([
         'workspaceTabAt'
       ])
-
     if (ws) {
       workspace_tabs.addTab(ws);
       workspace_tabs.resize();
@@ -454,8 +453,7 @@ export class Workspaces extends Context {
       RED,
       activeWorkspace
     } = this
-    const { id } = ws
-
+    const id = ws
     let workspace_tabs = this.workspace_tabs
     if (!ws) {
       this.deleteWorkspace(RED.nodes.workspace(activeWorkspace));

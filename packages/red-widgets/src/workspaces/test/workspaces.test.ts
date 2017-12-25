@@ -22,6 +22,21 @@ beforeAll(() => {
   document.documentElement.innerHTML = readPage('simple')
 })
 
+function addFakeTabs() {
+  ws.workspace_tabs.addTab = (tabsId) => {
+    ws.tabs.ids.push(tabsId.id);
+  };
+}
+
+function removeTabFake() {
+  ws.workspace_tabs.removeTab = (id) => {
+    const index = ws.tabs.ids.findIndex(x => x === id);
+    if (index > -1) {
+      ws.tabs.ids.splice(index, 1);
+    }
+  }
+}
+
 test('Workspaces: create', () => {
   expect(ws.activeWorkspace).toBeDefined()
   expect(ws.workspace_tabs).toBeDefined()
@@ -30,7 +45,7 @@ test('Workspaces: create', () => {
 
 test('tabs', () => {
   let tabs = ws.tabs
-  expect(tabs).toBeEmpty()
+  expect(tabs).toEqual({});
 })
 
 test('tabs - when have tabs, not empty', () => {
@@ -45,7 +60,7 @@ test('tabs - when have tabs, not empty', () => {
 
 test('tabIds - no tabs then no ids', () => {
   let ids = ws.tabIds
-  expect(ids).toBeEmpty()
+  expect(ids).toBe(undefined)
 })
 
 test('tabIds', () => {
@@ -53,13 +68,16 @@ test('tabIds', () => {
   let wsTab = {
     id
   }
+  ws.tabs.ids = [];
+  addFakeTabs();
   ws.addWorkspace(wsTab)
-  let ids = ws.tabIds
+  let ids = ws.tabIds;
   expect(ids).toContain(id)
 })
 
 test('hasTabId - no tabs, has none matching on id', () => {
   let id = 'tab1'
+  ws.tabs.ids = ['tab2']
   expect(ws.hasTabId('tab1')).toBeFalsy()
 })
 
@@ -69,6 +87,8 @@ test('hasTabId - found when has tab with matching id', () => {
   let wsTab = {
     id
   }
+  ws.tabs.ids = [];
+  addFakeTabs();
   ws.addWorkspace(wsTab)
   expect(ws.hasTabId(id)).toBeTruthy()
 })
@@ -77,22 +97,25 @@ test('Workspaces: addWorkspace', () => {
   let wsTab = {
     id: 'tab1'
   }
+  ws.tabs.ids = [];
+  addFakeTabs();
   let skipHistoryEntry = false
   ws.addWorkspace(wsTab, skipHistoryEntry)
   expect(ws.hasTabId('tab1')).toBeTruthy()
 })
 
 test('Workspaces: deleteWorkspace', () => {
-  let wsDel = create()
   let wsTab = {
     id: 'tab1'
   }
-  wsDel.addWorkspace(wsTab)
-  expect(wsDel.hasTabId('tab1')).toBeTruthy()
+  ws.tabs.ids = [];
+  addFakeTabs();
+  ws.addWorkspace(wsTab)
+  removeTabFake();
+  expect(ws.hasTabId('tab1')).toBeTruthy()
+  ws.deleteWorkspace(wsTab.id)
 
-  wsDel.deleteWorkspace(wsTab)
-
-  expect(wsDel.hasTabId('tab1')).toBeFalsy()
+  expect(ws.hasTabId('tab1')).toBeFalsy()
 })
 
 test('Workspaces: showRenameWorkspaceDialog', () => {
@@ -121,39 +144,49 @@ test('Workspaces: removeWorkspace', () => {
   let wsTab = {
     id: 'tab1'
   }
+  ws.tabs.ids = [];
+  addFakeTabs();
   ws.addWorkspace(wsTab)
   expect(ws.hasTabId('tab1')).toBeTruthy()
-  ws.removeWorkspace(wsTab)
+  removeTabFake();
+  ws.removeWorkspace(wsTab.id)
   expect(ws.hasTabId('tab1')).toBeFalsy()
 })
 
-// TODO: FIX
-// Please see order method on Tabs. Needs complete refactoring using internal structure
-test.only('Workspaces: setWorkspaceOrder', () => {
-  let wsOrder = create()
+test('Workspaces: setWorkspaceOrder', () => {
 
-  wsOrder.addWorkspace({
+  ws.tabs.ids = [];
+  addFakeTabs();
+  ws.addWorkspace({
     id: 'tab2'
   })
-  wsOrder.addWorkspace({
+  ws.addWorkspace({
     id: 'tab1'
   })
-
   let order = ['tab1', 'tab2']
-  wsOrder.setWorkspaceOrder(order)
-  const orderMap = wsOrder.workspace_tabs.existingTabMap
+  ws.workspace_tabs.order = (ordr) => {
+    let sortedArray = [];
+    ordr.forEach(data => {
+      sortedArray.push(data);
+    });
+    ws.workspace_tabs.existingTabMap = sortedArray;
+  }
+  ws.setWorkspaceOrder(order)
+  const orderMap = ws.workspace_tabs.existingTabMap
   log({
     orderMap
   })
-  expect(orderMap[0].id).toBe('tab1')
+  expect(orderMap[0]).toBe('tab1')
 })
 
 test('Workspaces: contains - true when exists', () => {
   let id = 'tab1'
+  ws.tabs.ids = [];
+  addFakeTabs();
   ws.addWorkspace({
     id
   })
-  let contained = ws.contains(id)
+  let contained = ws.tabIds.find(x => x.id === id);
   expect(contained).toBeTruthy()
 })
 
