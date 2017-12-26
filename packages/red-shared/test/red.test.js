@@ -1,30 +1,29 @@
-import test from 'ava'
 import {
   RED
-} from './api'
+} from '../'
 
 test('RED: history', () => {
-  t.is(typeof RED.history, 'object')
+  expect(typeof RED.history).toBe('object')
 })
 test('RED: text', () => {
-  t.is(typeof RED.text.bidi, 'object')
-  t.is(typeof RED.text.format, 'object')
+  expect(typeof RED.text.bidi).toBe('object')
+  expect(typeof RED.text.format).toBe('object')
 })
 test('RED: i18n', () => {
-  t.is(typeof RED.i18n, 'object')
+  expect(typeof RED.i18n).toBe('object')
 })
 test('RED: events', () => {
-  t.is(typeof RED.events, 'object')
+  expect(typeof RED.events).toBe('object')
 })
 test('RED: comms', () => {
-  t.is(typeof RED.comms, 'object')
+  expect(typeof RED.comms).toBe('object')
 })
 test('RED: settings', () => {
-  t.is(typeof RED.settings, 'object')
+  expect(typeof RED.settings).toBe('object')
 })
 test('RED: user', () => {
-  t.is(typeof RED.user, 'object')
+  expect(typeof RED.user).toBe('object')
 })
 test('RED: validators', () => {
-  t.is(typeof RED.validators, 'object')
+  expect(typeof RED.validators).toBe('object')
 })
