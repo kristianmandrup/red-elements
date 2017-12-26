@@ -6,6 +6,12 @@ function create() {
   return new Validators()
 }
 
+let v
+beforeEach(() => {
+  v = create()
+})
+
+
 test('validators: create', () => {
   t.is(typeof v, 'object')
 })

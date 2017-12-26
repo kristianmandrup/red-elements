@@ -7,8 +7,10 @@ function create() {
 }
 
 let bidi
-test.beforeEach(() => {
+beforeEach(() => {
   bidi = create()
 })
 
-test('Bidi: create', () => { })
+test('Bidi: create', () => {
+  expect(typeof bidi).toBe('object')
+})

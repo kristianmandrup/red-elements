@@ -7,7 +7,7 @@ function create() {
 }
 
 let undo
-test.beforeEach(() => {
+beforeEach(() => {
   undo = create()
 })
 

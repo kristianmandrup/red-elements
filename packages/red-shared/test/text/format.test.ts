@@ -7,8 +7,10 @@ function create() {
 }
 
 let tf
-test.beforeEach(() => {
+beforeEach(() => {
   tf = create()
 })
 
-test('TextFormat: create', () => { })
+test('TextFormat: create', () => {
+  expect(typeof tf).toBe('object')
+})

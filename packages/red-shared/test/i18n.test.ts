@@ -7,7 +7,7 @@ function create() {
 }
 
 let inst
-test.beforeEach(() => {
+beforeEach(() => {
   inst = create()
 })
 

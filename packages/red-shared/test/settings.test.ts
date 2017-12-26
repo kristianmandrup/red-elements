@@ -6,6 +6,11 @@ function create() {
   return new Settings()
 }
 
+let settings
+beforeEach(() => {
+  settings = create()
+})
+
 test('settings: create', () => {
   expect(typeof settings.loadedSettings).toBe('object')
 })

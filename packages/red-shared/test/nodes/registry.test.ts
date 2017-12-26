@@ -8,13 +8,13 @@ function create() {
 }
 
 let registry
-test.beforeEach(() => {
+beforeEach(() => {
   registry = create()
 })
 
 
 test('NodesRegistry: create', () => {
-  t.is(typeof registry, 'object')
+  expect(typeof registry).toBe('object')
 })
 
 test('registry: setModulePendingUpdated', () => {
@@ -22,57 +22,50 @@ test('registry: setModulePendingUpdated', () => {
   let version = 1
   registry.setModulePendingUpdated(module, version)
   let v = registry.moduleList[module].pending_version
-  t.is(v, version)
+  expect(v).toBe(version)
 })
 
 test('registry: getModule', () => {
-  let registry = create(ctx)
-  let module = {
+  let _module = {
     id: 'x'
   }
   let ns = {
-    module
+    module: _module
   }
   registry.addNodeSet(ns)
-  let registered = registry.getModule(module)
-  t.is(registered, module)
+  let registered = registry.getModule(_module)
+  expect(registered).toBe(_module)
 })
 
 test('registry: getNodeSetForType', () => {
-  let registry = create(ctx)
   let nodeType = 'io'
   registry.getNodeSetForType(nodeType)
 
 })
 
 test('registry: getModuleList', () => {
-  let registry = create(ctx)
   registry.getModuleList()
-
 })
 
 test('registry: getNodeList', () => {
-  let registry = create(ctx)
   registry.getNodeList()
 })
 
 test('registry: getNodeTypes', () => {
-  let registry = create(ctx)
   registry.getNodeTypes()
 })
 
 test('registry: setNodeList', () => {
-  let registry = create(ctx)
+  let list = []
   registry.setNodeList(list)
 })
 
 test('registry: removeNodeSet', () => {
-  let registry = create(ctx)
+  let id = 'a'
   registry.removeNodeSet(id)
 })
 
 test('registry: addNodeSet', () => {
-  let registry = create(ctx)
   let module = {
     id: 'x'
   }
@@ -82,11 +75,10 @@ test('registry: addNodeSet', () => {
   }
   registry.addNodeSet(ns)
   let set = registry.getNodeSet(ns.id)
-  t.is(set, ns)
+  expect(set).toBe(ns)
 })
 
 test('registry: getNodeSet', () => {
-  let registry = create(ctx)
   let module = {
     id: 'x'
   }
@@ -96,11 +88,10 @@ test('registry: getNodeSet', () => {
   }
   registry.addNodeSet(ns)
   let set = registry.getNodeSet(ns.id)
-  t.is(set, ns)
+  expect(set).toBe(ns)
 })
 
 test('registry: enableNodeSet', () => {
-  let registry = create(ctx)
   let module = {
     id: 'x'
   }
@@ -111,11 +102,10 @@ test('registry: enableNodeSet', () => {
   registry.addNodeSet(ns)
   registry.enableNodeSet(ns.id)
   let set = registry.getNodeSet(ns.id)
-  t.truthy(set.enabled)
+  expect(set.enabled).toBeTruthy()
 })
 
 test('registry: disableNodeSet', () => {
-  let registry = create(ctx)
   let module = {
     id: 'x'
   }
@@ -126,39 +116,36 @@ test('registry: disableNodeSet', () => {
   registry.addNodeSet(ns)
   registry.enableNodeSet(ns.id)
   let set = registry.getNodeSet(ns.id)
-  t.truthy(set.enabled)
+  expect(set.enabled).toBeTruthy()
   registry.disableNodeSet(ns.id)
-  t.falsy(set.enabled)
+  expect(set.enabled).toBeFalsy()
 })
 
 test('registry: registerNodeType', () => {
-  let registry = create(ctx)
   let nt = 'io'
   let def = {
     id: 'x'
   }
   registry.registerNodeType(nt, def)
-  t.is(registry.nodeDefinitions[nt], def)
+  expect(registry.nodeDefinitions[nt]).toEqual(def)
 })
 
 test('registry: removeNodeType', () => {
-  let registry = create(ctx)
   let nt = 'io'
   let def = {
     id: 'x'
   }
   registry.registerNodeType(nt, def)
   registry.removeNodeType(nt)
-  t.falsy(registry.nodeDefinitions[nt])
+  expect(registry.nodeDefinitions[nt]).toBeFalsy()
 })
 
 test('registry: getNodeType', () => {
-  let registry = create(ctx)
   let nt = 'io'
   let def = {
     id: 'x'
   }
   registry.registerNodeType(nt, def)
   let node = registry.getNodeType(nt)
-  t.is(node, def)
+  expect(node).toBe(def)
 })

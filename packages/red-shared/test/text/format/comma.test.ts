@@ -7,12 +7,12 @@ const {
 } = format
 
 test('comma: structure', () => {
-  t.is(typeof comma, 'object')
-  t.is(typeof comma.format, 'function')
+  expect(typeof comma).toBe('object')
+  expect(typeof comma.format).toBe('function')
 })
 
 // format(text, args, isRtl, isHtml, locale, parseOnly)
 test('comma: format', () => {
   let text = 'my text'
-  t.truthy(comma.format(text))
+  expect(comma.format(text)).toBeTruthy()
 })

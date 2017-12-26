@@ -7,12 +7,12 @@ const {
 } = format
 
 test('email: structure', () => {
-  t.is(typeof email, 'object')
-  t.is(typeof email.format, 'function')
+  expect(typeof email).toBe('object')
+  expect(typeof email.format).toBe('function')
 })
 
 // format(text, args, isRtl, isHtml, locale, parseOnly)
 test('email: format', () => {
   let content = 'xyz'
-  t.truthy(email.format(content))
+  expect(email.format(content)).toBeTruthy()
 })

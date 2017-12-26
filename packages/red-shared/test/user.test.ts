@@ -6,6 +6,11 @@ function create() {
   return new User()
 }
 
+let user
+beforeEach(() => {
+  user = create()
+})
+
 test('user: create', () => {
   expect(typeof user).toBe('object')
 })

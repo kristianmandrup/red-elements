@@ -7,12 +7,12 @@ const {
 } = format
 
 test('breadcrumb: structure', () => {
-  t.is(typeof breadcrumb, 'object')
-  t.is(typeof breadcrumb.format, 'function')
+  expect(typeof breadcrumb).toBe('object')
+  expect(typeof breadcrumb.format).toBe('function')
 })
 
 // format(text, args, isRtl, isHtml, locale, parseOnly)
 test('breadcrumb: format text', () => {
   let text = 'my text'
-  t.truthy(breadcrumb.format(text))
+  expect(breadcrumb.format(text)).toBeTruthy()
 })

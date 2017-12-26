@@ -10,7 +10,7 @@ function create() {
 }
 
 let events
-test.beforeEach(() => {
+beforeEach(() => {
   events = create()
 })
 

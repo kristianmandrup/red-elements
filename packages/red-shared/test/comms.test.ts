@@ -11,38 +11,38 @@ function func(event) {
   return ':' + event
 }
 
-let comm
-test.beforeEach(() => {
-  comm = create()
+let comms
+beforeEach(() => {
+  comms = create()
 })
 
 test('Communications: create', () => {
-  t.is(typeof comms, 'object')
+  expect(typeof comms).toBe('object')
 })
 
 test('communications: connect - makes active', () => {
   comms.connect()
-  t.true(comms.active)
+  expect(comms.active)
 })
 
 test('communications: connect - opens Web socket', () => {
   comms.connect()
-  t.true(typeof comms.ws, 'object')
+  expect(typeof comms.ws).toBe('object')
 
   // configures callback functions
-  t.true(typeof comms.onmessage, 'function')
-  t.true(typeof comms.onopen, 'function')
-  t.true(typeof comms.onclose, 'function')
+  expect(typeof comms.onmessage).toBe('function')
+  expect(typeof comms.onopen).toBe('function')
+  expect(typeof comms.onclose).toBe('function')
 })
 
 test('communications: subscribe - adds to subscriptions', () => {
   comms.subscribe('a', func)
-  t.true(comms.subscriptions['a'], func)
+  expect(comms.subscriptions['a']).toBe(func)
 })
 
 test('communications: unsubscribe - removes from subscriptions', () => {
   comms.subscribe('a', func)
-  t.true(comms.subscriptions['a'], func)
+  expect(comms.subscriptions['a']).toBe(func)
   comms.unsubscribe('a')
-  t.false(comms.subscriptions['a'], func)
+  expect(comms.subscriptions['a']).not.toBe(func)
 })

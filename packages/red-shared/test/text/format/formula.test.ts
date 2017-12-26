@@ -7,12 +7,12 @@ const {
 } = format
 
 test('formula: structure', () => {
-  t.is(typeof formula, 'object')
-  t.is(typeof formula.format, 'function')
+  expect(typeof formula).toBe('object')
+  expect(typeof formula.format).toBe('function')
 })
 
 // format(text, args, isRtl, isHtml, locale, parseOnly)
 test('formula: format', () => {
   let content = 'xyz'
-  t.truthy(formula.format(content))
+  expect(formula.format(content)).toBeTruthy()
 })

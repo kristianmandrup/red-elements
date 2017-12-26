@@ -7,12 +7,12 @@ const {
 } = format
 
 test('filepath: structure', () => {
-  t.is(typeof filepath, 'object')
-  t.is(typeof filepath.format, 'function')
+  expect(typeof filepath).toBe('object')
+  expect(typeof filepath.format).toBe('function')
 })
 
 // format(text, args, isRtl, isHtml, locale, parseOnly)
 test('filepath: format', () => {
   let content = 'xyz'
-  t.truthy(filepath.format(content))
+  expect(filepath.format(content)).toBeTruthy()
 })
