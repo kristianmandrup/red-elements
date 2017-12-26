@@ -6,7 +6,7 @@ import {
 } from './imports'
 
 function create(ctx) {
-  document.body.innerHTML = document.body.innerHTML = readPage('../red-widgets/src/library/test/app/library');
+  document.body.innerHTML = document.body.innerHTML = readPage('library');
   return new LibraryUI(ctx)
 }
 
