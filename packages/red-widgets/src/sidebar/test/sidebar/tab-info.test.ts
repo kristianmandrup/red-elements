@@ -56,7 +56,15 @@ test('TabInfo: addTargetToExternalLinks', () => {
 })
 
 test('TabInfo: refresh', () => {
-  let node = {}
+  let node = {};
+  tabInfo.sections = $("<div></div>");
+  tabInfo.nodeSection = {
+    contents: $('<div><laleb></label></div>'),
+    title: $('<div></div>')
+  };
+  tabInfo.infoSection = {
+    contents: $("<div><laleb></label></div>")
+  };
   let refreshed = tabInfo.refresh(node)
   expect(refreshed).toBe(tabInfo)
 })

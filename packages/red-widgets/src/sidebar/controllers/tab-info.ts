@@ -224,8 +224,7 @@ export class SidebarTabInfo extends Context {
       infoSection,
       expandedSections,
       RED
-    } = this
-
+    } = this    
     sections.show();
 
     $(nodeSection.contents).empty();

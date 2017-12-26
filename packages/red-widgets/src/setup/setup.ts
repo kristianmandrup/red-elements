@@ -119,7 +119,8 @@ export class RED implements IRED {
     getNodeLabel(node) {
       return 'my-label';
     },
-    validatePropertyExpression() { return true; }
+    validatePropertyExpression() { return true; },
+    createObjectElement(element) { return $("<div></div>"); }
   }
   public popover = {
     create(obj) { }
