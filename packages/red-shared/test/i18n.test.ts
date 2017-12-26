@@ -13,7 +13,7 @@ beforeEach(() => {
 
 test('I18n: create', () => {
   expect(typeof inst).toBe('object')
-  expect(typeof inst.i18n.toBe('object')
+  expect(typeof inst.i18n).toBe('object')
 })
 
 test('i18n: init', async () => {

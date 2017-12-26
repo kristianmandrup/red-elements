@@ -2,8 +2,8 @@ import {
   Events
 } from '../'
 
-const ctx = {}
 const evt = 'hello'
+const handlers = {}
 
 function create() {
   return new Events()
@@ -19,23 +19,25 @@ function func(event) {
 }
 
 test('Events: create', () => {
-  t.deepEqual(handlers, {})
+  let { handlers } = events
+  expect(handlers).toEqual({})
 })
 
 test('events: on', () => {
   events.on(evt, func)
+  let { handlers } = events
   let handler = handlers[evt]
   expect(handler).toBe(func)
 })
 
 test('events: off', () => {
   events.on(evt, func)
+  let { handlers } = events
   let handler = handlers[evt]
   expect(handler).toBe(func)
 
-
   events.off(evt)
-  let handler = handlers[evt]
+  handler = handlers[evt]
   expect(handler).toBe(null)
 
 })

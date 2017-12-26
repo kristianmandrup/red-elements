@@ -1,14 +1,21 @@
 import {
-  History
+  History,
 } from '../..'
 
-function create() {
+// function createUndo() {
+//   return new Undo()
+// }
+
+function createHistory() {
   return new History()
 }
 
-let undo
+
+// let undo
+let history
 beforeEach(() => {
-  undo = create()
+  // undo = createUndo()
+  history = createHistory()
 })
 
 test('history: undo', () => {
@@ -17,10 +24,10 @@ test('history: undo', () => {
   }
 
   history.push(ev)
-  let latest = nodes.peek()
-  t.is(latest, ev)
+  let latest = history.peek()
+  expect(latest).toBe(ev)
   history.undo()
 
-  latest = nodes.peek()
-  t.falsy(latest)
+  latest = history.peek()
+  expect(latest).toBeFalsy()
 })

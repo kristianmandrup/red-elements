@@ -4,62 +4,47 @@ import {
   Clipboard
 } from './ui'
 
-const ctx = {}
-
-function create(ctx) {
-  return new Clipboard(ctx)
+function create() {
+  return new Clipboard()
 }
 
 test('Clipboard: create', () => {
-  let clipboard = create(ctx)
   t.falsy(clipboard.disabled)
 
   // calls setupDialogs() which adds dialog to HTML body
 
-  // use nightmare
   // body
 })
 
 test('Clipboard: setupDialogs', () => {
-  let clipboard = create(ctx)
   clipboard.setupDialogs()
 })
 
 test('Clipboard: validateImport', () => {
-  let clipboard = create(ctx)
   clipboard.validateImport()
 
-  // use nightmare
 })
 
 test('Clipboard: importNodes', () => {
-  let clipboard = create(ctx)
   clipboard.importNodes()
 
-  // use nightmare
 })
 
 test('Clipboard: exportNodes', () => {
-  let clipboard = create(ctx)
   clipboard.exportNodes()
 
-  // use nightmare
 })
 
 test('Clipboard: hideDropTarget', () => {
-  let clipboard = create(ctx)
   clipboard.hideDropTarget()
 
-  // use nightmare
 })
 
 test('Clipboard: copyText', () => {
-  let clipboard = create(ctx)
   let value = 'x'
   let element = $('#x')
   let msg = 'hello'
 
   clipboard.copyText(value, element, msg)
 
-  // use nightmare
 })

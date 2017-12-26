@@ -18,21 +18,18 @@ test('user: create', () => {
 test('user: login', async () => {
   // fix - should be async via promise, not done callback
   let opts = {}
-  await user.login(opts, done)
-
-  // TODO: use nightmare to test that screen is updated as expected
+  await user.login(opts)
+  expect(user.loggedIn).toBeTruthy()
 })
 
 test('user: logout', async () => {
   let opts = {}
-  await user.login(opts, done)
+  await user.login(opts)
+  expect(user.loggedIn).toBeTruthy()
   await user.logout()
-
-  // TODO: use nightmare to test that screen is updated as expected
+  expect(user.loggedIn).toBeFalsy()
 })
 
 test('user: updateUserMenu', () => {
   user.updateUserMenu()
-
-  // TODO: use nightmare to test that screen is updated as expected
 })

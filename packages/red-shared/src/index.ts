@@ -4,7 +4,8 @@ export {
   from './red'
 
 export {
-  History
+  History,
+  UndoEvent
 }
   from './history'
 

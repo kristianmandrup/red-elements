@@ -7,13 +7,12 @@ function create() {
 }
 
 let history
-test.beforeEach(() => {
+beforeEach(() => {
   history = create()
 })
 
 test('history: create', () => {
-  t.deepEqual(history.undo_history, [])
-
+  expect(history.undo_history).toEqual([])
 })
 
 test('history: peek', () => {
@@ -21,8 +20,8 @@ test('history: peek', () => {
     id: 'a'
   }
   history.push(ev)
-  let latest = nodes.peek()
-  t.is(latest, ev)
+  let latest = history.peek()
+  expect(latest).toBe(ev)
 })
 
 test('history: push', () => {
@@ -30,8 +29,8 @@ test('history: push', () => {
     id: 'a'
   }
   history.push(ev)
-  let latest = nodes.peek()
-  t.is(latest, ev)
+  let latest = history.peek()
+  expect(latest).toBe(ev)
 })
 
 test('history: pop', () => {
@@ -44,14 +43,14 @@ test('history: pop', () => {
   history.push(evA)
   history.pop()
 
-  let latest = nodes.peek()
-  t.falsy(latest)
+  let latest = history.peek()
+  expect(latest).toBeFalsy()
 
   history.push(evA)
   history.push(evB)
   history.pop()
-  latest = nodes.peek()
-  t.is(latest, evA)
+  latest = history.peek()
+  expect(latest).toBe(evA)
 })
 
 test('history: list', () => {
@@ -64,8 +63,8 @@ test('history: list', () => {
   history.push(evA)
   history.push(evB)
   let list = history.list()
-  t.is(list[0], evA)
-  t.is(list[1], evB)
+  expect(list[0]).toBe(evA)
+  expect(list[1]).toBe(evB)
 })
 
 test('history: depth', () => {
@@ -78,7 +77,7 @@ test('history: depth', () => {
   history.push(evA)
   history.push(evB)
   let depth = history.depth()
-  t.is(depth, 2)
+  expect(depth).toBe(2)
 })
 
 test('history: markAllDirty', () => {
@@ -93,5 +92,5 @@ test('history: markAllDirty', () => {
   history.markAllDirty()
   let list = history.list()
   let item = list[0]
-  t.true(item.dirty)
+  expect(item.dirty).toBeTruthy()
 })
