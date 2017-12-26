@@ -71,17 +71,28 @@ test('TabInfo: refresh', () => {
 
 test('TabInfo: setInfoText', () => {
   let infoText = 'hello'
+  tabInfo.infoSection = {
+    content: $("<div></div>")
+  }
   let updated = tabInfo.setInfoText(infoText)
   expect(updated).toBe(tabInfo)
 })
 
 test('TabInfo: clear', () => {
+  tabInfo.sections = $('<div></div>');
   let cleared = tabInfo.clear()
   expect(cleared).toBe(tabInfo)
 })
 
 test('TabInfo: set', () => {
-  let html = '<b>hello</b>'
+  let html = '<b>hello</b>';
+  tabInfo.sections = $('<div></div>');
+  tabInfo.nodeSection = {
+    container: $('<div></div>')
+  }
+  tabInfo.infoSection = {
+    content: $('<div></div>')
+  }
   let set = tabInfo.set(html)
   expect(set).toBe(tabInfo)
 })

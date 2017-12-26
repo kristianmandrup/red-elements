@@ -224,7 +224,7 @@ export class SidebarTabInfo extends Context {
       infoSection,
       expandedSections,
       RED
-    } = this    
+    } = this
     sections.show();
 
     $(nodeSection.contents).empty();
@@ -370,12 +370,13 @@ export class SidebarTabInfo extends Context {
   setInfoText(infoText) {
     const {
       RED,
-      addTargetToExternalLinks,
       infoSection
+    } = this;
+    const {
+      addTargetToExternalLinks
     } = this.rebind([
         'addTargetToExternalLinks'
       ])
-
     var info = addTargetToExternalLinks($('<div class="node-help"><span class="bidiAware" dir=\"' + RED.text.bidi.resolveBaseTextDir(infoText) + '">' + infoText + '</span></div>')).appendTo(infoSection.content);
     info.find(".bidiAware").contents().filter(function () {
       return this.nodeType === 3 && this.textContent.trim() !== ""
@@ -404,10 +405,9 @@ export class SidebarTabInfo extends Context {
     let {
       sections,
       nodeSection,
-      infoSection,
-      setInfoText
+      infoSection
     } = this
-    setInfoText = setInfoText.bind(this)
+    const { setInfoText } = this.rebind(['setInfoText']);
 
     // tips.stop();
     sections.show();
