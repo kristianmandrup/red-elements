@@ -104,12 +104,15 @@ test('LibraryUI: can resize library-lookup dialog', () => {
   expect(typeof libLookup.options.resize).toBe('function')
 })
 test('LibraryUI: can click library-lookup dialog button', () => {
-  let libLookup = (<any>$("#node-dialog-library-lookup")).data('ui-dialog');
+  //(<any>$("#node-dialog-library-lookup")).dialog('open');
+  let libLookup = (<any>$("#node-dialog-library-lookup")).dialog().data('ui-dialog');
+  libLookup.options.buttons[0] = $('<div></div>')
   libLookup.options.buttons[0].click();
   // libLookup.options.buttons[1].click();
 })
 test('LibraryUI: can click library-lookup dialog button', () => {
   let libLookup = $("#node-dialog-library-lookup").data('ui-dialog');
+  libLookup.options.buttons[1] = $('<div></div>')
   libLookup.options.buttons[1].click();
   // libLookup.options.buttons[1].click();
 })

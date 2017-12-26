@@ -120,7 +120,7 @@ export class LibraryUI extends Context {
       height: 450,
       buttons: [{
         text: ctx._("common.label.cancel"),
-        click: () => {
+        click: function () {
           (<any>$(this)).dialog("close");
         }
       },
