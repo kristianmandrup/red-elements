@@ -17,19 +17,31 @@ import {
   Context
 } from './context'
 
-import * as d3 from 'd3'
+import * as $d3 from 'd3'
+import * as d3Select from 'd3-selection'
+
+const {
+  log
+} = console
+
+log({
+  d3Select
+})
+
+const d3 = Object.assign({}, $d3, d3Select)
+
+log({
+  d3
+})
+
 import * as $ from 'jquery';
 import { IRED, TYPES, container } from '../../setup/setup';
 import getDecorators from 'inversify-inject-decorators';
 import { Container, injectable, tagged, named } from 'inversify';
 let { lazyInject } = getDecorators(container);
-const {
-  log
-} = console
 const PORT_TYPE_INPUT = 1;
 const PORT_TYPE_OUTPUT = 0;
 export class View extends Context {
-  @lazyInject(TYPES.RED) RED: IRED;
   space_width: any
   space_height: any
   lasso: any
@@ -82,16 +94,13 @@ export class View extends Context {
   moveTouchCenter = [];
   touchStartTime: any = 0;
   constructor() {
-    super({})
-    // this.RED = ctx
-    // console.log(ctx)
+    super()
+
     // TODO: properties (ie. instance vars)
     var space_width = 5000,
       space_height = 5000,
       lineCurveScale = 0.75,
       scaleFactor = 1;
-
-
 
     var snapGrid = false;
 
@@ -124,8 +133,6 @@ export class View extends Context {
       'blue': '#53A3F3',
       'grey': '#d3d3d3'
     }
-
-
   }
 
   clearTimeout(timer) {
@@ -183,7 +190,7 @@ export class View extends Context {
       .attr('height', space_height)
       .attr('pointer-events', 'all')
       .style('cursor', 'crosshair')
-      .on('mousedown', handleD3MouseDownEvent);
+      .on('mousedown', handleD3MouseDownEvent); // outer is this
 
     this.outer = outer
 
@@ -198,17 +205,20 @@ export class View extends Context {
       .on('dblclick.zoom', null)
       .append('svg:g')
       .attr('class', 'innerCanvas')
-      .on('mousemove', canvasMouseMove)
-      .on('mousedown', canvasMouseDown)
-      .on('mouseup', canvasMouseUp)
+      .on('mousemove', canvasMouseMove) // vis is this
+      .on('mousedown', canvasMouseDown) // vis is this
+      .on('mouseup', canvasMouseUp) // vis is this
     this.vis = vis
 
+    const touchMoveHandler = handleOuterTouchMoveEvent(touchStartTime, startTouchCenter, lasso, canvasMouseMove, oldScaleFactor, scaleFactor, startTouchDistance)
+    const outertTouchHandler = handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp)
+    const touchStartHandler = handleOuterTouchStartEvent(touchStartTime, startTouchCenter, scaleFactor, startTouchDistance, touchLongPressTimeout)
 
     vis
-      .on('touchend', handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp))
-      .on('touchcancel', canvasMouseUp)
-      .on('touchstart', handleOuterTouchStartEvent(touchStartTime, startTouchCenter, scaleFactor, startTouchDistance, touchLongPressTimeout))
-      .on('touchmove', handleOuterTouchMoveEvent(touchStartTime, startTouchCenter, lasso, canvasMouseMove, oldScaleFactor, scaleFactor, startTouchDistance));
+      .on('touchend', outertTouchHandler)
+      .on('touchcancel', canvasMouseUp) // vis is this
+      .on('touchstart', touchStartHandler)
+      .on('touchmove', touchMoveHandler); // vis is this
 
     log('create outer_background', {
       vis,
@@ -280,10 +290,12 @@ export class View extends Context {
     });
 
     // Handle nodes dragged from the palette
-    (<any>$('#chart')).droppable({
+    const chart = (<any>$('#chart'))
+    chart.droppable({
       accept: '.palette_node',
       drop: (event: any, ui: any) => {
-        d3.event = event;
+        // TODO: Fix
+        // d3.event = event;
         var selected_tool = ui.draggable[0].type;
         var result = this.addNode(selected_tool, null, null);
         if (!result) {
@@ -293,7 +305,10 @@ export class View extends Context {
         var nn: any = result.node;
 
         var helperOffset = d3.touches(ui.helper.get(0))[0] || d3.mouse(ui.helper.get(0));
-        var mousePos: any = d3.touches(this)[0] || d3.mouse(this);
+
+        // TODO: Fixed ?
+        const svgElem = chart
+        var mousePos: any = d3.touches(svgElem)[0] || d3.mouse(svgElem);
 
         mousePos[1] += this.scrollTop + ((nn.h / 2) - helperOffset[1]);
         mousePos[0] += this.scrollLeft + ((nn.w / 2) - helperOffset[0]);
@@ -438,7 +453,7 @@ export class View extends Context {
     const {
       space_width,
       grid
-    } = this    
+    } = this
     var gridTicks = [];
     for (var i = 0; i < space_width; i += +this.gridSize) {
       gridTicks.push(i);
@@ -627,9 +642,19 @@ export class View extends Context {
         lasso = null;
       }
     }
+
+    if (!d3.event) {
+      this.logWarning('canvasMouseDown: no d3.event', {
+        event: d3.event
+      })
+      return this
+    }
+
     if (this.mouse_mode === 0 || this.mouse_mode === this.RED.state.QUICK_JOINING) {
       if (d3.event.metaKey || d3.event.ctrlKey) {
-        point = d3.mouse(this);
+        // TODO: Fixed?
+        const svgElem = this.vis
+        point = d3.mouse(svgElem);
         d3.event.stopPropagation();
         var mainPos = $('#main-container').position();
 
@@ -736,7 +761,9 @@ export class View extends Context {
     }
     if (this.mouse_mode === 0 && !(d3.event.metaKey || d3.event.ctrlKey)) {
       if (!this.touchStartTime) {
-        point = d3.mouse(this);
+        // TODO: Fixed?
+        const svgElem = this.vis
+        point = d3.mouse(svgElem);
         lasso = this.vis.append('rect')
           .attr('ox', point[0])
           .attr('oy', point[1])
@@ -763,7 +790,10 @@ export class View extends Context {
 
     var i;
     var node;
-    this.mouse_position = d3.touches(this)[0] || d3.mouse(this);
+
+    // TODO: Fixed?
+    const svgElem = this.vis
+    this.mouse_position = d3.touches(svgElem)[0] || d3.mouse(svgElem);
     // Prevent touch scrolling...
     //if (d3.touches(this)[0]) {
     //    d3.event.preventDefault();
@@ -1120,7 +1150,7 @@ export class View extends Context {
           };
           if (this.activeSpliceLink) {
             // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
-            var spliceLink = d3.select(this.activeSpliceLink).data()[0];
+            var spliceLink: any = d3.select(this.activeSpliceLink).data()[0];
             this.RED.nodes.removeLink(spliceLink);
             var link1 = {
               source: spliceLink.source,
@@ -1714,10 +1744,14 @@ export class View extends Context {
     if (node.nodeName.toLowerCase() === 'g') {
       var transform = d3Node.attr('transform');
       if (transform) {
-        localPos = d3.transform(transform).translate;
+        // Fix: use d3-geo package, geoTransform
+        localPos = d3.geoTransform(transform).translate;
       }
     } else {
-      localPos = [d3Node.attr('x') || 0, d3Node.attr('y') || 0];
+      // TODO: FIX
+      const x: number = parseInt(d3Node.attr('x')) || 0
+      const y: number = parseInt(d3Node.attr('y')) || 0
+      localPos = [x, y];
     }
     var parentPos = this.getElementPosition(node.parentNode);
     return [localPos[0] + parentPos[0], localPos[1] + parentPos[1]]
@@ -1831,7 +1865,7 @@ export class View extends Context {
 
       if (this.activeSpliceLink) {
         // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
-        var spliceLink = d3.select(this.activeSpliceLink).data()[0];
+        var spliceLink: any = d3.select(this.activeSpliceLink).data()[0];
         this.RED.nodes.removeLink(spliceLink);
         var link1 = {
           source: spliceLink.source,
@@ -1902,7 +1936,10 @@ export class View extends Context {
       this.selected_link = null;
       if (d3.event.button != 2) {
         this.mouse_mode = this.RED.state.MOVING;
-        var mouse = d3.touches(this)[0] || d3.mouse(this);
+        // TODO: Fixes?
+        const svgElem = this.vis
+
+        var mouse = d3.touches(svgElem)[0] || d3.mouse(svgElem);
         mouse[0] += d.x - d.w / 2;
         mouse[1] += d.y - d.h / 2;
         for (i = 0; i < this.moving_set.length; i++) {
@@ -2099,7 +2136,9 @@ export class View extends Context {
           .on('mouseup', this.nodeMouseUp)
           .on('mousedown', this.nodeMouseDown)
           .on('touchstart', (d) => {
-            var obj = d3.select(this);
+            // TODO: fixed?
+            const svgElem = this.vis
+            var obj = d3.select(svgElem);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
             this.startTouchCenter = [touch0.pageX, touch0.pageY];
@@ -2205,29 +2244,29 @@ export class View extends Context {
 
 
 
-        subflowOutputs.each(function (d, i) {
+        subflowOutputs.each(function (d: any, i) {
           if (d.dirty) {
             var output = d3.select(this);
-            output.selectAll('.subflowport').classed('node_selected', function (d) {
+            output.selectAll('.subflowport').classed('node_selected', function (d: any) {
               return d.selected;
             })
-            output.selectAll('.port_index').text(function (d) {
+            output.selectAll('.port_index').text(function (d: any) {
               return d.i + 1
             });
-            output.attr('transform', function (d) {
+            output.attr('transform', function (d: any) {
               return 'translate(' + (d.x - d.w / 2) + ',' + (d.y - d.h / 2) + ')';
             });
             dirtyNodes[d.id] = d;
             d.dirty = false;
           }
         });
-        subflowInputs.each(function (d, i) {
+        subflowInputs.each(function (d: any, i) {
           if (d.dirty) {
             var input = d3.select(this);
-            input.selectAll('.subflowport').classed('node_selected', function (d) {
+            input.selectAll('.subflowport').classed('node_selected', function (d: any) {
               return d.selected;
             })
-            input.attr('transform', function (d) {
+            input.attr('transform', function (d: any) {
               return 'translate(' + (d.x - d.w / 2) + ',' + (d.y - d.h / 2) + ')';
             });
             dirtyNodes[d.id] = d;
@@ -2271,7 +2310,7 @@ export class View extends Context {
           badge.append('svg:text').attr('class', 'node_badge_label').attr('x', 35).attr('y', 11).attr('text-anchor', 'end').text(d._def.badge());
           if (d._def.onbadgeclick) {
             badgeRect.attr('cursor', 'pointer')
-              .on('click', function (d) {
+              .on('click', function (d: any) {
                 d._def.onbadgeclick.call(d);
                 d3.event.preventDefault();
               });
@@ -2280,10 +2319,10 @@ export class View extends Context {
 
         if (d._def.button) {
           var nodeButtonGroup = node.append('svg:g')
-            .attr('transform', function (d) {
+            .attr('transform', function (d: any) {
               return 'translate(' + ((d._def.align == 'right') ? 94 : -25) + ',2)';
             })
-            .attr('class', function (d) {
+            .attr('class', function (d: any) {
               return 'node_button ' + ((d._def.align == 'right') ? 'node_right_button' : 'node_left_button');
             });
           nodeButtonGroup.append('rect')
@@ -2294,7 +2333,7 @@ export class View extends Context {
             .attr('fill', '#eee'); //function(d) { return d._def.color;})
           nodeButtonGroup.append('rect')
             .attr('class', 'node_button_button')
-            .attr('x', function (d) {
+            .attr('x', function (d: any) {
               return d._def.align == 'right' ? 11 : 5
             })
             .attr('y', 4)
@@ -2302,11 +2341,11 @@ export class View extends Context {
             .attr('ry', 4)
             .attr('width', 16)
             .attr('height', this.node_height - 12)
-            .attr('fill', function (d) {
+            .attr('fill', function (d: any) {
               return d._def.color;
             })
             .attr('cursor', 'pointer')
-            .on('mousedown', function (d) {
+            .on('mousedown', (d) => {
               if (!this.lasso && this.isButtonEnabled(d)) {
                 this.focusView();
                 d3.select(this).attr('fill-opacity', 0.2);
@@ -2314,19 +2353,19 @@ export class View extends Context {
                 d3.event.stopPropagation();
               }
             })
-            .on('mouseup', function (d) {
+            .on('mouseup', (d) => {
               if (!this.lasso && this.isButtonEnabled(d)) {
                 d3.select(this).attr('fill-opacity', 0.4);
                 d3.event.preventDefault();
                 d3.event.stopPropagation();
               }
             })
-            .on('mouseover', function (d) {
+            .on('mouseover', (d) => {
               if (!this.lasso && this.isButtonEnabled(d)) {
                 d3.select(this).attr('fill-opacity', 0.4);
               }
             })
-            .on('mouseout', function (d) {
+            .on('mouseout', (d: any) => {
               if (!this.lasso && this.isButtonEnabled(d)) {
                 var op = 1;
                 if (d._def.button.toggle) {
@@ -2341,17 +2380,17 @@ export class View extends Context {
 
         var mainRect = node.append('rect')
           .attr('class', 'node')
-          .classed('node_unknown', function (d) {
+          .classed('node_unknown', function (d: any) {
             return d.type == 'unknown';
           })
           .attr('rx', 5)
           .attr('ry', 5)
-          .attr('fill', function (d) {
+          .attr('fill', function (d: any) {
             return d._def.color;
           })
           .on('mouseup', this.nodeMouseUp)
           .on('mousedown', this.nodeMouseDown)
-          .on('touchstart', function (d) {
+          .on('touchstart', (d: any) => {
             var obj = d3.select(this);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
@@ -2362,7 +2401,7 @@ export class View extends Context {
             }, this.touchLongPressTimeout);
             this.nodeMouseDown.call(this, d)
           })
-          .on('touchend', function (d) {
+          .on('touchend', (d: any) => {
             clearTimeout(this.touchStartTime);
             this.touchStartTime = null;
             if (this.RED.touch.radialMenu.active()) {
@@ -2398,7 +2437,7 @@ export class View extends Context {
             .attr('stroke', 'none')
             .attr('fill', '#000')
             .attr('fill-opacity', '0.05')
-            .attr('height', function (d) {
+            .attr('height', function (d: any) {
               return Math.min(50, d.h - 4);
             });
 
@@ -2410,7 +2449,7 @@ export class View extends Context {
             .attr('height', '30');
 
           var icon_shade_border = icon_group.append('path')
-            .attr('d', function (d) {
+            .attr('d', function (d: any) {
               return 'M 30 1 l 0 ' + (d.h - 2)
             })
             .attr('class', 'node_icon_shade_border')
@@ -2420,7 +2459,7 @@ export class View extends Context {
 
           if ('right' == d._def.align) {
             icon_group.attr('class', 'node_icon_group node_icon_group_' + d._def.align);
-            icon_shade_border.attr('d', function (d) {
+            icon_shade_border.attr('d', function (d: any) {
               return 'M 0 1 l 0 ' + (d.h - 2)
             })
             //icon.attr('class','node_icon node_icon_'+d._def.align);
@@ -2496,31 +2535,31 @@ export class View extends Context {
           }
           var thisNode = d3.select(this);
           //thisNode.selectAll('.centerDot').attr({'cx':function(d) { return d.w/2;},'cy':function(d){return d.h/2}});
-          thisNode.attr('transform', function (d) {
+          thisNode.attr('transform', function (d: any) {
             return 'translate(' + (d.x - d.w / 2) + ',' + (d.y - d.h / 2) + ')';
           });
 
           if (mouse_mode != this.RED.state.MOVING_ACTIVE) {
             thisNode.selectAll('.node')
-              .attr('width', function (d) {
+              .attr('width', function (d: any) {
                 return d.w
               })
-              .attr('height', function (d) {
+              .attr('height', function (d: any) {
                 return d.h
               })
-              .classed('node_selected', function (d) {
+              .classed('node_selected', function (d: any) {
                 return d.selected;
               })
-              .classed('node_highlighted', function (d) {
+              .classed('node_highlighted', function (d: any) {
                 return d.highlighted;
               });
             //thisNode.selectAll('.node-gradient-top').attr('width',function(d){return d.w});
             //thisNode.selectAll('.node-gradient-bottom').attr('width',function(d){return d.w}).attr('y',function(d){return d.h-30});
 
-            thisNode.selectAll('.node_icon_group_right').attr('transform', function (d) {
+            thisNode.selectAll('.node_icon_group_right').attr('transform', function (d: any) {
               return 'translate(' + (d.w - 30) + ',0)'
             });
-            thisNode.selectAll('.node_label_right').attr('x', function (d) {
+            thisNode.selectAll('.node_label_right').attr('x', function (d: any) {
               return d.w - 38
             });
             //thisNode.selectAll('.node_icon_right').attr('x',function(d){return d.w-d3.select(this).attr('width')-1-(d.outputs>0?5:0);});
@@ -2534,22 +2573,22 @@ export class View extends Context {
             } else if (d.inputs === 1 && inputPorts.empty()) {
               var inputGroup = thisNode.append('g').attr('class', 'port_input');
               inputGroup.append('rect').attr('class', 'port').attr('rx', 3).attr('ry', 3).attr('width', 10).attr('height', 10)
-                .on('mousedown', function (d) {
+                .on('mousedown', (d) => {
                   this.portMouseDown(d, PORT_TYPE_INPUT, 0);
                 })
-                .on('touchstart', function (d) {
+                .on('touchstart', (d) => {
                   this.portMouseDown(d, PORT_TYPE_INPUT, 0);
                 })
-                .on('mouseup', function (d) {
+                .on('mouseup', (d) => {
                   this.portMouseUp(d, PORT_TYPE_INPUT, 0);
                 })
-                .on('touchend', function (d) {
+                .on('touchend', (d) => {
                   this.portMouseUp(d, PORT_TYPE_INPUT, 0);
                 })
-                .on('mouseover', function (d) {
+                .on('mouseover', (d) => {
                   this.portMouseOver(d3.select(this), d, PORT_TYPE_INPUT, 0);
                 })
-                .on('mouseout', function (d) {
+                .on('mouseout', (d) => {
                   this.portMouseOut(d3.select(this), d, PORT_TYPE_INPUT, 0);
                 });
             }
@@ -2611,7 +2650,7 @@ export class View extends Context {
                 });
               });
             }
-            thisNode.selectAll('text.node_label').text(function (d, i) {
+            thisNode.selectAll('text.node_label').text((d: any, i) => {
               var l: any = '';
               if (d._def.label) {
                 l = d._def.label;
@@ -2625,10 +2664,10 @@ export class View extends Context {
               }
               return l;
             })
-              .attr('y', function (d) {
+              .attr('y', function (d: any) {
                 return (d.h / 2) - 1;
               })
-              .attr('class', function (d) {
+              .attr('class', function (d: any) {
                 var s: any = '';
                 if (d._def.labelStyle) {
                   s = d._def.labelStyle;
@@ -2661,59 +2700,60 @@ export class View extends Context {
             }
 
 
-            thisNode.selectAll('.node_tools').attr('x', function (d) {
+            thisNode.selectAll('.node_tools').attr('x', function (d: any) {
               return d.w - 35;
-            }).attr('y', function (d) {
+            }).attr('y', function (d: any) {
               return d.h - 20;
             });
 
             thisNode.selectAll('.node_changed')
-              .attr('x', function (d) {
+              .attr('x', function (d: any) {
                 return d.w - 10
               })
-              .classed('hidden', function (d) {
+              .classed('hidden', function (d: any) {
                 return !(d.changed || d.moved);
               });
 
             thisNode.selectAll('.node_error')
-              .attr('x', function (d) {
+              .attr('x', function (d: any) {
                 return d.w - 10 - ((d.changed || d.moved) ? 13 : 0)
               })
-              .classed('hidden', function (d) {
+              .classed('hidden', function (d: any) {
                 return d.valid;
               });
 
             thisNode.selectAll('.port_input').each(function (d, i) {
               var port = d3.select(this);
-              port.attr('transform', function (d) {
+              port.attr('transform', function (d: any) {
                 return 'translate(-5,' + ((d.h / 2) - 5) + ')';
               })
             });
 
-            thisNode.selectAll('.node_icon').attr('y', function (d) {
-              return (d.h - d3.select(this).attr('height')) / 2;
+            thisNode.selectAll('.node_icon').attr('y', function (d: any) {
+              const height: number = parseInt(d3.select(this).attr('height'))
+              return (d.h - height) / 2;
             });
-            thisNode.selectAll('.node_icon_shade').attr('height', function (d) {
+            thisNode.selectAll('.node_icon_shade').attr('height', function (d: any) {
               return d.h;
             });
-            thisNode.selectAll('.node_icon_shade_border').attr('d', function (d) {
+            thisNode.selectAll('.node_icon_shade_border').attr('d', function (d: any) {
               return 'M ' + (('right' == d._def.align) ? 0 : 30) + ' 1 l 0 ' + (d.h - 2)
             });
 
-            thisNode.selectAll('.node_button').attr('opacity', function (d) {
+            thisNode.selectAll('.node_button').attr('opacity', (d) => {
               return (activeSubflow || !this.isButtonEnabled(d)) ? 0.4 : 1
             });
-            thisNode.selectAll('.node_button_button').attr('cursor', function (d) {
+            thisNode.selectAll('.node_button_button').attr('cursor', (d) => {
               return (activeSubflow || !this.isButtonEnabled(d)) ? '' : 'pointer';
             });
-            thisNode.selectAll('.node_right_button').attr('transform', function (d) {
+            thisNode.selectAll('.node_right_button').attr('transform', function (d: any) {
               var x = d.w - 6;
               if (d._def.button.toggle && !d[d._def.button.toggle]) {
                 x = x - 8;
               }
               return 'translate(' + x + ',2)';
             });
-            thisNode.selectAll('.node_right_button rect').attr('fill-opacity', function (d) {
+            thisNode.selectAll('.node_right_button rect').attr('fill-opacity', function (d: any) {
               if (d._def.button.toggle) {
                 return d[d._def.button.toggle] ? 1 : 0.2;
               }
@@ -2724,10 +2764,10 @@ export class View extends Context {
             //         return typeof d._def.button.color  === 'function' ? d._def.button.color.call(d):(d._def.button.color != null ? d._def.button.color : d._def.color)
             //});
 
-            thisNode.selectAll('.node_badge_group').attr('transform', function (d) {
+            thisNode.selectAll('.node_badge_group').attr('transform', function (d: any) {
               return 'translate(' + (d.w - 40) + ',' + (d.h + 3) + ')';
             });
-            thisNode.selectAll('text.node_badge_label').text(function (d, i) {
+            thisNode.selectAll('text.node_badge_label').text(function (d: any, i) {
               if (d._def.badge) {
                 if (typeof d._def.badge == 'function') {
                   try {
@@ -2788,7 +2828,9 @@ export class View extends Context {
       var linkEnter = link.enter().insert('g', '.node').attr('class', 'link');
 
       linkEnter.each((d, i) => {
-        var l = d3.select(this);
+        // TODO: Fixed?
+        const svgElem = this.vis
+        var l = d3.select(svgElem);
         d.added = true;
         l.append('svg:path').attr('class', 'link_background link_path')
           .on('mousedown', (d) => {
@@ -2819,10 +2861,10 @@ export class View extends Context {
           })
         l.append('svg:path').attr('class', 'link_outline link_path');
         l.append('svg:path').attr('class', 'link_line link_path')
-          .classed('link_link', function (d) {
+          .classed('link_link', function (d: any) {
             return d.link
           })
-          .classed('link_subflow', function (d) {
+          .classed('link_subflow', function (d: any) {
             return !d.link && activeSubflow
           });
       });
@@ -2832,7 +2874,7 @@ export class View extends Context {
       links.each(function (d) {
         var link = d3.select(this);
         if (d.added || d === this.selected_link || d.selected || dirtyNodes[d.source.id] || dirtyNodes[d.target.id]) {
-          link.attr('d', function (d) {
+          link.attr('d', function (d: any) {
             var numOutputs = d.source.outputs || 1;
             var sourcePort = d.sourcePort || 0;
             var y = -((numOutputs - 1) / 2) * 13 + 13 * sourcePort;
@@ -2914,7 +2956,7 @@ export class View extends Context {
             d3.event.preventDefault();
             d3.event.stopPropagation();
           })
-          .on('mouseup', function (f) {
+          .on('mouseup', (f) => {
             d3.event.stopPropagation();
             var targets = d.links[f];
             this.RED.workspaces.show(f);
@@ -2928,7 +2970,7 @@ export class View extends Context {
             this.updateSelection();
             this.redraw();
           });
-        enterLinkGroups.each(function (f) {
+        enterLinkGroups.each((f) => {
           var linkG = d3.select(this);
           linkG.append('svg:path').attr('class', 'link_flow_link')
             .attr('class', 'link_link')
@@ -2995,7 +3037,7 @@ export class View extends Context {
           s = -1;
         }
         var link = d3.select(this);
-        link.attr('transform', function (d) {
+        link.attr('transform', function (d: any) {
           return 'translate(' + (d.node.x + (s * d.node.w / 2)) + ',' + (d.node.y) + ')';
         });
 
@@ -3354,11 +3396,13 @@ export class View extends Context {
     } = this
 
     var touch0;
+
     if (!d3.event) {
-      this.handleError('handleOuterTouchStartEvent: d3 missing event object', {
+      this.logWarning('handleOuterTouchStartEvent: d3 missing event object', {
         // d3
         event: d3.event
       })
+      return this
     }
 
     if (d3.event.touches.length > 1) {
@@ -3387,7 +3431,10 @@ export class View extends Context {
       var pos = [touch0.pageX, touch0.pageY];
       startTouchCenter = [touch0.pageX, touch0.pageY];
       startTouchDistance = 0;
-      var point = d3.touches(this)[0];
+
+      // TODO: Fixed?
+      const svgElem = this.vis
+      var point = d3.touches(svgElem)[0];
       touchStartTime = setTimeout(() => {
         touchStartTime = null;
         showTouchMenu(obj, pos);
@@ -3416,6 +3463,14 @@ export class View extends Context {
     const {
       clearTimeout
     } = this
+
+    if (!d3.event) {
+      this.logWarning('handleOuterTouchStartEvent: d3 missing event object', {
+        // d3
+        event: d3.event
+      })
+      return this
+    }
 
     if (this.RED.touch.radialMenu.active()) {
       d3.event.preventDefault();
