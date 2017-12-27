@@ -1,22 +1,17 @@
-const nightmare = require('../nightmare')
-import test from 'ava'
 import {
   Notifications
 } from './ui'
-const ctx = {}
 
-function create(ctx) {
-  return new Notifications(ctx)
+function create() {
+  return new Notifications()
 }
 
 test('Notifications: create', () => {
-  let notifications = create(ctx)
   t.is(notifications.c, 0)
   t.deepEqual(notifications.currentNotifications, [])
 })
 
 test('Notifications: notify', () => {
-  let notifications = create(ctx)
   let msg = 'hello'
   let type = 'info'
   let elem = notifications.notify(msg, type)
@@ -25,7 +20,6 @@ test('Notifications: notify', () => {
 })
 
 test('Notifications: notify - fixed', () => {
-  let notifications = create(ctx)
   let msg = 'hello'
   let type = 'info'
   let fixed = true
@@ -34,7 +28,6 @@ test('Notifications: notify - fixed', () => {
 })
 
 test('Notifications: notify - timeout', () => {
-  let notifications = create(ctx)
   let msg = 'hello'
   let type = 'info'
   let fixed = false

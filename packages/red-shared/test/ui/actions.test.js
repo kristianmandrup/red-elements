@@ -1,14 +1,11 @@
-const nightmare = require('../nightmare')
-import test from 'ava'
 import {
   Actions
 } from './ui'
 
-const ctx = {}
 const evt = 'hello'
 
-function create(ctx) {
-  return new Actions(ctx)
+function create() {
+  return new Actions()
 }
 
 function func(event) {
@@ -16,41 +13,35 @@ function func(event) {
 }
 
 test('Actions: create', () => {
-  let actions = create(ctx)
-  t.is(typeof actions, 'object')
+  expect(typeof actions).toBe('object')
 })
 
 test('Actions: addAction', () => {
-  let actions = create(ctx)
   actions.addAction('a', func)
-  t.is(actions.actions['a'], func)
+  expect(actions.actions['a']).toBe(func)
 })
 
 test('Actions: removeAction', () => {
-  let actions = create(ctx)
   actions.addAction('a', func)
   actions.removeAction('a')
-  t.is(actions.length, 0)
+  expect(actions.length).toBe(0)
 })
 
 test('Actions: getAction', () => {
-  let actions = create(ctx)
   actions.addAction('a', func)
   let action = actions.getAction('a')
-  t.is(action, func)
+  expect(action).toBe(func)
 })
 
 test('Actions: invokeAction', () => {
-  let actions = create(ctx)
   actions.addAction('a', func)
   let result = actions.invokeAction('a')
-  t.is(result, ':')
+  expect(result).toBe(':')
 })
 
 test('Actions: listActions', () => {
-  let actions = create(ctx)
   actions.addAction('a', func)
   let list = actions.listActions()
   let item = list[0]
-  t.is(item.id, 'a')
+  expect(item.id).toBe('a')
 })

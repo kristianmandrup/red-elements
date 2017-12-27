@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-export const state = {
-    DEFAULT: 0,
-    MOVING: 1,
-    JOINING: 2,
-    MOVING_ACTIVE: 3,
-    ADDING: 4,
-    EDITING: 5,
-    EXPORT: 6,
-    IMPORT: 7,
-    IMPORT_DRAGGING: 8,
-    QUICK_JOINING: 9
+export const STATE = {
+  DEFAULT: 0,
+  MOVING: 1,
+  JOINING: 2,
+  MOVING_ACTIVE: 3,
+  ADDING: 4,
+  EDITING: 5,
+  EXPORT: 6,
+  IMPORT: 7,
+  IMPORT_DRAGGING: 8,
+  QUICK_JOINING: 9
 }

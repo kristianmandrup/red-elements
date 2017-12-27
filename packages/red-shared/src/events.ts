@@ -15,10 +15,9 @@
  **/
 
 export class Events {
-  public handlers: any
+  public handlers: any = {}
 
   constructor() {
-    this.handlers = {};
   }
 
   on(evt, func) {

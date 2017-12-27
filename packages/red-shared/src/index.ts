@@ -1,78 +1,65 @@
 export {
   default as RED
 }
-from './red'
+  from './red'
 
 export {
-  History
+  History,
+  UndoEvent
 }
-from './history'
+  from './history'
 
 export {
   NodeConfig,
   Nodes,
   NodesRegistry
 }
-from './nodes'
+  from './nodes'
 
 export {
   TextFormat,
-  Bidi
+  Bidi,
+  format
 }
-from './text'
+  from './text'
 
 export {
   Communications
 }
-from './comms'
+  from './comms'
 
 export {
   Events
 }
-from './events'
+  from './events'
 
 export {
   I18n
 }
-from './i18n'
+  from './i18n'
 export {
   Main
 }
-from './main'
+  from './main'
 export {
   Settings
 }
-from './settings'
+  from './settings'
 export {
   User
 }
-from './user'
+  from './user'
 export {
   Validators
 }
-from './validators'
+  from './validators'
 
 export {
   Actions,
   Clipboard,
   Deploy,
-  Diff,
-  Editor,
   Keyboard,
-  Library,
   Notifications,
-  Search,
-  state,
-  Subflow,
-  Tray,
-  TypeSearch,
-  UserSettings,
-  Utils,
-  Workspaces,
-  Sidebar,
-  SidebarTabConfig,
-  SidebarTabInfo,
-  Palette,
-  PaletteEditor
-}
-from './ui'
+  Utils
+} from './ui'
+

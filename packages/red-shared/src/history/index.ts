@@ -22,6 +22,10 @@ import {
   Context
 } from '../context'
 
+export {
+  UndoEvent
+}
+
 export class History extends Context {
   public undo_history = [];
   public undoEvent: any
