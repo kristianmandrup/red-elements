@@ -22,6 +22,7 @@ test('i18n: init', async () => {
   expect(typeof inst.i18n).toBe('object')
 })
 
+// TODO: mock Ajax responses via nock
 test('i18n: loadCatalog - no namespace fails', async () => {
   await inst.init()
   try {
@@ -53,6 +54,15 @@ test('i18n: loadCatalog - valid my-catalog namespace loads', async () => {
 })
 
 
-test.skip('i18n: loadCatalogs', async () => {
+test.skip('i18n: loadNodeCatalogs', async () => {
+  await inst.init()
+  try {
+    const loaded = await inst.loadNodeCatalogs()
+    expect(loaded).toBeDefined()
+  } catch (err) {
+    log('unexpected', {
+      err
+    })
+  }
 
 })

@@ -113,7 +113,7 @@ export class I18n extends Context {
     })
   }
 
-  async loadNodeCatalogs(done) {
+  async loadNodeCatalogs() {
     var languageList = [detectLanguage()]
     var toLoad = languageList.length;
     return new Promise((resolve, reject) => {

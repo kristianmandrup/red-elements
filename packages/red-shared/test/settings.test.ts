@@ -11,6 +11,8 @@ beforeEach(() => {
   settings = create()
 })
 
+const { log } = console
+
 test('settings: create', () => {
   expect(typeof settings.loadedSettings).toBe('object')
 })
@@ -24,13 +26,18 @@ test('settings: localstorage', () => {
   expect(settings.hasLocalStorage()).toBeTruthy()
 })
 
-test('settings: properties', () => {
+test.only('settings: properties', () => {
   const data = {
     x: 2
   }
   settings.setProperties(data)
-
-  expect(settings.x).toBe(2)
+  const $settings = settings.ctx.settings
+  // log({
+  //   settings: $settings,
+  //   loaded: settings.loadedSettings
+  // })
+  expect(settings.loadedSettings.x).toBe(2)
+  expect($settings.x).toBe(2)
 })
 
 // called by init
@@ -39,7 +46,7 @@ test('settings: load', async () => {
   await settings.load()
 })
 
-test('settings: theme', () => {
+test.only('settings: theme', () => {
   let defaultValue = true
   // test real theme values
   let property = 'palette.editable'

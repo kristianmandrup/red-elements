@@ -18,6 +18,7 @@ import {
   $
 } from './context'
 
+const { log } = console
 export class Settings extends Context {
   public loadedSettings: any
 
@@ -27,7 +28,7 @@ export class Settings extends Context {
   }
 
   async init() {
-    const ctx = this.ctx;
+    const { ctx } = this
     var accessTokenMatch = /[?&]access_token=(.*?)(?:$|&)/.exec(window.location.search);
     if (accessTokenMatch) {
       var accessToken = accessTokenMatch[1];
@@ -93,21 +94,27 @@ export class Settings extends Context {
       ctx,
       loadedSettings
     } = this
+    ctx.settings = ctx.settings || {}
 
-    for (var prop in loadedSettings) {
+    for (let prop in loadedSettings) {
       if (loadedSettings.hasOwnProperty(prop) && ctx.settings.hasOwnProperty(prop)) {
         delete ctx.settings[prop];
       }
     }
-    for (prop in data) {
+    for (let prop in data) {
       if (data.hasOwnProperty(prop)) {
         ctx.settings[prop] = data[prop];
+      } else {
+        this.logWarning('prop not own property of data', {
+          data
+        })
       }
     }
-    loadedSettings = data;
+    this.loadedSettings = data;
+    return this
   };
 
-  async load(done?) {
+  async load() {
     const {
       ctx,
       setProperties
@@ -115,34 +122,38 @@ export class Settings extends Context {
         'setProperties'
       ])
 
-    $.ajax({
-      headers: {
-        'Accept': 'application/json'
-      },
-      dataType: 'json',
-      cache: false,
-      url: 'settings',
-      success: function (data) {
-        setProperties(data);
-        if (!ctx.settings.user || ctx.settings.user.anonymous) {
-          ctx.settings.remove('auth-tokens');
-        }
-        console.log('Node-RED: ' + data.version);
-        done();
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        if (jqXHR.status === 401) {
-          if (/[?&]access_token=(.*?)(?:$|&)/.test(window.location.search)) {
-            window.location.search = '';
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        headers: {
+          'Accept': 'application/json'
+        },
+        dataType: 'json',
+        cache: false,
+        url: 'settings',
+        success: function (data) {
+          setProperties(data);
+          if (!ctx.settings.user || ctx.settings.user.anonymous) {
+            ctx.settings.remove('auth-tokens');
           }
-          ctx.user.login(function () {
-            load(done);
-          });
-        } else {
-          console.log('Unexpected error:', jqXHR.status, textStatus);
+          console.log('Node-RED: ' + data.version);
+          resolve(data)
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          if (jqXHR.status === 401) {
+            if (/[?&]access_token=(.*?)(?:$|&)/.test(window.location.search)) {
+              window.location.search = '';
+            }
+            reject(errorThrown)
+            // ctx.user.login(this.load);
+          } else {
+            this.handleError('Unexpected error:', {
+              status: jqXHR.status,
+              textStatus
+            });
+          }
         }
-      }
-    });
+      });
+    })
   };
 
   theme(property, defaultValue) {
