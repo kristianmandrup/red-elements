@@ -11,6 +11,8 @@ function func(event) {
   return ':' + event
 }
 
+const { log } = console
+
 let comms
 beforeEach(() => {
   comms = create()
@@ -22,27 +24,30 @@ test('Communications: create', () => {
 
 test('communications: connect - makes active', () => {
   comms.connect()
-  expect(comms.active)
+  expect(comms.active).toBeTruthy()
 })
 
 test('communications: connect - opens Web socket', () => {
   comms.connect()
-  expect(typeof comms.ws).toBe('object')
+  const ws = comms.ws
+  expect(typeof ws).toBe('object')
 
   // configures callback functions
-  expect(typeof comms.onmessage).toBe('function')
-  expect(typeof comms.onopen).toBe('function')
-  expect(typeof comms.onclose).toBe('function')
+  expect(typeof ws.onmessage).toBe('function')
+  expect(typeof ws.onopen).toBe('function')
+  expect(typeof ws.onclose).toBe('function')
 })
 
 test('communications: subscribe - adds to subscriptions', () => {
   comms.subscribe('a', func)
-  expect(comms.subscriptions['a']).toBe(func)
+  expect(comms.subscriptions['a']).toContain(func)
 })
 
 test('communications: unsubscribe - removes from subscriptions', () => {
   comms.subscribe('a', func)
-  expect(comms.subscriptions['a']).toBe(func)
-  comms.unsubscribe('a')
-  expect(comms.subscriptions['a']).not.toBe(func)
+  let subscription = comms.subscriptions['a']
+  expect(comms.subscriptions['a']).toContain(func)
+  comms.unsubscribe('a', func)
+  subscription = comms.subscriptions['a']
+  expect(subscription).toBeUndefined()
 })

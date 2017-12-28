@@ -14,16 +14,25 @@
  * limitations under the License.
  **/
 
-export class Events {
+import {
+  Context
+} from './context'
+
+const { log } = console
+export class Events extends Context {
   public handlers: any = {}
+  public lastEmitted: any
 
   constructor() {
+    super()
   }
 
   on(evt, func) {
     this.handlers[evt] = this.handlers[evt] || [];
     this.handlers[evt].push(func);
+    return this
   }
+
   off(evt, func) {
     var handler = this.handlers[evt];
     if (handler) {
@@ -34,22 +43,24 @@ export class Events {
         }
       }
     }
+    return this
   }
 
   emit(evt, arg) {
-    const { handlers } = this
-    var handler = handlers[evt];
-
-    if (handlers) {
-      for (var i = 0; i < handlers.length; i++) {
-        try {
-          this.handlers[i](arg);
-        } catch (err) {
-          console.log("RED.events.emit error: [" + evt + "] " + (err.toString()));
-          console.log(err);
-        }
-      }
-
+    var handlers = this.handlers[evt];
+    if (!handlers) {
+      return this
     }
+    for (let handler of handlers) {
+      try {
+        let lastEmitted = handler(arg);
+        this.lastEmitted = lastEmitted
+      } catch (err) {
+        this.handleError(`RED.events.emit error: [${evt}]`, {
+          err
+        });
+      }
+    }
+    return this
   }
 }

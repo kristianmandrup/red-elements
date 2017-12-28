@@ -9,6 +9,8 @@ function create() {
   return new Events()
 }
 
+const { log } = console
+
 let events
 beforeEach(() => {
   events = create()
@@ -27,23 +29,23 @@ test('events: on', () => {
   events.on(evt, func)
   let { handlers } = events
   let handler = handlers[evt]
-  expect(handler).toBe(func)
+  expect(handler).toContain(func)
 })
 
 test('events: off', () => {
   events.on(evt, func)
   let { handlers } = events
   let handler = handlers[evt]
-  expect(handler).toBe(func)
+  expect(handler).toContain(func)
 
-  events.off(evt)
+  events.off(evt, func)
   handler = handlers[evt]
-  expect(handler).toBe(null)
+  expect(handler).not.toContain(func)
 
 })
 
 test('events: emit', async () => {
   events.on(evt, func)
-  let result = events.emit(evt)
-  expect(result).toBe(':hello')
+  events.emit(evt, 'hello')
+  expect(events.lastEmitted).toBe(':hello')
 })

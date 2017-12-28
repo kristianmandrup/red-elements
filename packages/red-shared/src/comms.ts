@@ -17,16 +17,10 @@ import {
   Context
 } from './context'
 
+const { log } = console
 
 // https://www.npmjs.com/package/@types/ws
 import * as WebSocket from 'ws'
-
-// See: http://jsfiddle.net/bmknight/RqbYB/
-// const WebSocket = window['WebSocket']
-
-// if (!WebSocket) {
-//   throw Error('Browser does not support WebSocket :(')
-// }
 
 // https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
 
@@ -58,7 +52,8 @@ export class Communications extends Context {
       location,
       ws,
       connectCountdown,
-      connectCountdownTimer
+      connectCountdownTimer,
+      subscriptions
     } = this
 
     let {
@@ -70,6 +65,7 @@ export class Communications extends Context {
     this.active = true;
     // See: https://developer.mozilla.org/en-US/docs/Web/API/Location
     location = location || window.location
+    this.location = location
 
     var path = location.hostname;
     var port = location.port;
@@ -83,9 +79,10 @@ export class Communications extends Context {
     var auth_tokens = RED.settings.get("auth-tokens");
     pendingAuth = (auth_tokens != null);
 
-    let subscriptions = this.subscriptions
-
     function completeConnection() {
+      log('Websocket complete connection', {
+        ws
+      })
       for (var t in subscriptions) {
         if (subscriptions.hasOwnProperty(t)) {
           ws.send(JSON.stringify({
@@ -97,6 +94,9 @@ export class Communications extends Context {
 
     ws = new WebSocket(path);
     ws.onopen = function () {
+      // log('Websocket open', {
+      //   ws
+      // })
       reconnectAttempts = 0;
       if (errornotification) {
         clearErrorTimer = setTimeout(function () {
@@ -113,6 +113,10 @@ export class Communications extends Context {
       }
     }
     ws.onmessage = function (event) {
+      // log('websocket: message', {
+      //   event
+      // })
+
       var msg = JSON.parse(event.data);
       if (pendingAuth && msg.auth) {
         if (msg.auth === "ok") {
@@ -143,7 +147,11 @@ export class Communications extends Context {
         }
       }
     };
+
     ws.onclose = function () {
+      // log('websocket:closed', {
+      //   ws
+      // })
       if (!active) {
         return;
       }
@@ -181,33 +189,33 @@ export class Communications extends Context {
           }
         }, 1000);
       }
-
     }
+    this.ws = ws
+    return this
   }
 
   subscribe(topic, callback) {
     const {
-      ws
+      ws,
+      subscriptions
     } = this
-
-    let subscription = this.subscriptions[topic]
-    if (subscription === null) {
-      subscription = [];
-    }
+    let subscription = subscriptions[topic] || []
     subscription.push(callback);
     if (ws && ws.readyState == 1) {
       ws.send(JSON.stringify({
         subscribe: topic
       }));
     }
+    subscriptions[topic] = subscription
+    this.subscriptions = subscriptions
+    return this
   }
 
   unsubscribe(topic, callback) {
     let {
       subscriptions
     } = this
-
-    let subscription = this.subscriptions[topic]
+    let subscription = subscriptions[topic]
     if (subscription) {
       for (var i = 0; i < subscription.length; i++) {
         if (subscription[i] === callback) {
@@ -219,5 +227,7 @@ export class Communications extends Context {
         delete subscriptions[topic];
       }
     }
+    this.subscriptions = subscriptions
+    return this
   }
 }
