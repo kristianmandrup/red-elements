@@ -1,6 +1,6 @@
 import {
   Actions
-} from './ui'
+} from '../..'
 
 const evt = 'hello'
 
@@ -11,6 +11,11 @@ function create() {
 function func(event) {
   return ':'
 }
+
+let actions
+beforeEach(() => {
+  actions = create()
+})
 
 test('Actions: create', () => {
   expect(typeof actions).toBe('object')

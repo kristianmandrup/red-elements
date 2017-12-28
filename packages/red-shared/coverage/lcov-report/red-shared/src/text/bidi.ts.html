@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for red-shared/src/text/bidi.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../index.html">All files</a> / <a href="index.html">red-shared/src/text</a> bidi.ts
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">6.12% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>3/49</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/30</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/13</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">6.38% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>3/47</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+&nbsp;
+import {
+  Context,
+  $
+} fr<span class="fstat-no" title="function not covered" >om</span> '../context'
+<span class="cstat-no" title="statement not covered" ></span>
+export class Bidi exte<span class="cstat-no" title="statement not covered" >nds</span> Context {
+  constructor() {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    super()
+<span class="fstat-no" title="function not covered" ></span>
+    var textDir = "";<span class="cstat-no" title="statement not covered" ></span>
+    var LRE = "\u202A",
+      RLE = "\u202B",
+      PDF = "\u202C";
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  isRTLValue<span class="cstat-no" title="statement not covered" >(stringValue) {</span>
+    const {<span class="cstat-no" title="statement not covered" ></span>
+      isBidiChar,
+      isLatinChar<span class="cstat-no" title="statement not covered" ></span>
+    } = this.reb<span class="cstat-no" title="statement not covered" >ind([</span>
+        'isBidiChar',
+        'isLatinChar'
+      ])<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+<span class="fstat-no" title="function not covered" >    va</span>r length = stringValue.length;
+    for <span class="cstat-no" title="statement not covered" >(var i = 0; i &lt; length; i++) {</span>
+      if (isBidiChar(stringValue.charCodeAt(i))) {
+        return true;
+      } else if (isLatinChar(stringValue.charCodeAt(i))) {
+        return false;
+      }
+    }
+<span class="fstat-no" title="function not covered" >    re</span>turn false;
+  }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  isBidiChar(c) {
+    return (c &gt;= 0x05d0 &amp;&amp; c &lt;= 0x05ff) ||
+      (c &gt;= 0x0600 &amp;&amp; c &lt;= 0x065f) ||
+      (c &gt;= 0x066a &amp;&amp; c &lt;= 0x06ef) ||
+<span class="fstat-no" title="function not covered" ></span>      (c &gt;= 0x06fa &amp;&amp; c &lt;= 0x07ff) ||
+      (c &gt;= 0xfb1d &amp;&amp; c &lt;= 0xfdff) ||<span class="cstat-no" title="statement not covered" ></span>
+      (c &gt;= 0xfe70 &amp;&amp; c &lt;= 0xfefc);
+  }
+<span class="cstat-no" title="statement not covered" ></span>
+  isLatinCha<span class="cstat-no" title="statement not covered" >r(c) {</span>
+    return (c &gt; <span class="cstat-no" title="statement not covered" >64 &amp;&amp; c &lt; 91) </span>|| (c &gt; 96 &amp;&amp; c &lt; 123)
+  }
+&nbsp;
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Determines the text direction of a given string.
+   * @param value - the string
+   */
+  resolveBas<span class="cstat-no" title="statement not covered" >eTextDir(value) </span>{
+    const {
+      textDir,
+<span class="fstat-no" title="function not covered" ></span>      isRTLValue
+    } = this.rebind([<span class="cstat-no" title="statement not covered" ></span>
+        'isRTLValue'
+      ])
+<span class="cstat-no" title="statement not covered" ></span>
+    if (textDir == "auto") {
+      if (isRTLValue(value)) {
+        return "rtl";
+      } else {
+        return "ltr";
+      }
+<span class="fstat-no" title="function not covered" >    } </span>else {
+      return textDir;<span class="cstat-no" title="statement not covered" ></span>
+    }
+  }
+<span class="cstat-no" title="statement not covered" ></span>
+  onInputChange() {
+    cons<span class="cstat-no" title="statement not covered" >t {</span>
+      resolveBaseTextDir
+    } = this.rebind([
+        'resolveBaseTextDir'
+      ])
+&nbsp;
+    $(this).attr("dir", resolveBaseTextDir($(this).val()));
+  }<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**
+   * Adds event listeners to the Input to ensure its text-direction attribute
+   * is <span class="cstat-no" title="statement not covered" >properly set based on its content.</span>
+   * @param input - th<span class="cstat-no" title="statement not covered" >e input field</span>
+   */<span class="cstat-no" title="statement not covered" ></span>
+  prepareInput(i<span class="cstat-no" title="statement not covered" >nput) {</span>
+    const {
+      onInputChan<span class="cstat-no" title="statement not covered" >ge</span>
+    } = this.reb<span class="cstat-no" title="statement not covered" >ind([</span>
+        'onInputChange'
+      ])
+    inpu<span class="cstat-no" title="statement not covered" >t.on("keyup", </span>onInputChange).on("paste", onInputChange).on("cut", onInputChange);
+    // Set the initial text direction
+    onInputChange.call(input);
+  }
+&nbsp;
+  /**
+   *<span class="fstat-no" title="function not covered" > E</span>nforces the text direction of a given string by adding
+   * UCC (Unicode Control Characters)<span class="cstat-no" title="statement not covered" ></span>
+   * @param value - the string
+   */
+  enforc<span class="cstat-no" title="statement not covered" >eTextDirectionWithUCC(value) {<span class="fstat-no" title="function not covered" ></span></span>
+    const {<span class="cstat-no" title="statement not covered" ></span>
+      resolveBaseTextDir,
+      LR<span class="cstat-no" title="statement not covered" >E,<span class="fstat-no" title="function not covered" ></span></span>
+      PDF,<span class="cstat-no" title="statement not covered" ></span>
+      RLE
+    } = this.rebind([
+        'resolveBaseTextDir'
+      ])
+&nbsp;
+    if (value) {
+<span class="fstat-no" title="function not covered" ></span>      var dir = resolveBaseTextDir(value);
+      if (dir == "ltr") {<span class="cstat-no" title="statement not covered" ></span>
+        return LRE + value + PDF;
+      } else if (dir == "rtl") {
+<span class="cstat-no" title="statement not covered" >        return RLE + va</span>lue + PDF;
+      }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+    return value;
+  }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * Enforces the text direction for all the spans with style bidiAware under
+   * workspace or sidebar div
+   */
+  enforceTextDirectionOnPage() {
+    const {
+      resolveBaseTextDir
+    } = this.rebind([
+        'resolveBaseTextDir'
+      ])
+    $("#workspace").find('span.bidiAware').each(function () {
+      $(this).attr("dir", resolveBaseTextDir($(this).html()));
+    });
+    $("#sidebar").find('span.bidiAware').each(function () {
+      $(this).attr("dir", resolveBaseTextDir($(this).text()));
+    });
+  }
+&nbsp;
+  /**
+   * Sets the text direction preference
+   * @param dir - the text direction preference
+   */
+  setTextDirection(dir) {
+    let {
+      RED,
+      textDir,
+      enforceTextDirectionOnPage
+    } = this.rebind([
+        'enforceTextDirectionOnPage'
+      ])
+    textDir = dir;
+    RED.nodes.eachNode(function (n) {
+      n.dirty = true;
+    });
+    RED.view.redraw();
+    RED.palette.refresh();
+    enforceTextDirectionOnPage();
+  }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Dec 28 2017 10:14:52 GMT+0700 (+07)
+</div>
+</div>
+<script src="../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../sorter.js"></script>
+</body>
+</html>

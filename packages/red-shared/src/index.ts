@@ -1,58 +1,50 @@
-export {
-  default as RED
-}
-  from './red'
+// export {
+//   default as RED
+// } from './red'
 
 export {
   History,
   UndoEvent
-}
-  from './history'
+} from './history'
 
 export {
   NodeConfig,
   Nodes,
   NodesRegistry
-}
-  from './nodes'
+} from './nodes'
 
 export {
   TextFormat,
   Bidi,
   format
-}
-  from './text'
+} from './text'
 
 export {
   Communications
-}
-  from './comms'
+} from './comms'
 
 export {
   Events
-}
-  from './events'
+} from './events'
 
 export {
   I18n
-}
-  from './i18n'
+} from './i18n'
 export {
   Main
-}
-  from './main'
+} from './main'
+
 export {
   Settings
-}
-  from './settings'
+} from './settings'
+
 export {
   User
-}
-  from './user'
+} from './user'
+
 export {
   Validators
-}
-  from './validators'
+} from './validators'
 
 export {
   Actions,

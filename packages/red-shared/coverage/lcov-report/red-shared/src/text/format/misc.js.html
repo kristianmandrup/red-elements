@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for red-shared/src/text/format/misc.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">All files</a> / <a href="index.html">red-shared/src/text/format</a> misc.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">22.73% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>15/66</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/49</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">8.33% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/12</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">22.73% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>15/66</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var LRE = "\u202A";
+var RLE = "\u202B";
+var PDF = "\u202C";
+var LRM = "\u200E";
+var RLM = "\u200F";
+var LRO = "\u202D";
+var RLO = "\u202E";
+&nbsp;
+class Misc {
+  constructor() {
+    this.LRE = LRE
+    this.RLE = RLE
+    this.PDF = PDF
+    this.LRM = LRM
+    this.RLM = RLM
+    this.LRO = LRO
+    this.RLO = RLO
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  is</span>BidiLocale(locale) {
+    var lang = <span class="cstat-no" title="statement not covered" >!locale ? "" : locale.split("-")[0];</span>
+<span class="cstat-no" title="statement not covered" >    if (!lang || lang.length &lt; 2) {</span>
+<span class="cstat-no" title="statement not covered" >      return false;</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return ["iw", "he", "ar", "fa", "ur"].some(<span class="fstat-no" title="function not covered" >fu</span>nction (bidiLang) {</span>
+<span class="cstat-no" title="statement not covered" >      return bidiLang === lang;</span>
+    });
+  };
+&nbsp;
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ge</span>tLocaleDetails(locale) {
+<span class="cstat-no" title="statement not covered" >    if (!locale) {</span>
+<span class="cstat-no" title="statement not covered" >      locale = typeof navigator === "undefined" ? "" :</span>
+        (navigator.language ||
+          navigator.userLanguage ||
+          "");
+    }
+<span class="cstat-no" title="statement not covered" >    locale = locale.toLowerCase();</span>
+<span class="cstat-no" title="statement not covered" >    if (isBidiLocale(locale)) {</span>
+      var full = <span class="cstat-no" title="statement not covered" >locale.split("-");</span>
+<span class="cstat-no" title="statement not covered" >      return {</span>
+        lang: full[0],
+        country: full[1] ? full[1] : ""
+      };
+    }
+<span class="cstat-no" title="statement not covered" >    return {</span>
+      lang: "not-bidi"
+    };
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  re</span>moveUcc(text) {
+<span class="cstat-no" title="statement not covered" >    if (text) {</span>
+<span class="cstat-no" title="statement not covered" >      return text.replace(/[\u200E\u200F\u202A-\u202E]/g, "");</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return text;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  re</span>moveTags(text) {
+<span class="cstat-no" title="statement not covered" >    if (text) {</span>
+<span class="cstat-no" title="statement not covered" >      return text.replace(/&lt;[^&lt;]*&gt;/g, "");</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return text;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ge</span>tDirection(text, dir, guiDir, checkEnd) {
+<span class="cstat-no" title="statement not covered" >    if (dir !== "auto" &amp;&amp; (/^(rtl|ltr)$/i).test(dir)) {</span>
+<span class="cstat-no" title="statement not covered" >      return dir;</span>
+    }
+<span class="cstat-no" title="statement not covered" >    guiDir = (/^(rtl|ltr)$/i).test(guiDir) ? guiDir : "ltr";</span>
+    var txt = <span class="cstat-no" title="statement not covered" >!checkEnd ? text : text.split("").reverse().join("");</span>
+    var fdc = <span class="cstat-no" title="statement not covered" >/[A-Za-z\u05d0-\u065f\u066a-\u06ef\u06fa-\u07ff\ufb1d-\ufdff\ufe70-\ufefc]/.exec(txt);</span>
+<span class="cstat-no" title="statement not covered" >    return fdc ? (fdc[0] &lt;= "z" ? "ltr" : "rtl") : guiDir;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ha</span>sArabicChar(text) {
+    var fdc = <span class="cstat-no" title="statement not covered" >/[\u0600-\u065f\u066a-\u06ef\u06fa-\u07ff\ufb1d-\ufdff\ufe70-\ufefc]/.exec(text);</span>
+<span class="cstat-no" title="statement not covered" >    return !!fdc;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  sh</span>owMarks(text, guiDir) {
+    var result = <span class="cstat-no" title="statement not covered" >"";</span>
+<span class="cstat-no" title="statement not covered" >    for (var i = 0; i &lt; text.length; i++) {</span>
+      var c = <span class="cstat-no" title="statement not covered" >"" + text.charAt(i);</span>
+<span class="cstat-no" title="statement not covered" >      switch (c) {</span>
+        case LRM:
+<span class="cstat-no" title="statement not covered" >          result += "&lt;LRM&gt;";</span>
+<span class="cstat-no" title="statement not covered" >          break;</span>
+        case RLM:
+<span class="cstat-no" title="statement not covered" >          result += "&lt;RLM&gt;";</span>
+<span class="cstat-no" title="statement not covered" >          break;</span>
+        case LRE:
+<span class="cstat-no" title="statement not covered" >          result += "&lt;LRE&gt;";</span>
+<span class="cstat-no" title="statement not covered" >          break;</span>
+        case RLE:
+<span class="cstat-no" title="statement not covered" >          result += "&lt;RLE&gt;";</span>
+<span class="cstat-no" title="statement not covered" >          break;</span>
+        case LRO:
+<span class="cstat-no" title="statement not covered" >          result += "&lt;LRO&gt;";</span>
+<span class="cstat-no" title="statement not covered" >          break;</span>
+        case RLO:
+<span class="cstat-no" title="statement not covered" >          result += "&lt;RLO&gt;";</span>
+<span class="cstat-no" title="statement not covered" >          break;</span>
+        case PDF:
+<span class="cstat-no" title="statement not covered" >          result += "&lt;PDF&gt;";</span>
+<span class="cstat-no" title="statement not covered" >          break;</span>
+        default:
+<span class="cstat-no" title="statement not covered" >          result += c;</span>
+      }
+    }
+    var mark = <span class="cstat-no" title="statement not covered" >typeof (guiDir) === "undefined" || !((/^(rtl|ltr)$/i).test(guiDir)) ? "" :</span>
+      guiDir === "rtl" ? RLO : LRO;
+<span class="cstat-no" title="statement not covered" >    return mark + result + (mark === "" ? "" : PDF);</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  hi</span>deMarks(text) {
+    var txt = <span class="cstat-no" title="statement not covered" >text.replace(/&lt;LRM&gt;/g, this.LRM).replace(/&lt;RLM&gt;/g, this.RLM).replace(/&lt;LRE&gt;/g, this.LRE);</span>
+<span class="cstat-no" title="statement not covered" >    return txt.replace(/&lt;RLE&gt;/g, this.RLE).replace(/&lt;LRO&gt;/g, this.LRO).replace(/&lt;RLO&gt;/g, this.RLO).replace(/&lt;PDF&gt;/g, this.PDF);</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  sh</span>owTags(text) {
+<span class="cstat-no" title="statement not covered" >    return "&lt;xmp&gt;" + text + "&lt;/xmp&gt;";</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  hi</span>deTags(text) {
+<span class="cstat-no" title="statement not covered" >    return text.replace(/&lt;xmp&gt;/g, "").replace(/&lt;\/xmp&gt;/g, "");</span>
+  }
+}
+&nbsp;
+export const misc = new Misc()
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Dec 28 2017 10:14:52 GMT+0700 (+07)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

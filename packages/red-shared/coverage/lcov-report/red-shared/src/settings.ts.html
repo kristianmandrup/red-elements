@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for red-shared/src/settings.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">All files</a> / <a href="index.html">red-shared/src</a> settings.ts
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">5.26% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>4/76</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">7.32% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>3/41</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/21</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">5.63% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>4/71</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * Copyright JS Foundation and other contrib<span class="fstat-no" title="function not covered" >ut</span>ors, http://js.foundation
+ *<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+ * Licensed under<span class="fstat-no" title="function not covered" > the Apach</span>e License<span class="cstat-no" title="statement not covered" >, Vers<span class="cstat-no" title="statement not covered" >ion 2.0 (the 'License');<span class="cstat-no" title="statement not covered" ></span></span></span>
+ * you may not us<span class="fstat-no" title="function not covered" >e this fi</span>le except<span class="cstat-no" title="statement not covered" > in co<span class="cstat-no" title="statement not covered" >mpliance with the License.<span class="cstat-no" title="statement not covered" ></span></span></span>
+ * You may obtain<span class="fstat-no" title="function not covered" > a co</span>py of the <span class="cstat-no" title="statement not covered" >License at<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+ *<span class="cstat-no" title="statement not covered" ></span>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an 'AS IS' BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+import {
+  Context,
+  $
+} from './context'
+&nbsp;
+export class Settings extends Context {
+  public loadedSettings: any
+&nbsp;
+  constructor() {
+    super()
+    this.loadedSettings = {};
+  }
+<span class="fstat-no" title="function not covered" ></span>
+  async <span class="cstat-no" title="statement not covered" >init() {</span>
+    cons<span class="cstat-no" title="statement not covered" >t ctx = this.ctx;</span>
+    var accessTokenMatch = /[?&amp;]access_token=(.*?)(?:$|&amp;)/.exec(window.location.search);
+<span class="fstat-no" title="function not covered" >    if</span> (accessTokenMatch) {
+      va<span class="cstat-no" title="statement not covered" >r accessToken = accessTokenMatch[1];<span class="fstat-no" title="function not covered" ></span></span>
+      ctx.settings.set('<span class="cstat-no" title="statement not covered" >auth-toke</span>ns', {
+        access_token: accessToken<span class="cstat-no" title="statement not covered" ></span>
+      });<span class="cstat-no" title="statement not covered" ></span>
+      window.location.search = '';<span class="cstat-no" title="statement not covered" ></span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+    $.ajaxSetup({
+      beforeSend<span class="cstat-no" title="statement not covered" >: function (jqXHR, settings) </span>{
+        // Only attach auth header for requests to relative paths
+        if (<span class="cstat-no" title="statement not covered" >!/^\s*(https?:|\/|\.)/.test(settings.url)) {</span>
+          var auth_tokens = <span class="fstat-no" title="function not covered" >ct</span>x.settings.get('auth-tokens');
+          if (auth_tokens) {
+            jqXHR.se<span class="cstat-no" title="statement not covered" >tRequestHeader('Authorization', 'Bearer ' + auth_tokens.access_token);</span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+          jqXHR.setReque<span class="cstat-no" title="statement not covered" >stHeader('Node-RED-API-Version', 'v2');</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+      }
+    });<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+    return await this.load();
+  }
+<span class="cstat-no" title="statement not covered" ></span>
+  hasLocalStorage() {
+    try {
+<span class="fstat-no" title="function not covered" ></span>      return 'localStorage' in window &amp;&amp; window['localStorage'] !== null;
+    } ca<span class="cstat-no" title="statement not covered" >tch (e) {</span>
+      return<span class="cstat-no" title="statement not covered" > false;</span>
+    }
+  };
+<span class="cstat-no" title="statement not covered" ></span>
+  set(key, value) {
+    if (!this.hasLocalStorage()) {
+      return;
+<span class="fstat-no" title="function not covered" >    }</span>
+    loca<span class="cstat-no" title="statement not covered" >lStorage.setItem(key, JSON.stringify(value));</span>
+  };<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  /**<span class="cstat-no" title="statement not covered" ></span>
+   * If the key is not set in the localStorage it returns &lt;i&gt;undefined&lt;/i&gt;
+   * Else return the JSON parsed value
+   * @param key
+   * @returns {*}
+   */
+  get(key) {
+    if (!this.hasLocalStorage()) {
+      return undefined;
+<span class="fstat-no" title="function not covered" >    }</span>
+    retu<span class="cstat-no" title="statement not covered" >rn JSON.parse(localStorage.getItem(key));</span>
+  };<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  remove<span class="cstat-no" title="statement not covered" >(key) {</span>
+    if (!this.hasLocalStorage()) {
+      return;
+<span class="fstat-no" title="function not covered" >    }</span>
+    loca<span class="cstat-no" title="statement not covered" >lStorage.removeItem(key);</span>
+  };<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+  setPro<span class="cstat-no" title="statement not covered" >perties(data) {</span>
+    let {
+      ctx,
+<span class="fstat-no" title="function not covered" ></span>      loadedSettings
+    } = this<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+    for (var<span class="cstat-no" title="statement not covered" > prop in loadedSettings) {</span>
+      if (loaded<span class="cstat-no" title="statement not covered" >Settings.hasOwnProperty(pro</span>p) &amp;&amp; ctx.settings.hasOwnProperty(prop)) {
+        delete ctx.settings[prop];
+      }
+    }<span class="cstat-no" title="statement not covered" ></span>
+    for (pro<span class="cstat-no" title="statement not covered" >p in data) {</span>
+      if (data.h<span class="cstat-no" title="statement not covered" >asOwnProperty(prop)) {</span>
+        ctx.settings[prop] = data[prop];
+      }
+    }<span class="cstat-no" title="statement not covered" ></span>
+    loadedSettings = data;
+  };
+<span class="fstat-no" title="function not covered" ></span>
+  async <span class="cstat-no" title="statement not covered" >load(done?) {<span class="fstat-no" title="function not covered" ></span></span>
+    const {<span class="cstat-no" title="statement not covered" ></span>
+      ctx,
+      setProperties
+    } = this<span class="cstat-no" title="statement not covered" >.rebind([</span>
+        'setProperties'
+      ])
+&nbsp;
+    $.ajax({
+      headers: {
+        'Accept': 'application/json'
+      },<span class="fstat-no" title="function not covered" ></span>
+      dataType: 'jso<span class="cstat-no" title="statement not covered" >n',</span>
+      cache: false,<span class="cstat-no" title="statement not covered" ></span>
+      url: 'settings',<span class="cstat-no" title="statement not covered" ></span>
+      success: function (data) {
+        setPropertie<span class="cstat-no" title="statement not covered" >s(data);</span>
+        if (!ctx.set<span class="cstat-no" title="statement not covered" >tings.us</span>er || ctx.settings.user.anonymous) {
+          ctx.settings.remove('auth-tokens');
+        }<span class="fstat-no" title="function not covered" ></span>
+        console.log(<span class="cstat-no" title="statement not covered" >'Node-RED: ' + data.version);</span>
+        done();<span class="cstat-no" title="statement not covered" ></span>
+      },<span class="cstat-no" title="statement not covered" ></span>
+      error: function (jqXHR, textStatus, errorThrown) {
+        if (jqXHR.status<span class="cstat-no" title="statement not covered" > === 401) {<span class="fstat-no" title="function not covered" ></span></span>
+          if (/[?&amp;]access_to<span class="cstat-no" title="statement not covered" >ken=(.*?)(?:</span>$|&amp;)/.test(window.location.search)) {
+            window.location.search = '';
+          }
+          ctx.user.login(function () {
+            load(done);<span class="cstat-no" title="statement not covered" ></span>
+          });
+        } else {
+          console.log('Unexpected error:', jqXHR.status, textStatus);
+        }
+      }
+    });
+  };<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  theme(<span class="cstat-no" title="statement not covered" >property, defaultValue) {</span>
+    const ct<span class="cstat-no" title="statement not covered" >x = this.ctx;</span>
+    if (!ctx.settings.editorTheme) {
+      return default<span class="cstat-no" title="statement not covered" >Value;</span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+    var <span class="cstat-no" title="statement not covered" >parts = property.split('.');</span>
+    var v = <span class="cstat-no" title="statement not covered" >ctx.settings.editorTheme;</span>
+    try {<span class="cstat-no" title="statement not covered" ></span>
+      for (var i = 0; i &lt; parts.length; i++) {
+        v = <span class="cstat-no" title="statement not covered" >v[parts[i]];</span>
+      }<span class="cstat-no" title="statement not covered" ></span>
+      if (v === undefined) {
+        retu<span class="cstat-no" title="statement not covered" >rn default</span>Value;
+      }
+      return v;
+    } catch <span class="cstat-no" title="statement not covered" >(err) {</span>
+      return defaultValue;
+    }
+  }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Dec 28 2017 10:14:52 GMT+0700 (+07)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

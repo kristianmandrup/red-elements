@@ -1,22 +1,27 @@
 import {
   Notifications
-} from './ui'
+} from '../..'
 
 function create() {
   return new Notifications()
 }
 
+let notifications
+beforeEach(() => {
+  notifications = create()
+})
+
 test('Notifications: create', () => {
-  t.is(notifications.c, 0)
-  t.deepEqual(notifications.currentNotifications, [])
+  expect(notifications.c).toBe(0)
+  expect(notifications.currentNotifications).toEqual([])
 })
 
 test('Notifications: notify', () => {
   let msg = 'hello'
   let type = 'info'
-  let elem = notifications.notify(msg, type)
+  let notified = notifications.notify(msg, type)
   // returns div element with class: notification
-  t.is(notified.className, 'notification')
+  expect(notified.className).toBe('notification')
 })
 
 test('Notifications: notify - fixed', () => {

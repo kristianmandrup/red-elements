@@ -1,15 +1,18 @@
-const nightmare = require('../nightmare')
-import test from 'ava'
 import {
   Clipboard
-} from './ui'
+} from '../..'
 
 function create() {
   return new Clipboard()
 }
 
+let clipboard
+beforeEach(() => {
+  clipboard = create()
+})
+
 test('Clipboard: create', () => {
-  t.falsy(clipboard.disabled)
+  expect(clipboard.disabled).toBeFalsy()
 
   // calls setupDialogs() which adds dialog to HTML body
 

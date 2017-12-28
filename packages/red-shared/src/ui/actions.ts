@@ -3,11 +3,10 @@ import {
 } from '../context'
 
 export class Actions extends Context {
-  public actions: any
+  public actions: any = {}
 
-  constructor(ctx) {
+  constructor() {
     super()
-    this.actions = {}
   }
 
   add(name, handler) {

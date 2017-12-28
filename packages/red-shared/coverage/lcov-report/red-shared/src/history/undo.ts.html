@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for red-shared/src/history/undo.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../index.html">All files</a> / <a href="index.html">red-shared/src/history</a> undo.ts
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">1.57% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>3/191</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/130</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/12</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">1.57% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>3/191</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// THIS needs major refactoring!!!
+&nbsp;
+// NEVER have a huge function like this (max ~7 lines for any function)
+// NEVER have nested if/else
+// NEVER rely on globals
+&nbsp;
+import {
+  Context,
+  $<span class="fstat-no" title="function not covered" ></span>
+} from '<span class="cstat-no" title="statement not covered" >../contex</span>t'
+<span class="cstat-no" title="statement not covered" ></span>
+export c<span class="cstat-no" title="statement not covered" >lass UndoEvent ext</span>ends Context {
+  public nodes: any
+<span class="fstat-no" title="function not covered" ></span>
+  constructor() {<span class="cstat-no" title="statement not covered" ></span>
+    super()
+    const { ctx } = this
+    this.nodes = ctx
+  }
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span>
+  undoEvent(<span class="cstat-no" title="statement not covered" >ev) {</span>
+    const {<span class="cstat-no" title="statement not covered" ></span>
+      ctx,<span class="cstat-no" title="statement not covered" ></span>
+      nodes
+    } = this<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+    var i;
+    var len;<span class="cstat-no" title="statement not covered" ></span>
+    var node;<span class="cstat-no" title="statement not covered" ></span>
+    var subflow;<span class="cstat-no" title="statement not covered" ></span>
+    var modified<span class="cstat-no" title="statement not covered" >Tabs = {};<span class="fstat-no" title="function not covered" ></span></span>
+    if (ev) {<span class="cstat-no" title="statement not covered" ></span>
+      if (ev.t == 'multi<span class="cstat-no" title="statement not covered" >') {</span>
+        len = ev.events.length;
+        for (i = len - 1; i &gt;= 0; i--) {
+          // WAT<span class="cstat-no" title="statement not covered" >HC OUT!!! recursive</span>
+          this.undoEvent(ev.events[i]);
+        }<span class="cstat-no" title="statement not covered" ></span>
+      } else if <span class="cstat-no" title="statement not covered" >(ev.t == 'replace') {</span>
+        nodes.clear(<span class="cstat-no" title="statement not covered" >);</span>
+        var imported = n<span class="cstat-no" title="statement not covered" >odes.import(ev.config);</span>
+        imported[0].forE<span class="cstat-no" title="statement not covered" >ach(function (n) {</span>
+          if (ev.changed[n.i<span class="cstat-no" title="statement not covered" >d]) {</span>
+            n.changed = true;
+          }<span class="cstat-no" title="statement not covered" ></span>
+        })
+&nbsp;
+        nodes.ve<span class="cstat-no" title="statement not covered" >rsion(ev.rev);</span>
+      } else if (ev.<span class="cstat-no" title="statement not covered" >t == 'add') {</span>
+        if (ev.nodes) {<span class="cstat-no" title="statement not covered" ></span>
+          for (i = 0; i &lt; ev.nodes.length; i++) {
+            node = nodes.node(ev.nodes[i]);
+            if (<span class="cstat-no" title="statement not covered" >node.z) {</span>
+              modifi<span class="cstat-no" title="statement not covered" >edTabs[node.z] = true;</span>
+            }<span class="cstat-no" title="statement not covered" ></span>
+            nodes.remove<span class="cstat-no" title="statement not covered" >(ev.nodes[i]);</span>
+          }
+        }
+        if (ev.l<span class="cstat-no" title="statement not covered" >inks) {</span>
+          for (i = 0<span class="cstat-no" title="statement not covered" >; i &lt; ev.links.length; i++) {</span>
+            nodes.remove<span class="cstat-no" title="statement not covered" >Link(ev.links[i]);</span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }
+        if (ev.workspaces) {
+          for (i<span class="cstat-no" title="statement not covered" > = 0; i &lt; ev.workspaces.length; i++) {</span>
+            nodes.re<span class="cstat-no" title="statement not covered" >moveWorkspace(ev.workspaces[i].id);</span>
+            ctx.workspac<span class="cstat-no" title="statement not covered" >es.remove(ev.workspaces[i]);<span class="fstat-no" title="function not covered" ></span></span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.subflows) {<span class="cstat-no" title="statement not covered" ></span>
+          for (i = 0; i &lt; ev.sub<span class="cstat-no" title="statement not covered" >flows.length; i++) </span>{
+            nodes.removeSubflow(ev.subflows[i]);
+            ctx.workspaces.remove(ev.subflows[i]);
+          }
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.subflow) <span class="cstat-no" title="statement not covered" >{</span>
+          if (ev.subflow<span class="cstat-no" title="statement not covered" >.instances) {</span>
+            ev.subflow.insta<span class="cstat-no" title="statement not covered" >nces.forEach(function (n) {</span>
+              var node = nodes.node(n.id);
+              if (node) {
+                node.changed = n.changed;
+<span class="cstat-no" title="statement not covered" >                node.dirty = true;</span>
+              }<span class="cstat-no" title="statement not covered" ></span>
+            });<span class="cstat-no" title="statement not covered" ></span>
+          }
+          if (ev.subflow.hasOwnProperty('changed')) {
+            subflow = nodes.subflow(ev.subflow.id);
+            if (s<span class="cstat-no" title="statement not covered" >ubflow) {</span>
+              su<span class="cstat-no" title="statement not covered" >bflow.changed = ev.subflow.changed;</span>
+            }<span class="cstat-no" title="statement not covered" ></span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.removedLinks) {
+          for (i = 0; i &lt; ev.removedLinks.length; i++) {
+            node<span class="cstat-no" title="statement not covered" >s.addLink(ev.removedLinks[i]);</span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }
+<span class="cstat-no" title="statement not covered" ></span>
+      } else if (ev.<span class="cstat-no" title="statement not covered" >t == "delete") {</span>
+        if (ev.works<span class="cstat-no" title="statement not covered" >paces) {</span>
+          for (i = 0<span class="cstat-no" title="statement not covered" >; i &lt; ev.workspaces.length; </span>i++) {
+            nodes.addWorkspace(ev.workspaces[i]);
+            ctx.<span class="cstat-no" title="statement not covered" >workspaces.add(ev.workspaces[i]);</span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        if (ev.subflow &amp;<span class="cstat-no" title="statement not covered" >&amp; ev.subflow.subfl</span>ow) {
+          nodes.addSubflow(ev.subflow.subflow);
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.subflowInputs &amp;&amp; ev.su<span class="cstat-no" title="statement not covered" >bflowInputs.length &gt; </span>0) {
+          subflow = node<span class="cstat-no" title="statement not covered" >s.subflow(ev.subflowInputs[0].z);</span>
+          subflow.in.pus<span class="cstat-no" title="statement not covered" >h(ev.subflowInputs[0]);</span>
+          subflow.in[0].dirt<span class="cstat-no" title="statement not covered" >y = true;</span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.subflowOutputs &amp;&amp; ev.subflowOutputs.length &gt; 0) {
+          subflow = node<span class="cstat-no" title="statement not covered" >s.subflow(ev.su<span class="fstat-no" title="function not covered" >bf</span>lowOutputs[0].z);</span>
+          ev.subflowOutputs.<span class="cstat-no" title="statement not covered" >sort(function (a, b) {</span>
+            return a.i - b.i<span class="cstat-no" title="statement not covered" ></span>
+          });<span class="cstat-no" title="statement not covered" ></span>
+          for (i = 0; i &lt; ev.subflowOutputs.length; i++) {
+            var output = ev.subflowOutputs[i];
+            subflow.out.splice(output.i, 0, output);
+            for (var j = output.i + 1; j &lt; subflow.out.length; j++) {
+              subflow.out[j].i++;
+              su<span class="cstat-no" title="statement not covered" >bflow.out[j].dirty = true;</span>
+            }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+            nodes.eachLink(function<span class="cstat-no" title="statement not covered" > (l) {</span>
+              if (l.sour<span class="cstat-no" title="statement not covered" >ce.type == "subflow:" + subflow.id) {</span>
+                if (l.source<span class="cstat-no" title="statement not covered" >Port &gt;= output.i) {</span>
+                  l.sourcePo<span class="cstat-no" title="statement not covered" >rt++;</span>
+                }
+              }
+            });
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.subflow &amp;&amp; ev.subflow.hasOwnProperty('instances')) {
+          ev.subflow.instances.<span class="fstat-no" title="function not covered" >fo</span>rEach(function (n) {
+            var node = n<span class="cstat-no" title="statement not covered" >odes.node(n.id);</span>
+            if (node) {<span class="cstat-no" title="statement not covered" ></span>
+              node.chang<span class="cstat-no" title="statement not covered" >ed = n.changed;</span>
+              node.dirty = t<span class="cstat-no" title="statement not covered" >rue;</span>
+            }
+          });<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (subflow) {
+          nodes.filterNodes({
+            type<span class="cstat-no" title="statement not covered" >: "subflow:" + subflow.id</span>
+          }).forEach<span class="cstat-no" title="statement not covered" >(function (n) {</span>
+            n.inputs = s<span class="cstat-no" title="statement not covered" >ubflow.in.length;</span>
+            n.outputs = <span class="cstat-no" title="statement not covered" >subflow.out.length;</span>
+            while (n.outputs &gt; n.ports.length) {
+              n.ports.push(n.ports.length);
+            }<span class="cstat-no" title="statement not covered" ></span>
+            n.resize<span class="cstat-no" title="statement not covered" > = true;</span>
+            n.dirty = tr<span class="cstat-no" title="statement not covered" >ue;</span>
+          });
+        }
+        if (ev.n<span class="cstat-no" title="statement not covered" >odes) {</span>
+          for (i = 0<span class="cstat-no" title="statement not covered" >; i &lt; ev.nodes.length; i++) {</span>
+            nodes.add(ev<span class="cstat-no" title="statement not covered" >.nodes[i]);</span>
+            modifiedTabs[ev.<span class="cstat-no" title="statement not covered" >nodes[i].z] = true;</span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.links) {<span class="cstat-no" title="statement not covered" ></span>
+          for (i = 0; i &lt; ev.links.lengt<span class="cstat-no" title="statement not covered" >h; i++) {</span>
+            nodes.addLink(ev.links[i]);
+          }
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.changes) {
+          for (i in ev.changes) {
+            if (ev.changes.hasOwnProperty(i)) {
+              node = nodes.node(i);
+              if (node) {
+                f<span class="cstat-no" title="statement not covered" >or (var d in ev.changes[i]) {</span>
+<span class="cstat-no" title="statement not covered" >                  if (ev.changes[i].hasOwnProperty(d)) {</span>
+                    node[d] <span class="cstat-no" title="statement not covered" >= ev.changes</span>[i][d];
+                  }<span class="cstat-no" title="statement not covered" ></span>
+                }<span class="cstat-no" title="statement not covered" ></span>
+                node<span class="cstat-no" title="statement not covered" >.dirty = true;</span>
+              }<span class="cstat-no" title="statement not covered" ></span>
+            }
+          }
+<span class="cstat-no" title="statement not covered" ></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+      } else if (ev.t ==<span class="cstat-no" title="statement not covered" > "move") {</span>
+        for (i = 0; i &lt; ev.nodes.length; i++) {
+          var n = ev.nodes[i];
+          n.n.x <span class="cstat-no" title="statement not covered" >= n.ox;</span>
+          n.n.y = n.<span class="cstat-no" title="statement not covered" >oy;</span>
+          n.n.dirty = tr<span class="cstat-no" title="statement not covered" >ue;</span>
+          n.n.moved = n.moved;
+        }
+        // A move could have caused a link splice
+        if (ev.li<span class="cstat-no" title="statement not covered" >nks) {</span>
+          for (i<span class="cstat-no" title="statement not covered" > = 0; i &lt; ev.links.length; i++) {</span>
+            nodes.re<span class="cstat-no" title="statement not covered" >moveLink(ev.links[i]);</span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }
+        if (ev.removedLinks) {<span class="cstat-no" title="statement not covered" ></span>
+          for (i = 0; i &lt; ev<span class="cstat-no" title="statement not covered" >.removedLinks.length; i++) {</span>
+            nodes.addLink(ev.rem<span class="cstat-no" title="statement not covered" >ovedLinks[i]);</span>
+          }
+        }<span class="cstat-no" title="statement not covered" ></span>
+      } else if (ev.t == "ed<span class="cstat-no" title="statement not covered" >it") {</span>
+        for (i in ev.changes) {<span class="cstat-no" title="statement not covered" ></span>
+          if (ev.changes.hasOwnProperty(i)) {
+            if (ev.node._def.defaults[i] &amp;&amp; ev.node._def.defaults[i].type) {
+              // This is<span class="cstat-no" title="statement not covered" > a config node property</span>
+              var currentConfigNode = nodes.node(ev.node[i]);
+              if (currentConfigNode) {
+<span class="cstat-no" title="statement not covered" >                currentConfigNode.users.splice(currentConfigNode.users.indexOf(ev.node), 1);</span>
+              }<span class="cstat-no" title="statement not covered" ></span>
+              var newCon<span class="cstat-no" title="statement not covered" >figNode = nodes.node(ev.changes[i]);</span>
+              if (newConfigN<span class="cstat-no" title="statement not covered" >ode) {</span>
+                newConfigNode.users.push(ev.node);
+              }<span class="cstat-no" title="statement not covered" ></span>
+            }<span class="cstat-no" title="statement not covered" ></span>
+            ev.node[i] = ev.changes[i];
+          }
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.subflow) <span class="cstat-no" title="statement not covered" >{</span>
+          if (ev.subflow.has<span class="cstat-no" title="statement not covered" >OwnProperty('inputCount')) {</span>
+            if (ev.node.in.length &gt; ev.subflow.inputCount) {
+              ev.node.in.spli<span class="cstat-no" title="statement not covered" >ce(ev.subflow.inputCount);</span>
+            } else if (ev.su<span class="cstat-no" title="statement not covered" >bflow.inputs.length &gt; 0) {</span>
+              ev.node.in = ev.node.in.concat(ev.subflow.inputs);
+            }
+          }<span class="cstat-no" title="statement not covered" ></span>
+          if (ev.subflow<span class="cstat-no" title="statement not covered" >.hasOwnProperty('outputCount'<span class="fstat-no" title="function not covered" >))</span> {</span>
+            if (ev.node.out.length &gt; ev<span class="cstat-no" title="statement not covered" >.subflow.outputCo</span>unt) {
+              ev.node.out.sp<span class="cstat-no" title="statement not covered" >lice(ev.subflow.outputCount);</span>
+            } else if (ev.subflo<span class="cstat-no" title="statement not covered" >w.outputs.length &gt; 0) {</span>
+              ev.node.out = ev.n<span class="cstat-no" title="statement not covered" >ode.out.concat(ev.s</span>ubflow.outputs);
+            }
+          }
+          if (ev.subflow.hasOwnProperty('instances')) {
+            ev.subfl<span class="cstat-no" title="statement not covered" >ow.instances.forEach(function (n) {</span>
+              var node = nodes.node(n.id);
+              if (node) {<span class="fstat-no" title="function not covered" ></span>
+                node.cha<span class="cstat-no" title="statement not covered" >nged = n.changed;</span>
+                node.dir<span class="cstat-no" title="statement not covered" >ty = true;</span>
+              }<span class="cstat-no" title="statement not covered" ></span>
+            });
+          }
+          nodes.filterNodes({
+            type: "subflow:" + ev.node.id
+          }).forEach<span class="cstat-no" title="statement not covered" >(function (n) {</span>
+            n.inputs = e<span class="cstat-no" title="statement not covered" >v.node.in.length</span>;
+            n.outputs = <span class="cstat-no" title="statement not covered" >ev.node.out.length;</span>
+            ctx.editor.updat<span class="cstat-no" title="statement not covered" >eNodeProperties(n);</span>
+          });<span class="cstat-no" title="statement not covered" ></span>
+        } else {
+          var outputMap;
+          if (ev.outputMap) {
+            outputMa<span class="cstat-no" title="statement not covered" >p = {};</span>
+            for (var<span class="cstat-no" title="statement not covered" > port in ev.outputMap) {</span>
+              if (ev.outputMap.hasOwnProperty(port) &amp;&amp; ev.outputMap[port] !== "-1") {
+<span class="cstat-no" title="statement not covered" >                outputMap[ev.outputMap[port]] = port;</span>
+              }<span class="cstat-no" title="statement not covered" ></span>
+            }<span class="cstat-no" title="statement not covered" ></span>
+          }
+          ctx.editor.updateNodeProperties(ev.node, outputMap);
+          ctx.ed<span class="cstat-no" title="statement not covered" >itor.validateNode(ev.n</span>ode);
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.links) {
+          for (i <span class="cstat-no" title="statement not covered" >= 0; i &lt; ev.links.length; i++) {</span>
+            node<span class="cstat-no" title="statement not covered" >s.addLink(ev.links[i]);</span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }
+        ev.node.dirty = true;<span class="fstat-no" title="function not covered" ></span>
+        ev.node.changed <span class="cstat-no" title="statement not covered" >= ev.changed;</span>
+      } else if (ev.t ==<span class="cstat-no" title="statement not covered" > "createSubflow"</span>) {
+        if (ev.nodes) {
+          nodes.filt<span class="cstat-no" title="statement not covered" >erNodes({</span>
+            z: ev.subflo<span class="cstat-no" title="statement not covered" >w.subflow.id</span>
+          }).forEach(function (n) {
+            n.z = ev.activeWorkspace;
+            n.di<span class="cstat-no" title="statement not covered" >rty = true;</span>
+          });<span class="cstat-no" title="statement not covered" ></span>
+          for (i = 0; i <span class="cstat-no" title="statement not covered" >&lt; ev.nodes.length; i++) {</span>
+            nodes.remove(ev.nodes[i]);
+          }
+        }<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.l<span class="cstat-no" title="statement not covered" >inks) {</span>
+          for (i<span class="cstat-no" title="statement not covered" > = 0; i &lt; ev.links.length; i++) {</span>
+            nodes.re<span class="cstat-no" title="statement not covered" >moveLink(ev.links[i]);</span>
+          }<span class="cstat-no" title="statement not covered" ></span>
+        }
+&nbsp;
+        nodes.removeSubflow(ev.subflow.subflow);
+        ctx.works<span class="cstat-no" title="statement not covered" >paces.remove(ev.subflow.subflow);</span>
+<span class="cstat-no" title="statement not covered" ></span>
+        if (ev.remov<span class="cstat-no" title="statement not covered" >edLinks) {</span>
+          for (i = 0; i &lt; ev.removedLinks.length; i++) {
+            nodes.addLink(ev.removedLinks[i]);
+          }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+        }<span class="cstat-no" title="statement not covered" ></span>
+      } else if <span class="cstat-no" title="statement not covered" >(ev.t == "reorder") {</span>
+        if (ev.order<span class="cstat-no" title="statement not covered" >) {</span>
+          ctx.workspaces.order(ev.order);
+        }
+      }<span class="cstat-no" title="statement not covered" ></span>
+      Object<span class="cstat-no" title="statement not covered" >.keys(modifiedTabs).for</span>Each(function (id) {
+        var <span class="cstat-no" title="statement not covered" >subflow = nodes.subflow</span>(id);
+        if (<span class="cstat-no" title="statement not covered" >subflow) {</span>
+          ct<span class="cstat-no" title="statement not covered" >x.editor.validateNode(subflow)</span>;
+        }
+      });
+&nbsp;
+      nodes.dirty(ev.dirty);
+      ctx.view.ctxraw(true);
+      ctx.palette.refresh();
+      ctx.workspaces.refresh();
+      ctx.sidebar.config.refresh();
+    }
+  }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Dec 28 2017 10:14:52 GMT+0700 (+07)
+</div>
+</div>
+<script src="../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../sorter.js"></script>
+</body>
+</html>

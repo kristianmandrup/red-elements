@@ -17,6 +17,19 @@ import {
   Context
 } from './context'
 
+
+// https://www.npmjs.com/package/@types/ws
+import * as WebSocket from 'ws'
+
+// See: http://jsfiddle.net/bmknight/RqbYB/
+// const WebSocket = window['WebSocket']
+
+// if (!WebSocket) {
+//   throw Error('Browser does not support WebSocket :(')
+// }
+
+// https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
+
 export class Communications extends Context {
   public errornotification: any
   public clearErrorTimer: any
@@ -42,16 +55,21 @@ export class Communications extends Context {
       errornotification,
       clearErrorTimer,
       active,
+      location,
       ws,
-      connectWS,
       connectCountdown,
       connectCountdownTimer
+    } = this
+
+    let {
+      connectWS,
     } = this.rebind([
         'connectWS'
       ])
 
     this.active = true;
-    let location = this.location // fix
+    // See: https://developer.mozilla.org/en-US/docs/Web/API/Location
+    location = location || window.location
 
     var path = location.hostname;
     var port = location.port;
