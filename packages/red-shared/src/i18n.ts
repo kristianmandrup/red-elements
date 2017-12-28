@@ -14,79 +14,99 @@
  * limitations under the License.
  **/
 import {
-  Context
+  Context,
+  $
 } from './context'
 import * as i18n from 'i18next'
+import { InitOptions } from 'i18next';
 
+const { log } = console
+
+const { promisify } = require('util')
+
+function detectLanguage(fallbackLng = 'en') {
+  if (navigator) {
+    return navigator.language
+  } else {
+    return fallbackLng;
+  }
+}
+
+// See: https://www.i18next.com/getting-started.html
 export class I18n extends Context {
   public i18n: any
 
   constructor() {
     super()
-    const { ctx } = this
-    ctx._ = () => {
-      return i18n.t.apply(null, arguments);
+    const { RED } = this
+    RED._ = (key, arg) => {
+      return this.i18n.t(key, arg);
     }
+    this.RED = RED
     this.i18n = i18n;
   }
 
-  async init() {
-    try {
-      await this.i18n.init({
-        resGetPath: 'locales/__ns__?lng=__lng__',
-        dynamicLoad: false,
-        load: 'current',
-        ns: {
-          namespaces: ["editor", "node-red", "jsonata", "infotips"],
-          defaultNs: "editor"
-        },
-        fallbackLng: ['en-US'],
-        useCookie: false
-      })
-      return this.i18n.t.apply(null, arguments)
-    } catch (err) {
-      console.error(err)
-      throw err
+  get defaultOptions() {
+    return {
+      saveMissing: true,
+      debug: true
     }
   }
 
-  initCb(cb) {
-    this.i18n.init({
-      resGetPath: 'locales/__ns__?lng=__lng__',
-      dynamicLoad: false,
-      load: 'current',
-      ns: {
-        namespaces: ["editor", "node-red", "jsonata", "infotips"],
-        defaultNs: "editor"
-      },
+  get config(): InitOptions {
+    return {
+      load: 'currentOnly',
+      ns: ["editor", "node-red", "jsonata", "infotips"],
+      defaultNS: "editor",
       fallbackLng: ['en-US'],
-      useCookie: false
-    }, (err, t) => {
-      this.i18n.t.apply(null, arguments)
-      if (cb) {
-        cb(this.i18n)
-      }
-    })
+    }
+  }
 
+  async init() {
+    return new Promise((resolve, reject) => {
+      i18n.init(this.config, (err, t) => {
+        err ? reject(err) : resolve()
+      })
+    })
+  }
+
+  detectLanguage() {
+    return detectLanguage()
   }
 
   async loadCatalog(namespace) {
-    var languageList = i18n.functions.toLanguages(i18n.detectLanguage());
+    var languageList = [detectLanguage()]
+
     var toLoad = languageList.length;
     return new Promise((resolve, reject) => {
-      languageList.forEach(function (lang) {
+      languageList.forEach((lang) => {
+        const url = 'locales/' + namespace + '?lng=' + lang
+        log('request language localisations', {
+          lang,
+          url
+        })
         $.ajax({
           headers: {
-            "Accept": "application/json"
+            'Accept': 'application/json'
           },
           cache: false,
-          url: 'locales/' + namespace + '?lng=' + lang,
-          success: function (data) {
+          url,
+          success: (data) => {
+            log('success', {
+              data
+            })
             i18n.addResourceBundle(lang, namespace, data);
             toLoad--;
             if (toLoad === 0) {
-              resolve();
+              resolve()
             }
+          },
+          error: (jqXHR: any, textStatus: string, errMsg: string) => {
+            log({
+              textStatus,
+              errMsg
+            })
+            reject(errMsg)
           }
         });
       })
@@ -94,13 +114,13 @@ export class I18n extends Context {
   }
 
   async loadNodeCatalogs(done) {
-    var languageList = i18n.functions.toLanguages(i18n.detectLanguage());
+    var languageList = [detectLanguage()]
     var toLoad = languageList.length;
     return new Promise((resolve, reject) => {
       languageList.forEach(function (lang) {
         $.ajax({
           headers: {
-            "Accept": "application/json"
+            'Accept': 'application/json'
           },
           cache: false,
           url: 'locales/nodes?lng=' + lang,
@@ -111,10 +131,10 @@ export class I18n extends Context {
             });
             toLoad--;
             if (toLoad === 0) {
-              resolve();
+              resolve()
             }
           }
-        });
+        })
       })
     })
   }
