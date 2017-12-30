@@ -15,7 +15,7 @@ test('user: create', () => {
   expect(typeof user).toBe('object')
 })
 
-test('user: login', async () => {
+test.only('user: login', async () => {
   // fix - should be async via promise, not done callback
   let opts = {}
   await user.login(opts)

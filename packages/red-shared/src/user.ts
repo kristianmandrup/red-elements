@@ -59,7 +59,120 @@ export class User extends Context {
     }
   }
 
-  login(opts, done) {
+  onLoginSuccess(data) {
+    if (data.type == "credentials") {
+
+      for (; i < data.prompts.length; i++) {
+        var field = data.prompts[i];
+        var row = $("<div/>", {
+          class: "form-row"
+        });
+        $('<label for="node-dialog-login-' + field.id + '">' + ctx._(field.label) + ':</label><br/>').appendTo(row);
+        var input = $('<input style="width: 100%" id="node-dialog-login-' + field.id + '" type="' + field.type + '" tabIndex="' + (i + 1) + '"/>').appendTo(row);
+
+        if (i < data.prompts.length - 1) {
+          input.keypress(
+            (function () {
+              var r = row;
+              return function (event) {
+                if (event.keyCode == 13) {
+                  r.next("div").find("input").focus();
+                  event.preventDefault();
+                }
+              }
+            })()
+          );
+        }
+        row.appendTo("#node-dialog-login-fields");
+      }
+      $('<div class="form-row" style="text-align: right; margin-top: 10px;"><span id="node-dialog-login-failed" style="line-height: 2em;float:left;" class="hide">' + ctx._("user.loginFailed") + '</span><img src="red/images/spin.svg" style="height: 30px; margin-right: 10px; " class="login-spinner hide"/>' +
+        (opts.cancelable ? '<a href="#" id="node-dialog-login-cancel" style="margin-right: 20px;" tabIndex="' + (i + 1) + '">' + ctx._("common.label.cancel") + '</a>' : '') +
+        '<input type="submit" id="node-dialog-login-submit" style="width: auto;" tabIndex="' + (i + 2) + '" value="' + ctx._("user.login") + '"></div>').appendTo("#node-dialog-login-fields");
+
+
+      const buttonElem = <IButton>$("#node-dialog-login-submit")
+      buttonElem.button();
+      $("#node-dialog-login-fields").submit(function (event) {
+        buttonElem.button("option", "disabled", true);
+        $("#node-dialog-login-failed").hide();
+        $(".login-spinner").show();
+
+        var body = {
+          client_id: "node-red-editor",
+          grant_type: "password",
+          scope: ""
+        }
+        for (var i = 0; i < data.prompts.length; i++) {
+          var field = data.prompts[i];
+          body[field.id] = $("#node-dialog-login-" + field.id).val();
+        }
+        $.ajax({
+          url: "auth/token",
+          type: "POST",
+          data: body
+        }).done((data, textStatus, xhr) => {
+          ctx.settings.set("auth-tokens", data);
+          const loginDialog = <IDialogElem>$("#node-dialog-login")
+          loginDialog.dialog('destroy').remove();
+          if (opts.updateMenu) {
+            updateUserMenu();
+          }
+          user.loggedIn = true
+          resolve({ loggedIn: user.loggedIn });
+        }).fail((jqXHR, textStatus, errorThrown) => {
+          ctx.settings.remove("auth-tokens");
+          $("#node-dialog-login-failed").show();
+          user.loggedIn = false
+          resolve({ loggedIn: user.loggedIn });
+        }).always(() => {
+          buttonElem.button("option", "disabled", false);
+          $(".login-spinner").hide();
+        });
+        event.preventDefault();
+      });
+
+    } else if (data.type == "strategy") {
+      i = 0;
+      for (; i < data.prompts.length; i++) {
+        var field = data.prompts[i];
+        var row = $("<div/>", {
+          class: "form-row",
+          style: "text-align: center"
+        }).appendTo("#node-dialog-login-fields");
+
+        var loginButton = <IButton>$('<a href="#"></a>', {
+          style: "padding: 10px"
+        }).appendTo(row).click(function () {
+          // document.location = field.url;
+          // TODO: FIX ME!
+          throw Error('user: login - trying to set document location!!')
+        });
+        if (field.image) {
+          $("<img>", {
+            src: field.image
+          }).appendTo(loginButton);
+        } else if (field.label) {
+          var label = $('<span></span>').text(field.label);
+          if (field.icon) {
+            $('<i></i>', {
+              class: "fa fa-2x " + field.icon,
+              style: "vertical-align: middle"
+            }).appendTo(loginButton);
+            label.css({
+              "verticalAlign": "middle",
+              "marginLeft": "8px"
+            });
+
+          }
+          label.appendTo(loginButton);
+        }
+        loginButton.button();
+      }
+    }
+  }
+
+
+  async login(opts, done) {
     const {
       ctx,
       updateUserMenu
@@ -90,142 +203,42 @@ export class User extends Context {
     });
 
     $("#node-dialog-login-fields").empty();
-    $.ajax({
-      dataType: "json",
-      url: "auth/login",
-      success: function (data) {
-        var i = 0;
+    const user = this
 
-        if (data.type == "credentials") {
+    return new Promise((reject, resolve) => {
+      $.ajax({
+        dataType: "json",
+        url: "auth/login",
+        success: (data) => {
+          var i = 0;
+          this.onLoginSuccess(data)
 
-          for (; i < data.prompts.length; i++) {
-            var field = data.prompts[i];
-            var row = $("<div/>", {
-              class: "form-row"
-            });
-            $('<label for="node-dialog-login-' + field.id + '">' + ctx._(field.label) + ':</label><br/>').appendTo(row);
-            var input = $('<input style="width: 100%" id="node-dialog-login-' + field.id + '" type="' + field.type + '" tabIndex="' + (i + 1) + '"/>').appendTo(row);
+          if (opts.cancelable) {
+            const cancelButton = <IButton>$("#node-dialog-login-cancel")
 
-            if (i < data.prompts.length - 1) {
-              input.keypress(
-                (function () {
-                  var r = row;
-                  return function (event) {
-                    if (event.keyCode == 13) {
-                      r.next("div").find("input").focus();
-                      event.preventDefault();
-                    }
-                  }
-                })()
-              );
-            }
-            row.appendTo("#node-dialog-login-fields");
-          }
-          $('<div class="form-row" style="text-align: right; margin-top: 10px;"><span id="node-dialog-login-failed" style="line-height: 2em;float:left;" class="hide">' + ctx._("user.loginFailed") + '</span><img src="red/images/spin.svg" style="height: 30px; margin-right: 10px; " class="login-spinner hide"/>' +
-            (opts.cancelable ? '<a href="#" id="node-dialog-login-cancel" style="margin-right: 20px;" tabIndex="' + (i + 1) + '">' + ctx._("common.label.cancel") + '</a>' : '') +
-            '<input type="submit" id="node-dialog-login-submit" style="width: auto;" tabIndex="' + (i + 2) + '" value="' + ctx._("user.login") + '"></div>').appendTo("#node-dialog-login-fields");
-
-
-          const buttonElem = <IButton>$("#node-dialog-login-submit")
-          buttonElem.button();
-          $("#node-dialog-login-fields").submit(function (event) {
-            buttonElem.button("option", "disabled", true);
-            $("#node-dialog-login-failed").hide();
-            $(".login-spinner").show();
-
-            var body = {
-              client_id: "node-red-editor",
-              grant_type: "password",
-              scope: ""
-            }
-            for (var i = 0; i < data.prompts.length; i++) {
-              var field = data.prompts[i];
-              body[field.id] = $("#node-dialog-login-" + field.id).val();
-            }
-            $.ajax({
-              url: "auth/token",
-              type: "POST",
-              data: body
-            }).done(function (data, textStatus, xhr) {
-              ctx.settings.set("auth-tokens", data);
+            cancelButton.button().click(function (event) {
               const loginDialog = <IDialogElem>$("#node-dialog-login")
               loginDialog.dialog('destroy').remove();
-              if (opts.updateMenu) {
-                updateUserMenu();
-              }
-              this.loggedIn = true
-              done();
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-              ctx.settings.remove("auth-tokens");
-              $("#node-dialog-login-failed").show();
-            }).always(function () {
-              buttonElem.button("option", "disabled", false);
-              $(".login-spinner").hide();
             });
-            event.preventDefault();
-          });
-
-        } else if (data.type == "strategy") {
-          i = 0;
-          for (; i < data.prompts.length; i++) {
-            var field = data.prompts[i];
-            var row = $("<div/>", {
-              class: "form-row",
-              style: "text-align: center"
-            }).appendTo("#node-dialog-login-fields");
-
-            var loginButton = <IButton>$('<a href="#"></a>', {
-              style: "padding: 10px"
-            }).appendTo(row).click(function () {
-              // document.location = field.url;
-              // TODO: FIX ME!
-              throw Error('user: login - trying to set document location!!')
-            });
-            if (field.image) {
-              $("<img>", {
-                src: field.image
-              }).appendTo(loginButton);
-            } else if (field.label) {
-              var label = $('<span></span>').text(field.label);
-              if (field.icon) {
-                $('<i></i>', {
-                  class: "fa fa-2x " + field.icon,
-                  style: "vertical-align: middle"
-                }).appendTo(loginButton);
-                label.css({
-                  "verticalAlign": "middle",
-                  "marginLeft": "8px"
-                });
-
-              }
-              label.appendTo(loginButton);
-            }
-            loginButton.button();
           }
 
+          var loginImageSrc = data.image || "red/images/node-red-256.png";
 
+          // TODO: fix
+          const loadUrl = 'unknown'
+          const loadData = {}
+          $("#node-dialog-login-image").load(loadUrl, loadData, () => {
+            dialog.dialog("open");
+          }).attr("src", loginImageSrc);
+        },
+        error: (jqXHR: any, textStatus: string, errorThrown: string) => {
+          user.handleError(`login: ${textStatus}`, {
+            jqXHR
+          })
+          throw new Error(errorThrown)
         }
-        if (opts.cancelable) {
-          const cancelButton = <IButton>$("#node-dialog-login-cancel")
-
-          cancelButton.button().click(function (event) {
-            const loginDialog = <IDialogElem>$("#node-dialog-login")
-            loginDialog.dialog('destroy').remove();
-          });
-        }
-
-        var loginImageSrc = data.image || "red/images/node-red-256.png";
-
-        // TODO: fix
-        const loadUrl = 'unknown'
-        const loadData = {}
-        $("#node-dialog-login-image").load(loadUrl, loadData, () => {
-          dialog.dialog("open");
-        }).attr("src", loginImageSrc);
-
-
-      }
-    });
+      });
+    })
   }
 
   async logout() {
@@ -234,25 +247,32 @@ export class User extends Context {
     } = this
     var tokens = ctx.settings.get("auth-tokens");
     var token = tokens ? tokens.access_token : "";
-    $.ajax({
-      url: "auth/revoke",
-      type: "POST",
-      data: {
-        token: token
-      }
-    }).done(function (data, textStatus, xhr) {
-      ctx.settings.remove("auth-tokens");
-      if (data && data.redirect) {
-        document.location.href = data.redirect;
-      } else {
-        document.location.reload(true);
-      }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-      if (jqXHR.status === 401) {
-        document.location.reload(true);
-      } else {
-        console.log(textStatus);
-      }
+    const user = this
+    return new Promise((reject, resolve) => {
+      $.ajax({
+        url: "auth/revoke",
+        type: "POST",
+        data: {
+          token: token
+        }
+      }).done((data, textStatus, xhr) => {
+        ctx.settings.remove("auth-tokens");
+        if (data && data.redirect) {
+          document.location.href = data.redirect;
+        } else {
+          document.location.reload(true);
+        }
+        user.loggedIn = false
+        resolve({ loggedOut: !user.loggedIn })
+      }).fail((jqXHR, textStatus, errorThrown) => {
+        if (jqXHR.status === 401) {
+          document.location.reload(true);
+        } else {
+          console.log(textStatus);
+        }
+        user.loggedIn = true
+        reject({ loggedOut: !user.loggedIn })
+      })
     })
   }
 
@@ -269,10 +289,10 @@ export class User extends Context {
       ctx.menu.addItem("btn-usermenu", {
         id: "usermenu-item-login",
         label: ctx._("menu.label.login"),
-        onselect: function () {
+        onselect: () => {
           ctx.user.login({
             cancelable: true
-          }, function () {
+          }, () => {
             ctx.settings.load(function () {
               ctx.notify(ctx._("user.loggedInAs", {
                 name: ctx.settings.user.username
@@ -295,6 +315,6 @@ export class User extends Context {
         }
       });
     }
-
+    return this
   }
 }
