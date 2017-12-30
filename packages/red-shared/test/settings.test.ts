@@ -26,7 +26,7 @@ test('settings: localstorage', () => {
   expect(settings.hasLocalStorage()).toBeTruthy()
 })
 
-test.only('settings: properties', () => {
+test('settings: properties', () => {
   const data = {
     x: 2
   }
@@ -46,13 +46,33 @@ test('settings: load', async () => {
   await settings.load()
 })
 
-test.only('settings: theme', () => {
-  let defaultValue = true
+test('settings: theme - known value', () => {
+  let defaultValue = 'default'
   // test real theme values
-  let property = 'palette.editable'
-  settings.theme(property, defaultValue)
+  const dark = {
+    color: 'blue'
+  }
+
+  settings.ctx.settings = {
+    editorTheme: {
+      dark
+    }
+  }
+
+
+  let property = 'dark'
+  let result = settings.theme(property, defaultValue)
 
   // test theme value is set on .editorTheme object
-  expect(typeof settings.editorTheme).toBe('object')
-  expect(settings.editorTheme.palette.editable).toBe(true)
+  expect(result).toEqual(dark)
+})
+
+test('settings: theme - use default value', () => {
+  let defaultValue = 'default'
+  // test unknown theme values
+  let property = 'palette.unknown'
+  let result = settings.theme(property, defaultValue)
+
+  // test theme value is set on .editorTheme object
+  expect(result).toEqual(defaultValue)
 })

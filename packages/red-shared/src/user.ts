@@ -18,7 +18,21 @@ import {
   $
 } from './context'
 
+global.jQuery = $
+import 'jquery-ui-dist/jquery-ui'
+
+// Uses: jQuery UI Dialog
+// https://jqueryui.com/dialog/
+interface IDialogElem extends JQuery<HTMLElement> {
+  dialog: Function
+}
+
+interface IButton extends JQuery<HTMLElement> {
+  button: Function
+}
+
 export class User extends Context {
+  public loggedIn: boolean = false
   constructor() {
     super()
     const { ctx } = this
@@ -43,7 +57,6 @@ export class User extends Context {
         this.updateUserMenu();
       }
     }
-
   }
 
   login(opts, done) {
@@ -59,7 +72,7 @@ export class User extends Context {
       opts = {};
     }
 
-    var dialog = $('<div id="node-dialog-login" class="hide">' +
+    var dialog = <IDialogElem>$('<div id="node-dialog-login" class="hide">' +
       '<div style="display: inline-block;width: 250px; vertical-align: top; margin-right: 10px; margin-bottom: 20px;"><img id="node-dialog-login-image" src=""/></div>' +
       '<div style="display: inline-block; width: 250px; vertical-align: bottom; margin-left: 10px; margin-bottom: 20px;">' +
       '<form id="node-dialog-login-fields" class="form-horizontal" style="margin-bottom: 0px;"></form>' +
@@ -113,9 +126,10 @@ export class User extends Context {
             '<input type="submit" id="node-dialog-login-submit" style="width: auto;" tabIndex="' + (i + 2) + '" value="' + ctx._("user.login") + '"></div>').appendTo("#node-dialog-login-fields");
 
 
-          $("#node-dialog-login-submit").button();
+          const buttonElem = <IButton>$("#node-dialog-login-submit")
+          buttonElem.button();
           $("#node-dialog-login-fields").submit(function (event) {
-            $("#node-dialog-login-submit").button("option", "disabled", true);
+            buttonElem.button("option", "disabled", true);
             $("#node-dialog-login-failed").hide();
             $(".login-spinner").show();
 
@@ -134,16 +148,18 @@ export class User extends Context {
               data: body
             }).done(function (data, textStatus, xhr) {
               ctx.settings.set("auth-tokens", data);
-              $("#node-dialog-login").dialog('destroy').remove();
+              const loginDialog = <IDialogElem>$("#node-dialog-login")
+              loginDialog.dialog('destroy').remove();
               if (opts.updateMenu) {
                 updateUserMenu();
               }
+              this.loggedIn = true
               done();
             }).fail(function (jqXHR, textStatus, errorThrown) {
               ctx.settings.remove("auth-tokens");
               $("#node-dialog-login-failed").show();
             }).always(function () {
-              $("#node-dialog-login-submit").button("option", "disabled", false);
+              buttonElem.button("option", "disabled", false);
               $(".login-spinner").hide();
             });
             event.preventDefault();
@@ -158,7 +174,7 @@ export class User extends Context {
               style: "text-align: center"
             }).appendTo("#node-dialog-login-fields");
 
-            var loginButton = $('<a href="#"></a>', {
+            var loginButton = <IButton>$('<a href="#"></a>', {
               style: "padding: 10px"
             }).appendTo(row).click(function () {
               // document.location = field.url;
@@ -190,14 +206,20 @@ export class User extends Context {
 
         }
         if (opts.cancelable) {
-          $("#node-dialog-login-cancel").button().click(function (event) {
-            $("#node-dialog-login").dialog('destroy').remove();
+          const cancelButton = <IButton>$("#node-dialog-login-cancel")
+
+          cancelButton.button().click(function (event) {
+            const loginDialog = <IDialogElem>$("#node-dialog-login")
+            loginDialog.dialog('destroy').remove();
           });
         }
 
         var loginImageSrc = data.image || "red/images/node-red-256.png";
 
-        $("#node-dialog-login-image").load(function () {
+        // TODO: fix
+        const loadUrl = 'unknown'
+        const loadData = {}
+        $("#node-dialog-login-image").load(loadUrl, loadData, () => {
           dialog.dialog("open");
         }).attr("src", loginImageSrc);
 

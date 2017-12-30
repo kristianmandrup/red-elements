@@ -130,15 +130,15 @@ export class Settings extends Context {
         dataType: 'json',
         cache: false,
         url: 'settings',
-        success: function (data) {
+        success: (data) => {
           setProperties(data);
           if (!ctx.settings.user || ctx.settings.user.anonymous) {
             ctx.settings.remove('auth-tokens');
           }
-          console.log('Node-RED: ' + data.version);
+          log('Node-RED: ' + data.version);
           resolve(data)
         },
-        error: function (jqXHR, textStatus, errorThrown) {
+        error: (jqXHR, textStatus, errorThrown) => {
           if (jqXHR.status === 401) {
             if (/[?&]access_token=(.*?)(?:$|&)/.test(window.location.search)) {
               window.location.search = '';
