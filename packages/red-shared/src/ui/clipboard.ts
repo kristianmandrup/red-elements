@@ -18,6 +18,14 @@ import {
   $
 } from '../context'
 
+interface IButton extends JQuery<HTMLElement> {
+  button: Function
+}
+
+interface IDialog extends JQuery<HTMLElement> {
+  dialog: Function
+}
+
 export class Clipboard extends Context {
   public disabled: Boolean
   public dialog: any // JQuery<HTMLElement>
@@ -30,6 +38,9 @@ export class Clipboard extends Context {
     let {
       ctx,
       disabled,
+    } = this
+
+    const {
       exportNodes,
       importNodes,
       hideDropTarget
@@ -61,29 +72,31 @@ export class Clipboard extends Context {
     ctx.actions.add("core:show-import-dialog", importNodes);
 
 
-    ctx.events.on("editor:open", function () {
+    ctx.events.on("editor:open", () => {
       disabled = true;
     });
-    ctx.events.on("editor:close", function () {
+    ctx.events.on("editor:close", () => {
       disabled = false;
     });
-    ctx.events.on("search:open", function () {
+    ctx.events.on("search:open", () => {
       disabled = true;
     });
-    ctx.events.on("search:close", function () {
+    ctx.events.on("search:close", () => {
       disabled = false;
     });
-    ctx.events.on("type-search:open", function () {
+    ctx.events.on("type-search:open", () => {
       disabled = true;
     });
-    ctx.events.on("type-search:close", function () {
+    ctx.events.on("type-search:close", () => {
       disabled = false;
     });
 
+    this.disabled = disabled
 
-    $('#chart').on("dragenter", function (event) {
-      if ($.inArray("text/plain", event.originalEvent.dataTransfer.types) != -1 ||
-        $.inArray("Files", event.originalEvent.dataTransfer.types) != -1) {
+    $('#chart').on("dragenter", (event) => {
+      const originalEvent: any = event.originalEvent
+      if ($.inArray("text/plain", originalEvent.dataTransfer.types) != -1 ||
+        $.inArray("Files", originalEvent.dataTransfer.types) != -1) {
         $("#dropTarget").css({
           display: 'table'
         });
@@ -92,8 +105,9 @@ export class Clipboard extends Context {
     });
 
     $('#dropTarget').on("dragover", function (event) {
-      if ($.inArray("text/plain", event.originalEvent.dataTransfer.types) != -1 ||
-        $.inArray("Files", event.originalEvent.dataTransfer.types) != -1) {
+      const originalEvent: any = event.originalEvent
+      if ($.inArray("text/plain", originalEvent.dataTransfer.types) != -1 ||
+        $.inArray("Files", originalEvent.dataTransfer.types) != -1) {
         event.preventDefault();
       }
     })
@@ -101,12 +115,13 @@ export class Clipboard extends Context {
         hideDropTarget();
       })
       .on("drop", function (event) {
-        if ($.inArray("text/plain", event.originalEvent.dataTransfer.types) != -1) {
-          var data = event.originalEvent.dataTransfer.getData("text/plain");
+        const originalEvent: any = event.originalEvent
+        if ($.inArray("text/plain", originalEvent.dataTransfer.types) != -1) {
+          var data = originalEvent.dataTransfer.getData("text/plain");
           data = data.substring(data.indexOf('['), data.lastIndexOf(']') + 1);
           ctx.view.importNodes(data);
-        } else if ($.inArray("Files", event.originalEvent.dataTransfer.types) != -1) {
-          var files = event.originalEvent.dataTransfer.files;
+        } else if ($.inArray("Files", originalEvent.dataTransfer.types) != -1) {
+          var files = originalEvent.dataTransfer.files;
           if (files.length === 1) {
             var file = files[0];
             var reader = new FileReader();
@@ -121,7 +136,7 @@ export class Clipboard extends Context {
         hideDropTarget();
         event.preventDefault();
       });
-
+    return this
   }
 
   setupDialogs() {
@@ -133,8 +148,9 @@ export class Clipboard extends Context {
       importNodesDialog
     } = this
 
-    dialog = $('<div id="clipboard-dialog" class="hide node-red-dialog"><form class="dialog-form form-horizontal"></form></div>')
-      .appendTo("body")
+    dialog = <IDialog>$('<div id="clipboard-dialog" class="hide node-red-dialog"><form class="dialog-form form-horizontal"></form></div>')
+
+    dialog.appendTo("body")
       .dialog({
         modal: true,
         autoOpen: false,
@@ -144,7 +160,7 @@ export class Clipboard extends Context {
           id: "clipboard-dialog-cancel",
           text: ctx._("common.label.cancel"),
           click: function () {
-            $(this).dialog("close");
+            dialog.dialog("close");
           }
         },
         {
@@ -152,7 +168,7 @@ export class Clipboard extends Context {
           class: "primary",
           text: ctx._("common.label.close"),
           click: function () {
-            $(this).dialog("close");
+            dialog.dialog("close");
           }
         },
         {
@@ -164,7 +180,7 @@ export class Clipboard extends Context {
             document.execCommand("copy");
             document.getSelection().removeAllRanges();
             ctx.notify(ctx._("clipboard.nodesExported"));
-            $(this).dialog("close");
+            dialog.dialog("close");
           }
         },
         {
@@ -173,7 +189,7 @@ export class Clipboard extends Context {
           text: ctx._("common.label.import"),
           click: function () {
             ctx.view.importNodes($("#clipboard-import").val(), $("#import-tab > a.selected").attr('id') === 'import-tab-new');
-            $(this).dialog("close");
+            dialog.dialog("close");
           }
         }
         ],
@@ -216,22 +232,28 @@ export class Clipboard extends Context {
       '<a id="import-tab-new" class="editor-button toggle" href="#" data-i18n="clipboard.import.newFlow"></a>' +
       '</span>' +
       '</div>';
+
+    this.dialogContainer = dialogContainer
+    this.importNodesDialog = importNodesDialog
+    this.exportNodesDialog = exportNodesDialog
   }
 
   validateImport() {
     var importInput = $("#clipboard-import");
     var v = importInput.val();
-    v = v.substring(v.indexOf('['), v.lastIndexOf(']') + 1);
+    const vStr = String(v)
+    v = String(vStr).substring(vStr.indexOf('['), vStr.lastIndexOf(']') + 1);
+    const okButton = <IButton>$("#clipboard-dialog-ok")
     try {
       JSON.parse(v);
       importInput.removeClass("input-error");
       importInput.val(v);
-      $("#clipboard-dialog-ok").button("enable");
+      okButton.button("enable");
     } catch (err) {
       if (v !== "") {
         importInput.addClass("input-error");
       }
-      $("#clipboard-dialog-ok").button("disable");
+      okButton.button("disable");
     }
   }
 
@@ -250,17 +272,27 @@ export class Clipboard extends Context {
     if (disabled) {
       return;
     }
+
+    if (!dialogContainer) {
+      this.handleError('importNodes: missing dialogContainer', {
+        clipboard: this
+      })
+    }
+
     dialogContainer.empty();
     dialogContainer.append($(importNodesDialog));
     dialogContainer.i18n();
 
-    $("#clipboard-dialog-ok").show();
+    const dialogOk = <IButton>$("#clipboard-dialog-ok")
+    dialogOk.show();
     $("#clipboard-dialog-cancel").show();
     $("#clipboard-dialog-close").hide();
     $("#clipboard-dialog-copy").hide();
-    $("#clipboard-dialog-ok").button("disable");
-    $("#clipboard-import").keyup(validateImport);
-    $("#clipboard-import").on('paste', function () {
+    dialogOk.button("disable");
+
+    const clipBoardImport = $("#clipboard-import")
+    clipBoardImport.keyup(validateImport);
+    clipBoardImport.on('paste', function () {
       setTimeout(validateImport, 10)
     });
 
@@ -294,20 +326,21 @@ export class Clipboard extends Context {
     dialogContainer.i18n();
     var format = ctx.settings.flowFilePretty ? "export-format-full" : "export-format-mini";
 
-    $("#export-format-group > a").click(function (evt) {
+    const formatGroup = $("#export-format-group > a")
+    formatGroup.click(function (evt) {
       evt.preventDefault();
-      if ($(this).hasClass('disabled') || $(this).hasClass('selected')) {
+      if (formatGroup.hasClass('disabled') || formatGroup.hasClass('selected')) {
         $("#clipboard-export").focus();
         return;
       }
-      $(this).parent().children().removeClass('selected');
-      $(this).addClass('selected');
+      formatGroup.parent().children().removeClass('selected');
+      formatGroup.addClass('selected');
 
-      var flow = $("#clipboard-export").val();
+      var flow = <string>$("#clipboard-export").val();
       if (flow.length > 0) {
         var nodes = JSON.parse(flow);
 
-        format = $(this).attr('id');
+        format = formatGroup.attr('id');
         if (format === 'export-format-full') {
           flow = JSON.stringify(nodes, null, 4);
         } else {

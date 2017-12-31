@@ -2,6 +2,8 @@ import {
   Clipboard
 } from '../..'
 
+import * as $ from 'jquery'
+
 function create() {
   return new Clipboard()
 }
