@@ -18,6 +18,8 @@ import {
   $
 } from './context'
 
+const { log } = console
+
 export class Validators extends Context {
   constructor() {
     super()
@@ -36,23 +38,48 @@ export class Validators extends Context {
   }
 
   typedInput(ptypeName, isConfig) {
-    const ctx = this.ctx;
-    return function (v) {
-      var ptype = $('#node-' + (isConfig ? 'config-' : '') + 'input-' + ptypeName).val() || this[ptypeName];
+    return (v) => {
+      const nodeConfigElem = $('#node-' + (isConfig ? 'config-' : '') + 'input-' + ptypeName)
+      let ptypeElem
+      if (nodeConfigElem) {
+        ptypeElem = nodeConfigElem.val()
+      }
+      let ptypeProp = this[ptypeName]
+      var ptype = ptypeElem || ptypeProp;
+      if (!ptype) {
+        this.logWarning(`no validator ptype for ${ptypeName}`, {
+          ptypeName,
+          ptypeElem,
+          ptypeProp,
+          v
+        })
+      }
       if (ptype === 'json') {
-        try {
-          JSON.parse(v);
-          return true;
-        } catch (err) {
-          return false;
-        }
+        return this.validateJson(v)
       } else if (ptype === 'msg' || ptype === 'flow' || ptype === 'global') {
-        return ctx.utils.validatePropertyExpression(v);
+        return this.validateProp(v);
       } else if (ptype === 'num') {
-        return /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(v);
+        return this.validateNumber(v)
       }
       return true;
     }
   }
 
+  validateJson(value) {
+    try {
+      JSON.parse(value);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  validateNumber(value) {
+    return /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(value);
+  }
+
+  validateProp(value) {
+    const ctx = this.ctx;
+    return ctx.utils.validatePropertyExpression(value);
+  }
 }

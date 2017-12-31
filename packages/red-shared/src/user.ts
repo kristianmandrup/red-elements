@@ -59,9 +59,18 @@ export class User extends Context {
     }
   }
 
-  onLoginSuccess(data) {
+  onLoginSuccess({ resolve, reject, data, opts }) {
+    const {
+      ctx
+    } = this
+    const {
+      updateUserMenu
+    } = this.rebind([
+        'updateUserMenu'
+      ])
+    const user = this
+    let i
     if (data.type == "credentials") {
-
       for (; i < data.prompts.length; i++) {
         var field = data.prompts[i];
         var row = $("<div/>", {
@@ -92,7 +101,7 @@ export class User extends Context {
 
       const buttonElem = <IButton>$("#node-dialog-login-submit")
       buttonElem.button();
-      $("#node-dialog-login-fields").submit(function (event) {
+      $("#node-dialog-login-fields").submit((event) => {
         buttonElem.button("option", "disabled", true);
         $("#node-dialog-login-failed").hide();
         $(".login-spinner").show();
@@ -172,7 +181,7 @@ export class User extends Context {
   }
 
 
-  async login(opts, done) {
+  async login(opts) {
     const {
       ctx,
       updateUserMenu
@@ -181,7 +190,6 @@ export class User extends Context {
       ])
 
     if (typeof opts == 'function') {
-      done = opts;
       opts = {};
     }
 
@@ -211,7 +219,7 @@ export class User extends Context {
         url: "auth/login",
         success: (data) => {
           var i = 0;
-          this.onLoginSuccess(data)
+          this.onLoginSuccess({ resolve, reject, data, opts })
 
           if (opts.cancelable) {
             const cancelButton = <IButton>$("#node-dialog-login-cancel")
