@@ -9,6 +9,10 @@ export class Actions extends Context {
     super()
   }
 
+  get count() {
+    return Object.keys(this.actions).length
+  }
+
   add(name, handler) {
     this.actions[name] = handler;
   }
@@ -23,13 +27,12 @@ export class Actions extends Context {
 
   invoke(name) {
     if (this.actions.hasOwnProperty(name)) {
-      this.actions[name]();
+      return this.actions[name]();
     }
   }
 
   list() {
-    var RED = this.ctx;
-
+    var RED = this.RED;
     var result = [];
     Object.keys(this.actions).forEach((action) => {
       var shortcut = RED.keyboard.getShortcut(action);

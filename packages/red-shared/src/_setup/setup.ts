@@ -142,6 +142,9 @@ export class RED implements IRED {
     }
   }
   public keyboard = {
+    getShortcut(action) {
+      return 'x'
+    },
     remove(selector) { },
     add(selector) { }
   }
