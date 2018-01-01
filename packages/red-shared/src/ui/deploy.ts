@@ -19,6 +19,10 @@ import {
   $
 } from '../context'
 
+interface IDialog extends JQuery<HTMLElement> {
+  dialog: Function
+}
+
 export class Deploy extends Context {
   /**
    * options:
@@ -31,11 +35,14 @@ export class Deploy extends Context {
   public deploymentType: any
   public deploymentTypes: any
 
-  constructor(options) {
+  constructor(options: any = {}) {
     super()
 
     const {
       ctx,
+    } = this
+
+    const {
       changeDeploymentType,
       save,
       resolveConflict
@@ -153,7 +160,8 @@ export class Deploy extends Context {
 
     ctx.actions.add("core:deploy-flows", save);
 
-    $("#node-dialog-confirm-deploy").dialog({
+    const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
+    confirmDeployDialog.dialog({
       title: ctx._('deploy.confirm.button.confirm'),
       modal: true,
       autoOpen: false,
@@ -162,7 +170,7 @@ export class Deploy extends Context {
       buttons: [{
         text: ctx._("common.label.cancel"),
         click: function () {
-          $(this).dialog("close");
+          confirmDeployDialog.dialog("close");
         }
       },
       {
@@ -172,7 +180,7 @@ export class Deploy extends Context {
         click: function () {
           if (!$("#node-dialog-confirm-deploy-review").hasClass('disabled')) {
             ctx.diff.showRemoteDiff();
-            $(this).dialog("close");
+            confirmDeployDialog.dialog("close");
           }
         }
       },
@@ -182,7 +190,7 @@ export class Deploy extends Context {
         class: "primary disabled",
         click: function () {
           ctx.diff.mergeDiff(currentDiff);
-          $(this).dialog("close");
+          confirmDeployDialog.dialog("close");
         }
       },
       {
@@ -190,13 +198,13 @@ export class Deploy extends Context {
         text: ctx._("deploy.confirm.button.confirm"),
         class: "primary",
         click: function () {
-
+          const deployType = <string>$("#node-dialog-confirm-deploy-type").val()
           var ignoreChecked = $("#node-dialog-confirm-deploy-hide").prop("checked");
           if (ignoreChecked) {
-            ignoreDeployWarnings[$("#node-dialog-confirm-deploy-type").val()] = true;
+            ignoreDeployWarnings[deployType] = true;
           }
-          save(true, /conflict/.test($("#node-dialog-confirm-deploy-type").val()));
-          $(this).dialog("close");
+          save(true, /conflict/.test(deployType));
+          confirmDeployDialog.dialog("close");
         }
       },
       {
@@ -204,8 +212,9 @@ export class Deploy extends Context {
         text: ctx._("deploy.confirm.button.overwrite"),
         class: "primary",
         click: function () {
-          save(true, /conflict/.test($("#node-dialog-confirm-deploy-type").val()));
-          $(this).dialog("close");
+          const deployType = <string>$("#node-dialog-confirm-deploy-type").val()
+          save(true, /conflict/.test(deployType));
+          confirmDeployDialog.dialog("close");
         }
       }
       ],
@@ -218,9 +227,10 @@ export class Deploy extends Context {
           '</div>');
       },
       open: function () {
-        var deployType = $("#node-dialog-confirm-deploy-type").val();
+        const deployType = <string>$("#node-dialog-confirm-deploy-type").val();
         if (/conflict/.test(deployType)) {
-          $("#node-dialog-confirm-deploy").dialog('option', 'title', ctx._('deploy.confirm.button.review'));
+          const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
+          confirmDeployDialog.dialog('option', 'title', ctx._('deploy.confirm.button.review'));
           $("#node-dialog-confirm-deploy-deploy").hide();
           $("#node-dialog-confirm-deploy-review").addClass('disabled').show();
           $("#node-dialog-confirm-deploy-merge").addClass('disabled').show();
@@ -250,7 +260,9 @@ export class Deploy extends Context {
 
           $("#node-dialog-confirm-deploy-hide").parent().hide();
         } else {
-          $("#node-dialog-confirm-deploy").dialog('option', 'title', ctx._('deploy.confirm.button.confirm'));
+          const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
+          confirmDeployDialog.dialog('option', 'title', ctx._('deploy.confirm.button.confirm'));
+
           $("#node-dialog-confirm-deploy-deploy").show();
           $("#node-dialog-confirm-deploy-overwrite").hide();
           $("#node-dialog-confirm-deploy-review").hide();
@@ -361,7 +373,8 @@ export class Deploy extends Context {
     $("#node-dialog-confirm-deploy-unused").hide();
     $("#node-dialog-confirm-deploy-conflict").show();
     $("#node-dialog-confirm-deploy-type").val(activeDeploy ? "deploy-conflict" : "background-conflict");
-    $("#node-dialog-confirm-deploy").dialog("open");
+    const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
+    confirmDeployDialog.dialog("open");
   }
 
   save(skipValidation, force) {
@@ -443,7 +456,8 @@ export class Deploy extends Context {
         }
         if (showWarning) {
           $("#node-dialog-confirm-deploy-hide").prop("checked", false);
-          $("#node-dialog-confirm-deploy").dialog("open");
+          const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
+          confirmDeployDialog.dialog("open");
           return;
         }
       }

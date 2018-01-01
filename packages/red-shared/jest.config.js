@@ -31,5 +31,6 @@ module.exports = {
     "node_modules",
     "src"
   ],
-  "setupFiles": ["jest-localstorage-mock"]
+  "setupFiles": ["jest-localstorage-mock"],
+  "setupTestFrameworkScriptFile": "<rootDir>/jest/setup.js"
 }

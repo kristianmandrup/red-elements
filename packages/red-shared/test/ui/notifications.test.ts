@@ -21,7 +21,7 @@ test('Notifications: notify', () => {
   let type = 'info'
   let notified = notifications.notify(msg, type)
   // returns div element with class: notification
-  expect(notified.className).toBe('notification')
+  expect(notified.className).toBe('notification notification-info')
 })
 
 test('Notifications: notify - fixed', () => {

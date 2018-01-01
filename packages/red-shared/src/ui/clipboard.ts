@@ -18,6 +18,8 @@ import {
   $
 } from '../context'
 
+const { log } = console
+
 interface IButton extends JQuery<HTMLElement> {
   button: Function
 }
@@ -233,9 +235,12 @@ export class Clipboard extends Context {
       '</span>' +
       '</div>';
 
-    this.dialogContainer = dialogContainer
-    this.importNodesDialog = importNodesDialog
-    this.exportNodesDialog = exportNodesDialog
+    this.setInstanceVars({
+      dialog,
+      dialogContainer,
+      importNodesDialog,
+      exportNodesDialog
+    })
   }
 
   validateImport() {
@@ -257,12 +262,27 @@ export class Clipboard extends Context {
     }
   }
 
+  validateDialogContainer() {
+    if (!this.dialogContainer) {
+      this.setupDialogs()
+    }
+    // test if still not defined
+    if (!this.dialogContainer) {
+      this.handleError('importNodes: missing dialogContainer', {
+        clipboard: this
+      })
+    }
+  }
+
   importNodes() {
     const {
       ctx,
       disabled,
       dialog,
       dialogContainer,
+    } = this
+
+    let {
       importNodesDialog,
       validateImport
     } = this.rebind([
@@ -273,11 +293,7 @@ export class Clipboard extends Context {
       return;
     }
 
-    if (!dialogContainer) {
-      this.handleError('importNodes: missing dialogContainer', {
-        clipboard: this
-      })
-    }
+    this.validateDialogContainer()
 
     dialogContainer.empty();
     dialogContainer.append($(importNodesDialog));
@@ -321,10 +337,14 @@ export class Clipboard extends Context {
       return;
     }
 
+    const clipboard = this
+
+    this.validateDialogContainer()
+
     dialogContainer.empty();
     dialogContainer.append($(exportNodesDialog));
     dialogContainer.i18n();
-    var format = ctx.settings.flowFilePretty ? "export-format-full" : "export-format-mini";
+    let format = ctx.settings.flowFilePretty ? "export-format-full" : "export-format-mini";
 
     const formatGroup = $("#export-format-group > a")
     formatGroup.click(function (evt) {
@@ -351,7 +371,8 @@ export class Clipboard extends Context {
       }
     });
 
-    $("#export-range-group > a").click(function (evt) {
+    const exportRangeGroupLink = $("#export-range-group > a")
+    exportRangeGroupLink.click(function (evt) {
       evt.preventDefault();
       if ($(this).hasClass('disabled') || $(this).hasClass('selected')) {
         $("#clipboard-export").focus();
@@ -362,14 +383,20 @@ export class Clipboard extends Context {
       var type = $(this).attr('id');
       var flow = "";
       var nodes = null;
+
       if (type === 'export-range-selected') {
         var selection = ctx.view.selection();
+        clipboard._validateObj(selection, 'selection', 'exportNodes', 'exportRangeGroupLink.click')
+        clipboard._validateObj(nodes, 'ctx.nodes', 'exportNodes')
+
         // Don't include the subflow meta-port nodes in the exported selection
         nodes = ctx.nodes.createExportableNodeSet(selection.nodes.filter(function (n) {
           return n.type !== 'subflow'
         }));
       } else if (type === 'export-range-flow') {
         var activeWorkspace = ctx.workspaces.active();
+        clipboard._validateObj(activeWorkspace, 'activeWorkspace', 'exportNodes')
+
         nodes = ctx.nodes.filterNodes({
           z: activeWorkspace
         });
@@ -400,7 +427,10 @@ export class Clipboard extends Context {
     $("#clipboard-dialog-copy").hide();
     $("#clipboard-dialog-close").hide();
     var selection = ctx.view.selection();
-    if (selection.nodes) {
+    clipboard._validateObj(selection, 'selection', 'exportNodes')
+
+    const { nodes } = selection
+    if (nodes) {
       $("#export-range-selected").click();
     } else {
       $("#export-range-selected").addClass('disabled').removeClass('selected');
@@ -469,6 +499,9 @@ export class Clipboard extends Context {
         size: 'small',
         content: ctx._(msg)
       });
+
+      this._validateObj(popover, 'popover', 'copyText')
+
       setTimeout(function () {
         popover.close();
       }, 1000);

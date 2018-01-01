@@ -2,7 +2,7 @@ import {
   Clipboard
 } from '../..'
 
-import * as $ from 'jquery'
+import '../_setup'
 
 function create() {
   return new Clipboard()
@@ -51,5 +51,4 @@ test('Clipboard: copyText', () => {
   let msg = 'hello'
 
   clipboard.copyText(value, element, msg)
-
 })

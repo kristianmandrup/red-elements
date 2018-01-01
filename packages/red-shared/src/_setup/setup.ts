@@ -73,7 +73,11 @@ export class RED implements IRED {
   }
   public view = {
     focus() { },
-    selection() { }
+    selection() {
+      return [{
+        id: 'x'
+      }]  // nodes selected
+    }
   }
   public text = {
     bidi: {
@@ -90,12 +94,32 @@ export class RED implements IRED {
     validatePropertyExpression() { return true; }
   }
   public popover = {
-    create(obj) { }
+    create(obj) {
+      return {
+        open() { },
+        close() { }
+      }
+    }
   }
   public nodes = {
     subflow(index) { },
     addLink(link) { },
-    removeLink(link) { }
+    removeLink(link) { },
+    filterNodes(filter) {
+      return [{
+        id: 'x'
+      }] // set of filtered nodes
+    },
+    workspace(id) {
+      return {
+        id: 'my-workspace'
+      }
+    },
+    createExportableNodeSet(nodes) {
+      return {
+        id: 'x'
+      }
+    }
   }
   public sidebar = {
     info: {
@@ -120,7 +144,9 @@ export class RED implements IRED {
     toggle(elem) { }
   }
   public workspaces = {
-    active() { }
+    active() {
+      return {} // the currently active workspace
+    }
   }
   public subflow = {
     refresh(val) { }
@@ -161,23 +187,4 @@ export class RED implements IRED {
 }
 container.bind<IRED>(TYPES.RED).to(RED);
 export { container };
-
-// var RED = {
-//   settings: {
-//     theme(id) { },
-//     get(settings) { },
-//     set(settings, state) { },
-//     remove(id) { }
-//   },
-//   actions: {
-//     get(callback) { }
-//   }
-// }
-// var bottle = new Bottle();
-// var _RED = function () {
-//   return RED;
-// }
-// bottle.service("RED", _RED);
-// bottle.service("Menu", MenuFactory, 'RED');
-// export { bottle };
 
