@@ -11,15 +11,15 @@ beforeEach(() => {
   nodes = create()
 })
 
-test('nodes: create', () => {
+test('Nodes: create', () => {
   expect(typeof nodes).toBe('object')
 })
 
-test('nodes: getID', () => {
+test('Nodes: getID', () => {
   expect(typeof nodes.getID()).toBe('number')
 })
 
-test('nodes: addNode', () => {
+test('Nodes: addNode', () => {
   let node = {
     id: 'a'
   }
@@ -27,7 +27,7 @@ test('nodes: addNode', () => {
   expect(nodes.configNodes[node.id]).toBe(node)
 })
 
-test('nodes: getNode - finds it', () => {
+test('Nodes: getNode - finds it', () => {
   let id = 'a'
   let found = nodes.getNode('id')
   expect(found).toBeFalsy()
@@ -40,7 +40,7 @@ test('nodes: getNode - finds it', () => {
   expect(found).toBe(node)
 })
 
-test('nodes: removeNode - removes it', () => {
+test('Nodes: removeNode - removes it', () => {
   let id = 'a'
   let node = {
     id
@@ -54,7 +54,7 @@ test('nodes: removeNode - removes it', () => {
   expect(found).toBeFalsy()
 })
 
-test('nodes: addLink', () => {
+test('Nodes: addLink', () => {
   let link = {
     id: 'a'
   }
@@ -63,7 +63,7 @@ test('nodes: addLink', () => {
   expect(found).toBeTruthy()
 })
 
-test('nodes: removeLink - removes it', () => {
+test('Nodes: removeLink - removes it', () => {
   let link = {
     id: 'a'
   }
@@ -72,7 +72,7 @@ test('nodes: removeLink - removes it', () => {
   expect(found).toBeFalsy()
 })
 
-test('nodes: addWorkspace - adds it', () => {
+test('Nodes: addWorkspace - adds it', () => {
   let ws = {
     id: 'a'
   }
@@ -81,7 +81,7 @@ test('nodes: addWorkspace - adds it', () => {
   expect(found).toBeTruthy()
 })
 
-test('nodes: getWorkspace - finds it', () => {
+test('Nodes: getWorkspace - finds it', () => {
   let ws = {
     id: 'a'
   }
@@ -90,7 +90,7 @@ test('nodes: getWorkspace - finds it', () => {
   expect(found).toBeTruthy()
 })
 
-test('nodes: removeWorkspace - removes it', () => {
+test('Nodes: removeWorkspace - removes it', () => {
   let ws = {
     id: 'a'
   }
@@ -100,7 +100,7 @@ test('nodes: removeWorkspace - removes it', () => {
   expect(found).toBeFalsy()
 })
 
-test('nodes: addSubflow - adds it', () => {
+test('Nodes: addSubflow - adds it', () => {
   let subflow = {
     id: 'a'
   }
@@ -109,7 +109,7 @@ test('nodes: addSubflow - adds it', () => {
   expect(found).toBeTruthy()
 })
 
-test('nodes: getSubflow - finds it', () => {
+test('Nodes: getSubflow - finds it', () => {
   let subflow = {
     id: 'a'
   }
@@ -118,7 +118,7 @@ test('nodes: getSubflow - finds it', () => {
   expect(found).toBeTruthy()
 })
 
-test('nodes: removeSubflow - removes it', () => {
+test('Nodes: removeSubflow - removes it', () => {
   let subflow = {
     id: 'a'
   }
@@ -128,7 +128,7 @@ test('nodes: removeSubflow - removes it', () => {
   expect(found).toBeFalsy()
 })
 
-test('nodes: subflowContains', () => {
+test('Nodes: subflowContains', () => {
   let sfid = 'x'
   let nodeid = 'a'
   let subflow = {
@@ -140,7 +140,7 @@ test('nodes: subflowContains', () => {
   expect(found).toBeTruthy()
 })
 
-test('nodes: getAllFlowNodes', () => {
+test('Nodes: getAllFlowNodes', () => {
 
   // todo: add flow nodes
 
@@ -149,7 +149,7 @@ test('nodes: getAllFlowNodes', () => {
 })
 
 // TODO: test conversion
-test('nodes: convertWorkspace', () => {
+test('Nodes: convertWorkspace', () => {
   let node = {
     id: 'a'
   }
@@ -158,7 +158,7 @@ test('nodes: convertWorkspace', () => {
 })
 
 // TODO: test conversion
-test('nodes: convertNode', () => {
+test('Nodes: convertNode', () => {
   let node = {
     id: 'a'
   }
@@ -168,7 +168,7 @@ test('nodes: convertNode', () => {
 })
 
 // TODO: test conversion
-test('nodes: convertSubflow', () => {
+test('Nodes: convertSubflow', () => {
   let node = {
     id: 'a'
   }
@@ -176,7 +176,7 @@ test('nodes: convertSubflow', () => {
   expect(convertedNode).toBeTruthy()
 })
 
-test('nodes: createExportableNodeSet', () => {
+test('Nodes: createExportableNodeSet', () => {
   let node = {
     id: 'a'
   }
@@ -189,13 +189,13 @@ test('nodes: createExportableNodeSet', () => {
   expect(convertedSet).toBeTruthy()
 })
 
-test('nodes: createExportableNodeSet', () => {
+test('Nodes: createExportableNodeSet', () => {
   let exportCredentials = {}
   let set = nodes.createCompleteNodeSet(exportCredentials)
   expect(set).toBeTruthy()
 })
 
-test('nodes: checkForMatchingSubflow', () => {
+test('Nodes: checkForMatchingSubflow', () => {
   let node = {
     id: 'a'
   }
@@ -205,7 +205,7 @@ test('nodes: checkForMatchingSubflow', () => {
   expect(set).toBeTruthy()
 })
 
-test('nodes: compareNodes', () => {
+test('Nodes: compareNodes', () => {
   let nodeA = {
     id: 'a'
   }
@@ -220,7 +220,7 @@ test('nodes: compareNodes', () => {
   expect(result).toBeTruthy()
 })
 
-test('nodes: importNodes', () => {
+test('Nodes: importNodes', () => {
   let newNodesObj = {
     id: 'a'
   }
@@ -234,7 +234,7 @@ test('nodes: importNodes', () => {
   expect(node).toBe(newNodesObj)
 })
 
-test('nodes: filterNodes', () => {
+test('Nodes: filterNodes', () => {
   let filter = {
     type: 'x'
   }
@@ -252,7 +252,7 @@ test('nodes: filterNodes', () => {
   expect(filtered[0]).toBe(nodeA)
 })
 
-test('nodes: filterLinks', () => {
+test('Nodes: filterLinks', () => {
   let filter = {
     type: 'x'
   }
@@ -269,7 +269,7 @@ test('nodes: filterLinks', () => {
   expect(filtered[0]).toBe(linkA)
 })
 
-test('nodes: updateConfigNodeUsers', () => {
+test('Nodes: updateConfigNodeUsers', () => {
   let node = {
     id: 'a',
     type: 'x'
@@ -280,47 +280,47 @@ test('nodes: updateConfigNodeUsers', () => {
   expect(user).toEqual(expectedUser)
 })
 
-test('nodes: flowVersion', () => {
+test('Nodes: flowVersion', () => {
   let version = nodes.flowVersion()
   expect(version).toBe('1')
 })
 
-test('nodes: clear', () => {
+test('Nodes: clear', () => {
   nodes.clear()
   expect(nodes.nodes).toEqual([])
   expect(nodes.links).toEqual([])
 })
 
-test('nodes: getWorkspaceOrder', () => {
+test('Nodes: getWorkspaceOrder', () => {
   let expected = nodes.workspacesOrder
   let order = nodes.getWorkspaceOrder()
   expect(order).toBe(expected)
 })
 
-test('nodes: setWorkspaceOrder', () => {
+test('Nodes: setWorkspaceOrder', () => {
   let expected = 2
   let order = nodes.setWorkspaceOrder(expected)
   expect(order).toBe(expected)
 })
 
-test('nodes: eachNode', () => {
+test('Nodes: eachNode', () => {
 
 })
-test('nodes: eachLink', () => {
+test('Nodes: eachLink', () => {
 
 })
-test('nodes: eachConfig', () => {
+test('Nodes: eachConfig', () => {
 
 })
-test('nodes: eachSubflow', () => {
+test('Nodes: eachSubflow', () => {
 
 })
-test('nodes: eachWorkspace', () => {
+test('Nodes: eachWorkspace', () => {
 
 })
-test('nodes: originalFlow', () => {
+test('Nodes: originalFlow', () => {
 
 })
-test('nodes: dirty', () => {
+test('Nodes: dirty', () => {
 
 })

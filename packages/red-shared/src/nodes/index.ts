@@ -22,8 +22,8 @@ import {
 // } from './registry'
 
 export {
-  NodeConfig,
-} from './node-config'
+  Node,
+} from './node'
 
 export {
   Nodes,

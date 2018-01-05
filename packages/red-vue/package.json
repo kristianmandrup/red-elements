@@ -48,7 +48,7 @@
     "bootstrap": "^3.3.7",
     "bootstrap-select": "^1.12.4",
     "ace-builds": "^1.2.8",
-    "marked": "^0.3.6",
+    "marked": "^0.3.9",
     "@tecla5/red-ui-header": "^0.0.0",
     "@tecla5/red-ui-main-container": "^0.0.0",
     "@stencil/router": "^0.0.17"

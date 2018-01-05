@@ -45,6 +45,15 @@ export class Context {
     }
   }
 
+  protected _validateNum(value, name, methodName, context?) {
+    if (typeof value !== 'number') {
+      this.handleError(`${methodName}: ${name} must be a number`, {
+        [name]: value,
+        context
+      })
+    }
+  }
+
   protected _validateJQ(obj, name, methodName, context?) {
     if (obj instanceof jQuery) return true
     this.handleError(`${methodName}: ${name} must be a $ (jQuery) element`, {

@@ -3,7 +3,7 @@ import {
   $
 } from '../context'
 
-export class NodeConfig extends Context {
+export class Node extends Context {
   public node_defs = {};
   public nodes = [];
   public configNodes = {};

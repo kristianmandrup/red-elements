@@ -8,7 +8,7 @@ export {
 } from './history'
 
 export {
-  NodeConfig,
+  Node,
   Nodes,
   NodesRegistry
 } from './nodes'

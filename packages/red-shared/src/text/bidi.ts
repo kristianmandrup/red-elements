@@ -29,7 +29,7 @@ export class Bidi extends Context {
       PDF = "\u202C";
   }
 
-  isRTLValue(stringValue) {
+  isRTLValue(stringValue: string) {
     const {
       isBidiChar,
       isLatinChar
@@ -37,6 +37,8 @@ export class Bidi extends Context {
         'isBidiChar',
         'isLatinChar'
       ])
+
+    this._validateStr(stringValue, 'stringValue', 'isRTLValue')
 
     var length = stringValue.length;
     for (var i = 0; i < length; i++) {
@@ -49,7 +51,8 @@ export class Bidi extends Context {
     return false;
   }
 
-  isBidiChar(c) {
+  isBidiChar(c: number) {
+    this._validateNum(c, 'c', 'isBidiChar')
     return (c >= 0x05d0 && c <= 0x05ff) ||
       (c >= 0x0600 && c <= 0x065f) ||
       (c >= 0x066a && c <= 0x06ef) ||
@@ -58,7 +61,8 @@ export class Bidi extends Context {
       (c >= 0xfe70 && c <= 0xfefc);
   }
 
-  isLatinChar(c) {
+  isLatinChar(c: number) {
+    this._validateNum(c, 'c', 'isLatinChar')
     return (c > 64 && c < 91) || (c > 96 && c < 123)
   }
 
@@ -66,7 +70,7 @@ export class Bidi extends Context {
    * Determines the text direction of a given string.
    * @param value - the string
    */
-  resolveBaseTextDir(value) {
+  resolveBaseTextDir(value: string) {
     const {
       textDir,
       isRTLValue
