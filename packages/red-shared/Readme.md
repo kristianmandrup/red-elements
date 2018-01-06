@@ -1,54 +1,16 @@
-# Red widgets
+# Red shared
 
-The goal is  update the widget tests and include as much test cases as we can for individual components.
+*Red shared* is the node-red runtime and in-memory model, such as the internal node graph being edited, with some code shared between both client and server (backend API) applications.
 
-## Lerna project
-
-*red-widgets* is a lerna package, part of a [lerna](https://lernajs.io/) project.
-
-The full UI project contains multiple related packages that can be managed as a unit.
-
-See [Lerna Getting Started](https://lernajs.io/#getting-started) for typical development workflow.
-
-The essential `lerna` npm scripts:
-
-```json
-"lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-widgets",
-"lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
-```
-
-## Windows setup
-
-We have included the following scripts for Windows users.
-
-```json
-"clean:win": "npm run clean:lock | clean:modules",
-"clean:lock": "del /s /f /q package-lock.json.lock",
-"clean:modules": "del /s /f /q node_modules/*",
-"link:shared": "npm link @tecla5/red-widgets"
-```
-
-You need to somehow clean the project, by removing `package.json.lock` and all module folders under `node_modules` and then run `lerna:bootstrap`
-
-```bash
-$ npm run clean:win
-...
-
-$ npm run lerna:bootstrap
-... bootstrapped
-```
+This module is NOT a lerna project, as it has no local package dependencies in the `red-elements` repo.
 
 ## Getting started
 
-Run the `lerna:update` to ensure all dependency modules are installed, including `@tecla5/red-shared` a Lerna package (part of the Lerna project).
 
 ```bash
-$ npm run lerna:update
+$ npm install
 ...
-lerna success Bootstrapped 1 packages
 ```
-
-Now you should have a `@tecla5/red-shared` in `node_modules`
 
 ## Jest with TypeScript
 
@@ -63,37 +25,7 @@ Make sure you use the `jest.config.js` file to configure your Jest settings.
 
 Then just run `jest` normally and it should transpile using your settings before running.
 
-## Babel config
-
-If you get Syntax error on `import`, try adding `transform-runtime` to `.babelrc`
-
-```json
-  "plugins": [
-    ["transform-runtime", {
-      "polyfill": false,
-      "regenerator": true
-    }]
-  ]
-```
-
 ## Q & A
-
-Where is the code logic of all the components of which we are about to write jest tests? Like header’s path is `red-widget/src/header`
-
-Where is `Panel` and `Menu` etc.?
-
-- The most basic components can all be found under `src/common`. They are the basic building blocks.
-
-Most of the red-widgets components are in progress?
-
-- All are fully working components/widgets extracted from node-red project.
-
-We are first migrating test to jest of existing jQuery components.
-We will start developing new custom elements using StencilJs once we achieve good enough code coverage using jest.
-
-- Yes, exactly
-
-Where can I see all the existing jQuery custom elements which we are planning to upgrade?
 
 See the [node-red](https://nodered.org/) intro video to get an idea of interface.
 
@@ -111,38 +43,15 @@ Please mock and stub whatever you need to make tests pass. Jest includes advance
 
 We use the following testing stack for headless browser testing (E2E) on Travic CI.
 
-`red-elements/packages/red-widgets $ jest src/common/test/controllers/panels.test.js`
-
-## Syntax: Expectations & Globals
-
-- [Expectations](https://facebook.github.io/jest/docs/en/expect.html)
-- [Globals](https://facebook.github.io/jest/docs/en/api.html)
+`red-elements/packages/red-shared $ jest test/nodes/node.test.ts`
 
 Note: You need `jest-cli` installed for the project.
 
 ```js
-describe('sum', () => {
-  it('adds 1 + 1 = 2', () => {
-    expect(1 + 1).toBe(2)
-  })
-})
-
-// or using test
-
 test('the best flavor is grapefruit', () => {
   expect(bestLaCroixFlavor()).toBe('grapefruit')
 })
 ```
-
-Warning: Please note that jest seems to break if you put any arguments in the test function, ie. such as `done` cb here
-
-```js
-test('sum: 1+2 = 2', done => {
-  expect(1 + 1).toBe(2)
-})
-```
-
-## Troubleshooting
 
 Run jest with debugger
 
@@ -214,57 +123,4 @@ test('displays a user after a click', () => {
   expect(fetchCurrentUser).toBeCalled();
   expect($('#username').text()).toEqual('Johnny Cash - Logged In');
 });
-```
-
-Special jQuery assertions :)
-
-```js
-let el = $('#username')
-expect(el.text()).toEqual('Johnny Cash - Logged In');
-```
-
-Becomes
-
-```js
-let el = $('#username')
-expect(el).toHaveText('Johnny Cash - Logged In');
-```
-
-A little nicer on the eye :)
-
-```bash
-toExist
-toHaveLength
-toHaveId
-toHaveClass
-toHaveTag
-toHaveAttr
-toHaveProp
-toHaveText
-toHaveData
-toHaveValue
-toHaveCss
-toBeChecked
-toBeDisabled
-toBeEmpty
-toBeHidden
-toBeSelected
-toBeVisible
-toBeFocused
-toBeInDom
-toBeMatchedBy
-toHaveDescendant
-toHaveDescendantWithText
-```
-
-### Babel config
-
-In `package.json`
-
-```js
-  "babel": {
-    "presets": [
-      "env"
-    ]
-  }
 ```

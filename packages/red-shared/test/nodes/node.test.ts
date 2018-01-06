@@ -16,11 +16,43 @@ test('Node: create', () => {
 })
 
 test('Node: .node_defs', () => {
-  expect(typeof node.node_defs).toEqual({})
+  expect(node.node_defs).toEqual({})
 })
 
 test('Node: .nodes', () => {
-  expect(typeof node.nodes).toEqual([])
+  expect(node.nodes).toEqual([])
 })
 
-// TODO: more...
+test('Node: .links', () => {
+  expect(node.links).toEqual([])
+})
+
+test('Node: .defaultWorkspace', () => {
+  expect(node.defaultWorkspace).toBeUndefined()
+})
+
+test('Node: .defaultWorkspace', () => {
+  expect(node.workspaces).toEqual({})
+})
+
+test('Node: .defaultWorkspace', () => {
+  expect(node.workspacesOrder).toEqual([])
+})
+
+test('Node: .subflows', () => {
+  expect(node.subflows).toEqual({})
+})
+
+test('Node: .loadedFlowVersion', () => {
+  expect(node.loadedFlowVersion).toEqual(null)
+})
+
+test('Node: .initialLoad', () => {
+  expect(node.initialLoad).toBeUndefined()
+})
+
+test('Node: .dirty', () => {
+  expect(node.dirty).toEqual(false)
+})
+
+

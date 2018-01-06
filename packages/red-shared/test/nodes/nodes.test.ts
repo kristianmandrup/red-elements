@@ -11,18 +11,52 @@ beforeEach(() => {
   nodes = create()
 })
 
+const FAKE_RED = {}
+
+function merge(a, b) {
+  return Object.assign(a, b)
+}
+
+function fakeNode(override = {}) {
+  return Object.assign({
+    id: 'x',
+    in: {},
+    out: {},
+    type: 'subflow',
+    _def: {
+      credentials: {},
+      defaults: {},
+      set: {
+        module: 'node-red'
+      }
+    }
+  }, override)
+}
+
 test('Nodes: create', () => {
   expect(typeof nodes).toBe('object')
 })
 
-test('Nodes: getID', () => {
-  expect(typeof nodes.getID()).toBe('number')
+test('Nodes: create - has registry', () => {
+  expect(typeof nodes.registry).toBe('object')
 })
 
-test('Nodes: addNode', () => {
-  let node = {
-    id: 'a'
-  }
+test('Nodes: create - has empty configNodes collection object', () => {
+  expect(nodes.configNodes).toEqual({})
+})
+
+test('Nodes: create - has empty nodes list', () => {
+  expect(nodes.nodes).toEqual({})
+})
+
+test('Nodes: getID is a 14+ char string', () => {
+  const id = nodes.getID()
+  expect(typeof id).toBe('string')
+  expect(id.length).toBeGreaterThanOrEqual(14)
+})
+
+test('Nodes: addNode - category: config', () => {
+  let node = fakeNode()
   nodes.addNode(node)
   expect(nodes.configNodes[node.id]).toBe(node)
 })
@@ -32,24 +66,34 @@ test('Nodes: getNode - finds it', () => {
   let found = nodes.getNode('id')
   expect(found).toBeFalsy()
 
-  let node = {
+  // TODO: use node factory function
+  // See: node-editor/test/editor.test.ts
+  let node = fakeNode({
     id
-  }
+  })
+
   nodes.addNode(node)
   found = nodes.getNode(node.id)
   expect(found).toBe(node)
 })
 
-test('Nodes: removeNode - removes it', () => {
+test.only('Nodes: removeNode - removes it', () => {
   let id = 'a'
-  let node = {
+  let node = fakeNode({
     id
-  }
+  })
   nodes.addNode(node)
   let found = nodes.getNode(id)
   expect(found).toBeTruthy()
 
-  nodes.removeNode(node)
+  let removed = nodes.removeNode(id)
+
+  // TODO: Fix
+  const linksRemoved = []
+  const nodesRemoved = []
+  expect(removed.links).toEqual(linksRemoved)
+  expect(removed.nodes).toEqual(nodesRemoved)
+
   found = nodes.getNode(id)
   expect(found).toBeFalsy()
 })

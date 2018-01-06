@@ -8,7 +8,7 @@ export {
   Utils,
   Communications,
   History,
-  NodeConfig,
+  Node,
   Nodes,
   NodesRegistry,
   TextFormat,

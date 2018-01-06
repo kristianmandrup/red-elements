@@ -11,11 +11,13 @@ export {
   NodesRegistry
 }
 
+const { log } = console
+
 export class Nodes extends Context {
   public registry = new NodesRegistry()
-  public configNodes: any
-  public nodes: any
-  public links
+  public configNodes = {}
+  public nodes = []
+  public links = []
   public workspaces
   public workspacesOrder
   public subflows
@@ -33,7 +35,6 @@ export class Nodes extends Context {
   public registerType
   public getType
 
-
   constructor() {
     super()
 
@@ -42,6 +43,9 @@ export class Nodes extends Context {
       registry,
       configNodes,
       nodes,
+    } = this
+
+    const {
       convertNode,
       importNodes
     } = this.rebind([
@@ -49,10 +53,15 @@ export class Nodes extends Context {
         'importNodes'
       ])
 
+    this._validateObj(RED.events, 'RED.events', 'Nodes constructor')
+
     RED.events.on("registry:node-type-added", function (type) {
       var def = registry.getNodeType(type);
       var replaced = false;
       var replaceNodes = [];
+
+      this._validateObj(RED.nodes, 'RED.nodes', 'Nodes events.on handler')
+
       RED.nodes.eachNode(function (n) {
         if (n.type === "unknown" && n.name === type) {
           replaceNodes.push(n);
@@ -117,6 +126,9 @@ export class Nodes extends Context {
       RED
     } = this
 
+    this._validateNode(n, 'n', 'addNode')
+    this._validateNodeDef(n._def, 'n._def', 'addNode')
+
     if (n.type.indexOf("subflow") !== 0) {
       n["_"] = n._def._;
     } else {
@@ -165,20 +177,25 @@ export class Nodes extends Context {
     return null;
   }
 
-  removeNode(id) {
+  removeNode(id: string) {
     const {
       RED,
       configNodes,
-      getNode,
       nodes,
       links,
       registry,
-      removeNode,
       n
+    } = this
+
+    const {
+      getNode,
+      removeNode
     } = this.rebind([
         'getNode',
         'removeNode'
       ])
+
+    this._validateStr(id, 'id', 'removeNode')
 
     var removedLinks = [];
     var removedNodes = [];
@@ -190,41 +207,46 @@ export class Nodes extends Context {
       RED.workspaces.refresh();
     } else {
       node = getNode(id);
-      if (node) {
-        nodes.splice(nodes.indexOf(node), 1);
-        removedLinks = links.filter(function (l) {
-          return (l.source === node) || (l.target === node);
-        });
-        removedLinks.forEach(function (l) {
-          links.splice(links.indexOf(l), 1);
-        });
-        var updatedConfigNode = false;
-        for (var d in node._def.defaults) {
-          if (node._def.defaults.hasOwnProperty(d)) {
-            var property = node._def.defaults[d];
-            if (property.type) {
-              var type = registry.getNodeType(property.type);
-              if (type && type.category == "config") {
-                var configNode = configNodes[node[d]];
-                if (configNode) {
-                  updatedConfigNode = true;
-                  if (configNode._def.exclusive) {
-                    removeNode(node[d]);
-                    removedNodes.push(configNode);
-                  } else {
-                    var users = configNode.users;
-                    users.splice(users.indexOf(node), 1);
-                  }
+      if (!node) {
+        this.logWarning(`node ${id} to remove not found in node collection`, {
+          id,
+          nodes: this.nodes
+        })
+        return {}
+      }
+      nodes.splice(nodes.indexOf(node), 1);
+      removedLinks = links.filter(function (l) {
+        return (l.source === node) || (l.target === node);
+      });
+      removedLinks.forEach(function (l) {
+        links.splice(links.indexOf(l), 1);
+      });
+      var updatedConfigNode = false;
+      for (var d in node._def.defaults) {
+        if (node._def.defaults.hasOwnProperty(d)) {
+          var property = node._def.defaults[d];
+          if (property.type) {
+            var type = registry.getNodeType(property.type);
+            if (type && type.category == "config") {
+              var configNode = configNodes[node[d]];
+              if (configNode) {
+                updatedConfigNode = true;
+                if (configNode._def.exclusive) {
+                  removeNode(node[d]);
+                  removedNodes.push(configNode);
+                } else {
+                  var users = configNode.users;
+                  users.splice(users.indexOf(node), 1);
                 }
               }
             }
           }
         }
-        if (updatedConfigNode) {
-          RED.workspaces.refresh();
-        }
-        RED.events.emit('nodes:remove', node);
       }
+      if (updatedConfigNode) {
+        RED.workspaces.refresh();
+      }
+      RED.events.emit('nodes:remove', node);
     }
     if (node && node._def.onremove) {
       node._def.onremove.call(n);
