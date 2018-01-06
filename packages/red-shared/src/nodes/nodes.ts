@@ -18,22 +18,22 @@ export class Nodes extends Context {
   public configNodes = {}
   public nodes = []
   public links = []
-  public workspaces
-  public workspacesOrder
-  public subflows
-  public n
-  public initialLoad
+  public workspaces = {}
+  public workspacesOrder = []
+  public subflows = {}
+  public n = null // {}
+  public initialLoad = null // {}
   public loadedFlowVersion
-  public defaultWorkspace
+  public defaultWorkspace = {}
 
-  public setNodeList
-  public getNodeSet
-  public addNodeSet
-  public removeNodeSet
-  public enableNodeSet
-  public disableNodeSet
-  public registerType
-  public getType
+  public setNodeList: Function
+  public getNodeSet: Function
+  public addNodeSet: Function
+  public removeNodeSet: Function
+  public enableNodeSet: Function
+  public disableNodeSet: Function
+  public registerType: Function
+  public getType: Function
 
   constructor() {
     super()
@@ -258,9 +258,10 @@ export class Nodes extends Context {
   }
 
   removeLink(l) {
-    var index = this.links.indexOf(l);
+    const { links } = this
+    var index = links.indexOf(l);
     if (index != -1) {
-      this.links.splice(index, 1);
+      links.splice(index, 1);
     }
   }
 
@@ -290,6 +291,9 @@ export class Nodes extends Context {
       nodes,
       configNodes,
       workspacesOrder,
+    } = this
+
+    const {
       removeNode
     } = this.rebind([
         'removeNode'
@@ -298,10 +302,12 @@ export class Nodes extends Context {
     delete this.workspaces[id];
     this.workspacesOrder.splice(workspacesOrder.indexOf(id), 1);
 
+    // TODO: Fix - instance vars?
     var removedNodes = [];
     var removedLinks = [];
     var n;
     var node;
+
     for (n = 0; n < nodes.length; n++) {
       node = nodes[n];
       if (node.z == id) {
@@ -330,8 +336,7 @@ export class Nodes extends Context {
     const {
       RED,
       subflows
-    } = this.rebind([
-      ])
+    } = this
 
     if (createNewIds) {
       var subflowNames = Object.keys(subflows).map(function (sfid) {
@@ -385,24 +390,33 @@ export class Nodes extends Context {
   }
 
   getSubflow(id) {
-    return this.subflows[id];
+    const { subflows } = this
+    return subflows[id];
   }
 
   removeSubflow(sf) {
+    const { subflows, registry } = this
     delete this.subflows[sf.id];
-    this.registry.removeNodeType("subflow:" + sf.id);
+    registry.removeNodeType("subflow:" + sf.id);
   }
 
   subflowContains(sfid, nodeid) {
-    for (var i = 0; i < this.nodes.length; i++) {
-      var node = this.nodes[i];
+    const { nodes } = this
+    const {
+      subflowContains
+    } = this.rebind([
+        'subflowContains'
+      ])
+
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
       if (node.z === sfid) {
         var m = /^subflow:(.+)$/.exec(node.type);
         if (m) {
           if (m[1] === nodeid) {
             return true;
           } else {
-            var result = this.subflowContains(m[1], nodeid);
+            var result = subflowContains(m[1], nodeid);
             if (result) {
               return true;
             }

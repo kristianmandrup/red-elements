@@ -46,7 +46,23 @@ test('Nodes: create - has empty configNodes collection object', () => {
 })
 
 test('Nodes: create - has empty nodes list', () => {
-  expect(nodes.nodes).toEqual({})
+  expect(nodes.nodes).toEqual([])
+})
+
+test('Nodes: create - has empty links list', () => {
+  expect(nodes.links).toEqual([])
+})
+
+test('Nodes: create - has empty workspaces set', () => {
+  expect(nodes.workspaces).toEqual({})
+})
+
+test('Nodes: create - has empty workspacesOrder list', () => {
+  expect(nodes.workspacesOrder).toEqual([])
+})
+
+test('Nodes: create - has empty subflows set', () => {
+  expect(nodes.subflows).toEqual({})
 })
 
 test('Nodes: getID is a 14+ char string', () => {
@@ -77,7 +93,7 @@ test('Nodes: getNode - finds it', () => {
   expect(found).toBe(node)
 })
 
-test.only('Nodes: removeNode - removes it', () => {
+test('Nodes: removeNode - removes it', () => {
   let id = 'a'
   let node = fakeNode({
     id
@@ -99,20 +115,22 @@ test.only('Nodes: removeNode - removes it', () => {
 })
 
 test('Nodes: addLink', () => {
+  const id = 'a'
   let link = {
-    id: 'a'
+    id
   }
   nodes.addLink(link)
-  let found = nodes.links.find(link)
+  let found = nodes.links.find(link => link.id === id)
   expect(found).toBeTruthy()
 })
 
 test('Nodes: removeLink - removes it', () => {
+  const id = 'a'
   let link = {
-    id: 'a'
+    id
   }
   nodes.removeLink(link)
-  let found = nodes.links.find(link)
+  let found = nodes.links.find(link => link.id === id)
   expect(found).toBeFalsy()
 })
 

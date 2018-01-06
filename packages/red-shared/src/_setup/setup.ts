@@ -102,6 +102,7 @@ export class RED implements IRED {
     }
   }
   public nodes = {
+    getType() { return 'config' },
     subflow(index) { },
     addLink(link) { },
     removeLink(link) { },
