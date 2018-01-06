@@ -418,13 +418,19 @@ export class Nodes extends Context {
     return subflows[id];
   }
 
-  removeSubflow(sf) {
+  removeSubflow(sf: string | Subflow) {
     const { subflows, registry } = this
-    delete this.subflows[sf.id];
-    registry.removeNodeType("subflow:" + sf.id);
+
+    const id: string = typeof sf === 'string' ? sf : sf.id
+
+    delete this.subflows[id];
+    registry.removeNodeType("subflow:" + id);
   }
 
-  subflowContains(sfid, nodeid) {
+  subflowContains(sfid: string, nodeid: string) {
+    this._validateStr(sfid, 'sfid', 'subflowContains')
+    this._validateStr(nodeid, 'nodeid', 'subflowContains')
+
     const { nodes } = this
     const {
       subflowContains
@@ -432,29 +438,60 @@ export class Nodes extends Context {
         'subflowContains'
       ])
 
+    log('subflowContains', {
+      nodes,
+      sfid,
+      nodeid
+    })
+
     for (var i = 0; i < nodes.length; i++) {
       var node = nodes[i];
       if (node.z === sfid) {
+        // https://developer.mozilla.org/th/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
         var m = /^subflow:(.+)$/.exec(node.type);
+        log('match', {
+          type: node.type,
+          m
+        })
         if (m) {
+          log('node matching on ^subflow:(.+)$', {
+            m,
+            type: node.type,
+          })
           if (m[1] === nodeid) {
             return true;
           } else {
+            log('recurse node matching', {
+              m1: m[1],
+              nodeid
+            })
             var result = subflowContains(m[1], nodeid);
             if (result) {
               return true;
             }
           }
+        } else {
+          log('node not matching on ^subflow:(.+)$', {
+            m,
+            type: node.type,
+          })
         }
+      } else {
+        log('node not matching on .z', {
+          sfid,
+          z: node.z,
+        })
       }
     }
     return false;
   }
 
-  getAllFlowNodes(node) {
+  getAllFlowNodes(node: Node) {
     const {
       links
     } = this
+
+    this._validateNode(node, 'node', 'getAllFlowNodes')
 
     var visited = {};
     visited[node.id] = true;

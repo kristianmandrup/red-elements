@@ -183,7 +183,7 @@ test('Nodes: getSubflow - finds it', () => {
   expect(found).toBeTruthy()
 })
 
-test('Nodes: removeSubflow - removes it', () => {
+test('Nodes: removeSubflow - by id removes it', () => {
   const id = 'a'
   let subflow = fakeNode({
     id
@@ -194,19 +194,38 @@ test('Nodes: removeSubflow - removes it', () => {
   expect(found).toBeFalsy()
 })
 
-test('Nodes: subflowContains', () => {
+test('Nodes: removeSubflow - by subflow node removes it', () => {
+  const id = 'a'
+  let subflow = fakeNode({
+    id
+  })
+  nodes.addSubflow(subflow)
+  nodes.removeSubflow(id)
+  let found = nodes.getSubflow(id)
+  expect(found).toBeFalsy()
+})
+
+
+test.only('Nodes: subflowContains', () => {
   let sfid = 'x'
   let nodeid = 'a'
-  let subflow = fakeNode({
-    id: sfid
+  let subflowConfig = fakeNode({
+    z: sfid,
+    id: sfid,
+    type: 'subflow:config'
   })
+  let subflow = fakeNode({
+    id: sfid,
+    type: 'config'
+  })
+  nodes.addNode(subflowConfig)
   nodes.addSubflow(subflow)
 
   let found = nodes.subflowContains(sfid, nodeid)
   expect(found).toBeTruthy()
 })
 
-test('Nodes: getAllFlowNodes', () => {
+test.only('Nodes: getAllFlowNodes', () => {
 
   // todo: add flow nodes
 
@@ -225,7 +244,7 @@ test('Nodes: convertWorkspace', () => {
 })
 
 // TODO: test conversion
-test('Nodes: convertNode', () => {
+test.only('Nodes: convertNode', () => {
   let node = {
     id: 'a'
   }
@@ -235,7 +254,7 @@ test('Nodes: convertNode', () => {
 })
 
 // TODO: test conversion
-test('Nodes: convertSubflow', () => {
+test.only('Nodes: convertSubflow', () => {
   let node = {
     id: 'a'
   }
@@ -243,7 +262,7 @@ test('Nodes: convertSubflow', () => {
   expect(convertedNode).toBeTruthy()
 })
 
-test('Nodes: createExportableNodeSet', () => {
+test.only('Nodes: createExportableNodeSet', () => {
   let node = {
     id: 'a'
   }

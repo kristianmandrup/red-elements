@@ -72,6 +72,7 @@ export class RED implements IRED {
     emit(elm) { }
   }
   public view = {
+    redraw() { },
     focus() { },
     selection() {
       return [{
@@ -102,6 +103,7 @@ export class RED implements IRED {
     }
   }
   public nodes = {
+    dirty(node) { return false },
     registerType(type) { },
     getType() { return 'config' },
     subflow(index) { },
