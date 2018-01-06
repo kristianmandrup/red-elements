@@ -153,49 +153,53 @@ test('Nodes: getWorkspace - finds it', () => {
 })
 
 test('Nodes: removeWorkspace - removes it', () => {
+  const id = 'a'
   let ws = {
-    id: 'a'
+    id
   }
   nodes.addWorkspace(ws)
-  nodes.removeWorkspace(ws.id)
-  let found = nodes.getWorkspace(ws.id)
+  nodes.removeWorkspace(id)
+  let found = nodes.getWorkspace(id)
   expect(found).toBeFalsy()
 })
 
 test('Nodes: addSubflow - adds it', () => {
-  let subflow = {
-    id: 'a'
-  }
+  const id = 'a'
+  let subflow = fakeNode({
+    id
+  })
   nodes.addSubflow(subflow)
-  let found = nodes.getSubflow(subflow.id)
+  let found = nodes.getSubflow(id)
   expect(found).toBeTruthy()
 })
 
 test('Nodes: getSubflow - finds it', () => {
-  let subflow = {
-    id: 'a'
-  }
+  const id = 'a'
+  let subflow = fakeNode({
+    id
+  })
   nodes.addSubflow(subflow)
-  let found = nodes.getSubflow(subflow.id)
+  let found = nodes.getSubflow(id)
   expect(found).toBeTruthy()
 })
 
 test('Nodes: removeSubflow - removes it', () => {
-  let subflow = {
-    id: 'a'
-  }
+  const id = 'a'
+  let subflow = fakeNode({
+    id
+  })
   nodes.addSubflow(subflow)
-  nodes.removeSubflow(subflow.id)
-  let found = nodes.getSubflow(subflow.id)
+  nodes.removeSubflow(id)
+  let found = nodes.getSubflow(id)
   expect(found).toBeFalsy()
 })
 
 test('Nodes: subflowContains', () => {
   let sfid = 'x'
   let nodeid = 'a'
-  let subflow = {
+  let subflow = fakeNode({
     id: sfid
-  }
+  })
   nodes.addSubflow(subflow)
 
   let found = nodes.subflowContains(sfid, nodeid)
@@ -212,9 +216,10 @@ test('Nodes: getAllFlowNodes', () => {
 
 // TODO: test conversion
 test('Nodes: convertWorkspace', () => {
-  let node = {
-    id: 'a'
-  }
+  const id = 'a'
+  let node = fakeNode({
+    id
+  })
   let convertedNode = nodes.convertWorkspace(node)
   expect(convertedNode).toBeTruthy()
 })

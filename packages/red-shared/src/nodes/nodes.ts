@@ -11,6 +11,28 @@ export {
   NodesRegistry
 }
 
+interface Port {
+  length: number
+}
+
+interface NodeDef {
+}
+
+interface Node {
+  id: string,
+  name: string,
+  info?: string,
+  in: Port,
+  out: Port,
+  inputLabels: Object,
+  outputLabels: Object
+  _def: NodeDef
+}
+
+interface Subflow extends Node {
+}
+
+
 const { log } = console
 
 export class Nodes extends Context {
@@ -332,11 +354,13 @@ export class Nodes extends Context {
     };
   }
 
-  addSubflow(sf, createNewIds) {
+  addSubflow(sf: Subflow, createNewIds: boolean) {
     const {
       RED,
       subflows
     } = this
+
+    this._validateNode(sf, 'sf', 'addSubflow')
 
     if (createNewIds) {
       var subflowNames = Object.keys(subflows).map(function (sfid) {

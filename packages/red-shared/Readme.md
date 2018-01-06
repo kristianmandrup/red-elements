@@ -59,6 +59,43 @@ Run jest with debugger
 $ node --inspect-brk node_modules/.bin/jest --runInBand test/playtime/simple.test.js
 ```
 
+## Test Setup
+
+Jest and mocks for internal dependencies needed for tests are configured in `test/_setup.ts`
+
+```ts
+// ...
+
+jest
+  .dontMock('fs')
+  .dontMock('jquery')
+
+const $ = require('jquery');
+const fs = require('fs')
+
+global.$ = $
+
+global.jQuery = global.$
+require('jquery-ui-dist/jquery-ui')
+
+// ...
+```
+
+### Faking RED context
+
+The Fake `RED` global context object is configured in `src/_setup/setup.ts`
+
+```ts
+@injectable()
+export class RED implements IRED {
+  public palette: any
+  public stack: any
+  public comms: any
+
+  // ...
+}
+```
+
 ## Jest tooling
 
 - [VS Code jest plugin](https://github.com/orta/vscode-jest) - just AWESOME!!!
