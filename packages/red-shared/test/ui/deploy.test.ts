@@ -12,6 +12,7 @@ beforeEach(() => {
 })
 
 test('Deploy: create', () => {
+  expect(typeof deploy).toBe('object')
 })
 
 test('Deploy: create w options - type: development', () => {
@@ -21,12 +22,16 @@ test('Deploy: create w options - type: development', () => {
   deploy = new Deploy(options)
 })
 
-test('Deploy: changeDeploymentType(test)', () => {
+test(`Deploy: changeDeploymentType('test')`, () => {
   deploy.changeDeploymentType('test')
+  const deploySrc = $("#btn-deploy-icon").attr("src")
+  expect(deploySrc).toBe('test')
 })
 
-test('Deploy: changeDeploymentType(production)', () => {
+test(`Deploy: changeDeploymentType('production')`, () => {
   deploy.changeDeploymentType('production')
+  const deploySrc = $("#btn-deploy-icon").attr("src")
+  expect(deploySrc).toBe('production')
 })
 
 test('Deploy: getNodeInfo(node)', () => {

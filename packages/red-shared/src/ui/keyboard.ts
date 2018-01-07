@@ -59,7 +59,7 @@ import {
   $
 } from '../context'
 
-import d3 from 'd3'
+import * as d3 from 'd3'
 
 export class Keyboard extends Context {
   public handlers = {};
