@@ -83,6 +83,11 @@ export class Context {
     props.map(prop => this._validateDefined(obj[prop], prop, methodName, obj))
   }
 
+  protected _validateNodeSet(node, name, methodName, info?) {
+    this._validateObj(node, name, methodName, info)
+    this._validateArray(node.types, `${name}.types`, methodName)
+  }
+
   protected _validateNode(node, name, methodName, info?) {
     this._validateObj(node, name, methodName, info)
     // this._validateStr(node.id, `${name}.id`, methodName)

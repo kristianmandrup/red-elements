@@ -12,35 +12,53 @@ beforeEach(() => {
   registry = create()
 })
 
-
 test('NodesRegistry: create', () => {
   expect(typeof registry).toBe('object')
 })
 
-test('registry: setModulePendingUpdated', () => {
-  let module = 'x'
+test('registry: setModulePendingUpdated - module not registered', () => {
+  let moduleId = 'x'
   let version = 1
-  registry.setModulePendingUpdated(module, version)
-  let v = registry.moduleList[module].pending_version
+  expect(() => registry.setModulePendingUpdated(moduleId, version)).toThrow()
+})
+
+test('registry: setModulePendingUpdated', () => {
+  let moduleId = 'x'
+  let version = 1
+  // add fake (empty) module
+  registry.moduleList[moduleId] = {
+
+  }
+  registry.setModulePendingUpdated(moduleId, version)
+  let v = registry.getModule(moduleId).pending_version
   expect(v).toBe(version)
 })
 
 test('registry: getModule', () => {
-  let _module = {
-    id: 'x'
-  }
+  let name = 'hello'
   let ns = {
-    module: _module
+    module: name,
+    types: [
+      'string'
+    ]
   }
   registry.addNodeSet(ns)
-  let registered = registry.getModule(_module)
-  expect(registered).toBe(_module)
+
+  // {
+  //   "local": undefined,
+  //   "name": {"id": "x"},
+  //   "sets": {
+  //     "undefined": {"added": false, "module": {"id": "x"}, "types": ["string"]}
+  //   },
+  //   "version": undefined
+  // }
+  let registered = registry.getModule(name)
+  expect(registered.name).toEqual(name)
 })
 
 test('registry: getNodeSetForType', () => {
   let nodeType = 'io'
   registry.getNodeSetForType(nodeType)
-
 })
 
 test('registry: getModuleList', () => {
@@ -62,16 +80,29 @@ test('registry: setNodeList', () => {
 
 test('registry: removeNodeSet', () => {
   let id = 'a'
+  let ns = {
+    id,
+    module,
+    types: [
+      'string'
+    ]
+  }
+  registry.addNodeSet(ns)
   registry.removeNodeSet(id)
+  let set = registry.getNodeSet(ns.id)
+  expect(set).toBeFalsy()
 })
 
 test('registry: addNodeSet', () => {
-  let module = {
-    id: 'x'
-  }
+  let id = 'a'
+  let module = 'hello'
   let ns = {
-    id: 'a',
-    module
+    id,
+    module,
+    types: [
+      'string'
+    ]
+
   }
   registry.addNodeSet(ns)
   let set = registry.getNodeSet(ns.id)
@@ -79,12 +110,14 @@ test('registry: addNodeSet', () => {
 })
 
 test('registry: getNodeSet', () => {
-  let module = {
-    id: 'x'
-  }
+  let id = 'a'
+  let module = 'hello'
   let ns = {
-    id: 'a',
-    module
+    id,
+    module,
+    types: [
+      'string'
+    ]
   }
   registry.addNodeSet(ns)
   let set = registry.getNodeSet(ns.id)
@@ -92,12 +125,14 @@ test('registry: getNodeSet', () => {
 })
 
 test('registry: enableNodeSet', () => {
-  let module = {
-    id: 'x'
-  }
+  let id = 'a'
+  let module = 'hello'
   let ns = {
-    id: 'a',
-    module
+    id,
+    module,
+    types: [
+      'string'
+    ]
   }
   registry.addNodeSet(ns)
   registry.enableNodeSet(ns.id)
@@ -106,12 +141,14 @@ test('registry: enableNodeSet', () => {
 })
 
 test('registry: disableNodeSet', () => {
-  let module = {
-    id: 'x'
-  }
+  let id = 'a'
+  let module = 'hello'
   let ns = {
-    id: 'a',
-    module
+    id,
+    module,
+    types: [
+      'string'
+    ]
   }
   registry.addNodeSet(ns)
   registry.enableNodeSet(ns.id)
@@ -122,29 +159,93 @@ test('registry: disableNodeSet', () => {
 })
 
 test('registry: registerNodeType', () => {
-  let nt = 'io'
+  let nt = 'config' // must match name in NodeSet types
   let def = {
-    id: 'x'
+    id: 'my-def'
   }
+
+  let module = 'hello'
+  let id = 'blip'
+  let ns = {
+    id,
+    set: {
+      module
+    },
+    types: [
+      'config'
+    ]
+  }
+  registry.addNodeSet(ns)
+
   registry.registerNodeType(nt, def)
   expect(registry.nodeDefinitions[nt]).toEqual(def)
 })
 
-test('registry: removeNodeType', () => {
-  let nt = 'io'
+test('registry: removeNodeType - subflow', () => {
+  let nt = 'subflow:config'
   let def = {
-    id: 'x'
+    id: 'x',
   }
+
+  let module = 'hello'
+  let id = 'blip'
+  let ns = {
+    id,
+    set: {
+      module
+    },
+    types: [
+      'subflow:config'
+    ]
+  }
+
+  registry.addNodeSet(ns)
+
   registry.registerNodeType(nt, def)
   registry.removeNodeType(nt)
   expect(registry.nodeDefinitions[nt]).toBeFalsy()
 })
 
-test('registry: getNodeType', () => {
-  let nt = 'io'
+test('registry: removeNodeType - not a subflow throws', () => {
+  let nt = 'config'
   let def = {
-    id: 'x'
+    id: 'x',
   }
+  let module = 'hello'
+  let id = 'blip'
+  let ns = {
+    id,
+    set: {
+      module
+    },
+    types: [
+      'config'
+    ]
+  }
+  registry.addNodeSet(ns)
+  registry.registerNodeType(nt, def)
+
+  expect(() => registry.removeNodeType(nt)).toThrow()
+})
+
+
+test('registry: getNodeType', () => {
+  let nt = 'config'
+  let def = {
+    id: 'x',
+  }
+  let module = 'hello'
+  let id = 'blip'
+  let ns = {
+    id,
+    set: {
+      module
+    },
+    types: [
+      'config'
+    ]
+  }
+  registry.addNodeSet(ns)
   registry.registerNodeType(nt, def)
   let node = registry.getNodeType(nt)
   expect(node).toBe(def)

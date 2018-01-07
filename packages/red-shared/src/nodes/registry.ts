@@ -3,6 +3,7 @@ import {
   $
 } from '../context'
 
+const { log } = console
 export class NodesRegistry extends Context {
   public moduleList = {};
   public nodeList = [];
@@ -28,30 +29,48 @@ export class NodesRegistry extends Context {
     };
   }
 
-  setModulePendingUpdated(module, version) {
+  setModulePendingUpdated(moduleId, version) {
     const {
       RED,
       moduleList
     } = this
 
-    moduleList[module].pending_version = version;
+    let $module = this.getModule(moduleId)
+    $module.pending_version = version;
     RED.events.emit("registry:module-updated", {
-      module: module,
+      module: moduleId,
       version: version
     });
   }
 
-  getModule(moduleId) {
+  getModule(moduleId: string) {
     const {
       moduleList
     } = this
-    return moduleList[moduleId];
+
+    this._validateStr(moduleId, 'moduleId', 'getModule')
+
+    let $module = moduleList[moduleId]
+    if (!$module) {
+      this.handleError(`no such module registered: ${moduleId}`, {
+        moduleId,
+        module: $module
+      })
+      return this
+    }
+
+    return $module
   }
 
-  getNodeSetForType(nodeType) {
+  getNodeSetForType(nodeType: string) {
+    const {
+      typeToId
+    } = this
+
+    this._validateStr(nodeType, 'nodeType', 'getNodeSetForType')
+
     const {
       getNodeSet,
-      typeToId
     } = this.rebind([
         'getNodeSet'
       ])
@@ -95,12 +114,29 @@ export class NodesRegistry extends Context {
       nodeList
     } = this
 
+    const id = ns.id
     ns.added = false;
-    nodeSets[ns.id] = ns;
+    nodeSets[id] = ns;
+
+    this._validateNodeSet(ns, 'ns', 'addNodeSet')
+
+    log('addNodeSet: populate typeToId with type map for node set ids')
     for (var j = 0; j < ns.types.length; j++) {
-      typeToId[ns.types[j]] = ns.id;
+      const type = ns.types[j]
+      log({
+        id,
+        type,
+        typeToId
+      })
+      typeToId[type] = ns.id;
     }
+
     nodeList.push(ns);
+    log('pushed ns to nodeList', {
+      typeToId,
+      nodeList,
+      ns
+    })
 
     moduleList[ns.module] = moduleList[ns.module] || {
       name: ns.module,
@@ -113,6 +149,13 @@ export class NodesRegistry extends Context {
     }
     moduleList[ns.module].sets[ns.name] = ns;
     RED.events.emit("registry:node-set-added", ns);
+
+    this.setInstanceVars({
+      typeToId,
+      nodeList,
+      moduleList
+    })
+    return this
   }
 
   removeNodeSet(id) {
@@ -182,15 +225,29 @@ export class NodesRegistry extends Context {
       nodeDefinitions
     } = this
 
+    this._validateObj(def, 'def', 'registerNodeType')
+
     nodeDefinitions = nodeDefinitions || {}
     nodeDefinitions[nt] = def;
     def.type = nt;
     if (def.category != "subflows") {
       const id = typeToId[nt]
 
-      def.set = nodeSets[id];
+      log({
+        id,
+        nt,
+        typeToId,
+        nodeSets,
+      })
 
       let nodeSet = nodeSets[id]
+
+      log({
+        nodeSet
+      })
+
+      def.set = nodeSet
+      this._validateObj(def.set, 'def.set', 'registerNodeType')
 
       if (nodeSet) {
         nodeSet.added = true;
@@ -203,11 +260,17 @@ export class NodesRegistry extends Context {
       }
 
       var ns;
+
       if (def.set.module === "node-red") {
         ns = "node-red";
       } else {
         ns = def.set.id;
       }
+
+      this._validateStr(ns, 'ns', 'registerNodeType', {
+        set: def.set
+      })
+
       def["_"] = function () {
         var args = Array.prototype.slice.call(arguments, 0);
         var original = args[0];
@@ -224,6 +287,7 @@ export class NodesRegistry extends Context {
       // TODO: too tightly coupled into palette UI
     }
     RED.events.emit("registry:node-type-added", nt);
+    return this
   }
 
   removeNodeType(nt) {
@@ -234,7 +298,7 @@ export class NodesRegistry extends Context {
 
     if (nt.substring(0, 8) != "subflow:") {
       // NON-NLS - internal debug message
-      throw new Error(`this api is subflow only. called with: ${nt}`);
+      throw new Error(`this api is subflow only (ie. 'subflow:xyz'). called with: ${nt}`);
     }
     delete nodeDefinitions[nt];
     RED.events.emit("registry:node-type-removed", nt);
