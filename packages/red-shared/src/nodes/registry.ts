@@ -87,74 +87,87 @@ export class NodesRegistry extends Context {
   }
 
   addNodeSet(ns) {
-    const {
-      RED
+    let {
+      RED,
+      moduleList,
+      nodeSets,
+      typeToId,
+      nodeList
     } = this
 
     ns.added = false;
-    this.nodeSets[ns.id] = ns;
+    nodeSets[ns.id] = ns;
     for (var j = 0; j < ns.types.length; j++) {
-      this.typeToId[ns.types[j]] = ns.id;
+      typeToId[ns.types[j]] = ns.id;
     }
-    this.nodeList.push(ns);
+    nodeList.push(ns);
 
-    this.moduleList[ns.module] = this.moduleList[ns.module] || {
+    moduleList[ns.module] = moduleList[ns.module] || {
       name: ns.module,
       version: ns.version,
       local: ns.local,
       sets: {}
     };
     if (ns.pending_version) {
-      this.moduleList[ns.module].pending_version = ns.pending_version;
+      moduleList[ns.module].pending_version = ns.pending_version;
     }
-    this.moduleList[ns.module].sets[ns.name] = ns;
+    moduleList[ns.module].sets[ns.name] = ns;
     RED.events.emit("registry:node-set-added", ns);
   }
 
   removeNodeSet(id) {
-    const {
-      RED
+    let {
+      RED,
+      nodeSets,
+      typeToId,
+      nodeList,
+      moduleList
     } = this
 
-    var ns = this.nodeSets[id];
+    var ns = nodeSets[id];
     for (var j = 0; j < ns.types.length; j++) {
-      delete this.typeToId[ns.types[j]];
+      delete typeToId[ns.types[j]];
     }
-    delete this.nodeSets[id];
+    delete nodeSets[id];
     for (var i = 0; i < this.nodeList.length; i++) {
-      if (this.nodeList[i].id === id) {
-        this.nodeList.splice(i, 1);
+      if (nodeList[i].id === id) {
+        nodeList.splice(i, 1);
         break;
       }
     }
-    delete this.moduleList[ns.module].sets[ns.name];
-    if (Object.keys(this.moduleList[ns.module].sets).length === 0) {
-      delete this.moduleList[ns.module];
+    delete moduleList[ns.module].sets[ns.name];
+    if (Object.keys(moduleList[ns.module].sets).length === 0) {
+      delete moduleList[ns.module];
     }
     RED.events.emit("registry:node-set-removed", ns);
     return ns;
   }
 
   getNodeSet(id) {
-    return this.nodeSets[id];
+    const {
+      nodeSets
+    } = this
+    return nodeSets[id];
   }
 
   enableNodeSet(id) {
     const {
-      RED
+      RED,
+      nodeSets
     } = this
 
-    var ns = this.nodeSets[id];
+    var ns = nodeSets[id];
     ns.enabled = true;
     RED.events.emit("registry:node-set-enabled", ns);
   }
 
   disableNodeSet(id) {
     const {
-      RED
+      RED,
+      nodeSets
     } = this
 
-    var ns = this.nodeSets[id];
+    var ns = nodeSets[id];
     ns.enabled = false;
     RED.events.emit("registry:node-set-disabled", ns);
   }
@@ -164,13 +177,30 @@ export class NodesRegistry extends Context {
       RED,
       typeToId
     } = this
+    let {
+      nodeSets,
+      nodeDefinitions
+    } = this
 
-    this.nodeDefinitions[nt] = def;
+    nodeDefinitions = nodeDefinitions || {}
+    nodeDefinitions[nt] = def;
     def.type = nt;
     if (def.category != "subflows") {
-      def.set = this.nodeSets[typeToId[nt]];
-      this.nodeSets[typeToId[nt]].added = true;
-      this.nodeSets[typeToId[nt]].enabled = true;
+      const id = typeToId[nt]
+
+      def.set = nodeSets[id];
+
+      let nodeSet = nodeSets[id]
+
+      if (nodeSet) {
+        nodeSet.added = true;
+        nodeSet.enabled = true;
+      } else {
+        this.logWarning(`no nodeSet found for: ${id}`, {
+          id,
+          nodeSets
+        })
+      }
 
       var ns;
       if (def.set.module === "node-red") {
@@ -211,6 +241,9 @@ export class NodesRegistry extends Context {
   }
 
   getNodeType(nt) {
-    return this.nodeDefinitions[nt];
+    let {
+      nodeDefinitions
+    } = this
+    return nodeDefinitions[nt];
   }
 }

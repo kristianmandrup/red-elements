@@ -37,37 +37,37 @@ export class Context {
     }
   }
 
-  protected _validateStr(value, name, methodName, context?) {
+  protected _validateStr(value, name, methodName, info?) {
     if (typeof value !== 'string') {
       this.handleError(`${methodName}: ${name} must be a string`, {
         [name]: value,
-        context
+        info
       })
     }
   }
 
-  protected _validateNum(value, name, methodName, context?) {
+  protected _validateNum(value, name, methodName, info?) {
     if (typeof value !== 'number') {
       this.handleError(`${methodName}: ${name} must be a number`, {
         [name]: value,
-        context
+        info
       })
     }
   }
 
-  protected _validateJQ(obj, name, methodName, context?) {
+  protected _validateJQ(obj, name, methodName, info?) {
     if (obj instanceof jQuery) return true
     this.handleError(`${methodName}: ${name} must be a $ (jQuery) element`, {
       [name]: obj,
-      context
+      info
     })
   }
 
-  protected _validateDefined(value, name, methodName, context?) {
+  protected _validateDefined(value, name, methodName, info?) {
     if (value !== undefined && value !== null) return true
     this.handleError(`${methodName}: ${name} must be defined`, {
       [name]: value,
-      context
+      info
     })
   }
 
@@ -85,16 +85,22 @@ export class Context {
     // this._validateNodeDef(node._def, `${name}._def`, methodName)
   }
 
+  // TODO: add more guards/checks
+  protected _validateLink(node, name, methodName, info?) {
+    this._validateObj(node, name, methodName, info)
+  }
+
   protected _validateNodeDef(def, name, methodName, info?) {
     this._validateDefined(def, name, methodName, info)
     this._validateObj(def.defaults, `${name}.defaults`, methodName, info)
     this._validateObj(def.set, `${name}.set`, methodName, info)
   }
 
-  protected _validateStrOrNum(value, name, methodName) {
+  protected _validateStrOrNum(value, name, methodName, info?) {
     if (typeof value !== 'string' && typeof value !== 'number') {
       this.handleError(`${methodName}: ${name} must be a string or number`, {
-        [name]: value
+        [name]: value,
+        info
       })
     }
   }

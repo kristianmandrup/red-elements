@@ -11,6 +11,11 @@ export {
   NodesRegistry
 }
 
+interface Link {
+  source: any,
+  target: any
+}
+
 interface NodeDef {
   defaults: Object,
   credentials?: Object,
@@ -44,7 +49,9 @@ const { log } = console
 
 export class Nodes extends Context {
   public registry = new NodesRegistry()
-  public configNodes = {}
+  public configNodes = {
+    users: {}
+  }
   public nodes = []
   public links = []
   public workspaces = {}
@@ -189,11 +196,12 @@ export class Nodes extends Context {
     RED.events.emit('nodes:add', n);
   }
 
-  addLink(l) {
-    this.links.push(l);
+  addLink(link: Link) {
+    this._validateLink(link, 'link', 'addLink')
+    this.links.push(link);
   }
 
-  getNode(id) {
+  getNode(id: string) {
     if (id in this.configNodes) {
       return this.configNodes[id];
     } else {
@@ -723,11 +731,17 @@ export class Nodes extends Context {
         'convertSubflow'
       ])
 
+    const $nodes = this
+
     var nns = [];
     exportedConfigNodes = exportedConfigNodes || {};
     exportedSubflows = exportedSubflows || {};
     for (var n = 0; n < set.length; n++) {
       var node = set[n];
+
+      this._validateNode(node, 'node', 'createExportableNodeSet', 'iterate node set')
+      this._validateStr(node.type, 'node.type', 'createExportableNodeSet', 'iterate node set')
+
       if (node.type.substring(0, 8) == "subflow:") {
         var subflowId = node.type.substring(8);
         if (!exportedSubflows[subflowId]) {
@@ -735,6 +749,9 @@ export class Nodes extends Context {
           var subflow = getSubflow(subflowId);
           var subflowSet = [subflow];
           RED.nodes.eachNode(function (n) {
+
+            $nodes._validateNode(n, 'n', 'iterate RED nodes')
+
             if (n.z == subflowId) {
               subflowSet.push(n);
             }
@@ -768,53 +785,84 @@ export class Nodes extends Context {
     return nns;
   }
 
-  //TODO: rename this (createCompleteNodeSet)
   createCompleteNodeSet(exportCredentials) {
     const {
       workspacesOrder,
       workspaces,
       subflows,
-      nodes
+      nodes,
+      configNodes
     } = this
+
+    const {
+      convertWorkspace,
+      convertSubflow,
+      convertNode
+    } = this.rebind([
+        'convertWorkspace',
+        'convertSubflow',
+        'convertNode'
+      ])
 
     if (exportCredentials === undefined) {
       exportCredentials = true;
     }
     var nns = [];
     for (let i = 0; i < workspacesOrder.length; i++) {
-      if (this.workspaces[workspacesOrder[i]].type == "tab") {
-        nns.push(this.convertWorkspace(workspaces[workspacesOrder[i]]));
+      if (workspaces[workspacesOrder[i]].type == "tab") {
+        nns.push(convertWorkspace(workspaces[workspacesOrder[i]]));
       }
     }
     for (let flowId in subflows) {
-      if (this.subflows.hasOwnProperty(flowId)) {
-        nns.push(this.convertSubflow(subflows[flowId]));
+      if (subflows.hasOwnProperty(flowId)) {
+        nns.push(convertSubflow(subflows[flowId]));
       }
     }
-    for (let nodeId in this.configNodes) {
-      if (this.configNodes.hasOwnProperty(nodeId)) {
-        nns.push(this.convertNode(this.configNodes[nodeId], exportCredentials));
+    for (let nodeId in configNodes) {
+      if (configNodes.hasOwnProperty(nodeId)) {
+        const configNode = configNodes[nodeId]
+        log({
+          nodeId,
+          configNode,
+          configNodes
+        })
+        this._validateNode(configNode, 'configNode', 'createCompleteNodeSet', 'iterate configNodes')
+
+        nns.push(convertNode(configNode, exportCredentials));
       }
     }
     for (let nodeId = 0; nodeId < nodes.length; nodeId++) {
       var node = nodes[nodeId];
-      nns.push(this.convertNode(node, exportCredentials));
+      this._validateNode(node, 'node', 'createCompleteNodeSet', 'iterate nodes')
+
+      nns.push(convertNode(node, exportCredentials));
     }
     return nns;
   }
 
   checkForMatchingSubflow(subflow, subflowNodes) {
     const {
-      RED,
+      RED
+    } = this
+    const {
       createExportableNodeSet
     } = this.rebind([
         'createExportableNodeSet'
       ])
 
+    this._validateNode(subflow, 'subflow', 'checkForMatchingSubflow')
+    this._validateArray(subflowNodes, 'subflowNodes', 'checkForMatchingSubflow')
+
     var i;
     var match = null;
     try {
       RED.nodes.eachSubflow((sf) => {
+        this._validateNode(sf, 'sf', 'checkForMatchingSubflow', 'iterate subflow nodes')
+
+        log('eachSubflow', {
+          sf
+        })
+
         if (sf.name != subflow.name ||
           sf.info != subflow.info ||
           sf.in.length != subflow.in.length ||
@@ -824,12 +872,22 @@ export class Nodes extends Context {
         var sfNodes = RED.nodes.filterNodes({
           z: sf.id
         });
+
+        log({
+          sfNodes
+        })
+
         if (sfNodes.length != subflowNodes.length) {
           return;
         }
 
         var subflowNodeSet = [subflow].concat(subflowNodes);
         var sfNodeSet = [sf].concat(sfNodes);
+
+        log({
+          subflowNodeSet,
+          sfNodeSet
+        })
 
         var exportableSubflowNodes = JSON.stringify(subflowNodeSet);
         var exportableSFNodes = JSON.stringify(createExportableNodeSet(sfNodeSet));
@@ -839,9 +897,17 @@ export class Nodes extends Context {
         }
         exportableSubflowNodes = exportableSubflowNodes.replace(new RegExp("\"" + subflow.id + "\"", "g"), '"' + sf.id + '"');
 
+        log('compare', {
+          exportableSubflowNodes,
+          exportableSFNodes
+        })
+
         if (exportableSubflowNodes !== exportableSFNodes) {
           return;
         }
+        log('found match', {
+          sf
+        })
 
         match = sf;
         throw new Error();
@@ -1396,6 +1462,9 @@ export class Nodes extends Context {
 
     for (var n = 0; n < nodes.length; n++) {
       var node = nodes[n];
+
+      this._validateNode(node, 'node', 'filterNodes', 'iterate nodes')
+
       if (filter.hasOwnProperty("z") && node.z !== filter.z) {
         continue;
       }
@@ -1408,10 +1477,17 @@ export class Nodes extends Context {
   }
 
   filterLinks(filter) {
+    const {
+      links
+    } = this
+
     var result = [];
 
-    for (var n = 0; n < this.links.length; n++) {
-      var link = this.links[n];
+    for (var n = 0; n < links.length; n++) {
+      var link = links[n];
+
+      this._validateLink(link, 'link', 'filterNodes', { links })
+
       if (filter.source) {
         if (filter.source.hasOwnProperty("id") && link.source.id !== filter.source.id) {
           continue;
@@ -1437,24 +1513,75 @@ export class Nodes extends Context {
   }
 
   // Update any config nodes referenced by the provided node to ensure their 'users' list is correct
-  updateConfigNodeUsers(n) {
+  updateConfigNodeUsers(n: Node) {
     const {
-      registry
+      registry,
+      configNodes
     } = this
+
+    this._validateNode(n, 'n', 'updateConfigNodeUsers')
+    this._validateNodeDef(n._def, 'n._def', 'updateConfigNodeUsers')
+
+    const keys = Object.keys(n._def.defaults)
+    if (keys.length === 0) {
+      this.logWarning('no defaults registered for node def', {
+        _def: n._def,
+        n
+      })
+    }
 
     for (var d in n._def.defaults) {
       if (n._def.defaults.hasOwnProperty(d)) {
+        log({
+          d,
+          n,
+          _def: n._def,
+          defaults: n._def.defaults,
+        })
+
         var property = n._def.defaults[d];
+
         if (property.type) {
           var type = registry.getNodeType(property.type);
+          log('type property', {
+            type,
+            property
+          })
+
           if (type && type.category == "config") {
-            var configNode = this.configNodes[n[d]];
-            if (configNode) {
-              if (configNode.users.indexOf(n) === -1) {
-                configNode.users.push(n);
+            var defPropId = n[d]
+            if (defPropId) {
+              var configNode = configNodes[defPropId];
+              if (configNode) {
+                if (configNode.users.indexOf(n) === -1) {
+                  configNode.users.push(n);
+                } else {
+                  this.logWarning('user already registered in configNode.users', {
+                    n,
+                    users: configNode.users
+                  })
+                }
+              } else {
+                this.logWarning('missing configNode')
               }
+            } else {
+              this.logWarning(`missing default property: ${defPropId} in configNodes`, {
+                n,
+                d,
+                configNodes,
+                defPropId
+              })
             }
+          } else {
+            this.logWarning('node type not a config category', {
+              category: type.category,
+              property
+            })
           }
+        } else {
+          this.logWarning('missing property type', {
+            property
+          })
         }
       }
     }
@@ -1467,47 +1594,60 @@ export class Nodes extends Context {
 
     if (version !== undefined) {
       loadedFlowVersion = version;
-    } else {
-      return loadedFlowVersion;
     }
+    this.setInstanceVars({ loadedFlowVersion })
+    return loadedFlowVersion;
   }
 
   clear() {
     let {
       RED,
-      defaultWorkspace
+      defaultWorkspace,
+      subflows,
+      workspaces
     } = this
 
-    this.nodes = [];
-    this.links = [];
-    this.configNodes = {};
-    this.workspacesOrder = [];
-    var subflowIds = Object.keys(this.subflows);
+    var subflowIds = Object.keys(subflows);
     subflowIds.forEach((id) => {
       RED.subflow.removeSubflow(id)
     });
-    var workspaceIds = Object.keys(this.workspaces);
+    var workspaceIds = Object.keys(workspaces);
     workspaceIds.forEach((id) => {
-      RED.workspaces.remove(this.workspaces[id]);
+      RED.workspaces.remove(workspaces[id]);
     });
 
     defaultWorkspace = null;
 
     RED.nodes.dirty(true);
+
+    log('RED refresh')
+
     RED.view.redraw(true);
     RED.palette.refresh();
     RED.workspaces.refresh();
     RED.sidebar.config.refresh();
 
-    // var node_defs = {};
-    // var nodes = [];
-    // var configNodes = {};
-    // var links = [];
-    // var defaultWorkspace;
-    // var workspaces = {};
-    // var workspacesOrder =[];
-    // var subflows = {};
-    // var loadedFlowVersion = null;
+    var node_defs = {};
+    var nodes = [];
+    var configNodes = {};
+    var links = [];
+    workspaces = {};
+    var workspacesOrder = [];
+    subflows = {};
+    var loadedFlowVersion = null;
+
+    this.setInstanceVars({
+      node_defs,
+      nodes,
+      configNodes,
+      links,
+      workspaces,
+      workspacesOrder,
+      subflows,
+      loadedFlowVersion
+    })
+
+    return this
   }
 
   getWorkspaceOrder() {
@@ -1515,7 +1655,9 @@ export class Nodes extends Context {
   }
 
   setWorkspaceOrder(order) {
+    this._validateArray(order, 'order', 'setWorkspaceOrder')
     this.workspacesOrder = order;
+    return this
   }
 
   eachNode(cb) {

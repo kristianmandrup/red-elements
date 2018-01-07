@@ -11,6 +11,8 @@ beforeEach(() => {
   nodes = create()
 })
 
+const { log } = console
+
 const FAKE_RED = {}
 
 function merge(a, b) {
@@ -328,20 +330,46 @@ test('Nodes: createExportableNodeSet', () => {
   expect(convertedSet).toBeTruthy()
 })
 
-
-test('Nodes: createExportableNodeSet', () => {
+test('Nodes: createCompleteNodeSet with NO/default exportCredentials', () => {
   let exportCredentials = {}
+
+  nodes.configNodes.users = fakeNode({
+    id: 'my-user'
+  })
+
+  let set = nodes.createCompleteNodeSet()
+  expect(set).toBeTruthy()
+})
+
+test('Nodes: createCompleteNodeSet w exportCredentials', () => {
+  let exportCredentials = {
+    username: 'kris',
+    password: 'secret'
+  }
+
+  nodes.configNodes.users = fakeNode({
+    id: 'my-user'
+  })
+
   let set = nodes.createCompleteNodeSet(exportCredentials)
   expect(set).toBeTruthy()
 })
 
-test('Nodes: checkForMatchingSubflow', () => {
+test.only('Nodes: checkForMatchingSubflow', () => {
   const id = 'a'
   let node = fakeNode({
-    id
+    id,
+    in: [],
+    out: []
   })
-  let subflow = {}
-  let subflowNodes = [node]
+
+  // Fake the eachSubflow iterator
+  nodes.RED.nodes.eachSubflow = (cb) => {
+    cb(node)
+  }
+
+  let subflow = fakeNode({})
+  let subflowNodes = [subflow]
   let set = nodes.checkForMatchingSubflow(subflow, subflowNodes)
   expect(set).toBeTruthy()
 })
@@ -362,19 +390,17 @@ test('Nodes: compareNodes', () => {
   expect(result).toBeTruthy()
 })
 
-test.only('Nodes: importNodes - missing in/out', () => {
+test('Nodes: importNodes - missing in/out', () => {
   const id = 'a'
   let newNodesObj = fakeNode({
-    id,
-    in: [],
-    out: []
+    id
   })
   let createMissingWorkspace = true
   let createNewIds = true
   expect(() => nodes.importNodes(newNodesObj, createNewIds, createMissingWorkspace)).toThrow()
 })
 
-test.only('Nodes: importNodes', () => {
+test('Nodes: importNodes', () => {
   const id = 'a'
   let newNodesObj = fakeNode({
     id,
@@ -384,32 +410,44 @@ test.only('Nodes: importNodes', () => {
   let createMissingWorkspace = true
   let createNewIds = true
   let results = nodes.importNodes(newNodesObj, createNewIds, createMissingWorkspace)
+
+  let found = results.filter(imported => Array.isArray(imported) && typeof imported[0] === 'object')
+
   // return [new_nodes, new_links, new_workspaces, new_subflows, missingWorkspace];
+  let node = found[0][0]
 
   // TODO: test result...
-  let node = results[0]
-  expect(node).toBe(newNodesObj)
+  log('importNodes', {
+    results,
+    found,
+    node,
+    newNodesObj
+  })
+
+  expect(node.id).toBe(newNodesObj.id)
 })
 
-test.only('Nodes: filterNodes', () => {
+test('Nodes: filterNodes', () => {
   let filter = {
     type: 'x'
   }
-  let nodeA = {
+  let nodeA = fakeNode({
     id: 'a',
     type: 'x'
-  }
-  let nodeB = {
+  })
+  let nodeB = fakeNode({
     id: 'b'
-  }
+  })
+
   nodes.addNode(nodeA)
   nodes.addNode(nodeB)
+
   let filtered = nodes.filterNodes(filter)
   expect(filtered.length).toBe(1)
   expect(filtered[0]).toBe(nodeA)
 })
 
-test.only('Nodes: filterLinks', () => {
+test('Nodes: filterLinks', () => {
   let filter = {
     type: 'x'
   }
@@ -420,29 +458,66 @@ test.only('Nodes: filterLinks', () => {
     type: 'y'
   }
 
-  nodes.addLink()
+  nodes.addLink(linkA)
   let filtered = nodes.filterLinks(filter)
   expect(filtered.length).toBe(1)
   expect(filtered[0]).toBe(linkA)
 })
 
-test.only('Nodes: updateConfigNodeUsers', () => {
-  let node = {
+test('Nodes: updateConfigNodeUsers', () => {
+  let node = fakeNode({
     id: 'a',
-    type: 'x'
+    type: 'x',
+    _def: {
+      set: {},
+      defaults: {
+        custom: {
+          // registry.getNodeType(property.type) must be able to find the node type
+          type: 'age',
+          category: 'config'
+        }
+      }
+    }
+  })
+
+  // TODO: Fix and also add Type interface for it!?
+  const ns = {
+    id: 'basic',
+    types: {
+      age: {
+
+      }
+    },
+    module: 'demo',
+    version: 1,
+    local: true,
+    pending_version: 2
   }
+
+  nodes.registry.addNodeSet(ns)
+
+  // Note: the node type is looked up in the node sets registered in registry
+  nodes.registry.registerNodeType('age', {
+    category: 'config'
+  })
+
   nodes.updateConfigNodeUsers(node)
+  log({
+    users: nodes.configNodes.users
+  })
+  // TODO: not sure this is correct approach. users might be keyed by ID?
   let user = nodes.configNodes.users[0]
   let expectedUser = {}
   expect(user).toEqual(expectedUser)
 })
 
-test.only('Nodes: flowVersion', () => {
-  let version = nodes.flowVersion()
-  expect(version).toBe('1')
+test('Nodes: flowVersion', () => {
+  const versionId = '1'
+  let version = nodes.flowVersion(versionId)
+  expect(version).toBe(versionId)
 })
 
-test.only('Nodes: clear', () => {
+test('Nodes: clear', () => {
   nodes.clear()
   expect(nodes.nodes).toEqual([])
   expect(nodes.links).toEqual([])
@@ -454,10 +529,19 @@ test('Nodes: getWorkspaceOrder', () => {
   expect(order).toBe(expected)
 })
 
-test('Nodes: setWorkspaceOrder', () => {
-  let expected = 2
-  let order = nodes.setWorkspaceOrder(expected)
-  expect(order).toBe(expected)
+test.only('Nodes: setWorkspaceOrder - fails if not Array', () => {
+  let newOrder = {}
+  expect(() => nodes.setWorkspaceOrder(newOrder)).toThrow()
+})
+
+test.only('Nodes: setWorkspaceOrder', () => {
+  let newOrder = [
+    {
+      id: 'a'
+    }
+  ]
+  nodes.setWorkspaceOrder(newOrder)
+  expect(nodes.workspacesOrder).toBe(newOrder)
 })
 
 test('Nodes: eachNode', () => {

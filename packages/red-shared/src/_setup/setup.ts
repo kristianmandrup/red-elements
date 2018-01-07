@@ -41,7 +41,6 @@ export interface IRED {
 
 @injectable()
 export class RED implements IRED {
-  public palette: any
   public stack: any
   public comms: any
   public user: any
@@ -51,6 +50,10 @@ export class RED implements IRED {
   public search: any
   public library = {
     loadFlowLibrary() { }
+  }
+
+  public palette = {
+    refresh() { }
   }
 
   public i18n = {
@@ -103,6 +106,14 @@ export class RED implements IRED {
     }
   }
   public nodes = {
+    eachSubflow(cb) {
+      // callback with a fake subflow
+      cb({
+        id: 'x',
+        in: [],
+        out: []
+      })
+    },
     refresh() { },
     dirty(node) { return false },
     registerType(type) { },
@@ -129,6 +140,9 @@ export class RED implements IRED {
   public sidebar = {
     info: {
       set(text) { }
+    },
+    config: {
+      refresh() { }
     }
   }
   public _ = function () { }
@@ -149,6 +163,7 @@ export class RED implements IRED {
     toggle(elem) { }
   }
   public workspaces = {
+    refresh() { },
     active() {
       return {} // the currently active workspace
     }
