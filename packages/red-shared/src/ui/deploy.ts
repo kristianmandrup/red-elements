@@ -92,6 +92,7 @@ export class Deploy extends Context {
         '</a>' +
         '<a id="btn-deploy-options" data-toggle="dropdown" class="deploy-button" href="#"><i class="fa fa-caret-down"></i></a>' +
         '</span></li>').prependTo(".header-toolbar");
+
       ctx.menu.init({
         id: "btn-deploy-options",
         options: [{
@@ -319,6 +320,9 @@ export class Deploy extends Context {
       deploymentTypes
     } = this
     deploymentType = type;
+    this.setInstanceVars({
+      deploymentType
+    })
     $("#btn-deploy-icon").attr("src", deploymentTypes[type].img);
   }
 

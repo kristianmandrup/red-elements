@@ -42,12 +42,16 @@ export interface IRED {
 @injectable()
 export class RED implements IRED {
   public stack: any
-  public comms: any
   public user: any
   public deploy: any
   public diff: any
   public notifications: any
   public search: any
+
+  public comms = {
+    subscribe(name, cb) { },
+  }
+
   public library = {
     loadFlowLibrary() { }
   }
@@ -203,6 +207,7 @@ export class RED implements IRED {
    *  setDisabled
    */
   public menu = {
+    init() { }, // creates Menu instance
     setDisabled() { }
   }
   notify(func, node?, a?, b?) { }
