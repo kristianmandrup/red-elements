@@ -103,6 +103,7 @@ export class RED implements IRED {
     }
   }
   public nodes = {
+    refresh() { },
     dirty(node) { return false },
     registerType(type) { },
     getType() { return 'config' },

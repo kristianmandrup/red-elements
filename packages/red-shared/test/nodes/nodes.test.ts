@@ -206,7 +206,7 @@ test('Nodes: removeSubflow - by subflow node removes it', () => {
 })
 
 
-test.only('Nodes: subflowContains', () => {
+test('Nodes: subflowContains', () => {
   let sfid = 'x'
   let nodeid = 'a'
   let subflowConfig = fakeNode({
@@ -225,11 +225,24 @@ test.only('Nodes: subflowContains', () => {
   expect(found).toBeTruthy()
 })
 
-test.only('Nodes: getAllFlowNodes', () => {
+test('Nodes: getAllFlowNodes', () => {
+  // TODO: create test factory for setting up flow for testing
+  let nodeA = fakeNode({
+    id: 'a',
+    type: 'subflow'
+  })
+  let nodeB = fakeNode({
+    id: 'b',
+    type: 'subflow'
+  })
 
   // todo: add flow nodes
+  const id = 'c'
+  let node = fakeNode({
+    id
+  })
 
-  let flowNodes = nodes.getAllFlowNodes()
+  let flowNodes = nodes.getAllFlowNodes(node)
   expect(flowNodes).toBeTruthy()
 })
 
@@ -244,28 +257,68 @@ test('Nodes: convertWorkspace', () => {
 })
 
 // TODO: test conversion
-test.only('Nodes: convertNode', () => {
-  let node = {
-    id: 'a'
-  }
+test('Nodes: convertSubflow', () => {
+  const id = 'a'
+  let node = fakeNode({
+    id,
+    in: [],
+    out: []
+  })
+  let convertedNode = nodes.convertSubflow(node)
+  expect(convertedNode).toBeTruthy()
+})
+
+test('Nodes: convertSubflow - missing in', () => {
+  const id = 'a'
+  let node = fakeNode({
+    id,
+    out: []
+  })
+  expect(() => nodes.convertSubflow(node)).toThrow()
+})
+
+test('Nodes: convertSubflow - missing out', () => {
+  const id = 'a'
+  let node = fakeNode({
+    id,
+    in: []
+  })
+  expect(() => nodes.convertSubflow(node)).toThrow()
+})
+
+// TODO: test conversion
+test('Nodes: convertNode', () => {
+  const id = 'a'
+  let node = fakeNode({
+    id,
+    in: [],
+    out: []
+  })
   let exportCreds = false
   let convertedNode = nodes.convertNode(node, exportCreds)
   expect(convertedNode).toBeTruthy()
 })
 
-// TODO: test conversion
-test.only('Nodes: convertSubflow', () => {
-  let node = {
-    id: 'a'
-  }
-  let convertedNode = nodes.convertSubflow(node)
-  expect(convertedNode).toBeTruthy()
+test('Nodes: createExportableNodeSet - missing in/out', () => {
+  const id = 'a'
+  let node = fakeNode({
+    id
+  })
+  // TODO: test real data
+  let set = [node]
+  let exportedSubflows = {}
+  let exportedConfigNodes = {}
+
+  expect(() => nodes.createExportableNodeSet(set, exportedSubflows, exportedConfigNodes)).toThrow()
 })
 
-test.only('Nodes: createExportableNodeSet', () => {
-  let node = {
-    id: 'a'
-  }
+test('Nodes: createExportableNodeSet', () => {
+  const id = 'a'
+  let node = fakeNode({
+    id,
+    in: [],
+    out: []
+  })
   // TODO: test real data
   let set = [node]
   let exportedSubflows = {}
@@ -275,6 +328,7 @@ test.only('Nodes: createExportableNodeSet', () => {
   expect(convertedSet).toBeTruthy()
 })
 
+
 test('Nodes: createExportableNodeSet', () => {
   let exportCredentials = {}
   let set = nodes.createCompleteNodeSet(exportCredentials)
@@ -282,9 +336,10 @@ test('Nodes: createExportableNodeSet', () => {
 })
 
 test('Nodes: checkForMatchingSubflow', () => {
-  let node = {
-    id: 'a'
-  }
+  const id = 'a'
+  let node = fakeNode({
+    id
+  })
   let subflow = {}
   let subflowNodes = [node]
   let set = nodes.checkForMatchingSubflow(subflow, subflowNodes)
@@ -292,12 +347,13 @@ test('Nodes: checkForMatchingSubflow', () => {
 })
 
 test('Nodes: compareNodes', () => {
-  let nodeA = {
-    id: 'a'
-  }
-  let nodeB = {
+  const id = 'a'
+  let nodeA = fakeNode({
+    id
+  })
+  let nodeB = fakeNode({
     id: 'b'
-  }
+  })
   let idMustMatch = true
   let result = nodes.compareNodes(nodeA, nodeB, idMustMatch)
   expect(result).toBeFalsy()
@@ -306,10 +362,25 @@ test('Nodes: compareNodes', () => {
   expect(result).toBeTruthy()
 })
 
-test('Nodes: importNodes', () => {
-  let newNodesObj = {
-    id: 'a'
-  }
+test.only('Nodes: importNodes - missing in/out', () => {
+  const id = 'a'
+  let newNodesObj = fakeNode({
+    id,
+    in: [],
+    out: []
+  })
+  let createMissingWorkspace = true
+  let createNewIds = true
+  expect(() => nodes.importNodes(newNodesObj, createNewIds, createMissingWorkspace)).toThrow()
+})
+
+test.only('Nodes: importNodes', () => {
+  const id = 'a'
+  let newNodesObj = fakeNode({
+    id,
+    in: [],
+    out: []
+  })
   let createMissingWorkspace = true
   let createNewIds = true
   let results = nodes.importNodes(newNodesObj, createNewIds, createMissingWorkspace)
@@ -320,7 +391,7 @@ test('Nodes: importNodes', () => {
   expect(node).toBe(newNodesObj)
 })
 
-test('Nodes: filterNodes', () => {
+test.only('Nodes: filterNodes', () => {
   let filter = {
     type: 'x'
   }
@@ -338,7 +409,7 @@ test('Nodes: filterNodes', () => {
   expect(filtered[0]).toBe(nodeA)
 })
 
-test('Nodes: filterLinks', () => {
+test.only('Nodes: filterLinks', () => {
   let filter = {
     type: 'x'
   }
@@ -355,7 +426,7 @@ test('Nodes: filterLinks', () => {
   expect(filtered[0]).toBe(linkA)
 })
 
-test('Nodes: updateConfigNodeUsers', () => {
+test.only('Nodes: updateConfigNodeUsers', () => {
   let node = {
     id: 'a',
     type: 'x'
@@ -366,12 +437,12 @@ test('Nodes: updateConfigNodeUsers', () => {
   expect(user).toEqual(expectedUser)
 })
 
-test('Nodes: flowVersion', () => {
+test.only('Nodes: flowVersion', () => {
   let version = nodes.flowVersion()
   expect(version).toBe('1')
 })
 
-test('Nodes: clear', () => {
+test.only('Nodes: clear', () => {
   nodes.clear()
   expect(nodes.nodes).toEqual([])
   expect(nodes.links).toEqual([])

@@ -11,22 +11,29 @@ export {
   NodesRegistry
 }
 
-interface Port {
-  length: number
-}
-
 interface NodeDef {
+  defaults: Object,
+  credentials?: Object,
+  category?: string
 }
 
 interface Node {
   id: string,
   name: string,
   info?: string,
-  in: Port,
-  out: Port,
-  inputLabels: Object,
-  outputLabels: Object
-  _def: NodeDef
+  type: string,
+  credentials?: any,
+  in: any[],
+  out: any[],
+  inputs: number,
+  outputs: number,
+  inputLabels: string[],
+  outputLabels: string[],
+  _orig: any,
+  _def: NodeDef,
+  x: number,
+  y: number,
+  z: number
 }
 
 interface Subflow extends Node {
@@ -427,6 +434,7 @@ export class Nodes extends Context {
     registry.removeNodeType("subflow:" + id);
   }
 
+  // TODO: split up function into smaller parts to make easier to track and test internals
   subflowContains(sfid: string, nodeid: string) {
     this._validateStr(sfid, 'sfid', 'subflowContains')
     this._validateStr(nodeid, 'nodeid', 'subflowContains')
@@ -536,10 +544,13 @@ export class Nodes extends Context {
   /**
    * Converts a node to an exportable JSON Object
    **/
-  convertNode(n, exportCreds) {
+  convertNode(n: Node, exportCreds: boolean) {
     const {
       links
     } = this
+
+    this._validateNode(n, 'n', 'convertNode')
+    this._validateNodeDef(n._def, 'n._def', 'convertNode')
 
     if (n.type === 'tab') {
       return this.convertWorkspace(n);
@@ -623,7 +634,9 @@ export class Nodes extends Context {
     return node;
   }
 
-  convertSubflow(n) {
+  convertSubflow(n: Node) {
+    this._validateNode(n, 'n', 'convertSubflow')
+
     var node: any = {
     };
     node.id = n.id;
@@ -632,6 +645,9 @@ export class Nodes extends Context {
     node.info = n.info;
     node.in = [];
     node.out = [];
+
+    this._validateArray(n.in, 'n.in', 'convertSubflow')
+    this._validateArray(n.out, 'n.out', 'convertSubflow')
 
     n.in.forEach((p) => {
       var nIn = {
@@ -693,11 +709,14 @@ export class Nodes extends Context {
   createExportableNodeSet(set, exportedSubflows, exportedConfigNodes) {
     const {
       RED,
+      registry,
+      configNodes,
+    } = this
+    const {
       getSubflow,
       createExportableNodeSet,
-      configNodes,
       convertSubflow,
-      registry
+
     } = this.rebind([
         'getSubflow',
         'createExportableNodeSet',
@@ -863,16 +882,21 @@ export class Nodes extends Context {
   }
 
   importNodes(newNodesObj, createNewIds, createMissingWorkspace) {
-    let {
+    const {
       RED,
-      initialLoad,
       registry,
-      subflowContains,
+    } = this
+    let {
+      initialLoad,
       defaultWorkspace,
-      getID,
-      getSubflow,
       workspaces,
       configNodes
+    } = this
+
+    const {
+      subflowContains,
+      getID,
+      getSubflow,
     } = this.rebind([
         'subflowContains',
         'getID',
@@ -909,6 +933,8 @@ export class Nodes extends Context {
     var unknownTypes = [];
     for (i = 0; i < newNodes.length; i++) {
       n = newNodes[i];
+      this._validateNode(n, 'n', 'importNodes', 'iterate newNodes')
+
       // TODO: remove workspace in next release+1
       if (n.type != "workspace" &&
         n.type != "tab" &&
@@ -974,6 +1000,9 @@ export class Nodes extends Context {
     // Find all tabs and subflow templates
     for (i = 0; i < newNodes.length; i++) {
       n = newNodes[i];
+
+      this._validateNode(n, 'n', 'importNodes', 'iterate newNodes: tabs and subflows')
+
       // TODO: remove workspace in next release+1
       if (n.type === "workspace" || n.type === "tab") {
         if (n.type === "workspace") {
@@ -1000,6 +1029,10 @@ export class Nodes extends Context {
             nid = this.getID();
             n.id = nid;
           }
+
+          this._validateArray(n.in, 'n.in', 'importNodes', 'iterate newNodes: tabs and subflows')
+          this._validateArray(n.out, 'n.out', 'importNodes', 'iterate newNodes: tabs and subflows')
+
           // TODO: handle createNewIds - map old to new subflow ids
           n.in.forEach((input, i) => {
             input.type = "subflow";
@@ -1310,6 +1343,10 @@ export class Nodes extends Context {
     }
     for (i = 0; i < new_subflows.length; i++) {
       n = new_subflows[i];
+
+      this._validateArray(n.in, 'n.in', 'importNodes', 'iterate new_subflows')
+      this._validateArray(n.out, 'n.out', 'importNodes', 'iterate new_subflows')
+
       n.in.forEach(function (input) {
         input.wires.forEach(function (wire) {
           var link = {

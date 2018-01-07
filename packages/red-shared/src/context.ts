@@ -19,10 +19,11 @@ export class Context {
     this.ctx = this.RED;
   }
 
-  protected validateArray(value, name, methodName) {
+  protected _validateArray(value, name, methodName, info?) {
     if (!Array.isArray(value)) {
       this.handleError(`${methodName}: ${name} must be an Array`, {
-        [name]: value
+        [name]: value,
+        info
       })
     }
   }
@@ -74,8 +75,8 @@ export class Context {
     props.map(prop => this._validateDefined(obj[prop], prop, methodName, obj))
   }
 
-  protected _validateNode(node, name, methodName) {
-    this._validateObj(node, name, methodName)
+  protected _validateNode(node, name, methodName, info?) {
+    this._validateObj(node, name, methodName, info)
     // this._validateStr(node.id, `${name}.id`, methodName)
     this._validateStr(node.type, `${name}.type`, methodName)
 
@@ -84,10 +85,10 @@ export class Context {
     // this._validateNodeDef(node._def, `${name}._def`, methodName)
   }
 
-  protected _validateNodeDef(def, name, methodName) {
-    this._validateDefined(def, name, methodName)
-    this._validateObj(def.defaults, `${name}.defaults`, methodName)
-    this._validateObj(def.set, `${name}.set`, methodName)
+  protected _validateNodeDef(def, name, methodName, info?) {
+    this._validateDefined(def, name, methodName, info)
+    this._validateObj(def.defaults, `${name}.defaults`, methodName, info)
+    this._validateObj(def.set, `${name}.set`, methodName, info)
   }
 
   protected _validateStrOrNum(value, name, methodName) {
