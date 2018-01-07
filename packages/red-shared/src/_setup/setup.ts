@@ -121,9 +121,14 @@ export class RED implements IRED {
     subflow(index) { },
     addLink(link) { },
     removeLink(link) { },
-    filterNodes(filter) {
+
+    // filters all nodes w matching node props
+    filterNodes(node) {
       return [{
-        id: 'x'
+        id: 'x',
+        type: 'subflow',
+        in: [],
+        out: []
       }] // set of filtered nodes
     },
     workspace(id) {

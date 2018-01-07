@@ -194,6 +194,7 @@ export class Nodes extends Context {
       this.nodes.push(n);
     }
     RED.events.emit('nodes:add', n);
+    return this
   }
 
   addLink(link: Link) {
@@ -873,36 +874,69 @@ export class Nodes extends Context {
           z: sf.id
         });
 
-        log({
-          sfNodes
+        const compareLengths = {
+          sfNodes: sfNodes.length,
+          subflowNodes: subflowNodes.length
+        }
+
+        log('original node sets', {
+          sfNodes,
+          subflowNodes,
+          compareLengths
         })
 
         if (sfNodes.length != subflowNodes.length) {
+          log('no match: incompatible lengths', {
+            compareLengths
+          })
           return;
         }
 
         var subflowNodeSet = [subflow].concat(subflowNodes);
         var sfNodeSet = [sf].concat(sfNodes);
 
-        log({
+        log('after concat', {
           subflowNodeSet,
-          sfNodeSet
+          sfNodeSet,
+          DEFsubflowNodeSet: subflowNodeSet.map(n => n._def),
+          DEFsfNodeSet: sfNodeSet.map(n => n._def)
         })
 
         var exportableSubflowNodes = JSON.stringify(subflowNodeSet);
-        var exportableSFNodes = JSON.stringify(createExportableNodeSet(sfNodeSet));
+
+        // Seems to cut off the credentials!
+        // Test if this is current intended behavior, then make sure test runs without credentials?
+        const exportableSFNodeSet = createExportableNodeSet(sfNodeSet)
+        log({
+          exportableSFNodeSet
+        })
+
+        var exportableSFNodes = JSON.stringify(exportableSFNodeSet);
         var nodeMap = {};
+
         for (i = 0; i < sfNodes.length; i++) {
           exportableSubflowNodes = exportableSubflowNodes.replace(new RegExp("\"" + subflowNodes[i].id + "\"", "g"), '"' + sfNodes[i].id + '"');
         }
         exportableSubflowNodes = exportableSubflowNodes.replace(new RegExp("\"" + subflow.id + "\"", "g"), '"' + sf.id + '"');
 
+        const exportableSubflowNodesObj = JSON.parse(exportableSubflowNodes)
+        const exportableSFNodesObj = JSON.parse(exportableSFNodes)
+
+        // TODO: avoid string compare, too fragile!
         log('compare', {
-          exportableSubflowNodes,
-          exportableSFNodes
+          exportableSubflowNodesObj,
+          exportableSFNodesObj
         })
 
-        if (exportableSubflowNodes !== exportableSFNodes) {
+        const nodesMatch = exportableSubflowNodesObj.every((sfNode, index) => {
+          return this._isEquivalent(sfNode, exportableSFNodesObj[index])
+        })
+
+        if (!nodesMatch) {
+          log('no match: not equivalent', {
+            exportableSubflowNodesObj,
+            exportableSFNodesObj
+          })
           return;
         }
         log('found match', {

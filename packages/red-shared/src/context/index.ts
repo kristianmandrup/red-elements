@@ -1,4 +1,4 @@
-import { IRED, TYPES, container } from './_setup/setup';
+import { IRED, TYPES, container } from '../_setup/setup';
 import getDecorators from 'inversify-inject-decorators';
 const { lazyInject } = getDecorators(container);
 
@@ -11,12 +11,20 @@ export {
 import * as jQuery from 'jquery';
 export const $ = jQuery
 
+import {
+  deepEquals
+} from './equals'
+
 export class Context {
   @lazyInject(TYPES.RED) RED: IRED;
 
   protected ctx: IRED;
   constructor() {
     this.ctx = this.RED;
+  }
+
+  protected _isEquivalent(a, b) {
+    return deepEquals(a, b)
   }
 
   protected _validateArray(value, name, methodName, info?) {
