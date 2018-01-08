@@ -2,6 +2,9 @@ import {
   RadialMenu
 } from '../../..'
 
+// Note: Used for mobile devices only.
+// Extract from node-red project!
+
 function create() {
   return new RadialMenu()
 }
