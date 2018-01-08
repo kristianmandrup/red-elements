@@ -67,5 +67,6 @@ log('TEST: using mock i18n widget added to all jQuery elements')
 export {
   RED,
   ctx,
-  readPage
+  readPage,
+  $
 }

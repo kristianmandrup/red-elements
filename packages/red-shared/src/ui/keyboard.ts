@@ -19,6 +19,8 @@ const isMac = /Mac/i.test(window.navigator.platform);
 
 const cmdCtrlKey = '<span class="help-key">' + (isMacLike ? '&#8984;' : 'Ctrl') + '</span>';
 
+const { log } = console
+
 const keyMap = {
   "left": 37,
   "up": 38,
@@ -45,6 +47,12 @@ const metaKeyCodes = {
   18: true,
   91: true,
   93: true
+}
+
+interface IActionKeyMap {
+  scope?: object,
+  key?: string,
+  user?: object
 }
 
 interface I18n extends JQuery<HTMLElement> {
@@ -76,11 +84,20 @@ import * as d3 from 'd3'
 export class Keyboard extends Context {
   public handlers = {};
   public partialState = null;
-  public actionToKeyMap = {}
+  public actionToKeyMap: IActionKeyMap = {}
   public defaultKeyMap = {};
+  public mainElement: HTMLElement
 
   constructor() {
     super()
+
+    // TODO:
+    // somehow use SearchBox widget from red-widgets (possibly move all common widgets to red-shared)
+    // avoid circular dependency!
+
+    // make SearchBox widget factory available on all jQuery elements
+    // new SearchBox()
+
     const {
       ctx,
       defaultKeyMap,
@@ -115,6 +132,7 @@ export class Keyboard extends Context {
           }
         }
       }
+
       for (var action in userKeymap) {
         if (userKeymap.hasOwnProperty(action)) {
           var obj = userKeymap[action];
@@ -136,7 +154,8 @@ export class Keyboard extends Context {
       }
     })
 
-    d3.select(window).on("keydown", function () {
+    const $window = d3.select(window)
+    $window.on("keydown", function () {
       if (metaKeyCodes[d3.event.keyCode]) {
         return;
       }
@@ -152,28 +171,47 @@ export class Keyboard extends Context {
     });
   }
 
-  revertToDefault(action) {
+  revertToDefault(action: string) {
     const {
       actionToKeyMap,
+      defaultKeyMap
+    } = this
+
+    const {
       removeHandler,
       addHandler,
-      defaultKeyMap
     } = this.rebind([
         'removeHandler',
         'addHandler'
       ])
 
+    this._validateStr(action, 'action', 'revertToDefault')
+
     var currentAction = actionToKeyMap[action];
     if (currentAction) {
       removeHandler(currentAction.key);
+    } else {
+      this.logWarning('no such action/key mapping registered', {
+        actionToKeyMap,
+        action
+      })
     }
+
     if (defaultKeyMap.hasOwnProperty(action)) {
       var obj = defaultKeyMap[action];
       addHandler(obj.scope, obj.key, action, false);
+    } {
+      this.logWarning('no such action in defaultKeyMap', {
+        defaultKeyMap,
+        action
+      })
     }
+    return this
   }
 
-  parseKeySpecifier(key) {
+  parseKeySpecifier(key: string) {
+    this._validateStr(key, 'key', 'parseKeySpecifier')
+
     var parts = key.toLowerCase().split("-");
     var modifiers = {
       ctrl: false,
@@ -218,6 +256,8 @@ export class Keyboard extends Context {
     let {
       partialState,
       handlers,
+    } = this
+    const {
       resolveKeyEvent
     } = this.rebind([
         'resolveKeyEvent'
@@ -262,19 +302,22 @@ export class Keyboard extends Context {
       partialState = null;
       return resolveKeyEvent(evt);
     }
+    return this
   }
 
-  addHandler(scope, key, modifiers, ondown) {
+  addHandler(scope: any, key: string, modifiers: Function | string, ondown: Function | string) {
     const {
       actionToKeyMap,
-      parseKeySpecifier,
       handlers
+    } = this
+    const {
+      parseKeySpecifier
     } = this.rebind([
         'parseKeySpecifier'
       ])
 
-    var mod = modifiers;
-    var cbdown = ondown;
+    var mod: any = modifiers;
+    var cbdown: Function | string = ondown;
     if (typeof modifiers == "function" || typeof modifiers === "string") {
       mod = {};
       cbdown = modifiers;
@@ -283,6 +326,10 @@ export class Keyboard extends Context {
     var i = 0;
     if (typeof key === 'string') {
       if (typeof cbdown === 'string') {
+        log(`add (shortcut) to action map: ${cbdown}`, {
+          actionToKeyMap,
+          cbdown
+        })
         actionToKeyMap[cbdown] = {
           scope: scope,
           key: key
@@ -291,6 +338,9 @@ export class Keyboard extends Context {
           actionToKeyMap[cbdown].user = ondown;
         }
       }
+      // set instance var
+      this.actionToKeyMap = actionToKeyMap
+
       var parts = key.split(" ");
       for (i = 0; i < parts.length; i++) {
         var parsedKey = parseKeySpecifier(parts[i]);
@@ -303,7 +353,7 @@ export class Keyboard extends Context {
     } else {
       keys.push([key, mod])
     }
-    var slot = handlers;
+    var slot: any = handlers;
     for (i = 0; i < keys.length; i++) {
       key = keys[i][0];
       mod = keys[i][1];
@@ -325,18 +375,22 @@ export class Keyboard extends Context {
     }
     slot.scope = scope;
     slot.ondown = cbdown;
+    return this
   }
 
-  removeHandler(key, modifiers) {
+  removeHandler(key: string, modifiers: any) {
     const {
-      parseKeySpecifier,
       handlers,
       actionToKeyMap
+    } = this
+
+    const {
+      parseKeySpecifier,
     } = this.rebind([
         'parseKeySpecifier'
       ])
 
-    var mod = modifiers || {};
+    var mod: any = modifiers || {};
     var keys = [];
     var i = 0;
     if (typeof key === 'string') {
@@ -347,14 +401,16 @@ export class Keyboard extends Context {
         if (parsedKey) {
           keys.push(parsedKey);
         } else {
-          console.log("Unrecognised key specifier:", key)
-          return;
+          this.logWarning("Unrecognised key specifier:", {
+            key
+          })
+          return this;
         }
       }
     } else {
       keys.push([key, mod])
     }
-    var slot = handlers;
+    var slot: any = handlers;
     for (i = 0; i < keys.length; i++) {
       key = keys[i][0];
       mod = keys[i][1];
@@ -368,7 +424,7 @@ export class Keyboard extends Context {
         slot = slot.alt;
       }
       if (!slot[key]) {
-        return;
+        return this;
       }
       slot = slot[key];
     }
@@ -383,9 +439,10 @@ export class Keyboard extends Context {
     }
     delete slot.scope;
     delete slot.ondown;
+    return this
   }
 
-  formatKey(key) {
+  formatKey(key: string): string {
     var formattedKey = isMac ? key.replace(/ctrl-?/, "&#8984;") : key;
     formattedKey = isMac ? formattedKey.replace(/alt-?/, "&#8997;") : key;
     formattedKey = formattedKey.replace(/shift-?/, "&#8679;")
@@ -396,7 +453,7 @@ export class Keyboard extends Context {
     return '<span class="help-key-block"><span class="help-key">' + formattedKey.split(" ").join('</span> <span class="help-key">') + '</span></span>';
   }
 
-  validateKey(key) {
+  validateKey(key: string): boolean {
     const {
       parseKeySpecifier
     } = this.rebind([
@@ -414,9 +471,11 @@ export class Keyboard extends Context {
     return true;
   }
 
-  editShortcut(e) {
+  editShortcut(e, container?) {
     const {
       ctx,
+    } = this
+    const {
       buildShortcutRow,
       endEditShortcut
     } = this.rebind([
@@ -425,9 +484,17 @@ export class Keyboard extends Context {
       ])
 
     e.preventDefault();
-    var container = $(this);
+
+    // TODO: Fix container reference this (see original node-red code)
+    container = container || $(this);
     var object = container.data('data');
 
+    this._validateObj(object, 'object', 'endEditShortcut')
+
+    log('editShortcut', {
+      container,
+      object
+    })
 
     if (!container.hasClass('keyboard-shortcut-entry-expanded')) {
       endEditShortcut();
@@ -480,9 +547,10 @@ export class Keyboard extends Context {
 
       keyInput.focus();
     }
+    return this
   }
 
-  endEditShortcut(cancel) {
+  endEditShortcut(cancel: boolean) {
     const {
       ctx
     } = this
@@ -531,9 +599,10 @@ export class Keyboard extends Context {
       $('.keyboard-shortcut-edit').remove();
       container.removeClass('keyboard-shortcut-entry-expanded');
     }
+    return this
   }
 
-  buildShortcutRow(container, object) {
+  buildShortcutRow(container: JQuery<HTMLElement>, object: any) {
     const {
       ctx,
       editShortcut
@@ -569,9 +638,10 @@ export class Keyboard extends Context {
 
     $("<span>").text(object.scope === '*' ? 'global' : object.scope || "").appendTo(scope);
     container.click(editShortcut);
+    return this
   }
 
-  getSettingsPane() {
+  getSettingsPane(): JQuery<HTMLElement> {
     const {
       ctx,
       buildShortcutRow
@@ -630,7 +700,7 @@ export class Keyboard extends Context {
     return pane;
   }
 
-  getShortcut(actionName) {
+  getShortcut(actionName): object {
     return this.actionToKeyMap[actionName];
   }
 }

@@ -1,12 +1,12 @@
 import {
-  RadialMenu
+  // RadialMenu
 } from '../../..'
 
 // Note: Used for mobile devices only.
 // Extract from node-red project!
 
 function create() {
-  return new RadialMenu()
+  return {} // new RadialMenu()
 }
 
 let menu
