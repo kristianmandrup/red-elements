@@ -40,6 +40,7 @@ export const Utils = class Utils extends Context {
   formatString(str) {
     return str.replace(/\r?\n/g, "&crarr;").replace(/\t/g, "&rarr;");
   }
+
   sanitize(m) {
     return m.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
@@ -128,13 +129,15 @@ export const Utils = class Utils extends Context {
     if (expand) {
       el.click();
     }
-
+    return this
   }
 
-  addMessageControls(obj, sourceId, key, msg, rootPath, strippedKey) {
+  addMessageControls(obj: JQuery<HTMLElement>, sourceId: string, key: string, msg: string, rootPath: string, strippedKey: string) {
     const {
       RED,
       pinnedPaths,
+    } = this
+    const {
       normalisePropertyExpression,
     } = this.rebind([
         'normalisePropertyExpression'
@@ -176,6 +179,7 @@ export const Utils = class Utils extends Context {
       }).toggleClass("selected", isPinned);
       obj.toggleClass("debug-message-row-pinned", isPinned);
     }
+    return this
   }
 
   checkExpanded(strippedKey, expandPaths, minRange, maxRange) {
