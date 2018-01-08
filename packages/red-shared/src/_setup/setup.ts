@@ -44,9 +44,12 @@ export class RED implements IRED {
   public stack: any
   public user: any
   public deploy: any
-  public diff: any
   public notifications: any
   public search: any
+
+  public diff = {
+    getRemoteDiff() { }
+  }
 
   public comms = {
     subscribe(name, cb) { },
@@ -110,6 +113,22 @@ export class RED implements IRED {
     }
   }
   public nodes = {
+    version() { return '1' },
+    createCompleteNodeSet() {
+      return {} // nns
+    },
+    eachConfig(cb) {
+      cb({
+        // empty config
+      })
+    }
+    eachNode(cb) {
+      cb({
+        id: 'x',
+        in: [],
+        out: []
+      })
+    },
     eachSubflow(cb) {
       // callback with a fake subflow
       cb({

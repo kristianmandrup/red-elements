@@ -19,6 +19,7 @@ import {
   $
 } from '../context'
 
+const { log } = console
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
@@ -31,15 +32,37 @@ export class Deploy extends Context {
    *      label: the text to display - default: "Deploy"
    *      icon : the icon to use. Null removes the icon. default: "red/images/deploy-full-o.png"
    */
-
-  public deploymentType: any
-  public deploymentTypes: any
+  public type = 'default'
+  public deploymentTypes = {
+    "full": {
+      img: "red/images/deploy-full-o.png"
+    },
+    "nodes": {
+      img: "red/images/deploy-nodes-o.png"
+    },
+    "flows": {
+      img: "red/images/deploy-flows-o.png"
+    }
+  }
+  public deploymentType = 'full'
+  public deployInflight = false
+  public currentDiff = null
+  public lastDeployAttemptTime: Date = null
+  public ignoreDeployWarnings = {
+    unknown: false,
+    unusedConfig: false,
+    invalid: false
+  }
 
   constructor(options: any = {}) {
     super()
 
-    const {
+    let {
       ctx,
+      type,
+      currentDiff,
+      ignoreDeployWarnings,
+      deployInflight
     } = this
 
     const {
@@ -52,34 +75,11 @@ export class Deploy extends Context {
         'resolveConflict'
       ])
 
-    var deploymentTypes = {
-      "full": {
-        img: "red/images/deploy-full-o.png"
-      },
-      "nodes": {
-        img: "red/images/deploy-nodes-o.png"
-      },
-      "flows": {
-        img: "red/images/deploy-flows-o.png"
-      }
-    }
-
-    var ignoreDeployWarnings = {
-      unknown: false,
-      unusedConfig: false,
-      invalid: false
-    }
-
-    var deploymentType = "full";
-
-    var deployInflight = false;
-
-    var currentDiff = null;
-
     options = options || {};
-    var type = options.type || "default";
+    type = options.type || type
+    this.type = type
 
-    if (type == "default") {
+    if (type == 'default') {
       $('<li><span class="deploy-button-group button-group">' +
         '<a id="btn-deploy" class="deploy-button disabled" href="#">' +
         '<span class="deploy-button-content">' +
@@ -220,6 +220,8 @@ export class Deploy extends Context {
       }
       ],
       create: function () {
+        log('confirmDeployDialog: create')
+
         $("#node-dialog-confirm-deploy").parent().find("div.ui-dialog-buttonpane")
           .prepend('<div style="height:0; vertical-align: middle; display:inline-block; margin-top: 13px; float:left;">' +
           '<input style="vertical-align:top;" type="checkbox" id="node-dialog-confirm-deploy-hide"> ' +
@@ -228,6 +230,8 @@ export class Deploy extends Context {
           '</div>');
       },
       open: function () {
+        log('confirmDeployDialog: open')
+
         const deployType = <string>$("#node-dialog-confirm-deploy-type").val();
         if (/conflict/.test(deployType)) {
           const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
@@ -323,7 +327,14 @@ export class Deploy extends Context {
     this.setInstanceVars({
       deploymentType
     })
-    $("#btn-deploy-icon").attr("src", deploymentTypes[type].img);
+    const $deploymentType = deploymentTypes[type]
+    if (!$deploymentType) {
+      this.handleError('no such deploymentType registered with image for icon', {
+        deploymentTypes,
+        type
+      })
+    }
+    $("#btn-deploy-icon").attr("src", $deploymentType.img);
   }
 
   getNodeInfo(node) {
@@ -371,6 +382,7 @@ export class Deploy extends Context {
     return 0;
   }
 
+  // TODO: handle error if any element required is not found on page
   resolveConflict(currentNodes, activeDeploy) {
     $("#node-dialog-confirm-deploy-config").hide();
     $("#node-dialog-confirm-deploy-unknown").hide();
@@ -379,16 +391,21 @@ export class Deploy extends Context {
     $("#node-dialog-confirm-deploy-type").val(activeDeploy ? "deploy-conflict" : "background-conflict");
     const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
     confirmDeployDialog.dialog("open");
+    return this
   }
 
   save(skipValidation, force) {
     let {
       ctx,
-      getNodeInfo,
-      ignoreDeployWarnings,
-      sortNodeInfo,
       deployInflight,
+      lastDeployAttemptTime,
       deploymentType,
+      ignoreDeployWarnings,
+    } = this
+
+    const {
+      getNodeInfo,
+      sortNodeInfo,
       resolveConflict
     } = this.rebind([
         'getNodeInfo',
@@ -397,7 +414,18 @@ export class Deploy extends Context {
       ])
 
     if (!$("#btn-deploy").hasClass("disabled")) {
+      log({
+        skipValidation,
+        force
+      })
+
+      this.lastDeployAttemptTime = new Date()
+      log({
+        lastDeployAttemptTime: this.lastDeployAttemptTime
+      })
+
       if (!skipValidation) {
+        log('deploy validation')
         var hasUnknown = false;
         var hasInvalid = false;
         var hasUnusedConfig = false;
@@ -416,15 +444,18 @@ export class Deploy extends Context {
             }
           }
         });
+        log('iterated nodes')
+
         hasUnknown = unknownNodes.length > 0;
 
         var unusedConfigNodes = [];
         ctx.nodes.eachConfig(function (node) {
-          if (node.users.length === 0 && (node._def.hasUsers !== false)) {
+          if (!node.users || node.users.length === 0 && (node._def.hasUsers !== false)) {
             unusedConfigNodes.push(getNodeInfo(node));
             hasUnusedConfig = true;
           }
         });
+        log('iterated configs')
 
         $("#node-dialog-confirm-deploy-config").hide();
         $("#node-dialog-confirm-deploy-unknown").hide();
@@ -434,12 +465,18 @@ export class Deploy extends Context {
         var showWarning = false;
 
         if (hasUnknown && !ignoreDeployWarnings.unknown) {
+          log('show unknown', {
+            hasUnknown,
+            ignoreDeployWarnings
+          })
+
           showWarning = true;
           $("#node-dialog-confirm-deploy-type").val("unknown");
           $("#node-dialog-confirm-deploy-unknown").show();
           $("#node-dialog-confirm-deploy-unknown-list")
             .html("<li>" + unknownNodes.join("</li><li>") + "</li>");
         } else if (hasInvalid && !ignoreDeployWarnings.invalid) {
+          log('show invalid')
           showWarning = true;
           $("#node-dialog-confirm-deploy-type").val("invalid");
           $("#node-dialog-confirm-deploy-config").show();
@@ -450,6 +487,7 @@ export class Deploy extends Context {
             }).join("</li><li>") + "</li>");
 
         } else if (hasUnusedConfig && !ignoreDeployWarnings.unusedConfig) {
+          log('show unused config')
           // showWarning = true;
           // $( "#node-dialog-confirm-deploy-type" ).val("unusedConfig");
           // $( "#node-dialog-confirm-deploy-unused" ).show();
@@ -458,12 +496,17 @@ export class Deploy extends Context {
           // $( "#node-dialog-confirm-deploy-unused-list" )
           //     .html("<li>"+unusedConfigNodes.map(function(A) { return (A.tab?"["+A.tab+"] ":"")+A.label+" ("+A.type+")"}).join("</li><li>")+"</li>");
         }
+
         if (showWarning) {
+          log('show warning')
+
           $("#node-dialog-confirm-deploy-hide").prop("checked", false);
           const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
           confirmDeployDialog.dialog("open");
           return;
         }
+
+        log('deploy validation DONE')
       }
 
       var nns = ctx.nodes.createCompleteNodeSet();
@@ -479,10 +522,15 @@ export class Deploy extends Context {
       };
 
       if (!force) {
+        log('not forced: use current version as revision number')
         data.rev = ctx.nodes.version();
       }
 
+      const deployer = this
+
       deployInflight = true;
+      this.deployInflight = deployInflight
+
       $("#header-shade").show();
       $("#editor-shade").show();
       $("#palette-shade").show();
@@ -533,6 +581,9 @@ export class Deploy extends Context {
         ctx.view.redraw();
         ctx.events.emit("deploy");
       }).fail(function (xhr, textStatus, err) {
+        log('Ajax fail', {
+          err
+        })
         ctx.nodes.dirty(true);
         $("#btn-deploy").removeClass("disabled");
         if (xhr.status === 401) {
@@ -551,7 +602,10 @@ export class Deploy extends Context {
           }), "error");
         }
       }).always(function () {
+        log('Ajax always: cleanup')
+
         deployInflight = false;
+        deployer.deployInflight = deployInflight
         var delta = Math.max(0, 300 - (Date.now() - startTime));
         setTimeout(function () {
           $(".deploy-button-content").css('opacity', 1);
@@ -562,6 +616,8 @@ export class Deploy extends Context {
           $("#sidebar-shade").hide();
         }, delta);
       });
+    } else {
+      this.logWarning('deploy-button disabled: not able to deploy via UI')
     }
   }
 }

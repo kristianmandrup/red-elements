@@ -2,6 +2,10 @@ import {
   Deploy
 } from '../..'
 
+import {
+  readPage
+} from '../_setup'
+
 function create() {
   return new Deploy()
 }
@@ -9,6 +13,14 @@ function create() {
 let deploy
 beforeEach(() => {
   deploy = create()
+})
+
+beforeAll(() => {
+  // widgets that need to be available
+  // EditableList(RED)
+
+  // load document with placeholder elements to create widgets (for testing)
+  document.documentElement.innerHTML = readPage('deploy');
 })
 
 const { log } = console
@@ -45,14 +57,22 @@ test('Deploy: create w options - type: development', () => {
   deploy = new Deploy(options)
 })
 
-test(`Deploy: changeDeploymentType('test')`, () => {
-  deploy.changeDeploymentType('test')
-  expect(deploy.deploymentType).toBe('test')
+// By default the following deploymentTypes are made available:
+// - full
+// - nodes
+// - flows
+test(`Deploy: changeDeploymentType - no deploymentType registered for type`, () => {
+  expect(() => deploy.changeDeploymentType('unknown')).toThrow()
 })
 
-test(`Deploy: changeDeploymentType('production')`, () => {
-  deploy.changeDeploymentType('production')
-  expect(deploy.deploymentType).toBe('production')
+test(`Deploy: changeDeploymentType('full')`, () => {
+  deploy.changeDeploymentType('full')
+  expect(deploy.deploymentType).toBe('full')
+})
+
+test(`Deploy: changeDeploymentType('flows')`, () => {
+  deploy.changeDeploymentType('flows')
+  expect(deploy.deploymentType).toBe('flows')
 })
 
 test('Deploy: getNodeInfo(node)', () => {
@@ -76,7 +96,7 @@ test('Deploy: getNodeInfo(node)', () => {
   expect(info.type).toBe(node.type)
 })
 
-test.only('Deploy: sortNodeInfo(A, B) - default', () => {
+test('Deploy: sortNodeInfo(A, B) - default', () => {
   const nodeA = fakeNode({
     id: 'a',
   })
@@ -93,10 +113,10 @@ test.only('Deploy: sortNodeInfo(A, B) - default', () => {
   })
 
   expect(sorted).toBe(0)
-  // TODO: add real expectations on sort result
 })
 
-test.only('Deploy: sortNodeInfo(A, B) - tab', () => {
+// TODO: improve it, should work on -1 and +1
+test('Deploy: sortNodeInfo(A, B) - tab', () => {
   const nodeA = fakeNode({
     id: 'a',
     tab: 'x'
@@ -108,6 +128,11 @@ test.only('Deploy: sortNodeInfo(A, B) - tab', () => {
 
   const A = deploy.getNodeInfo(nodeA)
   const B = deploy.getNodeInfo(nodeB)
+
+  // override node info for sorting
+  A.tab = 'x'
+  B.tab = 'y'
+
   const sorted = deploy.sortNodeInfo(A, B)
 
   log('sort tab', {
@@ -118,11 +143,11 @@ test.only('Deploy: sortNodeInfo(A, B) - tab', () => {
     sorted
   })
 
-  expect(sorted).toBeDefined()
-  // TODO: add real expectations on sort result
+  expect(sorted).toBe(-1)
 })
 
-test.only('Deploy: sortNodeInfo(A, B) - type', () => {
+// TODO: improve it, should work on -1 and +1
+test('Deploy: sortNodeInfo(A, B) - type', () => {
   const nodeA = fakeNode({
     id: 'a',
     type: 'config'
@@ -134,6 +159,11 @@ test.only('Deploy: sortNodeInfo(A, B) - type', () => {
 
   const A = deploy.getNodeInfo(nodeA)
   const B = deploy.getNodeInfo(nodeB)
+
+  // override node info for sorting
+  // A.type = 'type'
+  // B.type = 'io'
+
   const sorted = deploy.sortNodeInfo(A, B)
 
   log('sort type', {
@@ -144,11 +174,11 @@ test.only('Deploy: sortNodeInfo(A, B) - type', () => {
     sorted
   })
 
-  expect(sorted).toBeDefined()
-  // TODO: add real expectations on sort result
+  expect(sorted).toBe(-1)
 })
 
-test.only('Deploy: sortNodeInfo(A, B) - name', () => {
+// TODO: improve it, should work on -1 and +1
+test('Deploy: sortNodeInfo(A, B) - name', () => {
   const nodeA = fakeNode({
     id: 'a',
     name: 'ape'
@@ -160,6 +190,11 @@ test.only('Deploy: sortNodeInfo(A, B) - name', () => {
 
   const A = deploy.getNodeInfo(nodeA)
   const B = deploy.getNodeInfo(nodeB)
+
+  // override node info for sorting
+  A.name = 'ape'
+  B.name = 'zebra'
+
   const sorted = deploy.sortNodeInfo(A, B)
 
   log('sort name', {
@@ -170,48 +205,65 @@ test.only('Deploy: sortNodeInfo(A, B) - name', () => {
     sorted
   })
 
-  expect(sorted).toBeDefined()
-  // TODO: add real expectations on sort result
+  expect(sorted).toBe(-1)
 })
 
 
 test('Deploy: resolveConflict(currentNodes, activeDeploy)', () => {
-  const nodeA = {
+  const nodeA = fakeNode({
     id: 'a',
-    _def: {
-
-    }
-  }
-  const nodeB = {
+  })
+  const nodeB = fakeNode({
     id: 'b',
-    _def: {
+  })
 
-    }
-  }
   const currentNodes = [nodeA, nodeB]
   const activeDeploy = {
-
   }
   const resolved = deploy.resolveConflict(currentNodes, activeDeploy)
   expect(resolved).toBeDefined()
 })
 
-test('Deploy: save(true, true)', () => {
+test('Deploy: save(true, true) - deploy button disabled - no deploy in flight', () => {
+  $("#btn-deploy").addClass("disabled")
   const skipValidation = true
   const force = true
+  const beforeTime: number = new Date().getUTCMilliseconds()
   deploy.save(skipValidation, force)
+  const afterTime = deploy.lastDeployAttemptTime
+  expect(afterTime).toBe(null)
+})
+
+test('Deploy: save(true, true)', () => {
+  $("#btn-deploy").removeClass("disabled")
+  const skipValidation = true
+  const force = true
+  const beforeTime: number = new Date().getUTCMilliseconds()
+  deploy.save(skipValidation, force)
+  const afterTime = deploy.lastDeployAttemptTime.getUTCMilliseconds()
+  expect(afterTime).toBeGreaterThanOrEqual(beforeTime)
 })
 
 test('Deploy: save(true, false)', () => {
+  $("#btn-deploy").removeClass("disabled")
   const skipValidation = true
   const force = false
+  const beforeTime: number = new Date().getUTCMilliseconds()
   deploy.save(skipValidation, force)
+  const afterTime = deploy.lastDeployAttemptTime.getUTCMilliseconds()
+  expect(afterTime).toBeGreaterThanOrEqual(beforeTime)
 })
 
 test('Deploy: save(false, false)', () => {
+  $("#btn-deploy").removeClass("disabled")
   const skipValidation = false
   const force = false
+  const beforeTime: number = new Date().getUTCMilliseconds()
   deploy.save(skipValidation, force)
+  // since warning is shown and returned before attempting ajax
+  // expect(afterTime).toBe(null)
+  const afterTime = deploy.lastDeployAttemptTime.getUTCMilliseconds()
+  expect(afterTime).toBeGreaterThanOrEqual(beforeTime)
 })
 
 
