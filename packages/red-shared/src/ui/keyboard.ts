@@ -47,6 +47,18 @@ const metaKeyCodes = {
   93: true
 }
 
+interface I18n extends JQuery<HTMLElement> {
+  i18n: Function
+}
+
+interface ISearchBox extends JQuery<HTMLElement> {
+  searchBox: Function
+}
+
+interface IEditableList extends JQuery<HTMLElement> {
+  editableList: Function
+}
+
 // FF generates some different keycodes because reasons.
 const firefoxKeyCodeMap = {
   59: 186,
@@ -72,11 +84,14 @@ export class Keyboard extends Context {
     const {
       ctx,
       defaultKeyMap,
-      getSettingsPane,
       actionToKeyMap,
+    } = this
+    const {
+      getSettingsPane,
       resolveKeyEvent,
       addHandler
     } = this.rebind([
+        'getSettingsPane',
         'resolveKeyEvent',
         'addHandler'
       ])
@@ -426,13 +441,13 @@ export class Keyboard extends Context {
         if (e.keyCode === 13) {
           return endEditShortcut();
         }
-        var currentVal = $(this).val();
+        var currentVal = String($(this).val());
         currentVal = currentVal.trim();
         var valid = (currentVal === "" || ctx.keyboard.validateKey(currentVal));
         $(this).toggleClass("input-error", !valid);
       })
 
-      var scopeSelect = $('<select><option value="*" data-i18n="keyboard.global"></option><option value="workspace" data-i18n="keyboard.workspace"></option></select>').appendTo(scope);
+      var scopeSelect = <I18n>$('<select><option value="*" data-i18n="keyboard.global"></option><option value="workspace" data-i18n="keyboard.workspace"></option></select>').appendTo(scope);
       scopeSelect.i18n();
       scopeSelect.val(object.scope || '*');
 
@@ -478,8 +493,8 @@ export class Keyboard extends Context {
       var keyInput = container.find(".keyboard-shortcut-entry-key input");
       var scopeSelect = container.find(".keyboard-shortcut-entry-scope select");
       if (!cancel) {
-        var key = keyInput.val().trim();
-        var scope = scopeSelect.val();
+        var key = String(keyInput.val()).trim();
+        var scope = String(scopeSelect.val());
         var valid = (key === "" || ctx.keyboard.validateKey(key));
         if (valid) {
           var current = ctx.keyboard.getShortcut(object.id);
@@ -571,10 +586,11 @@ export class Keyboard extends Context {
       '<div class="keyboard-shortcut-entry-scope" data-i18n="keyboard.scope"></div>' +
       '</div>').appendTo(pane);
 
-    pane.find("input").searchBox({
+    const inputPane = <ISearchBox>pane.find("input")
+    inputPane.searchBox({
       delay: 100,
       change: function () {
-        var filterValue = $(this).val().trim();
+        var filterValue = String($(this).val()).trim();
         if (filterValue === "") {
           shortcutList.editableList('filter', null);
         } else {
@@ -586,13 +602,15 @@ export class Keyboard extends Context {
       }
     });
 
-    var shortcutList = $('<ol class="keyboard-shortcut-list"></ol>').css({
+    var shortcutList = <IEditableList>$('<ol class="keyboard-shortcut-list"></ol>').css({
       position: "absolute",
       top: "32px",
       bottom: "0",
       left: "0",
       right: "0"
-    }).appendTo(pane).editableList({
+    }).appendTo(pane)
+
+    shortcutList.editableList({
       addButton: false,
       scrollOnAdd: false,
       addItem: function (container, i, object) {

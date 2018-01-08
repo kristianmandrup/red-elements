@@ -28,9 +28,9 @@ test('Keyboard: create - no partialState', () => {
 })
 
 test('Keyboard: create - empty actionToKeyMap', () => {
-  expect(kb.actionToKeyMap).toBe({})
+  expect(kb.actionToKeyMap).toEqual({})
 })
 
 test('Keyboard: create - empty defaultKeyMap', () => {
-  expect(kb.defaultKeyMap).toBe({})
+  expect(kb.defaultKeyMap).toEqual({})
 })

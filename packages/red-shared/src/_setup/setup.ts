@@ -121,7 +121,7 @@ export class RED implements IRED {
       cb({
         // empty config
       })
-    }
+    },
     eachNode(cb) {
       cb({
         id: 'x',
@@ -188,7 +188,8 @@ export class RED implements IRED {
     validateNode(node) { }
   }
   public userSettings = {
-    toggle(elem) { }
+    toggle(elem) { },
+    add(setting) { },
   }
   public workspaces = {
     refresh() { },
