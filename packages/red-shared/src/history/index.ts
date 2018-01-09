@@ -28,10 +28,14 @@ export {
 
 export class History extends Context {
   public undo_history = [];
-  public undoEvent: any = new UndoEvent()
+  public undo: any = new UndoEvent()
 
   constructor() {
     super()
+  }
+
+  undoEvent(ev) {
+    this.undo.undoEvent(ev)
   }
 
   //TODO: this function is a placeholder until there is a 'save' event that can be listened to

@@ -94,3 +94,21 @@ test('history: markAllDirty', () => {
   let item = list[0]
   expect(item.dirty).toBeTruthy()
 })
+
+
+test('history: undo', () => {
+  let ev = {
+    id: 'a',
+    events: [
+      {}
+    ]
+  }
+
+  history.push(ev)
+  let latest = history.peek()
+  expect(latest).toBe(ev)
+  history.undo()
+
+  latest = history.peek()
+  expect(latest).toBeFalsy()
+})

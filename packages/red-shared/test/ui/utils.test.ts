@@ -165,7 +165,7 @@ test('Utils: getMessageProperty(msg, expr) - str expr', () => {
   expect(msgProp).toEqual('hello my friend')
 })
 
-test.only('Utils: getMessageProperty(msg, expr) - array expr', () => {
+test('Utils: getMessageProperty(msg, expr) - array expr', () => {
   const msg = {
     hello: 'hello my friend'
   }
@@ -175,7 +175,7 @@ test.only('Utils: getMessageProperty(msg, expr) - array expr', () => {
 })
 
 
-test.only('Utils: getMessageProperty(msg, expr) - data expr', () => {
+test('Utils: getMessageProperty(msg, expr) - data expr', () => {
   const msg = {
     type: 'message',
     data: {

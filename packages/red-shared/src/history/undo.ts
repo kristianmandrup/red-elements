@@ -9,17 +9,49 @@ import {
   $
 } from '../context'
 
+interface Node {
+  id: string,
+  type: string,
+  _def: any,
+  out: any[],
+  in: any[],
+  dirty: boolean,
+  changed: boolean
+}
+
+interface Event {
+  t: string,
+  events: any[],
+  changed: boolean,
+  config: object,
+  rev: string,
+  links: string[],
+  workspaces: any[],
+  activeWorkspace: any,
+  nodes: any[],
+  subflow: any,
+  subflows: any,
+  removedLinks: string[],
+  subflowOutputs: any[],
+  subflowInputs: any[],
+  changes: any[],
+  node: Node,
+  outputMap: object,
+  order: any[],
+  dirty: boolean
+}
+
 export class UndoEvent extends Context {
   public nodes: any
 
   constructor() {
     super()
     const { ctx } = this
-    this.nodes = ctx
+    this.nodes = ctx.nodes
   }
 
 
-  undoEvent(ev) {
+  undoEvent(ev: Event) {
     const {
       ctx,
       nodes
@@ -30,6 +62,9 @@ export class UndoEvent extends Context {
     var node;
     var subflow;
     var modifiedTabs = {};
+
+    this._validateEvent(ev, 'ev', 'undoEvent')
+
     if (ev) {
       if (ev.t == 'multi') {
         len = ev.events.length;

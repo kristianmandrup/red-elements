@@ -8,6 +8,7 @@ export {
   Utils,
   Communications,
   History,
+  UndoEvent,
   Node,
   Nodes,
   NodesRegistry,

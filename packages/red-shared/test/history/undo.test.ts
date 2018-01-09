@@ -1,33 +1,44 @@
 import {
   History,
+  UndoEvent
 } from '../..'
 
-// function createUndo() {
-//   return new Undo()
-// }
-
-function createHistory() {
-  return new History()
+function create() {
+  return new UndoEvent()
 }
 
-
-// let undo
-let history
+let undo
 beforeEach(() => {
-  // undo = createUndo()
-  history = createHistory()
+  undo = create()
 })
 
-test('history: undo', () => {
+test('Undo: create', () => {
+  expect(typeof undo).toBe('object')
+})
+
+test('Undo: create - has nodes', () => {
+  expect(undo.nodes).toBeDefined()
+})
+
+test('Undo: undoEvent(ev) - missing .t - throws', () => {
   let ev = {
     id: 'a'
   }
+  expect(() => undo.undoEvent(ev)).toThrow()
+})
 
-  history.push(ev)
-  let latest = history.peek()
-  expect(latest).toBe(ev)
-  history.undo()
+test(`Undo: undoEvent(ev) - t: 'multi' missing .events - throws`, () => {
+  let ev = {
+    id: 'a',
+    t: 'multi'
+  }
+  expect(() => undo.undoEvent(ev)).toThrow()
+})
 
-  latest = history.peek()
-  expect(latest).toBeFalsy()
+test(`Undo: undoEvent(ev) - t: 'replace'`, () => {
+  let ev = {
+    id: 'a',
+    t: 'replace'
+  }
+  undo.undoEvent(ev)
 })

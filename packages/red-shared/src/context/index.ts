@@ -88,6 +88,13 @@ export class Context {
     this._validateArray(node.types, `${name}.types`, methodName)
   }
 
+  protected _validateEvent(ev, name, methodName, info?) {
+    this._validateObj(ev, name, methodName, info)
+    this._validateStr(ev.t, `${name}.t`, methodName, info)
+    this._validateArray(ev.events, `${name}.events`, methodName, info)
+    this._validateObj(ev.changed, `${name}.changed`, methodName, info)
+  }
+
   protected _validateNode(node, name, methodName, info?) {
     this._validateObj(node, name, methodName, info)
     // this._validateStr(node.id, `${name}.id`, methodName)
