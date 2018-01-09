@@ -46,8 +46,8 @@ export class UndoEvent extends Context {
 
   constructor() {
     super()
-    const { ctx } = this
-    this.nodes = ctx.nodes
+    const { RED } = this
+    this.nodes = RED.nodes
   }
 
 

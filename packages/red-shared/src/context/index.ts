@@ -91,7 +91,17 @@ export class Context {
   protected _validateEvent(ev, name, methodName, info?) {
     this._validateObj(ev, name, methodName, info)
     this._validateStr(ev.t, `${name}.t`, methodName, info)
-    this._validateArray(ev.events, `${name}.events`, methodName, info)
+    if (ev.t === 'multi') {
+      this._validateArray(ev.events, `${name}.events`, methodName, info)
+    }
+    if (ev.t === 'move') {
+      this._validateArray(ev.nodes, `${name}.nodes`, methodName, info)
+    }
+    if (ev.t === 'edit') {
+      this._validateObj(ev.changes, `${name}.changes`, methodName, info)
+      this._validateObj(ev.node, `${name}.node`, methodName, info)
+    }
+
     this._validateObj(ev.changed, `${name}.changed`, methodName, info)
   }
 

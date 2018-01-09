@@ -82,6 +82,7 @@ export class RED implements IRED {
     emit(elm) { }
   }
   public view = {
+    ctxraw() { },
     redraw() { },
     focus() { },
     selection() {
@@ -116,6 +117,18 @@ export class RED implements IRED {
     }
   }
   public nodes = {
+    removeSubflow() { },
+    import(config) {
+      return [{
+        forEach(cb) {
+          cb({
+            id: 'x',
+            type: 'subflow'
+          })
+        }
+      }]
+    },
+    clear() { },
     version() { return '1' },
     createCompleteNodeSet() {
       return {} // nns
@@ -188,6 +201,7 @@ export class RED implements IRED {
     push(event) { }
   }
   public editor = {
+    updateNodeProperties() { },
     validateNode(node) { }
   }
   public userSettings = {
@@ -195,6 +209,7 @@ export class RED implements IRED {
     add(setting) { },
   }
   public workspaces = {
+    remove() { },
     refresh() { },
     active() {
       return {} // the currently active workspace
