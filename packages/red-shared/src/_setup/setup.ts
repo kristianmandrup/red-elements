@@ -92,6 +92,9 @@ export class RED implements IRED {
   }
   public text = {
     bidi: {
+      enforceTextDirectionWithUCC(label) {
+        return label
+      },
       // for renameTab
       resolveBaseTextDir(label) {
         return label;

@@ -14,6 +14,29 @@ function create() {
   return new Utils()
 }
 
+const { log } = console
+
+function fakeNode(override = {}, def = true) {
+  let base: any = {
+    id: 'x',
+    in: {},
+    out: {},
+    type: 'subflow'
+  }
+
+  if (def) {
+    base._def = {
+      credentials: {},
+      defaults: {},
+      set: {
+        module: 'node-red'
+      }
+    }
+  }
+
+  return Object.assign(base, override)
+}
+
 let utils
 beforeEach(() => {
   utils = create()
@@ -83,8 +106,8 @@ test('Utils: formatNumber(element, obj, sourceId, path, cycle, initialFormat)', 
   const path = 'abc'
   const cycle = 0
   const initialFormat = 'A'
-  const number = utils.formatNumber(element, obj, sourceId, path, cycle, initialFormat)
-  expect(number).toBe(0)
+  const formatted = utils.formatNumber(element, obj, sourceId, path, cycle, initialFormat)
+  expect(formatted).toBe(utils)
 })
 
 test('Utils: formatBuffer(element, button, sourceId, path, cycle)', () => {
@@ -93,35 +116,78 @@ test('Utils: formatBuffer(element, button, sourceId, path, cycle)', () => {
   const sourceId = 'x'
   const path = 'abc'
   const cycle = 0
-  const buffer = utils.formatBuffer(element, button, sourceId, path, cycle)
-  expect(buffer).toBe('xyz')
+  const farmatted = utils.formatBuffer(element, button, sourceId, path, cycle)
+  expect(farmatted).toBe(utils)
 })
 
 test('Utils: buildMessageElement(obj, options)', () => {
   const obj = {}
   const options = {}
   const msgElem = utils.buildMessageElement(obj, options)
-  expect(msgElem).toBe('xyz')
+  const classes = msgElem.attr('class').split(/\s+/)
+  const html = msgElem.html()
+  const id = msgElem.attr('id')
+  const text = msgElem.text()
+  log({
+    id,
+    html,
+    text,
+    msgElem,
+    classes
+  })
+
+  expect(html).toEqual('<span class="debug-message-row"><span class="debug-message-object-value"><span class="debug-message-object-header"><span>{ </span><span class="debug-message-type-meta">empty</span><span> }</span></span></span></span>')
+  expect(text).toEqual('{ empty }')
+  expect(id).toBeUndefined()
+  expect(classes).toEqual(['debug-message-element',
+    'debug-message-top-level',
+    'collapsed'])
 })
 
 test('Utils: normalisePropertyExpression(str)', () => {
   const str = 'abc'
   const normalized = utils.normalisePropertyExpression(str)
-  expect(normalized).toBe(str)
+  expect(normalized).toEqual([str])
 })
 
 test('Utils: validatePropertyExpression(str)', () => {
   const str = 'abc'
   const validated = utils.validatePropertyExpression(str)
-  expect(validated).toBe(str)
+  expect(validated).toBe(true)
 })
 
-test('Utils: getMessageProperty(msg, expr)', () => {
-  const msg = 'abc'
-  const expr = /a/
+test('Utils: getMessageProperty(msg, expr) - str expr', () => {
+  const msg = {
+    hello: 'hello my friend'
+  }
+  const expr = 'msg.hello' // use hello
   const msgProp = utils.getMessageProperty(msg, expr)
-  expect(msgProp).toBe('abc')
+  expect(msgProp).toEqual('hello my friend')
 })
+
+test.only('Utils: getMessageProperty(msg, expr) - array expr', () => {
+  const msg = {
+    hello: 'hello my friend'
+  }
+  const expr = ['hello']
+  const msgProp = utils.getMessageProperty(msg, expr)
+  expect(msgProp).toEqual('hello my friend')
+})
+
+
+test.only('Utils: getMessageProperty(msg, expr) - data expr', () => {
+  const msg = {
+    type: 'message',
+    data: {
+      hello: 'hello my friend'
+    },
+    length: 10
+  }
+  const expr = ['hello']
+  const msgProp = utils.getMessageProperty(msg, expr)
+  expect(msgProp).toEqual('hello my friend')
+})
+
 
 test('Utils: getNodeIcon(def, node)', () => {
   const def = {
@@ -130,12 +196,15 @@ test('Utils: getNodeIcon(def, node)', () => {
   }
   const node = {}
   const msgProp = utils.getNodeIcon(def, node)
-  expect(msgProp).toBe('abc')
+  expect(msgProp).toBe("icons/node-red/cog.png")
 })
 
 test('Utils: getNodeLabel(node, defaultLabel)', () => {
-  const node = {}
+  const node = fakeNode({
+    id: 'x',
+    label: 'hello'
+  })
   const defaultLabel = 'hello'
   const label = utils.getNodeLabel(node, defaultLabel)
-  expect(label).toBe('hello')
+  expect(label).toBe(label)
 })

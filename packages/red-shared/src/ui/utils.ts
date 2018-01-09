@@ -19,6 +19,12 @@ import {
   $
 } from '../context'
 
+const { log } = console
+
+interface ICollapsible extends JQuery<HTMLElement> {
+  collapse: Function,
+  clearPinned: Function
+}
 
 // API
 // createObjectElement: buildMessageElement,
@@ -242,6 +248,7 @@ export const Utils = class Utils extends Context {
     } else if (format === 'hex') {
       element.text("0x" + (obj).toString(16));
     }
+    return this
   }
 
   formatBuffer(element, button, sourceId, path, cycle) {
@@ -266,6 +273,7 @@ export const Utils = class Utils extends Context {
       button.text('string');
       element.addClass('debug-message-buffer-string').removeClass('debug-message-buffer-raw');
     }
+    return this
   }
 
   buildMessageElement(obj, options) {
@@ -316,7 +324,7 @@ export const Utils = class Utils extends Context {
     if (path !== undefined && rootPath !== undefined) {
       strippedKey = path.substring(rootPath.length + (path[rootPath.length] === "." ? 1 : 0));
     }
-    var element = $('<span class="debug-message-element"></span>');
+    var element = <ICollapsible>$('<span class="debug-message-element"></span>');
     element.collapse = function () {
       element.find(".debug-message-expandable").parent().addClass("collapsed");
     }
@@ -751,8 +759,9 @@ export const Utils = class Utils extends Context {
       ])
     var result = null;
     var msgPropParts;
+    var exprType = typeof expr
 
-    if (typeof expr === 'string') {
+    if (exprType === 'string') {
       if (expr.indexOf('msg.') === 0) {
         expr = expr.substring(4);
       }
@@ -761,10 +770,34 @@ export const Utils = class Utils extends Context {
       msgPropParts = expr;
     }
     var m;
+
+    if (!Array.isArray(msgPropParts)) {
+      this.handleError('getMessageProperty: msgPropParts must be an Array', {
+        msg,
+        expr,
+        normalisePropertyExpression: exprType === 'string'
+      })
+    }
+
     msgPropParts.reduce(function (obj, key) {
-      result = (typeof obj[key] !== "undefined" ? obj[key] : undefined);
-      if (result === undefined && obj.hasOwnProperty('type') && obj.hasOwnProperty('data') && obj.hasOwnProperty('length')) {
-        result = (typeof obj.data[key] !== "undefined" ? obj.data[key] : undefined);
+      const keyValue = obj[key]
+      result = (typeof keyValue !== "undefined" ? keyValue : undefined);
+      const isDataObj = result === undefined && obj.hasOwnProperty('type') && obj.hasOwnProperty('data') && obj.hasOwnProperty('length')
+      // log({
+      //   key,
+      //   obj,
+      //   keyValue,
+      //   result,
+      //   isDataObj
+      // })
+      if (isDataObj) {
+        const dataValue = obj.data[key]
+        result = (typeof dataValue !== "undefined" ? dataValue : undefined);
+        // log('data obj', {
+        //   dataValue,
+        //   obj,
+        //   result
+        // })
       }
       return result;
     }, msg);
@@ -801,6 +834,11 @@ export const Utils = class Utils extends Context {
     } = this
     defaultLabel = defaultLabel || "";
     var l;
+
+    this._validateNode(node, 'node', 'getNodeLabel')
+    this._validateNodeDef(node._def, 'node._def', 'getNodeLabel')
+    this._validateStr(node.label, 'node.label', 'getNodeLabel')
+
     if (node.type === 'tab') {
       l = node.label || defaultLabel
     } else {
