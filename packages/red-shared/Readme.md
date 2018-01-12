@@ -47,6 +47,10 @@ We use the following testing stack for headless browser testing (E2E) on Travic 
 
 Note: You need `jest-cli` installed for the project.
 
+`$ npm install -g jest-cli`
+
+Writing jest tests can look sth like this:
+
 ```js
 test('the best flavor is grapefruit', () => {
   expect(bestLaCroixFlavor()).toBe('grapefruit')
