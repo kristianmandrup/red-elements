@@ -53,10 +53,12 @@ test('the best flavor is grapefruit', () => {
 })
 ```
 
-Run jest with debugger
+Please note that any `test/playtime` folder or similar sounding name (`sandbox` etc) is for experimental tests, ie. a sandbox for playing around.. Use any tests here at your own risk, ie. they might be highly unstable.
+
+### Run jest with debugger
 
 ```bash
-$ node --inspect-brk node_modules/.bin/jest --runInBand test/playtime/simple.test.js
+$ node --inspect-brk node_modules/.bin/jest --runInBand jest test/nodes/node.test.ts
 ```
 
 ## Test Setup
