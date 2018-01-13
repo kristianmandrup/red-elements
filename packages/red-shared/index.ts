@@ -1,25 +1,13 @@
 export {
-  // RED,
-  Actions,
-  Clipboard,
-  Deploy,
-  Keyboard,
-  Notifications,
-  Utils,
   Communications,
   History,
   UndoEvent,
   Node,
   Nodes,
   NodesRegistry,
-  TextFormat,
-  Bidi,
-  format,
   Events,
   I18n,
-  Main,
   Settings,
-  User,
   Validators
 } from './src'
 

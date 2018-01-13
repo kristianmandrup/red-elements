@@ -1,7 +1,6 @@
 import {
   canvas
-}
-  from './canvas'
+} from './canvas'
 
 import {
   common,
@@ -19,10 +18,24 @@ import {
   LibraryUI
 } from './library'
 
+import {
+  Main,
+} from './main'
+
+import {
+  User,
+} from './user'
+
 // import {
 //   mainContainer
 // }
 // from './main-container'
+
+export {
+  TextFormat,
+  Bidi,
+  format
+} from './text'
 
 export {
   Actions
@@ -114,6 +127,8 @@ export const widgets = {
 export default widgets
 
 export {
+  Main,
+  User,
   Editor,
   Palette,
   PaletteEditor,

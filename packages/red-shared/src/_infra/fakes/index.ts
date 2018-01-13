@@ -1,6 +1,8 @@
-import { Container, injectable, tagged, named } from 'inversify';
-import 'reflect-metadata';
-let container = new Container();
+import {
+  container,
+  injectable
+} from '../injectable'
+
 export let TYPES = { RED: 'IRED' };
 export interface IRED {
   i18n: any;

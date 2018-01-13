@@ -16,7 +16,7 @@
 import {
   Context,
   $
-} from './context'
+} from '../context'
 
 global.jQuery = $
 import 'jquery-ui-dist/jquery-ui'

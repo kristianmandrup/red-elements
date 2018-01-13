@@ -18,15 +18,18 @@ import {
   Communications,
   Events,
   I18n,
-  Main,
   Settings,
-  User,
   Validators,
   History,
   Nodes,
+} from '@tecla5/red-shared/src'
+
+import {
   TextFormat,
   Bidi,
-} from '@tecla5/red-shared/src'
+  Main,
+  User
+} from '../'
 
 console.log({
   Communications,
