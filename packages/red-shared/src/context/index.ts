@@ -1,4 +1,4 @@
-import { IRED, TYPES, container } from '../_setup/setup';
+import { IRED, TYPES, container } from '@tecla5/red-shared/src/setup';
 import getDecorators from 'inversify-inject-decorators';
 const { lazyInject } = getDecorators(container);
 

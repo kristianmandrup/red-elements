@@ -1,17 +1,16 @@
 
 import {
   controllers
-}
-  from './controllers'
+} from './controllers'
 
 export {
-  BaseContext,
-  Context,
   lazyInject,
   IRED,
   TYPES,
+  Context,
   $
-} from './base'
+} from '../context'
+
 
 export const common = {
   controllers
