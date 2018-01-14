@@ -18,13 +18,32 @@ import {
   $
 } from '../context'
 
+import {
+  ILocalStorage,
+  LocalStorage
+} from './localstorage'
+
 const { log } = console
 export class Settings extends Context {
-  public loadedSettings: any
+  public loadedSettings: any = {}
+
+  protected localStorage: ILocalStorage
 
   constructor() {
     super()
-    this.loadedSettings = {};
+    this.localStorage = new LocalStorage()
+  }
+
+  hasLocalStorage(): boolean {
+    return this.localStorage.hasLocalStorage()
+  }
+
+  get(key: string): string {
+    return this.localStorage.get(key)
+  }
+
+  set(key: string, value: any) {
+    this.localStorage.set(key, value)
   }
 
   async init() {
@@ -37,7 +56,12 @@ export class Settings extends Context {
       });
       window.location.search = '';
     }
+    this.setup()
+    return await this.load();
+  }
 
+  setup() {
+    const { ctx } = this
     $.ajaxSetup({
       beforeSend: function (jqXHR, settings) {
         // Only attach auth header for requests to relative paths
@@ -50,44 +74,7 @@ export class Settings extends Context {
         }
       }
     });
-
-    return await this.load();
   }
-
-  hasLocalStorage() {
-    try {
-      return 'localStorage' in window && window['localStorage'] !== null;
-    } catch (e) {
-      return false;
-    }
-  };
-
-  set(key, value) {
-    if (!this.hasLocalStorage()) {
-      return;
-    }
-    localStorage.setItem(key, JSON.stringify(value));
-  };
-
-  /**
-   * If the key is not set in the localStorage it returns <i>undefined</i>
-   * Else return the JSON parsed value
-   * @param key
-   * @returns {*}
-   */
-  get(key) {
-    if (!this.hasLocalStorage()) {
-      return undefined;
-    }
-    return JSON.parse(localStorage.getItem(key));
-  };
-
-  remove(key) {
-    if (!this.hasLocalStorage()) {
-      return;
-    }
-    localStorage.removeItem(key);
-  };
 
   setProperties(data) {
     let {

@@ -32,9 +32,15 @@ function detectLanguage(fallbackLng = 'en') {
   }
 }
 
+import {
+  ICatalog,
+  Catalog
+} from './catalog'
+
 // See: https://www.i18next.com/getting-started.html
 export class I18n extends Context {
   public i18n: any
+  protected catalog: Catalog
 
   constructor() {
     super()
@@ -44,6 +50,7 @@ export class I18n extends Context {
     }
     this.RED = RED
     this.i18n = i18n;
+    this.catalog = new Catalog(this)
   }
 
   get defaultOptions() {
@@ -72,70 +79,5 @@ export class I18n extends Context {
 
   detectLanguage() {
     return detectLanguage()
-  }
-
-  async loadCatalog(namespace) {
-    var languageList = [detectLanguage()]
-
-    var toLoad = languageList.length;
-    return new Promise((resolve, reject) => {
-      languageList.forEach((lang) => {
-        const url = 'locales/' + namespace + '?lng=' + lang
-        log('request language localisations', {
-          lang,
-          url
-        })
-        $.ajax({
-          headers: {
-            'Accept': 'application/json'
-          },
-          cache: false,
-          url,
-          success: (data) => {
-            log('success', {
-              data
-            })
-            i18n.addResourceBundle(lang, namespace, data);
-            toLoad--;
-            if (toLoad === 0) {
-              resolve()
-            }
-          },
-          error: (jqXHR: any, textStatus: string, errMsg: string) => {
-            log({
-              textStatus,
-              errMsg
-            })
-            reject(errMsg)
-          }
-        });
-      })
-    })
-  }
-
-  async loadNodeCatalogs() {
-    var languageList = [detectLanguage()]
-    var toLoad = languageList.length;
-    return new Promise((resolve, reject) => {
-      languageList.forEach(function (lang) {
-        $.ajax({
-          headers: {
-            'Accept': 'application/json'
-          },
-          cache: false,
-          url: 'locales/nodes?lng=' + lang,
-          success: function (data) {
-            var namespaces = Object.keys(data);
-            namespaces.forEach(function (ns) {
-              i18n.addResourceBundle(lang, ns, data[ns]);
-            });
-            toLoad--;
-            if (toLoad === 0) {
-              resolve()
-            }
-          }
-        })
-      })
-    })
   }
 }
