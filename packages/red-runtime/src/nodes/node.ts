@@ -3,6 +3,9 @@ import {
   $
 } from '../context'
 
+/**
+ * A single Node definition
+ */
 export class Node extends Context {
   public node_defs = {};
   public nodes = [];
@@ -22,12 +25,12 @@ export class Node extends Context {
 
   setDirty(d) {
     let {
-      ctx,
+      RED,
       dirty
     } = this
 
     dirty = d;
-    ctx.events.emit("nodes:change", {
+    RED.events.emit("nodes:change", {
       dirty: dirty
     });
   }

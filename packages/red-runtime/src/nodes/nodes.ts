@@ -11,23 +11,34 @@ export {
   NodesRegistry
 }
 
+// TODO: extends Node[] ??
+interface Flow {
+
+}
+
 interface Link {
   source: any,
-  target: any
+  target: any,
+  sourcePort?: any
 }
+
 
 interface NodeDef {
   defaults: Object,
   credentials?: Object,
-  category?: string
+  category?: string,
+  _?: any
 }
 
+// TODO: Fix - Use Node class instead!!
 interface Node {
   id: string,
   name: string,
   info?: string,
   type: string,
   credentials?: any,
+  ports?: any[],
+  wires: any[],
   in: any[],
   out: any[],
   inputs: number,
@@ -38,7 +49,9 @@ interface Node {
   _def: NodeDef,
   x: number,
   y: number,
-  z: number
+  z: number,
+  dirty: boolean,
+  i?: number
 }
 
 interface Subflow extends Node {
@@ -47,11 +60,15 @@ interface Subflow extends Node {
 
 const { log } = console
 
+/**
+ * A set of Nodes that form a subflow or similar grouping
+ */
 export class Nodes extends Context {
   public registry = new NodesRegistry()
   public configNodes = {
     users: {}
   }
+  protected _dirty: boolean = false
   public nodes = []
   public links = []
   public workspaces = {}
@@ -59,7 +76,7 @@ export class Nodes extends Context {
   public subflows = {}
   public n = null // {}
   public initialLoad = null // {}
-  public loadedFlowVersion
+  public loadedFlowVersion: string
   public defaultWorkspace = {}
 
   public setNodeList: Function
@@ -91,19 +108,19 @@ export class Nodes extends Context {
 
     this._validateObj(RED.events, 'RED.events', 'Nodes constructor')
 
-    RED.events.on("registry:node-type-added", function (type) {
+    RED.events.on("registry:node-type-added", function (type: string) {
       var def = registry.getNodeType(type);
       var replaced = false;
       var replaceNodes = [];
 
       this._validateObj(RED.nodes, 'RED.nodes', 'Nodes events.on handler')
 
-      RED.nodes.eachNode(function (n) {
+      RED.nodes.eachNode(function (n: Node) {
         if (n.type === "unknown" && n.name === type) {
           replaceNodes.push(n);
         }
       });
-      RED.nodes.eachConfig(function (n) {
+      RED.nodes.eachConfig(function (n: Node) {
         if (n.type === "unknown" && n.name === type) {
           replaceNodes.push(n);
         }
@@ -111,7 +128,7 @@ export class Nodes extends Context {
 
       if (replaceNodes.length > 0) {
         var reimportList = [];
-        replaceNodes.forEach(function (n) {
+        replaceNodes.forEach(function (n: Node) {
           if (configNodes.hasOwnProperty(n.id)) {
             delete configNodes[n.id];
           } else {
@@ -122,10 +139,10 @@ export class Nodes extends Context {
         RED.view.redraw(true);
         var result = importNodes(reimportList, false);
         var newNodeMap = {};
-        result[0].forEach(function (n) {
+        result[0].forEach(function (n: Node) {
           newNodeMap[n.id] = n;
         });
-        RED.nodes.eachLink(function (l) {
+        RED.nodes.eachLink(function (l: Link) {
           if (newNodeMap.hasOwnProperty(l.source.id)) {
             l.source = newNodeMap[l.source.id];
           }
@@ -157,7 +174,7 @@ export class Nodes extends Context {
     return (1 + Math.random() * 4294967295).toString(16);
   }
 
-  addNode(n) {
+  addNode(n: Node) {
     const {
       RED
     } = this
@@ -186,7 +203,7 @@ export class Nodes extends Context {
       this.updateConfigNodeUsers(n);
       if (n._def.category == "subflows" && typeof n.i === "undefined") {
         var nextId = 0;
-        RED.nodes.eachNode(function (node) {
+        RED.nodes.eachNode(function (node: Node) {
           nextId = Math.max(nextId, node.i || 0);
         });
         n.i = nextId + 1;
@@ -201,7 +218,10 @@ export class Nodes extends Context {
     this._validateLink(link, 'link', 'addLink')
     this.links.push(link);
   }
-
+  /**
+   * Find and return a node by ID
+   * @param id {string} id of node to find
+   */
   getNode(id: string) {
     if (id in this.configNodes) {
       return this.configNodes[id];
@@ -215,6 +235,10 @@ export class Nodes extends Context {
     return null;
   }
 
+  /**
+   * Remove a node from the canvas by ID
+   * @param id {string} id of node to remove
+   */
   removeNode(id: string) {
     const {
       RED,
@@ -295,7 +319,11 @@ export class Nodes extends Context {
     };
   }
 
-  removeLink(l) {
+  /**
+   * Remove a link
+   * @param l {string} link to remove
+   */
+  removeLink(l: Link) {
     const { links } = this
     var index = links.indexOf(l);
     if (index != -1) {
@@ -379,14 +407,14 @@ export class Nodes extends Context {
     this._validateNode(sf, 'sf', 'addSubflow')
 
     if (createNewIds) {
-      var subflowNames = Object.keys(subflows).map(function (sfid) {
+      var subflowNames = Object.keys(subflows).map(function (sfid: string) {
         return subflows[sfid].name;
       });
 
       subflowNames.sort();
       var copyNumber = 1;
       var subflowName = sf.name;
-      subflowNames.forEach(function (name) {
+      subflowNames.forEach(function (name: string) {
         if (subflowName == name) {
           copyNumber++;
           subflowName = sf.name + " (" + copyNumber + ")";
@@ -416,10 +444,10 @@ export class Nodes extends Context {
       paletteLabel: function () {
         return RED.nodes.subflow(sf.id).name
       },
-      inputLabels: function (i) {
+      inputLabels: function (i: number) {
         return sf.inputLabels ? sf.inputLabels[i] : null
       },
-      outputLabels: function (i) {
+      outputLabels: function (i: number) {
         return sf.outputLabels ? sf.outputLabels[i] : null
       },
       set: {
@@ -503,6 +531,10 @@ export class Nodes extends Context {
     return false;
   }
 
+  /**
+   * Get all the flow nodes related to a node
+   * @param node { Node } the node to find all flow nodes from
+   */
   getAllFlowNodes(node: Node) {
     const {
       links
@@ -535,7 +567,11 @@ export class Nodes extends Context {
     return nns;
   }
 
-  convertWorkspace(n) {
+  /**
+   * Convert a node to a workspace?
+   * @param n { Node } the node to convert
+   */
+  convertWorkspace(n: Node) {
     var node = {
       id: null,
       type: null
@@ -552,6 +588,8 @@ export class Nodes extends Context {
   }
   /**
    * Converts a node to an exportable JSON Object
+   * @param n { Node } the node to convert
+   * @param exportCreds { boolean } if node (user) credentials should also be exported
    **/
   convertNode(n: Node, exportCreds: boolean) {
     const {
@@ -623,7 +661,7 @@ export class Nodes extends Context {
       for (var i = 0; i < n.outputs; i++) {
         node.wires.push([]);
       }
-      var wires = links.filter(function (d) {
+      var wires = links.filter(function (d: Link) {
         return d.source === n;
       });
       for (var j = 0; j < wires.length; j++) {
@@ -643,6 +681,10 @@ export class Nodes extends Context {
     return node;
   }
 
+  /**
+   * Convert a node to a Subflow
+   * @param n { Node } node to convert
+   */
   convertSubflow(n: Node) {
     this._validateNode(n, 'n', 'convertSubflow')
 
@@ -683,7 +725,7 @@ export class Nodes extends Context {
         y: p.y,
         wires: []
       };
-      var wires = this.links.filter(function (d) {
+      var wires = this.links.filter(function (d: Link) {
         return d.target === p
       });
       for (var i = 0; i < wires.length; i++) {
@@ -714,8 +756,11 @@ export class Nodes extends Context {
   }
   /**
    * Converts the current node selection to an exportable JSON Object
-   **/
-  createExportableNodeSet(set, exportedSubflows, exportedConfigNodes) {
+   * @param set { Node[] } set of nodes to export
+   * @param exportedSubflows { object } map of subflows by ID to be exported
+   * @param exportedConfigNodes { object } map of config nodes by ID to be exported
+   */
+  createExportableNodeSet(set: Node[], exportedSubflows: object, exportedConfigNodes: object) {
     const {
       RED,
       registry,
@@ -786,7 +831,11 @@ export class Nodes extends Context {
     return nns;
   }
 
-  createCompleteNodeSet(exportCredentials) {
+  /**
+   * Create a complete node set for export
+   * @param exportCredentials { boolean } whether credentials should also be exported
+   */
+  createCompleteNodeSet(exportCredentials: boolean) {
     const {
       workspacesOrder,
       workspaces,
@@ -841,7 +890,12 @@ export class Nodes extends Context {
     return nns;
   }
 
-  checkForMatchingSubflow(subflow, subflowNodes) {
+  /**
+   * Check if a subflow has a node that matches a given node
+   * @param subflow { Node } node subflow
+   * @param subflowNodes list of subflow nodes
+   */
+  checkForMatchingSubflow(subflow: Node, subflowNodes: Node[]) {
     const {
       RED
     } = this
@@ -952,7 +1006,13 @@ export class Nodes extends Context {
     return match;
   }
 
-  compareNodes(nodeA, nodeB, idMustMatch) {
+  /**
+   * Compare if nodes match (equality)
+   * @param nodeA node to to compare
+   * @param nodeB { Node } node to compare with
+   * @param idMustMatch { boolean } if IDs must match as well to be truly equal
+   */
+  compareNodes(nodeA: Node, nodeB: Node, idMustMatch: boolean) {
     if (idMustMatch && nodeA.id != nodeB.id) {
       return false;
     }
@@ -981,7 +1041,13 @@ export class Nodes extends Context {
     return true;
   }
 
-  importNodes(newNodesObj, createNewIds, createMissingWorkspace) {
+  /**
+   * Import nodes from a string (JSON serialization) reprepresentation
+   * @param newNodesObj { Node } the node definitions to import
+   * @param createNewIds { boolean } create IDs of imported nodes if not in import definitions
+   * @param createMissingWorkspace { boolean } create missing workspace if no such workspace exists
+   */
+  importNodes(newNodesObj: string, createNewIds: boolean, createMissingWorkspace: boolean) {
     const {
       RED,
       registry,
@@ -1487,7 +1553,11 @@ export class Nodes extends Context {
   }
 
   // TODO: supports filter.z|type
-  filterNodes(filter) {
+  /**
+   * Filter nodes based on a filter criteria
+   * @param filter { object } filter criteria (Node) all filtered nodes must match
+   */
+  filterNodes(filter: Node) {
     const {
       nodes
     } = this
@@ -1510,7 +1580,7 @@ export class Nodes extends Context {
     return result;
   }
 
-  filterLinks(filter) {
+  filterLinks(filter: Link) {
     const {
       links
     } = this
@@ -1547,6 +1617,10 @@ export class Nodes extends Context {
   }
 
   // Update any config nodes referenced by the provided node to ensure their 'users' list is correct
+  /**
+   * Update configured users with the user of a given node
+   * @param n { Node } update config users of node
+   */
   updateConfigNodeUsers(n: Node) {
     const {
       registry,
@@ -1621,6 +1695,10 @@ export class Nodes extends Context {
     }
   }
 
+  /**
+   * Return the flow version
+   * @param version { string } version of flow
+   */
   flowVersion(version) {
     let {
       loadedFlowVersion
@@ -1633,6 +1711,9 @@ export class Nodes extends Context {
     return loadedFlowVersion;
   }
 
+  /**
+   * Clear all the node flows
+   */
   clear() {
     let {
       RED,
@@ -1653,8 +1734,6 @@ export class Nodes extends Context {
     defaultWorkspace = null;
 
     RED.nodes.dirty(true);
-
-    log('RED refresh')
 
     RED.view.redraw(true);
     RED.palette.refresh();
@@ -1684,28 +1763,47 @@ export class Nodes extends Context {
     return this
   }
 
+  /**
+   * Get the current workspace order
+   */
   getWorkspaceOrder() {
     return this.workspacesOrder
   }
 
-  setWorkspaceOrder(order) {
+  /**
+   * Set the workspace order
+   * @param order { Workspace[] } list of workspaces in a given order
+   */
+  setWorkspaceOrder(order: any[]) {
     this._validateArray(order, 'order', 'setWorkspaceOrder')
     this.workspacesOrder = order;
     return this
   }
 
+  /**
+   * Iterate all nodes
+   * @param cb { function } For each iterated node, call this callback function
+   */
   eachNode(cb) {
     for (var n = 0; n < this.nodes.length; n++) {
       cb(this.nodes[n]);
     }
   }
 
+  /**
+   * Iterate all links
+   * @param cb { function } For each iterated link, call this callback function
+   */
   eachLink(cb) {
     for (var l = 0; l < this.links.length; l++) {
       cb(this.links[l]);
     }
   }
 
+  /**
+   * Iterate all config nodes
+   * @param cb { function } For each iterated config node, call this callback function
+   */
   eachConfig(cb) {
     for (var id in this.configNodes) {
       if (this.configNodes.hasOwnProperty(id)) {
@@ -1714,6 +1812,10 @@ export class Nodes extends Context {
     }
   }
 
+  /**
+   * Iterate all subflows
+   * @param cb { function } For each iterated subflow, call this callback function
+   */
   eachSubflow(cb) {
     for (var id in this.subflows) {
       if (this.subflows.hasOwnProperty(id)) {
@@ -1721,14 +1823,21 @@ export class Nodes extends Context {
       }
     }
   }
-
+  /**
+   * Iterate all workspaces
+   * @param cb { function } For each iterated workspace, call this callback function
+   */
   eachWorkspace(cb) {
     for (var i = 0; i < this.workspacesOrder.length; i++) {
       cb(this.workspaces[this.workspacesOrder[i]]);
     }
   }
 
-  originalFlow(flow) {
+  /**
+   * Return the original flow definition
+   * @param flow { Flow } the flow
+   */
+  originalFlow(flow: Flow) {
     let {
       initialLoad
     } = this
@@ -1739,16 +1848,23 @@ export class Nodes extends Context {
     }
   }
 
-  dirty(d) {
+  setDirty(d: boolean) {
+    this._dirty = d
+  }
+
+  /**
+   * Return (or set) Nodes dirty state
+   * @param d { boolean } set dirty state
+   */
+  dirty(d: boolean) {
     const {
       setDirty,
-      dirty
     } = this.rebind([
         'setDirty'
       ])
 
     if (d == null) {
-      return dirty;
+      return this._dirty;
     } else {
       setDirty(d);
     }
