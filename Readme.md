@@ -1,4 +1,4 @@
-# Red UI
+# Red Elements
 
 Node-red UI using native browser Custom Elements (aka. Web components).
 

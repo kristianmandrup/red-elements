@@ -1,12 +1,105 @@
 # Red widgets
 
-The goal is  update the widget tests and include as much test cases as we can for individual components.
+Red widgets contains all the widgets of node-red, refactored as TypeScript classes.
+For the first iteration (version), we plan to refactor the code and include good test coverage, then wrap each widget as a [native browser W3C Custom Element](https://www.w3.org/TR/custom-elements/) to build the full node-red editor UI from.
+
+We will then polish and improve the editor as needed to suit our particular use cases.
+
+## Dependencies
+
+- `red-runtime` (in-memory model)
+- `red-assets` shared assets such as stylesheets, images, vendor libs etc.
+
+We currently depend on a modified version of `jsonata` library in `@tecla5/red-assets/vendor`.
+We will want to upgrade to use the latest `jsonata` version.
+
+The `d3` library used is v3 but we will want to upgrade to use the latest version (v4), which has a modular design of smaller modules to avoid loading all of D3.
+
+### Backend API
+
+Some widgets use Ajax (via jQuery `$.ajax`) to make requests to a backend API. We have an Express server backend [red-api](https://github.com/tecla5/red-api) refactored as ES6 classes, but for now simply mock the reponses using [nock](red-widgets) or similar.
+
+## Getting started: red-widgets
+
+Run the script `lerna:update` to ensure all dependency modules are installed, including `@tecla5/red-runtime` a Lerna package (part of the Lerna project).
+
+```bash
+red-elements/packages/red-widgets $ npm run lerna:update
+...
+lerna success Bootstrapped 1 packages
+```
+
+Now you should have a `@tecla5/red-runtime` in `node_modules`
+
+Ensure you have `jest-cli` installed so you can run the `jest` binary/executable to run the tests:
+
+`$ npm install -g jest-cli`
+
+Run a test
+
+`$ jest test/actions/actions.test.ts`
+
+Should all pass :)
+
+## Design/Architecture
+
+- `src` contains all the source files in TypeScript
+- `dist` contains the compiled `.js` files for distribution and compiled test files
+
+## Testing
+
+See the [Test](https://github.com/kristianmandrup/red-elements/blob/major-refactor/packages/red-widgets/docs/Test.md) document for testing details
+
+Note that the test are run from `dist`. Running:
+
+`$ jest test/actions/actions.test.ts`
+
+Will actually run the equivalent `.js` file in `dist`
+
+`$ jest dist/test/actions/actions.test.js`
+
+Ensure files in dist reflect your latest update. Ensure you have setup a task to auto-compile your .ts files to `/dist` folder on any change.
+
+Note: You might also want to sometimes clean the `dist` folder to ensure you don't have leftover files from refactoring file names and locations.
+
+## Widgets
+
+The following should provide an overview of all the widgets that form the NodeRed UI
+
+- `actions` - editor actions
+- `app` - the full editor UI app
+- `clipboard` - copy nodes to clipboard
+- `canvas` - canvas to draw nodes on (via D3)
+- `common` - base widgets such as `Panel`, `Menu`, `Dropdown` etc.
+- `context` - base class for all widgets
+- `deploy` - deploy nodes for running on server
+- `header` - header of editor (logo, session, main menu)
+- `keyboard` - editor keyboard control and shortcuts
+- `library` - node libraries
+- `main` - main editor area (palette, canvas, sidebar) and setup of all widgets used
+- `node-diff` - node difference display
+- `node-editor` - form to edit node properties
+- `notifications` - notify user on events
+- `palette` - palette of nodes available for canvas
+- `red` - RED context object (injected on all widgets)
+- `search` - search for nodes
+- `settings` - user settings
+- `sidebar` - sidebar with tabs, incl. console output of running node flow
+- `state` - current editor state?
+- `text` - text formatting
+- `touch` - touch specific widgets such as radial menu
+- `tray` - tray with info
+- `user` - user session login/logout
+- `utils` - various utility functions
+- `workspaces` - workspaces of node configurations
+
+Please also see the [1.0 Roadmap](https://nodered.org/blog/2017/07/17/roadmap-to-1-dot-0) and the NodeRed videos online to get a full impression of the UI.
 
 ## Lerna project
 
 *red-widgets* is a lerna package, part of a [lerna](https://lernajs.io/) project.
 
-The full UI project contains multiple related packages that can be managed as a unit.
+The full UI project contains multiple inter-related packages that can be managed as a unit.
 
 See [Lerna Getting Started](https://lernajs.io/#getting-started) for typical development workflow.
 
@@ -17,9 +110,15 @@ The essential `lerna` npm scripts:
 "lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
 ```
 
+To update dependencies, just run:
+
+`red-elements/packages/red-widgets $ npm run lerna:update`
+
 ## Windows setup
 
-We have included the following scripts for Windows users.
+Please use [docker for windows](https://www.docker.com/docker-windows) to setup a unix environment (VM) to work in.
+
+If for any reason you are trying to run this on a Windows OS directly, we have included the following scripts: (Not yet tested, modify as needed)
 
 ```json
 "clean:win": "npm run clean:lock | clean:modules",
@@ -37,18 +136,6 @@ $ npm run clean:win
 $ npm run lerna:bootstrap
 ... bootstrapped
 ```
-
-## Getting started
-
-Run the `lerna:update` to ensure all dependency modules are installed, including `@tecla5/red-runtime` a Lerna package (part of the Lerna project).
-
-```bash
-$ npm run lerna:update
-...
-lerna success Bootstrapped 1 packages
-```
-
-Now you should have a `@tecla5/red-runtime` in `node_modules`
 
 ## Jest with TypeScript
 
@@ -80,20 +167,9 @@ If you get Syntax error on `import`, try adding `transform-runtime` to `.babelrc
 
 Where is the code logic of all the components of which we are about to write jest tests? Like header’s path is `red-widget/src/header`
 
-Where is `Panel` and `Menu` etc.?
+Where are the basic widgets such as `Panel`, `Menu` etc.?
 
 - The most basic components can all be found under `src/common`. They are the basic building blocks.
-
-Most of the red-widgets components are in progress?
-
-- All are fully working components/widgets extracted from node-red project.
-
-We are first migrating test to jest of existing jQuery components.
-We will start developing new custom elements using StencilJs once we achieve good enough code coverage using jest.
-
-- Yes, exactly
-
-Where can I see all the existing jQuery custom elements which we are planning to upgrade?
 
 See the [node-red](https://nodered.org/) intro video to get an idea of interface.
 
@@ -101,13 +177,13 @@ Run the [node-red project on github](https://github.com/node-red/node-red)
 
 See [1.0 Roadmap](https://nodered.org/blog/2017/07/17/roadmap-to-1-dot-0) to get a detailed overview of current status and where project is going...
 
-What about references and use of the `RED` global context object which is empty?
+What about references and use of the `RED` global context object?
 
-See [red-runtime](https://github.com/tecla5/red-runtime) and [red-api](https://github.com/tecla5/red-api) (Express backend API)
+Currently the tests are injecting a fake (mocked) `RED` global context object into all classes. We will shortly use the real `RED` object (as per the `node-red` project) once we have that implemented and tested!
 
 Please mock and stub whatever you need to make tests pass. Jest includes advanced mocking capabilities.
 
-## Testing
+## Advanced testing
 
 We use the following testing stack for headless browser testing (E2E) on Travic CI.
 
@@ -142,7 +218,7 @@ test('sum: 1+2 = 2', done => {
 })
 ```
 
-## Troubleshooting
+### Troubleshooting
 
 Run jest with debugger
 
@@ -150,11 +226,11 @@ Run jest with debugger
 $ node --inspect-brk node_modules/.bin/jest --runInBand test/playtime/simple.test.js
 ```
 
-## Jest tooling
+### Jest tooling
 
 - [VS Code jest plugin](https://github.com/orta/vscode-jest) - just AWESOME!!!
 
-## Jest stack
+### Jest stack
 
 - [Jest next generation testing](https://codeburst.io/jest-the-next-generation-testing-8a6ee7c14656)
 - [Jest JQuery tutorial](https://facebook.github.io/jest/docs/en/tutorial-jquery.html)
@@ -257,14 +333,6 @@ toHaveDescendant
 toHaveDescendantWithText
 ```
 
-### Babel config
+## License
 
-In `package.json`
-
-```js
-  "babel": {
-    "presets": [
-      "env"
-    ]
-  }
-```
+Copyright 2018 Tecla5
