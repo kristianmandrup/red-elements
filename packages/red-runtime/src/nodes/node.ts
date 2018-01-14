@@ -19,6 +19,8 @@ export class Node extends Context {
   public initialLoad;
   public dirty = false;
 
+  public type: string
+
   constructor() {
     super()
   }

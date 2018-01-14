@@ -15,7 +15,7 @@
  **/
 import {
   Context
-} from './context'
+} from '../context'
 
 const { log } = console
 

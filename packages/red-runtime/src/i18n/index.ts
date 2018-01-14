@@ -16,7 +16,7 @@
 import {
   Context,
   $
-} from './context'
+} from '../context'
 import * as i18n from 'i18next'
 import { InitOptions } from 'i18next';
 
