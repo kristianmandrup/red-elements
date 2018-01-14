@@ -1,20 +1,22 @@
 import {
-  controllers
-}
-from './controllers'
+  Sidebar,
+  SidebarTabConfig,
+  SidebarTabInfo,
+  Tips
+} from './lib'
 
 export const sidebar = {
-  controllers
+  Sidebar,
+  SidebarTabConfig,
+  SidebarTabInfo,
+  Tips
 }
 
 export default sidebar
 
 export {
-  controllers
-}
-
-export const {
   Sidebar,
   SidebarTabConfig,
-  SidebarTabInfo
-} = controllers
+  SidebarTabInfo,
+  Tips
+}

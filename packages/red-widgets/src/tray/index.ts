@@ -1,18 +1,14 @@
 import {
-  controllers
+  Tray
 }
-  from './controllers'
+  from './lib'
 
 export const tray = {
-  controllers
+  Tray
 }
 
 export default tray
 
 export {
-  controllers
-}
-
-export const {
   Tray
-} = controllers
+}

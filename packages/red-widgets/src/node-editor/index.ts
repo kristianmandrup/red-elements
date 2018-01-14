@@ -1,18 +1,14 @@
 import {
-  controllers
+  NodeEditor
 }
-  from './controllers'
+  from './lib'
 
-export const nodeEditor = {
-  controllers
+export const editor = {
+  NodeEditor
 }
 
-export default nodeEditor
+export default editor
 
 export {
-  controllers
+  NodeEditor
 }
-
-export const {
-  Editor
-} = controllers

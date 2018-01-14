@@ -1,10 +1,16 @@
-export {
+import {
+  TextFormat,
+  Bidi
+} from './lib'
+
+export const text = {
+  TextFormat,
   Bidi
 }
-  from './bidi'
+
+export default text
 
 export {
   TextFormat,
-  format
+  Bidi
 }
-  from './format'

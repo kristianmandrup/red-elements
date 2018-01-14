@@ -5,7 +5,8 @@ import {
 import {
   common,
   Tabs,
-  Stack
+  Stack,
+  Menu
 } from './common'
 
 import {
@@ -26,60 +27,53 @@ import {
   User,
 } from './user'
 
-// import {
-//   mainContainer
-// }
-// from './main-container'
-
-export {
+import {
   TextFormat,
-  Bidi,
-  format
+  Bidi
 } from './text'
 
-export {
+import {
   Actions
 } from './actions'
 
-export {
+import {
   Clipboard
 } from './clipboard'
 
-export {
+import {
   Deploy
 } from './deploy'
 
-export {
+import {
   Keyboard
 } from './keyboard'
 
-export {
+import {
   Notifications
 } from './notifications'
 
-export {
+import {
   STATE
 } from './state'
 
-export {
+import {
   Utils
 } from './utils'
 
-
 import {
-  nodeDiff,
+  diff,
   NodeDiff
 } from './node-diff'
 
 import {
-  nodeEditor,
-  Editor
+  editor,
+  NodeEditor
 }
   from './node-editor'
 
 import {
-  workspaces,
-  Workspaces
+  Workspaces,
+  workspaces
 } from './workspaces'
 
 import {
@@ -93,12 +87,17 @@ import {
   Sidebar,
   SidebarTabConfig,
   SidebarTabInfo,
+  Tips,
 } from './sidebar'
 
 import {
   settings,
   UserSettings
 } from './settings'
+
+import {
+  RadialMenu
+} from './touch'
 
 import {
   tray,
@@ -111,12 +110,12 @@ import {
   TypeSearch
 } from './search'
 
-export const widgets = {
+export const libs = {
   canvas,
   common,
   library,
-  nodeEditor,
-  nodeDiff,
+  editor,
+  diff,
   palette,
   search,
   settings,
@@ -124,12 +123,19 @@ export const widgets = {
   workspaces
 }
 
-export default widgets
-
-export {
+export const widgets = {
   Main,
   User,
-  Editor,
+  Utils,
+  Menu,
+  Actions,
+  Deploy,
+  Keyboard,
+  TextFormat,
+  Bidi,
+  Notifications,
+  RadialMenu,
+  NodeEditor,
   Palette,
   PaletteEditor,
   NodeDiff,
@@ -139,6 +145,38 @@ export {
   Sidebar,
   SidebarTabConfig,
   SidebarTabInfo,
+  Tips,
+  Search,
+  TypeSearch,
+  UserSettings,
+  Workspaces
+}
+
+export default libs
+
+export {
+  Main,
+  User,
+  Menu,
+  Utils,
+  Actions,
+  Deploy,
+  Keyboard,
+  TextFormat,
+  Bidi,
+  Notifications,
+  RadialMenu,
+  NodeEditor,
+  Palette,
+  PaletteEditor,
+  NodeDiff,
+  Library,
+  LibraryUI,
+  Tray,
+  Sidebar,
+  SidebarTabConfig,
+  SidebarTabInfo,
+  Tips,
   Search,
   TypeSearch,
   UserSettings,
