@@ -27,7 +27,7 @@ import {
 } from '../../common'
 import {
   I18n
-} from '@tecla5/red-shared/src/i18n'
+} from '@tecla5/red-runtime/src/i18n'
 
 import marked from 'marked'
 

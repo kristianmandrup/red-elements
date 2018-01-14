@@ -121,7 +121,7 @@ test('Keyboard: buildShortcutRow(container, object)', () => {
 test.skip('Keyboard: getSettingsPane()', () => {
   // TODO:
   // see: Keyboard constructor
-  // somehow use SearchBox widget from red-widgets (possibly move all common widgets to red-shared)
+  // somehow use SearchBox widget from red-widgets (possibly move all common widgets to red-runtime)
   // avoid circular dependency!
 
   // make SearchBox widget factory available on all jQuery elements

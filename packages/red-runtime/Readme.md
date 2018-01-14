@@ -43,7 +43,7 @@ Please mock and stub whatever you need to make tests pass. Jest includes advance
 
 We use the following testing stack for headless browser testing (E2E) on Travic CI.
 
-`red-elements/packages/red-shared $ jest test/nodes/node.test.ts`
+`red-elements/packages/red-runtime $ jest test/nodes/node.test.ts`
 
 Note: You need `jest-cli` installed for the project.
 

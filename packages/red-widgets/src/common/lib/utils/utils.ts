@@ -14,7 +14,7 @@
  * limitations under the License.
  **/
 
-import { Context, $ } from '../../base';
+import { Context, $ } from '../context'
 export class Utils extends Context {
   public Utils: any;
 

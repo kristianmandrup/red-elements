@@ -4,4 +4,4 @@ export {
   TYPES,
   lazyInject,
   $
-} from '@tecla5/red-shared/src/context'
+} from '@tecla5/red-runtime/src/context'

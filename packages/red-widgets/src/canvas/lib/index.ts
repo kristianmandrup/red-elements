@@ -24,21 +24,10 @@ const {
   log
 } = console
 
-log({
-  d3Select
-})
-
 const d3 = Object.assign({}, $d3, d3Select)
 
-log({
-  d3
-})
-
 import * as $ from 'jquery';
-import { IRED, TYPES, container } from '../../setup/setup';
-import getDecorators from 'inversify-inject-decorators';
-import { Container, injectable, tagged, named } from 'inversify';
-let { lazyInject } = getDecorators(container);
+
 const PORT_TYPE_INPUT = 1;
 const PORT_TYPE_OUTPUT = 0;
 export class View extends Context {

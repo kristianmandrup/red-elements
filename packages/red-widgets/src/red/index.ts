@@ -22,7 +22,7 @@ import {
   Validators,
   History,
   Nodes,
-} from '@tecla5/red-shared/src'
+} from '@tecla5/red-runtime/src'
 
 import {
   TextFormat,

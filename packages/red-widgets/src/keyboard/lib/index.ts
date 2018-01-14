@@ -92,7 +92,7 @@ export class Keyboard extends Context {
     super()
 
     // TODO:
-    // somehow use SearchBox widget from red-widgets (possibly move all common widgets to red-shared)
+    // somehow use SearchBox widget from red-widgets (possibly move all common widgets to red-runtime)
     // avoid circular dependency!
 
     // make SearchBox widget factory available on all jQuery elements

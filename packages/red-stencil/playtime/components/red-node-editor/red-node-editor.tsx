@@ -1,6 +1,6 @@
 import { Component, Prop, Element } from '@stencil/core'
 import { nodeEditor } from '../_widgets'
-import { Actions } from "@tecla5/red-shared/src/ui/actions";
+import { Actions } from "@tecla5/red-runtime/src/ui/actions";
 const { controllers } = nodeEditor
 
 @Component({

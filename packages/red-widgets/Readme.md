@@ -40,7 +40,7 @@ $ npm run lerna:bootstrap
 
 ## Getting started
 
-Run the `lerna:update` to ensure all dependency modules are installed, including `@tecla5/red-shared` a Lerna package (part of the Lerna project).
+Run the `lerna:update` to ensure all dependency modules are installed, including `@tecla5/red-runtime` a Lerna package (part of the Lerna project).
 
 ```bash
 $ npm run lerna:update
@@ -48,7 +48,7 @@ $ npm run lerna:update
 lerna success Bootstrapped 1 packages
 ```
 
-Now you should have a `@tecla5/red-shared` in `node_modules`
+Now you should have a `@tecla5/red-runtime` in `node_modules`
 
 ## Jest with TypeScript
 

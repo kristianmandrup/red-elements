@@ -34,7 +34,7 @@ const log = console.log
 
 import {
   Actions
-} from '@tecla5/red-shared/src/ui/actions'
+} from '../..'
 
 // Note: Ensure Jquery UI has been initialized so .draggable widget is available
 
@@ -45,8 +45,7 @@ export class Sidebar extends Context {
   }
 
   createActions(options) {
-    // legacy: ctx.actions.add
-    return new Actions(options)
+    return new Actions()
   }
 
   sidebarSeparator: any = {}

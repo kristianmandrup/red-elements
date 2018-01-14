@@ -5,7 +5,7 @@
 - Canvas
   x Needs fix to missing `d3.event`
 - Main container
-  x all broken due to `red.js` in `@tecla5/red-shared`
+  x all broken due to `red.js` in `@tecla5/red-runtime`
 - Node diff
   ✕ Diff: mergeDiff (2ms)
   ✕ Diff: createNodeConflictRadioBoxes (5ms)
@@ -380,8 +380,8 @@ Test Suites: 1 failed, 1 total
 
 ```bash
 TypeError: _1.History is not a constructor
-  at Object.<anonymous> (node_modules/@tecla5/red-shared/src/red.ts:38:15)
-  at Object.<anonymous> (node_modules/@tecla5/red-shared/src/index.ts:3:13)
+  at Object.<anonymous> (node_modules/@tecla5/red-runtime/src/red.ts:38:15)
+  at Object.<anonymous> (node_modules/@tecla5/red-runtime/src/index.ts:3:13)
 ```
 
 ## Node diff

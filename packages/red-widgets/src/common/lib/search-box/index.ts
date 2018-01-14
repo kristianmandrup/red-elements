@@ -14,7 +14,7 @@
  * limitations under the License.
  **/
 // jQuery
-import { Context } from '../../base'
+import { Context, $ } from '../context';
 import { Widget } from './widget'
 
 export class Searchbox extends Context {

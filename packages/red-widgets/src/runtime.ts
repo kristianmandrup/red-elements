@@ -9,4 +9,4 @@ export {
   Subflow,
   RadialMenu,
   Utils,
-} from '@tecla5/red-shared/src'
+} from '@tecla5/red-runtime/src'

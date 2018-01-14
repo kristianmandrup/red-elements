@@ -4,7 +4,7 @@ First make each of the original Node-red Editor components into Custom Elements 
 
 Then wrap the custom elements as Vue components and build up a Vue app, composed from these Vue components.
 
-## red-shared
+## red-runtime
 
 Should possibly be renamed to red-runtime, to reflect that it contains the runtime (in-memory) model. For shared assets etc. we should have a red-assets module.
 

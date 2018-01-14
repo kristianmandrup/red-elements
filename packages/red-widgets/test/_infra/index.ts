@@ -2,7 +2,7 @@ export {
   RED,
   $,
   readPage
-} from '@tecla5/red-shared/test/_setup'
+} from '@tecla5/red-runtime/test/_setup'
 
 export {
   widgets

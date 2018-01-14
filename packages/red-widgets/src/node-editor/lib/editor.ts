@@ -19,7 +19,7 @@ import {
 
 import marked from 'marked'
 
-// TODO: alternatively, load from red-shared/vendor/jsonata
+// TODO: alternatively, load from red-runtime/vendor/jsonata
 import { jsonata } from './formatter'
 import * as ace from 'brace'
 
