@@ -8,7 +8,7 @@ const {
   Search,
 } = widgets
 
-function create(ctx) {
+function create() {
   return new Search()
 }
 
@@ -45,18 +45,18 @@ let keyboard = {
   remove(escape) { }
 }
 
-const ctx = Object.assign({
+const ctx = {
   events,
   actions,
   utils,
   nodes,
   view,
   keyboard
-}, baseCtx)
+}
 
 let search
 beforeEach(() => {
-  search = create(ctx)
+  search = create()
 })
 
 beforeAll(() => {

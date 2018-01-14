@@ -1,7 +1,7 @@
 
 import {
   widgets
-} from './widgets'
+} from './lib'
 
 export {
   lazyInject,
@@ -33,4 +33,4 @@ export const {
   Searchbox,
   Validators,
   CheckboxSet
-} = controllers
+} = widgets

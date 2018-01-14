@@ -1,12 +1,18 @@
 import {
-  canvas
+  canvas,
+  Canvas
 } from './canvas'
 
 import {
   common,
   Tabs,
   Stack,
-  Menu
+  Menu,
+  Popover,
+  Searchbox,
+  EditableList,
+  CheckboxSet,
+  TypedInput
 } from './common'
 
 import {
@@ -124,16 +130,26 @@ export const libs = {
 }
 
 export const widgets = {
+  common,
+  Tabs,
+  Stack,
+  Menu,
+  Popover,
+  Searchbox,
+  EditableList,
+  CheckboxSet,
+  TypedInput,
   Main,
   User,
   Utils,
-  Menu,
   Actions,
   Deploy,
   Keyboard,
   TextFormat,
   Bidi,
+  Canvas,
   Notifications,
+  Clipboard,
   RadialMenu,
   NodeEditor,
   Palette,
@@ -158,13 +174,21 @@ export {
   Main,
   User,
   Menu,
+  Stack,
+  Popover,
+  Searchbox,
+  EditableList,
+  CheckboxSet,
+  TypedInput,
   Utils,
+  Canvas,
   Actions,
   Deploy,
   Keyboard,
   TextFormat,
   Bidi,
   Notifications,
+  Clipboard,
   RadialMenu,
   NodeEditor,
   Palette,
@@ -183,18 +207,3 @@ export {
   Workspaces
 }
 
-// export {
-//   // canvas,
-//   common,
-//   // header,
-//   // library,
-//   // mainContainer,
-//   // nodeDiff,
-//   // nodeEditor,
-//   palette,
-//   // search,
-//   // settings,
-//   // sidebar,
-//   tray,
-//   // workspaces
-// }

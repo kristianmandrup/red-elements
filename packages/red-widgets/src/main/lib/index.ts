@@ -14,7 +14,8 @@
  * limitations under the License.
  **/
 import {
-  Context
+  Context,
+  EditableList
 } from '../../context'
 
 // import from red-runtime
@@ -60,6 +61,8 @@ export class Main extends Context {
 
   constructor() {
     super();
+
+    new EditableList()
 
     const {
       RED,

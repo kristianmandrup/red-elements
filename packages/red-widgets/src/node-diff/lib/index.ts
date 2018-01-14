@@ -1,5 +1,6 @@
 import {
-  Context
+  Context,
+  EditableList
 } from '../../common'
 
 import { log } from 'util';
@@ -17,6 +18,8 @@ export class Diff extends Context {
   constructor() {
     super()
     const { RED } = this
+
+    new EditableList()
 
     let {
       showRemoteDiff
