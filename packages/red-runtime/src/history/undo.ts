@@ -1,9 +1,3 @@
-// THIS needs major refactoring!!!
-
-// NEVER have a huge function like this (max ~7 lines for any function)
-// NEVER have nested if/else
-// NEVER rely on globals
-
 import {
   Context,
 } from '../context'
@@ -113,6 +107,10 @@ export class UndoEvent extends Context {
 
   // protected
 
+  /**
+   * Multiple events
+   * @param ev
+   */
   protected _multi(ev) {
     let len = ev.events.length;
     for (let i = len - 1; i >= 0; i--) {
@@ -121,6 +119,10 @@ export class UndoEvent extends Context {
     }
   }
 
+  /**
+   * Replace node?
+   * @param ev
+   */
   protected _replace(ev) {
     const {
       nodes
@@ -136,6 +138,10 @@ export class UndoEvent extends Context {
     nodes.version(ev.rev);
   }
 
+  /**
+   * Add node
+   * @param ev
+   */
   protected _add(ev) {
     const {
       nodes,
@@ -195,6 +201,10 @@ export class UndoEvent extends Context {
     }
   }
 
+  /**
+   * Delete node
+   * @param ev
+   */
   protected _delete(ev) {
     const {
       nodes,
@@ -289,6 +299,10 @@ export class UndoEvent extends Context {
     }
   }
 
+  /**
+   * Move node
+   * @param ev
+   */
   protected _move(ev) {
     const {
       nodes
@@ -314,6 +328,10 @@ export class UndoEvent extends Context {
     }
   }
 
+  /**
+   * Edit node
+   * @param ev
+   */
   protected _edit(ev) {
     const {
       nodes,
@@ -389,6 +407,10 @@ export class UndoEvent extends Context {
     ev.node.changed = ev.changed;
   }
 
+  /**
+   * Create new subflow
+   * @param ev
+   */
   _createSubflow(ev) {
     const {
       nodes,
@@ -422,6 +444,10 @@ export class UndoEvent extends Context {
     }
   }
 
+  /**
+   * Reorder workspaces
+   * @param ev
+   */
   protected _reorder(ev) {
     const {
       ctx
@@ -432,6 +458,10 @@ export class UndoEvent extends Context {
     }
   }
 
+  /**
+   * Default event handling (unknown event)
+   * @param ev
+   */
   protected _default(ev) {
     this.logWarning('unknown event type', {
       type: ev.t,
