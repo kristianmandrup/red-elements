@@ -44,7 +44,53 @@ Should all pass :)
 ## Design/Architecture
 
 - `src` contains all the source files in TypeScript
+- `test` contains the test files used to test source
 - `dist` contains the compiled `.js` files for distribution and compiled test files
+
+## Src architecture
+
+The source code is written in TypeScript. Use the full power, including types and interfaces etc.
+
+### Widget folders
+
+Each widget has a folder, such as `sidebar` for the `Sidebar` widget.
+A widget subfolder usually has the following structure:
+
+- `index.ts` exposing widget API such as the main widget classes and interfaces
+- `/lib` library code (ie. main logic)
+- `/docs` documentation, explaining widget architecture, use, supporting files etc
+- `/styles` any styles specific to widget
+- `/assets` static assets
+
+### RED
+
+The folder `/red` contains the global `RED` context object.
+Currently we are only using a fake/mock `RED` object, but we need to use a full (live) one ASAP!
+
+## Test architecture
+
+Testing is done using `jest` test runner
+
+### Infrastructure
+
+`test/_infra` contains testing infrastructure files, such as:
+
+- test documents
+- adds special jquery matchers to jest
+- adds globals `$` and `jQuery`
+- adds `i18n()` fake jquery widget factory method
+
+Test documents (in `_infra/document`) are used to have a DOM available to test specific widgets that rely on pre-existing minimal DOM structure.
+
+To use a test document use `readPage` to read the document and set the `innerHTML` of the document in a `beforeAll`:
+
+```js
+beforeAll(() => {
+  document.documentElement.innerHTML = readPage('simple')
+})
+```
+
+Documentation of the general test setup can be found in the `red-runtime` project
 
 ## Testing
 
