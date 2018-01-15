@@ -17,15 +17,10 @@ import {
   Context
 } from '../context'
 
-// export {
-//   NodesRegistry
-// } from './registry'
-
-export {
-  Node,
-} from './node'
-
 export {
   Nodes,
-  NodesRegistry
-} from './nodes'
+} from './list'
+
+export {
+  NodesRegistry,
+} from './registry'

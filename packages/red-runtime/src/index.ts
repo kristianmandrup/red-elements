@@ -5,6 +5,9 @@ export {
 
 export {
   Node,
+} from './node'
+
+export {
   Nodes,
   NodesRegistry
 } from './nodes'

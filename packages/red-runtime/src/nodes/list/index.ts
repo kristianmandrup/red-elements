@@ -1,11 +1,11 @@
 import {
   Context,
   $
-} from '../context'
+} from '../../context'
 
 import {
   NodesRegistry
-} from './registry'
+} from '../registry'
 
 export {
   NodesRegistry
@@ -24,7 +24,7 @@ import {
   Subflow,
   NodeDef,
   Flow
-} from './interfaces'
+} from '../interfaces'
 
 /**
  * A set of Nodes that form a subflow or similar grouping
