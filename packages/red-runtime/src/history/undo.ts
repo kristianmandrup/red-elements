@@ -6,7 +6,6 @@
 
 import {
   Context,
-  $
 } from '../context'
 
 // TODO: Fix - reuse interfaces from nodes/interfaces.ts
@@ -20,8 +19,18 @@ interface Node {
   changed: boolean
 }
 
-interface Event {
-  t: string,
+type EventType =
+  'multi' |
+  'add' |
+  'replace' |
+  'delete' |
+  'move' |
+  'edit' |
+  'createSubflow' |
+  'reorder'
+
+export interface Event {
+  t: EventType,
   events: any[],
   changed: boolean,
   config: object,

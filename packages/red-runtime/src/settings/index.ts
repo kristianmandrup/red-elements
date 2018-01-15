@@ -46,6 +46,9 @@ export class Settings extends Context {
     this.localStorage.set(key, value)
   }
 
+  /**
+   * Initialize user settings by preparing access token and ajax call
+   */
   async init() {
     const { ctx } = this
     var accessTokenMatch = /[?&]access_token=(.*?)(?:$|&)/.exec(window.location.search);
@@ -56,24 +59,8 @@ export class Settings extends Context {
       });
       window.location.search = '';
     }
-    this.setup()
+    this._setup()
     return await this.load();
-  }
-
-  setup() {
-    const { ctx } = this
-    $.ajaxSetup({
-      beforeSend: function (jqXHR, settings) {
-        // Only attach auth header for requests to relative paths
-        if (!/^\s*(https?:|\/|\.)/.test(settings.url)) {
-          var auth_tokens = ctx.settings.get('auth-tokens');
-          if (auth_tokens) {
-            jqXHR.setRequestHeader('Authorization', 'Bearer ' + auth_tokens.access_token);
-          }
-          jqXHR.setRequestHeader('Node-RED-API-Version', 'v2');
-        }
-      }
-    });
   }
 
   setProperties(data) {
@@ -101,12 +88,16 @@ export class Settings extends Context {
     return this
   };
 
+  /**
+   * load user settings via Ajax call to server API: /settings
+   */
   async load() {
     const {
-      ctx,
-      setProperties
+      _onLoadSuccess,
+      _onLoadError
     } = this.rebind([
-        'setProperties'
+        '_onLoadSuccess',
+        '_onLoadError'
       ])
 
     return new Promise((resolve, reject) => {
@@ -118,32 +109,28 @@ export class Settings extends Context {
         cache: false,
         url: 'settings',
         success: (data) => {
-          setProperties(data);
-          if (!ctx.settings.user || ctx.settings.user.anonymous) {
-            ctx.settings.remove('auth-tokens');
-          }
-          log('Node-RED: ' + data.version);
+          _onLoadSuccess(data)
           resolve(data)
         },
         error: (jqXHR, textStatus, errorThrown) => {
-          if (jqXHR.status === 401) {
-            if (/[?&]access_token=(.*?)(?:$|&)/.test(window.location.search)) {
-              window.location.search = '';
-            }
+          try {
+            _onLoadError({
+              jqXHR, textStatus, errorThrown
+            })
+          } finally {
             reject(errorThrown)
-            // ctx.user.login(this.load);
-          } else {
-            this.handleError('Unexpected error:', {
-              status: jqXHR.status,
-              textStatus
-            });
           }
         }
       });
     })
   };
 
-  theme(property, defaultValue) {
+  /**
+   * Get theme from settings.editorTheme
+   * @param property { string } theme property
+   * @param defaultValue { object } default value to use if property not set in user settings
+   */
+  theme(property: string, defaultValue: any) {
     const ctx = this.ctx;
     if (!ctx.settings.editorTheme) {
       return defaultValue;
@@ -161,5 +148,66 @@ export class Settings extends Context {
     } catch (err) {
       return defaultValue;
     }
+  }
+
+  /**
+   * Setup Ajax call with Authorization using JWT Bearer token
+   */
+  protected _setup() {
+    const { ctx } = this
+    $.ajaxSetup({
+      beforeSend: function (jqXHR, settings) {
+        // Only attach auth header for requests to relative paths
+        if (!/^\s*(https?:|\/|\.)/.test(settings.url)) {
+          var auth_tokens = ctx.settings.get('auth-tokens');
+          if (auth_tokens) {
+            jqXHR.setRequestHeader('Authorization', 'Bearer ' + auth_tokens.access_token);
+          }
+          jqXHR.setRequestHeader('Node-RED-API-Version', 'v2');
+        }
+      }
+    });
+  }
+
+  /**
+   * Handle load error on Ajax API call to /settings
+   * @param error { object } the error
+   */
+  protected _onLoadError(error) {
+    const {
+      jqXHR,
+      textStatus
+    } = error
+
+    if (jqXHR.status === 401) {
+      if (/[?&]access_token=(.*?)(?:$|&)/.test(window.location.search)) {
+        window.location.search = '';
+      }
+      // ctx.user.login(this.load);
+    } else {
+      this.handleError('Unexpected error:', {
+        status: jqXHR.status,
+        textStatus
+      });
+    }
+  }
+
+  /**
+   * Handle load success on Ajax API call to /settings
+   * @param data { object } the user settings data
+   */
+  protected _onLoadSuccess(data) {
+    const {
+      ctx,
+      setProperties
+    } = this.rebind([
+        'setProperties'
+      ])
+
+    setProperties(data);
+    if (!ctx.settings.user || ctx.settings.user.anonymous) {
+      ctx.settings.remove('auth-tokens');
+    }
+    log('Node-RED: ' + data.version);
   }
 }

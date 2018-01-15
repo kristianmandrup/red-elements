@@ -25,19 +25,34 @@ export class Validators extends Context {
     super()
   }
 
+  /**
+   * Return validation function to test if value is a number via javascript isNaN function
+   * @param blankAllowed { boolean } if blanks are allowed
+   * @returns { function } validation function
+   */
   number(blankAllowed) {
     return function (v) {
       return (blankAllowed && (v === '' || v === undefined)) || (v !== '' && !isNaN(v));
     }
   }
 
-  regex(re) {
+  /**
+   * return validation function to test if value is matches given Regular Expression
+   * @param re { RegExp } regular expression to use in validation function
+   * @returns { function } validation function
+   */
+  regex(re: RegExp): Function {
     return function (v) {
       return re.test(v);
     }
   }
 
-  typedInput(ptypeName, isConfig) {
+  /**
+   *
+   * @param ptypeName { string }
+   * @param isConfig { boolean }
+   */
+  typedInput(ptypeName: string, isConfig: boolean) {
     return (v) => {
       const nodeConfigElem = $('#node-' + (isConfig ? 'config-' : '') + 'input-' + ptypeName)
       let ptypeElem
@@ -65,7 +80,12 @@ export class Validators extends Context {
     }
   }
 
-  validateJson(value) {
+  /**
+   * Try to parse value as JSON - valid if parse without error
+   * @param value { string } value to parse as JSON
+   * @returns { boolean } whether value is valid JSON
+   */
+  validateJson(value: string): boolean {
     try {
       JSON.parse(value);
       return true;
@@ -74,12 +94,20 @@ export class Validators extends Context {
     }
   }
 
-  validateNumber(value) {
+  /**
+   * Validate if value is a number via RegExp
+   * @param value { string } value to validate
+   */
+  validateNumber(value: string) {
     return /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(value);
   }
 
-  validateProp(value) {
-    const ctx = this.ctx;
+  /**
+   * Validate if value is a property
+   * @param value { string } value to validate
+   */
+  validateProp(value: string) {
+    const { ctx } = this
     return ctx.utils.validatePropertyExpression(value);
   }
 }

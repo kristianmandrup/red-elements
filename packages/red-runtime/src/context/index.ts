@@ -8,131 +8,23 @@ export {
   lazyInject
 }
 
-import * as jQuery from 'jquery';
-export const $ = jQuery
-
 import {
   deepEquals
 } from './equals'
 
+import {
+  IValidator,
+  Validator
+} from './validator'
+
 export class Context {
   @lazyInject(TYPES.RED) RED: IRED;
 
+  protected validator: IValidator
   protected ctx: IRED;
   constructor() {
     this.ctx = this.RED;
-  }
-
-  protected _isEquivalent(a, b) {
-    return deepEquals(a, b)
-  }
-
-  protected _validateArray(value, name, methodName, info?) {
-    if (!Array.isArray(value)) {
-      this.handleError(`${methodName}: ${name} must be an Array`, {
-        [name]: value,
-        info
-      })
-    }
-  }
-
-  protected _validateObj(value, name, methodName, info?) {
-    if (typeof value !== 'object') {
-      this.handleError(`${methodName}: ${name} must be an Object`, {
-        [name]: value,
-        info
-      })
-    }
-  }
-
-  protected _validateStr(value, name, methodName, info?) {
-    if (typeof value !== 'string') {
-      this.handleError(`${methodName}: ${name} must be a string`, {
-        [name]: value,
-        info
-      })
-    }
-  }
-
-  protected _validateNum(value, name, methodName, info?) {
-    if (typeof value !== 'number') {
-      this.handleError(`${methodName}: ${name} must be a number`, {
-        [name]: value,
-        info
-      })
-    }
-  }
-
-  protected _validateJQ(obj, name, methodName, info?) {
-    if (obj instanceof jQuery) return true
-    this.handleError(`${methodName}: ${name} must be a $ (jQuery) element`, {
-      [name]: obj,
-      info
-    })
-  }
-
-  protected _validateDefined(value, name, methodName, info?) {
-    if (value !== undefined && value !== null) return true
-    this.handleError(`${methodName}: ${name} must be defined`, {
-      [name]: value,
-      info
-    })
-  }
-
-  protected _validateProps(obj, props, methodName) {
-    props.map(prop => this._validateDefined(obj[prop], prop, methodName, obj))
-  }
-
-  protected _validateNodeSet(node, name, methodName, info?) {
-    this._validateObj(node, name, methodName, info)
-    this._validateArray(node.types, `${name}.types`, methodName)
-  }
-
-  protected _validateEvent(ev, name, methodName, info?) {
-    this._validateObj(ev, name, methodName, info)
-    this._validateStr(ev.t, `${name}.t`, methodName, info)
-    if (ev.t === 'multi') {
-      this._validateArray(ev.events, `${name}.events`, methodName, info)
-    }
-    if (ev.t === 'move') {
-      this._validateArray(ev.nodes, `${name}.nodes`, methodName, info)
-    }
-    if (ev.t === 'edit') {
-      this._validateObj(ev.changes, `${name}.changes`, methodName, info)
-      this._validateObj(ev.node, `${name}.node`, methodName, info)
-    }
-
-    this._validateObj(ev.changed, `${name}.changed`, methodName, info)
-  }
-
-  protected _validateNode(node, name, methodName, info?) {
-    this._validateObj(node, name, methodName, info)
-    // this._validateStr(node.id, `${name}.id`, methodName)
-    this._validateStr(node.type, `${name}.type`, methodName)
-
-    // this._validateObj(node.in, `${name}.in`, methodName)
-    // this._validateObj(node.out, `${name}.out`, methodName)
-    // this._validateNodeDef(node._def, `${name}._def`, methodName)
-  }
-
-  // TODO: add more guards/checks
-  protected _validateLink(node, name, methodName, info?) {
-    this._validateObj(node, name, methodName, info)
-  }
-
-  protected _validateNodeDef(def, name, methodName, info?) {
-    this._validateDefined(def, name, methodName, info)
-    this._validateObj(def.defaults, `${name}.defaults`, methodName, info)
-    this._validateObj(def.set, `${name}.set`, methodName, info)
-  }
-
-  protected _validateStrOrNum(value, name, methodName, info?) {
-    if (typeof value !== 'string' && typeof value !== 'number') {
-      this.handleError(`${methodName}: ${name} must be a string or number`, {
-        [name]: value,
-        info
-      })
-    }
+    this.validator = new Validator(this)
   }
 
   logWarning(msg, data?) {
@@ -144,7 +36,7 @@ export class Context {
     throw new Error(msg)
   }
 
-  setInstanceVars(instMap, target) {
+  setInstanceVars(instMap, target?) {
     target = target || this
     Object.keys(instMap).map(name => {
       this[name] = instMap[name]
@@ -176,5 +68,50 @@ export class Context {
       acc[name] = ctx[name]
       return acc
     }, {})
+  }
+
+  protected _isEquivalent(a, b) {
+    return deepEquals(a, b)
+  }
+
+  protected _validateArray(value, name, methodName, info?) {
+    this.validator._validateArray(value, name, methodName, info)
+  }
+
+  protected _validateObj(value, name, methodName, info?) {
+    this.validator._validateObj(value, name, methodName, info)
+  }
+  protected _validateStr(value, name, methodName, info?) {
+    this.validator._validateStr(value, name, methodName, info)
+  }
+  protected _validateNum(value, name, methodName, info?) {
+    this.validator._validateNum(value, name, methodName, info)
+  }
+  protected _validateJQ(obj, name, methodName, info?) {
+    this.validator._validateJQ(value, name, methodName, info)
+  }
+  protected _validateDefined(value, name, methodName, info?) {
+    this.validator._validateDefined(value, name, methodName, info)
+  }
+  protected _validateProps(obj, props, methodName) {
+    this.validator._validateProps(obj, props, methodName)
+  }
+  protected _validateNodeSet(node, name, methodName, info?) {
+    this.validator._validateNodeSet(node, name, methodName, info)
+  }
+  protected _validateEvent(ev, name, methodName, info?) {
+    this.validator._validateEvent(ev, name, methodName, info)
+  }
+  protected _validateNode(node, name, methodName, info?) {
+    this.validator._validateNode(node, name, methodName, info)
+  }
+  protected _validateLink(link, name, methodName, info?) {
+    this.validator._validateLink(link, name, methodName, info)
+  }
+  protected _validateNodeDef(def, name, methodName, info?) {
+    this.validator._validateNodeDef(def, name, methodName, info)
+  }
+  protected _validateStrOrNum(value, name, methodName, info?) {
+    this.validator._validateStrOrNum(value, name, methodName, info)
   }
 }

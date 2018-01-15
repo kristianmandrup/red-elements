@@ -16,7 +16,7 @@
 
 import {
   Context
-} from './context'
+} from '../context'
 
 const { log } = console
 export class Events extends Context {

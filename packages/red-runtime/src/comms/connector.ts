@@ -10,41 +10,77 @@ export interface IConnector {
   connect: () => void
 }
 
+interface AuthTokens {
+  access_token: string
+}
+
 const { log } = console
 
+/**
+ * Connect to WebSocket and set up event handlers for:
+ * - open socket channel
+ * - close socket channel
+ * - receive message on socket channel
+ */
 export class Connector extends Context {
+  protected auth_tokens: AuthTokens
+  protected pending_auth: boolean
+  protected active: boolean
+
   constructor(public communications: Communications) {
     super()
   }
 
+  /**
+   * Connect to WebSocket and set up socket event handlers
+   */
   connect() {
-    let {
-      RED,
-      pendingAuth,
-      reconnectAttempts,
-      errornotification,
-      clearErrorTimer,
-      active,
-      location,
-      ws,
-      connectCountdown,
-      connectCountdownTimer,
-      subscriptions
-    } = this.communications
+    const {
+      RED
+    } = this
 
     let {
       connectWS,
-      setInstanceVars
+      setInstanceVars,
+      _pathOf,
+      _onOpen,
+      _onClose,
+      _onMessage
     } = this.rebind([
         'connectWS',
-        'setInstanceVars'
+        'setInstanceVars',
+        '_pathOf',
+        '_onOpen',
+        '_onClose',
+        '_onMessage'
       ], this.communications)
 
 
     // See: https://developer.mozilla.org/en-US/docs/Web/API/Location
-    location = location || window.location
-    active = true
+    const active = true
+    const location = window.location
+    const path = _pathOf(location)
+    const auth_tokens = RED.settings.get("auth-tokens");
+    const pendingAuth = (auth_tokens != null);
 
+    const ws = new WebSocket(path);
+
+    this.setInstanceVars({
+      active,
+      location,
+      ws,
+      auth_tokens,
+      pendingAuth
+    })
+
+    _onOpen()
+    _onClose()
+    _onMessage()
+
+    return this
+  }
+
+  protected _pathOf(location): string {
     var path = location.hostname;
     var port = location.port;
     if (port.length !== 0) {
@@ -53,24 +89,51 @@ export class Connector extends Context {
     path = path + document.location.pathname;
     path = path + (path.slice(-1) == "/" ? "" : "/") + "comms";
     path = "ws" + (document.location.protocol == "https:" ? "s" : "") + "://" + path;
+    return path
+  }
 
-    var auth_tokens = RED.settings.get("auth-tokens");
-    pendingAuth = (auth_tokens != null);
+  protected _completeConnection() {
+    const {
+      ws,
+      subscriptions
+    } = this.communications
 
-    function completeConnection() {
-      log('Websocket complete connection', {
-        ws
-      })
-      for (var t in subscriptions) {
-        if (subscriptions.hasOwnProperty(t)) {
-          ws.send(JSON.stringify({
-            subscribe: t
-          }));
-        }
+    log('Websocket complete connection', {
+      ws
+    })
+    for (var t in subscriptions) {
+      if (subscriptions.hasOwnProperty(t)) {
+        ws.send(JSON.stringify({
+          subscribe: t
+        }));
       }
     }
+  }
 
-    ws = new WebSocket(path);
+  protected _onOpen() {
+    let {
+      pendingAuth,
+      reconnectAttempts,
+      clearErrorTimer,
+      active,
+      location,
+      ws,
+      connectCountdown,
+      connectCountdownTimer,
+      subscriptions,
+      errornotification
+    } = this.communications
+
+    const {
+      auth_tokens
+    } = this
+
+    const {
+      _completeConnection
+    } = this.rebind([
+        '_completeConnection'
+      ])
+
     ws.onopen = function () {
       // log('Websocket open', {
       //   ws
@@ -87,44 +150,28 @@ export class Connector extends Context {
           auth: auth_tokens.access_token
         }));
       } else {
-        completeConnection();
+        _completeConnection();
       }
     }
-    ws.onmessage = function (event) {
-      // log('websocket: message', {
-      //   event
-      // })
+  }
 
-      var msg = JSON.parse(event.data);
-      if (pendingAuth && msg.auth) {
-        if (msg.auth === "ok") {
-          pendingAuth = false;
-          completeConnection();
-        } else if (msg.auth === "fail") {
-          // anything else is an error...
-          active = false;
-          RED.user.login({
-            updateMenu: true
-          }, function () {
-            connectWS();
-          })
-        }
-      } else if (msg.topic) {
-        for (var t in subscriptions) {
-          if (subscriptions.hasOwnProperty(t)) {
-            var re = new RegExp("^" + t.replace(/([\[\]\?\(\)\\\\$\^\*\.|])/g, "\\$1").replace(/\+/g, "[^/]+").replace(/\/#$/, "(\/.*)?") + "$");
-            if (re.test(msg.topic)) {
-              var subscribers = subscriptions[t];
-              if (subscribers) {
-                for (var i = 0; i < subscribers.length; i++) {
-                  subscribers[i](msg.topic, msg.data);
-                }
-              }
-            }
-          }
-        }
-      }
-    };
+  protected _onClose() {
+    let {
+      RED,
+      reconnectAttempts,
+      errornotification,
+      clearErrorTimer,
+      active,
+      ws,
+      connectCountdown,
+      connectCountdownTimer,
+    } = this.communications
+
+    const {
+      connectWS
+    } = this.rebind([
+        'connectWS'
+      ])
 
     ws.onclose = function () {
       // log('websocket:closed', {
@@ -168,13 +215,63 @@ export class Connector extends Context {
         }, 1000);
       }
     }
+  }
 
+  protected _onMessage() {
+    let {
+      RED,
+      pendingAuth,
+      active,
+      ws,
+      subscriptions
+    } = this.communications
+
+    const {
+      completeConnection,
+      connectWS
+    } = this.rebind([
+        'completeConnection',
+        'connectWS'
+      ])
+
+    ws.onmessage = function (event) {
+      log('websocket: message', {
+        event
+      })
+
+      const msg = JSON.parse(event.data);
+      if (pendingAuth && msg.auth) {
+        if (msg.auth === "ok") {
+          pendingAuth = false;
+          completeConnection();
+        } else if (msg.auth === "fail") {
+          // anything else is an error...
+          active = false;
+          RED.user.login({
+            updateMenu: true
+          }, () => {
+            connectWS();
+          })
+        }
+      } else if (msg.topic) {
+        for (let t in subscriptions) {
+          if (subscriptions.hasOwnProperty(t)) {
+            var re = new RegExp("^" + t.replace(/([\[\]\?\(\)\\\\$\^\*\.|])/g, "\\$1").replace(/\+/g, "[^/]+").replace(/\/#$/, "(\/.*)?") + "$");
+            if (re.test(msg.topic)) {
+              var subscribers = subscriptions[t];
+              if (subscribers) {
+                for (let i = 0; i < subscribers.length; i++) {
+                  subscribers[i](msg.topic, msg.data);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     this.setInstanceVars({
       active,
-      location,
-      ws
+      pendingAuth
     })
-
-    return this
   }
 }

@@ -24,6 +24,10 @@ const { log } = console
 
 const { promisify } = require('util')
 
+/**
+ * Detect language used via browser language or user agent
+ * @param fallbackLng
+ */
 function detectLanguage(fallbackLng = 'en') {
   if (navigator) {
     return navigator.language
@@ -53,6 +57,33 @@ export class I18n extends Context {
     this.catalog = new Catalog(this)
   }
 
+  // delegate catalog
+
+  /**
+   * Load node catalog for a particular namespace
+   * For a given language, load a translation resource bundle a specific namespace
+   *
+   * Use backend API endpoint
+   *   locales/[namespace]?lng=[language]
+   */
+  async loadCatalog(namespace: string) {
+    return this.catalog.loadCatalog(namespace)
+  }
+
+  /**
+   * Load node catalogs
+   * For each language, load translation resource bundle for each (node) namespace
+   *
+   * Use backend API endpoint
+   *   locales/nodes?lng=[language]
+   */
+  async loadNodeCatalogs() {
+    return this.catalog.loadNodeCatalogs()
+  }
+
+  /**
+   * Default options for I18n
+   */
   get defaultOptions() {
     return {
       saveMissing: true,
@@ -60,6 +91,9 @@ export class I18n extends Context {
     }
   }
 
+  /**
+   * Default configuration for I18n
+   */
   get config(): InitOptions {
     return {
       load: 'currentOnly',
@@ -69,6 +103,9 @@ export class I18n extends Context {
     }
   }
 
+  /**
+   * Initialize i18n (async)
+   */
   async init() {
     return new Promise((resolve, reject) => {
       i18n.init(this.config, (err, t) => {
@@ -77,6 +114,9 @@ export class I18n extends Context {
     })
   }
 
+  /**
+   * Detect language via browser or user agent settings
+   */
   detectLanguage() {
     return detectLanguage()
   }
