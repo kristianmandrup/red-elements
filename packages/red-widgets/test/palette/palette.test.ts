@@ -7,11 +7,8 @@ import {
 } from './_palette'
 
 beforeAll(() => {
-  // widgets that need to be available
-  new Searchbox()
-  new EditableList()
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('palette', __dirname);
+  document.documentElement.innerHTML = readPage('palette');
 })
 
 test('Palette: created', () => {

@@ -51,6 +51,11 @@ export interface Event {
   dirty: boolean
 }
 
+/**
+ * Undo an editor event
+ * - undo effect of event
+ * - remove event from event history
+ */
 export class UndoEvent extends Context {
   public nodes: any
 

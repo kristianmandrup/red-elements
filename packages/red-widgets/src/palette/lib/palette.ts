@@ -32,7 +32,12 @@ export {
   PaletteEditor
 } from './editor'
 
-import { Context, $ } from '../../context'
+import {
+  Context,
+  $,
+  Searchbox,
+  EditableList
+} from '../../common'
 
 export class Palette extends Context {
   public categoryContainers: Object
@@ -40,6 +45,10 @@ export class Palette extends Context {
     super()
     this.categoryContainers = {};
     const RED = this.RED
+
+    // make jquery Widget factories available for jQuery elements
+    new Searchbox()
+    new EditableList()
 
     const {
       addNodeType,

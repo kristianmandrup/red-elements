@@ -24,7 +24,7 @@ beforeAll(() => {
   // EditableList(RED)
 
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('editor', __dirname);
+  document.documentElement.innerHTML = readPage('editor');
 })
 
 function merge(a, b) {

@@ -58,11 +58,8 @@ export class PaletteEditor extends Context {
     super()
     const RED = this.RED
 
-    // to make sure
-    // searchBox jQuery widget factory is available on searchInput element
+    // make jquery Widget factories available for jQuery elements
     new Searchbox()
-
-    // editableList jQuery widget factory is available on packageList element
     new EditableList()
 
     if (RED.settings.theme('palette.editable') === false) {

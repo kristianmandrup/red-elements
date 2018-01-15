@@ -13,12 +13,8 @@ const {
 } = console
 
 beforeAll(() => {
-  // widgets that need to be available
-  new EditableList()
-  new Searchbox()
-
   // load document with placeholder elements to create widgets (for testing)
-  document.documentElement.innerHTML = readPage('palette-editor', __dirname);
+  document.documentElement.innerHTML = readPage('palette-editor')
 })
 
 test('Editor: semVerCompare', () => {

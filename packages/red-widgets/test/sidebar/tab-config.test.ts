@@ -29,8 +29,7 @@ beforeEach(() => {
 })
 
 beforeAll(() => {
-  let html = readPage('simple');
-  document.documentElement.innerHTML = html
+  document.documentElement.innerHTML = readPage('simple')
 })
 
 test('Sidebar TabConfig: create', () => {

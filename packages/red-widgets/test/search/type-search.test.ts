@@ -83,7 +83,7 @@ beforeEach(() => {
 })
 
 beforeAll(() => {
-  document.documentElement.innerHTML = readPage('search', __dirname);
+  document.documentElement.innerHTML = readPage('search');
 })
 function getSerachResult() {
   return $("#searchResults");

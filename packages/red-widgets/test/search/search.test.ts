@@ -60,7 +60,7 @@ beforeEach(() => {
 })
 
 beforeAll(() => {
-  document.documentElement.innerHTML = readPage('search', __dirname);
+  document.documentElement.innerHTML = readPage('search');
 })
 
 test('Search: created', () => {
