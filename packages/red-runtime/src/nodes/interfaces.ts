@@ -20,32 +20,29 @@ export interface NodeDef {
 // TODO: Fix - Use Node class instead!!
 export interface Node {
   id: string,
-  name: string,
+  name?: string,
   info?: string,
   type: string,
   credentials?: any,
   ports?: any[],
-  wires: any[],
-  in: any[],
-  out: any[],
-  inputs: number,
-  outputs: number,
-  inputLabels: string[],
-  outputLabels: string[],
-  _orig: any,
-  _def: NodeDef,
-  x: number,
-  y: number,
-  z: number,
-  dirty: boolean,
+  wires?: any[],
+  in?: any[],
+  out?: any[],
+  inputs?: number,
+  outputs?: number,
+  inputLabels?: string[],
+  outputLabels?: string[],
+  _orig?: any,
+  _def?: NodeDef,
+  x?: number,
+  y?: number,
+  z?: number,
+  dirty?: boolean,
   i?: number
 }
 
-export interface Subflow extends Node {
+export interface Workspace extends Node {
 }
 
-export interface ISerializer {
-  importNodes: Function
-  createExportableNodeSet: Function
-  createCompleteNodeSet: Function
+export interface Subflow extends Node {
 }

@@ -1,14 +1,19 @@
 import {
   Nodes,
-} from '../nodes'
+} from '../'
 
 import {
   Node,
-} from '../interfaces'
+} from '../../interfaces'
 
 import {
   Context
-} from '../../context'
+} from '../../../context'
+
+export interface IExporter {
+  createExportableNodeSet(set: Node[], exportedSubflows: object, exportedConfigNodes: object)
+  createCompleteNodeSet(exportCredentials: boolean)
+}
 
 export class Exporter extends Context {
   constructor(public nodes: Nodes) {

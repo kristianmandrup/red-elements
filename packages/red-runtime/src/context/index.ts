@@ -144,10 +144,24 @@ export class Context {
     throw new Error(msg)
   }
 
-  setInstanceVars(instMap) {
+  setInstanceVars(instMap, target) {
+    target = target || this
     Object.keys(instMap).map(name => {
       this[name] = instMap[name]
     })
+  }
+
+  delegate(functions, target) {
+    if (target === this) {
+      this.handleError('cannot delegate to self', {
+        target,
+        $this: this
+      })
+
+      functions.map(name => {
+        this[name] = target[name]
+      })
+    }
   }
 
   rebind(varNames, ctx?) {

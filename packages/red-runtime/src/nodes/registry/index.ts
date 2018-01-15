@@ -16,6 +16,31 @@ import {
   NodeTypeManager
 } from './node-type'
 
+import {
+  Node
+} from '../interfaces'
+
+export interface INodesRegistry {
+  // delegating to NodeSetManager
+  addNodeSet(ns: NodeSet): NodesRegistry
+  removeNodeSet(id: string): NodeSet
+  getNodeSet(id: string): NodeSet
+  getNodeSet(id: string): NodeSet
+  enableNodeSet(id: string): NodesRegistry
+  disableNodeSet(id: string): NodesRegistry
+  getNodeSetForType(nodeType: string): NodeSet
+
+  // delegating to NodeTypeManager
+  registerNodeType(nt: string, def: any)
+  removeNodeType(nt: string): NodesRegistry
+  getNodeType(nt: string): any
+  setModulePendingUpdated(moduleId, version)
+  getModule(moduleId: string)
+  getModuleList()
+  getNodeList()
+  getNodeTypes()
+  setNodeList(list: Node[])
+}
 
 export class NodesRegistry extends Context {
   public moduleList = {};
@@ -128,7 +153,7 @@ export class NodesRegistry extends Context {
     return Object.keys(this.nodeDefinitions);
   }
 
-  setNodeList(list) {
+  setNodeList(list: Node[]) {
     let {
       nodeList,
       addNodeSet

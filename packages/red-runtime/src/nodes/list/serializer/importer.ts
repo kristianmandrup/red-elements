@@ -1,15 +1,19 @@
 import {
   Nodes
-} from '../nodes'
+} from '../'
 
 import {
   Context
-} from '../../context'
+} from '../../../context'
 
 import {
   Node,
   NodeDef
-} from '../interfaces'
+} from '../../interfaces'
+
+export interface IImporter {
+  importNodes(newNodesObj: string, createNewIds: boolean, createMissingWorkspace: boolean)
+}
 
 /**
  * Import nodes from a serialized format (String, JSON etc.)
