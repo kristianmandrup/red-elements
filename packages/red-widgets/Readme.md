@@ -13,7 +13,7 @@ We will then polish and improve the editor as needed to suit our particular use 
 We currently depend on a modified version of `jsonata` library in `@tecla5/red-assets/vendor`.
 We will want to upgrade to use the latest `jsonata` version.
 
-The `d3` library used is v3 but we will want to upgrade to use the latest version (v4), which has a modular design of smaller modules to avoid loading all of D3.
+The `d3` library used is `v3` but we will want to upgrade to use the latest version `v4`, which has a modular design that consists of smaller modules to avoid loading all of D3.
 
 ### Backend API
 

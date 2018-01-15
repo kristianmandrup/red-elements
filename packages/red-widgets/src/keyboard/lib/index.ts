@@ -76,8 +76,9 @@ const firefoxKeyCodeMap = {
 
 import {
   Context,
-  $
-} from '../../context'
+  $,
+  Searchbox
+} from '../../common'
 
 import * as d3 from 'd3'
 
@@ -95,8 +96,8 @@ export class Keyboard extends Context {
     // somehow use SearchBox widget from red-widgets (possibly move all common widgets to red-runtime)
     // avoid circular dependency!
 
-    // make SearchBox widget factory available on all jQuery elements
-    // new SearchBox()
+    // make Searchbox widget factory available on all jQuery elements
+    new Searchbox()
 
     const {
       ctx,

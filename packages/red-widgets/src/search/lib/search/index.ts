@@ -1,19 +1,19 @@
 /**
  * Copyright JS Foundation and other contributors, http://js.foundation
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { Context, $, EditableList, Searchbox } from '../../common'
+import { Context, $, EditableList, Searchbox } from '../../../common'
 
 // TODO: Find I18n constructor in node-red
 // import {
@@ -34,6 +34,15 @@ interface ISearchInput extends JQuery<HTMLElement> {
   i18n: Function
   searchBox: Function
 }
+
+import {
+  SearchInput
+} from './input'
+
+import {
+  SearchResults
+} from './results'
+
 
 export class Search extends Context {
   public disabled: Boolean
@@ -91,7 +100,7 @@ export class Search extends Context {
       })
     }
 
-    ctx.actions.add("core:search", show);
+    ctx.actions.add('core:search', show);
 
     if (!ctx.events.on) {
       this.handleError('Search: events missing on method', {
@@ -99,15 +108,15 @@ export class Search extends Context {
       })
     }
 
-    ctx.events.on("editor:open", disable);
-    ctx.events.on("editor:close", enable);
-    ctx.events.on("type-search:open", disable);
-    ctx.events.on("type-search:close", enable);
+    ctx.events.on('editor:open', disable);
+    ctx.events.on('editor:close', enable);
+    ctx.events.on('type-search:open', disable);
+    ctx.events.on('type-search:close', enable);
 
-    $("#header-shade").on('mousedown', this.hide);
-    $("#editor-shade").on('mousedown', this.hide);
-    $("#palette-shade").on('mousedown', this.hide);
-    $("#sidebar-shade").on('mousedown', this.hide);
+    $('#header-shade').on('mousedown', this.hide);
+    $('#editor-shade').on('mousedown', this.hide);
+    $('#palette-shade').on('mousedown', this.hide);
+    $('#sidebar-shade').on('mousedown', this.hide);
 
   }
 
@@ -130,14 +139,14 @@ export class Search extends Context {
 
     this._validateStr(label, 'label', 'indexNode')
     if (label) {
-      label = ("" + label).toLowerCase();
+      label = ('' + label).toLowerCase();
       index[label] = index[label] || {};
       index[label][node.id] = {
         node,
         label
       }
     }
-    label = label || node.label || node.name || node.id || "";
+    label = label || node.label || node.name || node.id || '';
 
     var properties = ['id', 'type', 'name', 'label', 'info'];
     if (node._def && node._def.defaults) {
@@ -148,7 +157,7 @@ export class Search extends Context {
       if (node.hasOwnProperty(prop)) {
         var v = node[prop];
         if (typeof v === 'string' || typeof v === 'number') {
-          v = ("" + v).toLowerCase();
+          v = ('' + v).toLowerCase();
 
           let id = node.id
           this._validateStr(v, 'v', 'indexNode', prop)
@@ -250,7 +259,7 @@ export class Search extends Context {
   }
 
   ensureSelectedIsVisible() {
-    var selectedEntry = this.searchResults.find("li.selected");
+    var selectedEntry = this.searchResults.find('li.selected');
     if (selectedEntry.length === 1) {
       var scrollWindow = this.searchResults.parent();
       var scrollHeight = scrollWindow.height();
@@ -269,28 +278,38 @@ export class Search extends Context {
     }
   }
 
-  createDialog() {
-    let {
-      ctx,
-      dialog,
-      search,
-      searchInput,
-      searchResults,
-      results,
-      selected,
-      reveal
+  get $mainContainer() {
+    return '#main-container'
+  }
+
+  _createSearchDialog(dialog) {
+    const {
+      $mainContainer
     } = this
 
-    dialog = $("<div>", {
-      id: "red-ui-search",
-      class: "red-ui-search"
-    }).appendTo("#main-container");
-    var searchDiv = $("<div>", {
-      class: "red-ui-search-container"
-    }).appendTo(dialog);
+    return $('<div>', {
+      id: 'red-ui-search',
+      class: 'red-ui-search'
+    }).appendTo($mainContainer);
+  }
 
+  _createSearchContainer(dialog) {
+    const searchDialog = this._createSearchDialog(dialog)
+    return $('<div>', {
+      class: 'red-ui-search-container'
+    }).appendTo(searchDialog);
+  }
+
+  _createSearchInput(dialog) {
+    const {
+      search
+    } = this.rebind([
+        'search'
+      ])
+
+    const searchDiv = this._createSearchContainer(dialog)
     const searchInputElem: ISearchboxWidget = <ISearchboxWidget>$('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv)
-    searchInput = searchInputElem.searchBox({
+    return searchInputElem.searchBox({
       delay: 200,
       change: () => {
         search($(this).val());
@@ -300,8 +319,20 @@ export class Search extends Context {
         // console.log('i18n not implemented')
       }
     });
+  }
 
-    this.searchInput = searchInput
+  _configureSearchInputElement() {
+    let {
+      ctx,
+      dialog,
+      searchResults,
+      results,
+      selected,
+      reveal
+    } = this
+
+    // TODO: use SearchInput helper class
+    const searchInput = this._createSearchInput(dialog)
 
     searchInput.on('keydown', (evt) => {
       var children;
@@ -344,17 +375,34 @@ export class Search extends Context {
       })
     }
 
-    // TODO: ensure i18n widget factory is instantiated!
+    // TODO: ensure i18n widget factory is instantiated! is i18n method native to jQuery UI??
     // new I18n()
     searchInput.i18n();
 
-    var searchResultsDiv = $("<div>", {
-      class: "red-ui-search-results-container"
+    this.setInstanceVars({
+      searchInput
+    })
+
+    return searchInput
+  }
+
+  _configureSearchResultsElement() {
+    let {
+      ctx,
+      dialog,
+      results,
+      selected,
+      reveal
+    } = this
+
+    // TODO: use SearchResults helper class
+    var searchResultsDiv = $('<div>', {
+      class: 'red-ui-search-results-container'
     }).appendTo(dialog);
 
-    searchResults = <ISearchResults>$('<ol>', {
-      id: "search-result-list",
-      style: "position: absolute;top: 5px;bottom: 5px;left: 5px;right: 5px;"
+    const searchResults = <ISearchResults>$('<ol>', {
+      id: 'search-result-list',
+      style: 'position: absolute;top: 5px;bottom: 5px;left: 5px;right: 5px;'
     })
     searchResults.appendTo(searchResultsDiv)
 
@@ -370,58 +418,58 @@ export class Search extends Context {
         var node = object.node;
         if (node === undefined) {
           $('<div>', {
-            class: "red-ui-search-empty"
+            class: 'red-ui-search-empty'
           }).html(ctx._('search.empty')).appendTo(container);
 
         } else {
           var def = node._def;
           var div = $('<a>', {
             href: '#',
-            class: "red-ui-search-result"
+            class: 'red-ui-search-result'
           }).appendTo(container);
 
           var nodeDiv = $('<div>', {
-            class: "red-ui-search-result-node"
+            class: 'red-ui-search-result-node'
           }).appendTo(div);
           var colour = def.color;
           var icon_url = ctx.utils.getNodeIcon(def, node);
           if (node.type === 'tab') {
-            colour = "#C0DEED";
+            colour = '#C0DEED';
           }
           nodeDiv.css('backgroundColor', colour);
 
           var iconContainer = $('<div/>', {
-            class: "palette_icon_container"
+            class: 'palette_icon_container'
           }).appendTo(nodeDiv);
           $('<div/>', {
-            class: "palette_icon",
-            style: "background-image: url(" + icon_url + ")"
+            class: 'palette_icon',
+            style: 'background-image: url(' + icon_url + ')'
           }).appendTo(iconContainer);
 
           var contentDiv = $('<div>', {
-            class: "red-ui-search-result-description"
+            class: 'red-ui-search-result-description'
           }).appendTo(div);
           if (node.z) {
             var workspace = ctx.nodes.workspace(node.z);
             if (!workspace) {
               workspace = ctx.nodes.subflow(node.z);
-              workspace = "subflow:" + workspace.name;
+              workspace = 'subflow:' + workspace.name;
             } else {
-              workspace = "flow:" + workspace.label;
+              workspace = 'flow:' + workspace.label;
             }
             $('<div>', {
-              class: "red-ui-search-result-node-flow"
+              class: 'red-ui-search-result-node-flow'
             }).html(workspace).appendTo(contentDiv);
           }
 
           $('<div>', {
-            class: "red-ui-search-result-node-label"
+            class: 'red-ui-search-result-node-label'
           }).html(object.label || node.id).appendTo(contentDiv);
           $('<div>', {
-            class: "red-ui-search-result-node-type"
+            class: 'red-ui-search-result-node-type'
           }).html(node.type).appendTo(contentDiv);
           $('<div>', {
-            class: "red-ui-search-result-node-id"
+            class: 'red-ui-search-result-node-id'
           }).html(node.id).appendTo(contentDiv);
 
           div.click(function (evt) {
@@ -432,6 +480,18 @@ export class Search extends Context {
       },
       scrollOnAdd: false
     });
+
+    this.setInstanceVars({
+      searchResults
+    })
+
+    return searchResults
+  }
+
+
+  createDialog() {
+    this._configureSearchInputElement()
+    this._configureSearchResultsElement()
     return this
   }
 
@@ -464,20 +524,20 @@ export class Search extends Context {
       return this;
     }
     if (!visible) {
-      ctx.keyboard.add("*", "escape", function () {
+      ctx.keyboard.add('*', 'escape', function () {
         hide()
       });
-      $("#header-shade").show();
-      $("#editor-shade").show();
-      $("#palette-shade").show();
-      $("#sidebar-shade").show();
-      $("#sidebar-separator").hide();
+      $('#header-shade').show();
+      $('#editor-shade').show();
+      $('#palette-shade').show();
+      $('#sidebar-shade').show();
+      $('#sidebar-separator').hide();
       indexWorkspace();
       if (dialog === null) {
         createDialog();
       }
       dialog.slideDown(300);
-      ctx.events.emit("search:open");
+      ctx.events.emit('search:open');
       visible = true;
     }
     if (!searchInput) {
@@ -500,19 +560,19 @@ export class Search extends Context {
     } = this
 
     if (visible) {
-      ctx.keyboard.remove("escape");
+      ctx.keyboard.remove('escape');
       visible = false;
-      $("#header-shade").hide();
-      $("#editor-shade").hide();
-      $("#palette-shade").hide();
-      $("#sidebar-shade").hide();
-      $("#sidebar-separator").show();
+      $('#header-shade').hide();
+      $('#editor-shade').hide();
+      $('#palette-shade').hide();
+      $('#sidebar-shade').hide();
+      $('#sidebar-separator').show();
       if (dialog !== null) {
         dialog.slideUp(200, () => {
           searchInput.searchBox('value', '');
         });
       }
-      ctx.events.emit("search:close");
+      ctx.events.emit('search:close');
     }
   }
 }
