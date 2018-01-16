@@ -45,47 +45,40 @@ import {
 
 
 export class Search extends Context {
-  public disabled: Boolean
-  public dialog: any // Dialog ?
-  public selected: any
-  public visible: Boolean
-  public index: Object
-  public keys: Array<any>
-  public results: Array<any>
+  public disabled: Boolean = false
+  public dialog: any = null
+  public selected: any = -1
+  public visible: Boolean = false
+  public index: Object = {}
+  public keys: Array<any> = []
+  public results: Array<any> = []
   public searchResults: ISearchResults
   public searchInput: ISearchInput
 
   constructor() {
     super()
-    const { ctx } = this
+    this._prepareWidgetFactories()
+    this._configureHandlers()
+  }
 
+  protected _prepareWidgetFactories() {
     // to ensure that searchResults can be converted to EditableList jQuery Widget
     new EditableList()
     new Searchbox()
+  }
 
-    this.disabled = false;
-    this.dialog = null;
-    this.selected = -1;
-    this.visible = false;
 
-    this.index = {};
-    this.keys = [];
-    this.results = [];
+  /**
+   * Ensure RED context has actions and events containers
+   */
+  protected _validateContext() {
+    const {
+      ctx
+    } = this
     const required = [
       'actions',
       'events'
     ]
-
-    let {
-      show,
-      enable,
-      disable
-    } = this.rebind([
-        'show',
-        'enable',
-        'disable'
-      ])
-
     required.map(name => {
       if (!ctx[name]) {
         this.handleError(`Search: missing ${name} property on ctx`, {
@@ -93,14 +86,45 @@ export class Search extends Context {
         })
       }
     })
+  }
+
+  protected _configureHandlers() {
+    this._validateContext()
+    this._configureActionHandlers()
+    this._configureEditorEventHandlers()
+    this._configureMouseEventHandlers()
+  }
+
+  protected _configureActionHandlers() {
+    const {
+      ctx
+    } = this
+    const {
+      show
+    } = this.rebind([
+        'show'
+      ])
 
     if (!ctx.actions.add) {
       this.handleError('Search: actions missing add method', {
         actions: ctx.actions
       })
     }
-
     ctx.actions.add('core:search', show);
+  }
+
+
+  protected _configureEditorEventHandlers() {
+    const {
+      ctx
+    } = this
+    const {
+      enable,
+      disable
+    } = this.rebind([
+        'enable',
+        'disable'
+      ])
 
     if (!ctx.events.on) {
       this.handleError('Search: events missing on method', {
@@ -112,21 +136,39 @@ export class Search extends Context {
     ctx.events.on('editor:close', enable);
     ctx.events.on('type-search:open', disable);
     ctx.events.on('type-search:close', enable);
-
-    $('#header-shade').on('mousedown', this.hide);
-    $('#editor-shade').on('mousedown', this.hide);
-    $('#palette-shade').on('mousedown', this.hide);
-    $('#sidebar-shade').on('mousedown', this.hide);
-
   }
 
+  protected _configureMouseEventHandlers() {
+    const {
+      hide
+    } = this.rebind([
+        'hide'
+      ])
+
+    $('#header-shade').on('mousedown', hide);
+    $('#editor-shade').on('mousedown', hide);
+    $('#palette-shade').on('mousedown', hide);
+    $('#sidebar-shade').on('mousedown', hide);
+  }
+
+  /**
+   * Disable search
+   */
   disable() {
     this.disabled = true;
   }
+
+  /**
+   * Enable search
+   */
   enable() {
     this.disabled = false;
   }
 
+  /**
+   * ???
+   * @param node
+   */
   indexNode(node) {
     const {
       ctx,
@@ -173,6 +215,9 @@ export class Search extends Context {
     }
   }
 
+  /**
+   * ???
+   */
   indexWorkspace() {
     let {
       ctx,
@@ -203,6 +248,12 @@ export class Search extends Context {
     return this
   }
 
+  /**
+   * Search for the value and populate searchResults with matches
+   * Searches all keys of all nodes for a match, using indexOf to find any substring match
+   *
+   * @param val { string } value to search for
+   */
   search(val) {
     let {
       keys,
@@ -222,11 +273,18 @@ export class Search extends Context {
     selected = -1;
     results = [];
     if (val.length > 0) {
+
+      // convert search term to lowercase
       val = val.toLowerCase();
       var i;
       var j;
       var list = [];
       var nodes = {};
+
+      // iterate all node keys
+      // searches all keys of all nodes for a match
+      // using indexOf to find any substring match
+      // uses node indexes to find matching node?
       for (i = 0; i < keys.length; i++) {
         var key = keys[i];
         var kpos = keys[i].indexOf(val);
@@ -244,20 +302,28 @@ export class Search extends Context {
         return nodes[A].index - nodes[B].index;
       });
 
+      // populate search results
       for (i = 0; i < list.length; i++) {
         this.results.push(nodes[list[i]]);
       }
+
+      // add results to editable list if results found
       if (this.results.length > 0) {
         for (i = 0; i < Math.min(this.results.length, 25); i++) {
           this.searchResults.editableList('addItem', this.results[i])
         }
       } else {
+        // create empty editable list if no results found
         this.searchResults.editableList('addItem', {});
       }
     }
     return this
   }
 
+  /**
+   * Ensure selected is visible
+   * Scrolls selected into view if not visible in viewport
+   */
   ensureSelectedIsVisible() {
     var selectedEntry = this.searchResults.find('li.selected');
     if (selectedEntry.length === 1) {
@@ -278,11 +344,17 @@ export class Search extends Context {
     }
   }
 
+  /**
+   * The selector for the main container elements
+   */
   get $mainContainer() {
     return '#main-container'
   }
 
-  _createSearchDialog(dialog) {
+  /**
+   * Create a search dialog container element
+   */
+  protected _createSearchDialog() {
     const {
       $mainContainer
     } = this
@@ -293,35 +365,45 @@ export class Search extends Context {
     }).appendTo($mainContainer);
   }
 
-  _createSearchContainer(dialog) {
-    const searchDialog = this._createSearchDialog(dialog)
+  /**
+   * Create a search container element
+   */
+  protected _createSearchContainer() {
+    const searchDialog = this._createSearchDialog()
     return $('<div>', {
       class: 'red-ui-search-container'
     }).appendTo(searchDialog);
   }
 
-  _createSearchInput(dialog) {
+  /**
+   * Create a search input element
+   */
+  protected _createSearchInput() {
     const {
       search
     } = this.rebind([
         'search'
       ])
 
-    const searchDiv = this._createSearchContainer(dialog)
+    const searchDiv = this._createSearchContainer()
     const searchInputElem: ISearchboxWidget = <ISearchboxWidget>$('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv)
     return searchInputElem.searchBox({
       delay: 200,
       change: () => {
         search($(this).val());
-      },
-      // Fix: trying to add i18n support (better to do directly on widget)
-      i18n: () => {
-        // console.log('i18n not implemented')
       }
     });
   }
 
-  _configureSearchInputElement() {
+  /**
+   * TODO: Single Responsibility.
+   * !! Either build and configure and call method _build or only configure
+   *
+   * Build/Configure Search input element
+   * - builds input element
+   * - on keydown event handler
+   */
+  protected _configureSearchInputElement() {
     let {
       ctx,
       dialog,
@@ -332,7 +414,7 @@ export class Search extends Context {
     } = this
 
     // TODO: use SearchInput helper class
-    const searchInput = this._createSearchInput(dialog)
+    const searchInput = this._createSearchInput()
 
     searchInput.on('keydown', (evt) => {
       var children;
@@ -386,6 +468,11 @@ export class Search extends Context {
     return searchInput
   }
 
+  /**
+   * Configure Search results element
+   * - turns element into an editableList
+   * - adds addItem event handler
+   */
   _configureSearchResultsElement() {
     let {
       ctx,
@@ -488,19 +575,29 @@ export class Search extends Context {
     return searchResults
   }
 
-
+  /**
+   * Create a search dialog with search input and results
+   */
   createDialog() {
     this._configureSearchInputElement()
     this._configureSearchResultsElement()
     return this
   }
 
+  /**
+   * Reveal a hidden node
+   * @param node
+   */
   reveal(node) {
     this.hide();
     this.ctx.view.reveal(node.id);
     return this
   }
 
+  /**
+   * Show all ???
+   * TODO: When is this called/used? after search is complete?
+   */
   show() {
     let {
       ctx,
@@ -551,6 +648,11 @@ export class Search extends Context {
     return this
   }
 
+  /**
+   * See show
+   *
+   * TODO: add documentation - I think while searching, parts of UI are hidden?
+   */
   hide() {
     let {
       ctx,
