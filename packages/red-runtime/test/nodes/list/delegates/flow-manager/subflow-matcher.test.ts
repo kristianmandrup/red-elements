@@ -36,7 +36,17 @@ beforeEach(() => {
   matcher = create()
 })
 
-test('_checkSubflowContains(node)', () => {
+
+
+test.only('_matchingNodeZ(node)', () => {
+  // TODO
+})
+
+test.only('_matchNodeIsSubflow(match)', () => {
+  // TODO
+})
+
+test.only('_checkSubflowContains(node)', () => {
 })
 
 test('contains', () => {
