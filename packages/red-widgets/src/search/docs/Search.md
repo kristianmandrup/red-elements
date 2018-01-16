@@ -6,16 +6,11 @@ Is used to search for specific nodes in a workspace.
 
 ### structure
 
-- `/controllers` contains the search logic, as a class `Search`.
+- `/lib` contains the search logic, as a class `Search`.
 - `/test` contains the tests
 
 Currently the constructor expect a context object (`RED`) as the single argument.
-We should instead use Dependency Injection of a `RED` singleton object using either:
-
-- [InversifyJS](https://github.com/inversify/InversifyJS)
-- [bottlejs](https://github.com/young-steveo/bottlejs)
-
-Alternatively (even better), use [TypeScript](typescriptlang.org) and use a decorator to inject it.
+We use Dependency Injection of a `RED` singleton object using [InversifyJS](https://github.com/inversify/InversifyJS)
 
 ## Requirements
 
