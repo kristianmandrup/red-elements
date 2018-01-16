@@ -35,6 +35,9 @@ import {
   SearchResults
 } from './results'
 
+import {
+  SearchConfiguration
+} from './configuration'
 
 export class Search extends Context {
   public disabled: Boolean = false
@@ -49,12 +52,18 @@ export class Search extends Context {
 
   constructor() {
     super()
+
+    // TODO: use SearchConfiguration delegate class
     this._prepareWidgetFactories()
     this._configureHandlers()
   }
 
+  /**
+   * Ensure required jQuery Widget factories are available
+   * - searchResults: EditableList
+   * - searchInput: Searchbox
+   */
   protected _prepareWidgetFactories() {
-    // to ensure that searchResults can be converted to EditableList jQuery Widget
     new EditableList()
     new Searchbox()
   }
