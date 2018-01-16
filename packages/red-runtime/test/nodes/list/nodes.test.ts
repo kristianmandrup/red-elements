@@ -2,6 +2,10 @@ import {
   Nodes
 } from '../../..'
 
+import {
+  INode
+} from '../../../src/interfaces'
+
 function create() {
   return new Nodes()
 }
@@ -20,10 +24,10 @@ function merge(a, b) {
 }
 
 function fakeNode(override = {}, def = true) {
-  let base: any = {
+  let base: INode = {
     id: 'x',
-    in: {},
-    out: {},
+    in: [],
+    out: [],
     type: 'subflow'
   }
 
