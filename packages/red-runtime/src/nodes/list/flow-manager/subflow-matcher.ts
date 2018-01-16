@@ -25,12 +25,26 @@ export class SubflowMatcher extends Context {
       nodes
     } = this
 
-    for (var i = 0; i < nodes.length; i++) {
-      if (this._checkSubflowContains(i)) {
-        return true
-      }
-    }
-    return false;
+    const {
+      _checkSubflowContains
+    } = this.rebind([
+        '_checkSubflowContains'
+      ])
+
+    log('contains', {
+      nodes,
+      type: typeof nodes,
+      isArray: Array.isArray(nodes)
+    })
+
+    return Boolean(nodes.find(_checkSubflowContains))
+
+    // for (var i = 0; i < nodes.length; i++) {
+    //   if (this._checkSubflowContains(i)) {
+    //     return true
+    //   }
+    // }
+    // return false;
   }
 
   _checkSubflowContains(i: number): boolean {
