@@ -10,21 +10,22 @@ import {
   fakeNode
 } from '../../../../_infra'
 
+const $nodes = new Nodes()
+
 function create() {
-  const nodes = new Nodes()
-  return new FlowManager(nodes)
+  return new FlowManager($nodes)
 }
 
-let nodes
+let flowManager
 beforeEach(() => {
-  nodes = create()
+  flowManager = create()
 })
 
 const { log } = console
 
 const FAKE_RED = {}
 
-test.only('Nodes: subflowContains', () => {
+test.only('FlowManager: subflowContains - matches', () => {
   let sfid = 'x'
   let nodeid = 'a'
   let subflowConfig = fakeNode({
@@ -36,9 +37,30 @@ test.only('Nodes: subflowContains', () => {
     id: sfid,
     type: 'config'
   })
-  nodes.addNode(subflowConfig)
-  nodes.addSubflow(subflow)
 
-  let found = nodes.subflowContains(sfid, nodeid)
+  $nodes.addNode(subflowConfig)
+  $nodes.addSubflow(subflow)
+
+  let found = flowManager.subflowContains(sfid, nodeid)
   expect(found).toBeTruthy()
+})
+
+test.only('FlowManager: subflowContains - no match', () => {
+  let sfid = 'x'
+  let nodeid = 'a'
+  let subflowConfig = fakeNode({
+    z: sfid,
+    id: sfid,
+    type: 'subflow:config'
+  })
+  let subflow = fakeNode({
+    id: sfid,
+    type: 'config'
+  })
+
+  $nodes.addNode(subflowConfig)
+  $nodes.addSubflow(subflow)
+
+  let found = flowManager.subflowContains(sfid, nodeid)
+  expect(found).toBeFalsy()
 })

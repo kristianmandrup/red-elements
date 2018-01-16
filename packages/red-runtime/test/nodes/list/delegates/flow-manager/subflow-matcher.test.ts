@@ -27,7 +27,7 @@ function create() {
 }
 
 function createMatcher(sfid: string, nodeid: string) {
-  return new SubflowMatcher(flowManager, sfid, nodeid)
+  return new SubflowMatcher(flowManager).configure(sfid, nodeid)
 }
 
 let matcher

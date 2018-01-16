@@ -199,7 +199,7 @@ test('Nodes: removeSubflow - by subflow node removes it', () => {
 })
 
 
-test.only('Nodes: subflowContains', () => {
+test.only('Nodes: subflowContains - matches', () => {
   let sfid = 'x'
   let nodeid = 'a'
   let subflowConfig = fakeNode({
@@ -216,6 +216,25 @@ test.only('Nodes: subflowContains', () => {
 
   let found = nodes.subflowContains(sfid, nodeid)
   expect(found).toBeTruthy()
+})
+
+test.only('Nodes: subflowContains - no match', () => {
+  let sfid = 'x'
+  let nodeid = 'a'
+  let subflowConfig = fakeNode({
+    z: sfid,
+    id: sfid,
+    type: 'subflow:config'
+  })
+  let subflow = fakeNode({
+    id: sfid,
+    type: 'config'
+  })
+  nodes.addNode(subflowConfig)
+  nodes.addSubflow(subflow)
+
+  let found = nodes.subflowContains(sfid, nodeid)
+  expect(found).toBeFalsy()
 })
 
 test('Nodes: getAllFlowNodes', () => {

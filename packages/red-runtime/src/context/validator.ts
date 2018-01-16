@@ -18,6 +18,9 @@ export interface IValidator {
   _validateObj(value: object, name: string, methodName: string, info?: string)
   _validateStr(value: string, name: string, methodName: string, info?: string)
   _validateNum(value: number, name: string, methodName: string, info?: string)
+  _validateBool(value: boolean, name: string, methodName: string, info?: string)
+  _validateStrOrNum(value, name: string, methodName: string, info?: string)
+
   _validateJQ(obj: JQuery<HTMLElement>, name, methodName: string, info?: string)
   _validateDefined(value, name: string, methodName: string, info?: any)
   _validateProps(obj: object, props: string[], methodName: string)
@@ -26,14 +29,14 @@ export interface IValidator {
   _validateNode(node: INode, name: string, methodName: string, info?: string)
   _validateLink(link: ILink, name: string, methodName: string, info?: string)
   _validateNodeDef(def: INodeDef, name: string, methodName: string, info?: string)
-  _validateStrOrNum(value, name: string, methodName: string, info?: string)
+
 }
 
 export class Validator {
   protected className: string
 
   constructor(public target: any) {
-    this.className = this.constructor.name
+    this.className = target.constructor.name
   }
 
   handleError(msg: string, data?: any) {

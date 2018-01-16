@@ -45,9 +45,14 @@ export class SubflowMatcher extends Context {
     this._validateStr(sfid, 'sfid', 'contains')
     this._validateStr(sfid, 'nodeid', 'contains')
     this._validateArray(nodeList, 'nodes', 'contains')
+
     return Boolean(nodeList.find(_checkSubflowContains))
   }
 
+  /**
+   * Test if a node is contained in a subflow
+   * @param node { INode } node to test if contained in a subflow
+   */
   _checkSubflowContains(node: INode): boolean {
     const {
       manager
@@ -57,25 +62,37 @@ export class SubflowMatcher extends Context {
     return this._matchingNodeZ(node)
   }
 
-  _isSubflowNode(node) {
+  /**
+   * Test if node is a subflow type
+   * @param node { INode } node to test
+   */
+  _isSubflowNode(node: INode) {
     const match = /^subflow:(.+)$/.exec(node.type);
     return match ? match[1] : null
   }
 
+  /**
+   * Test if node .z matches subflow id - .z is the subflow (dimension) of the node
+   * @param node { INode } node to test
+   */
   _matchingNodeZ(node) {
     const { sfid, nodeid, nodeList } = this
     if (node.z !== sfid) {
       return false
     }
     const match = this._isSubflowNode(node)
-    log('match', {
+    this.logInfo('match', {
       type: node.type,
       match
     })
     return this._matchNodeIsSubflow(match)
   }
 
-  _matchNodeIsSubflow(match) {
+  /**
+   * Test if node subflow type name matches subflow
+   * @param match { } test subflow name match part against nodeid
+   */
+  _matchNodeIsSubflow(match: string) {
     const {
       manager,
       nodeid
@@ -85,7 +102,7 @@ export class SubflowMatcher extends Context {
       return false
     }
 
-    log('node matching on ^subflow:(.+)$', {
+    this.logInfo('node matching on ^subflow:(.+)$', {
       match
     })
 
@@ -93,10 +110,14 @@ export class SubflowMatcher extends Context {
     if (match === nodeid) {
       return true;
     }
-    log('recurse node matching', {
+
+    this.logInfo('recurse node matching', {
       match,
       nodeid
     })
+
+    // TODO: detect possible infinite loop here!?
+    // recurse using subflow id of node type as new subflow id
     return manager.subflowContains(match, nodeid);
   }
 }
