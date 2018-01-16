@@ -138,12 +138,14 @@ export class FlowManager extends Context implements IFlowManager {
     })
 
     for (var i = 0; i < nodes.length; i++) {
-      this._checkSubflowContains(sfid, nodeid, i)
+      if (this._checkSubflowContains(sfid, nodeid, i)) {
+        return true
+      }
     }
     return false;
   }
 
-  _checkSubflowContains(sfid, nodeid, i) {
+  _checkSubflowContains(sfid: string, nodeid: string, i: number): boolean {
     const { nodes } = this.nodes
     const {
       subflowContains
@@ -161,6 +163,8 @@ export class FlowManager extends Context implements IFlowManager {
         type: node.type,
         m
       })
+
+      // make this a new protected function
       if (m) {
         log('node matching on ^subflow:(.+)$', {
           m,
