@@ -82,15 +82,15 @@ export class UndoEvent extends Context {
     if (!ev) return
 
     switch (ev.t) {
-      case 'multi': this._multi(ev)
-      case 'replace': this._replace(ev)
-      case 'add': this._add(ev)
-      case 'delete': this._delete(ev)
-      case 'move': this._move(ev)
-      case 'edit': this._edit(ev)
-      case 'createSubflow': this._createSubflow(ev)
-      case 'reorder': this._reorder(ev)
-      default: this._default(ev)
+      case 'multi': return this._multi(ev)
+      case 'replace': return this._replace(ev)
+      case 'add': return this._add(ev)
+      case 'delete': return this._delete(ev)
+      case 'move': return this._move(ev)
+      case 'edit': return this._edit(ev)
+      case 'createSubflow': return this._createSubflow(ev)
+      case 'reorder': return this._reorder(ev)
+      default: return this._default(ev)
     }
 
     Object.keys(modifiedTabs).forEach(function (id) {
