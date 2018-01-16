@@ -37,7 +37,3 @@ export {
   ISettings
 } from './settings'
 
-export {
-  Validators,
-  IValidators
-} from './validators'

@@ -4,10 +4,6 @@ import {
 } from './canvas'
 
 import {
-  Validators
-} from './validators'
-
-import {
   common,
   Tabs,
   Stack,
@@ -169,8 +165,7 @@ export const widgets = {
   Search,
   TypeSearch,
   UserSettings,
-  Workspaces,
-  Validators
+  Workspaces
 }
 
 export default libs
@@ -209,7 +204,6 @@ export {
   Search,
   TypeSearch,
   UserSettings,
-  Workspaces,
-  Validators
+  Workspaces
 }
 
