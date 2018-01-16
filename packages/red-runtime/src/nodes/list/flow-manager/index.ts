@@ -137,6 +137,10 @@ export class FlowManager extends Context implements IFlowManager {
       nodeid
     })
 
+    // instantiate a helper class SubflowMatcher with sfid and nodeid and constructor params
+    // move functions in here
+    // test helper class SubflowMatcher on its own
+
     for (var i = 0; i < nodes.length; i++) {
       if (this._checkSubflowContains(sfid, nodeid, i)) {
         return true
@@ -170,6 +174,8 @@ export class FlowManager extends Context implements IFlowManager {
           m,
           type: node.type,
         })
+
+        // make this a new protected function
         if (m[1] === nodeid) {
           return true;
         } else {
