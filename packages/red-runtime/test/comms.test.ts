@@ -3,6 +3,14 @@ import {
 } from '../'
 const ctx = {}
 
+import {
+  expectObj,
+  expectTruthy,
+  expectFunction,
+  expectUndefined,
+  expectFunctions
+} from './_infra'
+
 function create() {
   return new Communications()
 }
@@ -19,12 +27,12 @@ beforeEach(() => {
 })
 
 test('Communications: create', () => {
-  expect(typeof comms).toBe('object')
+  expectObj(comms)
 })
 
 test('communications: connect - makes active', () => {
   comms.connect()
-  expect(comms.active).toBeTruthy()
+  expectTruthy(comms.active)
 })
 
 test('communications: connect - opens Web socket', () => {
@@ -33,9 +41,7 @@ test('communications: connect - opens Web socket', () => {
   expect(typeof ws).toBe('object')
 
   // configures callback functions
-  expect(typeof ws.onmessage).toBe('function')
-  expect(typeof ws.onopen).toBe('function')
-  expect(typeof ws.onclose).toBe('function')
+  expectFunctions(ws.onmessage, ws.onopen, ws.onclose)
 })
 
 test('communications: subscribe - adds to subscriptions', () => {
@@ -49,5 +55,5 @@ test('communications: unsubscribe - removes from subscriptions', () => {
   expect(comms.subscriptions['a']).toContain(func)
   comms.unsubscribe('a', func)
   subscription = comms.subscriptions['a']
-  expect(subscription).toBeUndefined()
+  expectUndefined(subscription)
 })

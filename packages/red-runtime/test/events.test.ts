@@ -2,6 +2,14 @@ import {
   Events
 } from '../'
 
+import {
+  expectObj,
+  expectTruthy,
+  expectFunction,
+  expectUndefined,
+  expectFunctions
+} from './_infra'
+
 const evt = 'hello'
 const handlers = {}
 
@@ -34,6 +42,8 @@ test('events: on', () => {
 
 test('events: off', () => {
   events.on(evt, func)
+
+  // TODO: add utility function to avoid duplication!!!
   let { handlers } = events
   let handler = handlers[evt]
   expect(handler).toContain(func)
