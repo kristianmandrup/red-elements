@@ -7,6 +7,10 @@ import {
 } from '../../../context'
 
 import {
+  SubflowMatcher
+} from './subflow-matcher'
+
+import {
   IFlow,
   ISubflow,
   INode
@@ -140,66 +144,8 @@ export class FlowManager extends Context implements IFlowManager {
     // instantiate a helper class SubflowMatcher with sfid and nodeid and constructor params
     // move functions in here
     // test helper class SubflowMatcher on its own
-
-    for (var i = 0; i < nodes.length; i++) {
-      if (this._checkSubflowContains(sfid, nodeid, i)) {
-        return true
-      }
-    }
-    return false;
-  }
-
-  _checkSubflowContains(sfid: string, nodeid: string, i: number): boolean {
-    const { nodes } = this.nodes
-    const {
-      subflowContains
-    } = this.rebind([
-        'subflowContains'
-      ])
-
-    var node = nodes[i];
-
-    // TODO: further decompose into smaller functions to reduce complexity and avoid nested ifs
-    if (node.z === sfid) {
-      // https://developer.mozilla.org/th/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
-      var m = /^subflow:(.+)$/.exec(node.type);
-      log('match', {
-        type: node.type,
-        m
-      })
-
-      // make this a new protected function
-      if (m) {
-        log('node matching on ^subflow:(.+)$', {
-          m,
-          type: node.type,
-        })
-
-        // make this a new protected function
-        if (m[1] === nodeid) {
-          return true;
-        } else {
-          log('recurse node matching', {
-            m1: m[1],
-            nodeid
-          })
-          var result = this.subflowContains(m[1], nodeid);
-          if (result) {
-            return true;
-          }
-        }
-      } else {
-        log('node not matching on ^subflow:(.+)$', {
-          m,
-          type: node.type,
-        })
-      }
-    } else {
-      log('node not matching on .z', {
-        sfid,
-        z: node.z,
-      })
-    }
+    const subflowMatcher = new SubflowMatcher(this, sfid, nodeid, nodes)
+    return subflowMatcher.contains()
   }
 
   /**
