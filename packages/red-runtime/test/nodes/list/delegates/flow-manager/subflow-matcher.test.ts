@@ -36,6 +36,9 @@ beforeEach(() => {
   matcher = create()
 })
 
+test('_checkSubflowContains(node)', () => {
+})
+
 test('contains', () => {
   let sfid = 'x'
   let nodeid = 'a'

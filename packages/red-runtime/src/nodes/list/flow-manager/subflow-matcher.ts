@@ -39,16 +39,9 @@ export class SubflowMatcher extends Context {
     })
 
     return Boolean(nodes.find(_checkSubflowContains))
-
-    // for (var i = 0; i < nodes.length; i++) {
-    //   if (this._checkSubflowContains(i)) {
-    //     return true
-    //   }
-    // }
-    // return false;
   }
 
-  _checkSubflowContains(i: number): boolean {
+  _checkSubflowContains(node: INode): boolean {
     const { sfid, nodeid, nodes } = this
     const {
       manager
@@ -60,48 +53,57 @@ export class SubflowMatcher extends Context {
         'subflowContains'
       ])
 
-    var node = nodes[i];
+    this._validateDefined(node.z, 'node.z', '_checkSubflowContains')
 
     // TODO: further decompose into smaller functions to reduce complexity and avoid nested ifs
     if (node.z === sfid) {
-      // https://developer.mozilla.org/th/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
-      var m = /^subflow:(.+)$/.exec(node.type);
-      log('match', {
-        type: node.type,
-        m
-      })
-
-      // make this a new protected function
-      if (m) {
-        log('node matching on ^subflow:(.+)$', {
-          m,
-          type: node.type,
-        })
-
-        // make this a new protected function
-        if (m[1] === nodeid) {
-          return true;
-        } else {
-          log('recurse node matching', {
-            m1: m[1],
-            nodeid
-          })
-          var result = manager.subflowContains(m[1], nodeid);
-          if (result) {
-            return true;
-          }
-        }
-      } else {
-        log('node not matching on ^subflow:(.+)$', {
-          m,
-          type: node.type,
-        })
-      }
-    } else {
-      log('node not matching on .z', {
-        sfid,
-        z: node.z,
-      })
+      return this._matchingNodeZ(node)
     }
+    log('node not matching on .z', {
+      sfid,
+      z: node.z,
+    })
+    return false
+  }
+
+
+  _matchingNodeZ(node) {
+    // https://developer.mozilla.org/th/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
+    var m = /^subflow:(.+)$/.exec(node.type);
+    log('match', {
+      type: node.type,
+      m
+    })
+
+    // make this a new protected function
+    if (m) {
+      return this._matchNodeIsSubflow(m[1])
+    }
+
+    log('node not matching on ^subflow:(.+)$', {
+      m,
+      type: node.type,
+    })
+  }
+
+  _matchNodeIsSubflow(match) {
+    const {
+      manager,
+      nodeid
+    } = this
+
+    log('node matching on ^subflow:(.+)$', {
+      match
+    })
+
+    // make this a new protected function
+    if (match === nodeid) {
+      return true;
+    }
+    log('recurse node matching', {
+      match,
+      nodeid
+    })
+    return manager.subflowContains(match, nodeid);
   }
 }
