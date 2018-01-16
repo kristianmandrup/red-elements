@@ -40,17 +40,17 @@ import {
 import {
   NodeManager,
   INodeManager
-} from './node'
+} from './node-manager'
 
 import {
   LinkManager,
   ILinkManager
-} from './link'
+} from './link-manager'
 
 import {
   IFlowManager,
   FlowManager
-} from './flow'
+} from './flow-manager'
 
 import {
   WorkspaceManager,
