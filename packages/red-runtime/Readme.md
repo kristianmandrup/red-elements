@@ -13,15 +13,17 @@ $ npm install
 
 ## Design/Architecture
 
-- `src` contains all the source files in TypeScript
-- `test` contains the test files used to test source
-- `dist` contains the compiled `.js` files for distribution and compiled test files
+- `/src` contains all the source files in TypeScript
+- `/test` contains the test files used to test source
+- `/dist` contains the compiled `.js` files for distribution and compiled test files ie. both `/src` and `/test` files
 
 ## Src architecture
 
 The source code is written in TypeScript. Use the full power, including types and interfaces etc.
 
 ### Infrastructure
+
+In the `/src/_infra` folder:
 
 - configures fakes such as the fake injectable `RED` object currently used for testing
 - configures and exports constants from `inversify` dependency injection library
@@ -54,6 +56,14 @@ via the `@lazyInject` decorator.
 export class Context {
   @lazyInject(TYPES.RED) RED: IRED;
 ```
+
+```ts
+class Search extends Context {
+  // injects RED service as an instance variable on class
+  constructor() {
+    super()
+  }
+}
 
 We need to use a real/live `RED` object for testing, not the fake currently used!
 See the `src/red` folder of `red-widgets`
