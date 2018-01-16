@@ -1,10 +1,14 @@
 import {
   Context
-} from '../../../context'
+} from '../../../../context'
 
 import {
   Search
-} from './'
+} from '../'
+
+import {
+  SearchContainerBuilder
+} from './container'
 
 interface ISearchboxWidget extends JQuery<HTMLElement> {
   searchBox: Function
@@ -18,6 +22,11 @@ export interface ISearchInput extends JQuery<HTMLElement> {
 export class SearchInputBuilder extends Context {
   constructor(public search: Search) {
     super()
+  }
+
+  _createSearchContainer(): JQuery<HTMLElement> {
+    const builder = new SearchContainerBuilder(this.search)
+    return builder.createSearchContainer()
   }
 
   /**
@@ -37,7 +46,7 @@ export class SearchInputBuilder extends Context {
 
     // TODO: we should not rely on protected search method here!
     // should be already available on Search instance once we call this method, or better pass as parameter
-    searchDiv = searchDiv || _createSearchContainer()
+    searchDiv = searchDiv || this._createSearchContainer()
 
     const searchInputElem: ISearchboxWidget = <ISearchboxWidget>$('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv)
     return searchInputElem.searchBox({

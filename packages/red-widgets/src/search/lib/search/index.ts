@@ -13,27 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { Context, $, EditableList, Searchbox } from '../../../common'
+import {
+  Context,
+  $
+} from '../../../common'
 
-// TODO: Find I18n constructor in node-red
-// import {
-//   I18n
-// } from 'i18n'
+type JQElem = JQuery<HTMLElement>
 
 const { log } = console
 
-interface ISearchResults extends JQuery<HTMLElement> {
-  editableList: Function
-}
-
 import {
   SearchInputBuilder,
-  ISearchInput
-} from './input'
-
-import {
-  SearchResults
-} from './results'
+  ISearchInput,
+  SearchResultsBuilder,
+  ISearchResults
+} from './builder'
 
 import {
   SearchConfiguration
@@ -50,105 +44,21 @@ export class Search extends Context {
   public searchResults: ISearchResults
   public searchInput: ISearchInput
 
+  /**
+   * The selector for the main container elements
+   */
+  protected $mainContainer: JQElem = $('#main-container')
+
+  protected $headerShade: JQElem = $('#header-shade')
+  protected $editorShade: JQElem = $('#editor-shade')
+  protected $paletteShade: JQElem = $('#palette-shade')
+  protected $sidebarShade: JQElem = $('#sidebar-shade')
+  protected $sidebarSeparator: JQElem = $('#sidebar-separator')
+
   constructor() {
     super()
-
-    // TODO: use SearchConfiguration delegate class
-    this._prepareWidgetFactories()
-    this._configureHandlers()
-  }
-
-  /**
-   * Ensure required jQuery Widget factories are available
-   * - searchResults: EditableList
-   * - searchInput: Searchbox
-   */
-  protected _prepareWidgetFactories() {
-    new EditableList()
-    new Searchbox()
-  }
-
-  /**
-   * Ensure RED context has actions and events containers
-   */
-  protected _validateContext() {
-    const {
-      ctx
-    } = this
-    const required = [
-      'actions',
-      'events'
-    ]
-    required.map(name => {
-      if (!ctx[name]) {
-        this.handleError(`Search: missing ${name} property on ctx`, {
-          ctx
-        })
-      }
-    })
-  }
-
-  protected _configureHandlers() {
-    this._validateContext()
-    this._configureActionHandlers()
-    this._configureEditorEventHandlers()
-    this._configureMouseEventHandlers()
-  }
-
-  protected _configureActionHandlers() {
-    const {
-      ctx
-    } = this
-    const {
-      show
-    } = this.rebind([
-        'show'
-      ])
-
-    if (!ctx.actions.add) {
-      this.handleError('Search: actions missing add method', {
-        actions: ctx.actions
-      })
-    }
-    ctx.actions.add('core:search', show);
-  }
-
-
-  protected _configureEditorEventHandlers() {
-    const {
-      ctx
-    } = this
-    const {
-      enable,
-      disable
-    } = this.rebind([
-        'enable',
-        'disable'
-      ])
-
-    if (!ctx.events.on) {
-      this.handleError('Search: events missing on method', {
-        events: ctx.events
-      })
-    }
-
-    ctx.events.on('editor:open', disable);
-    ctx.events.on('editor:close', enable);
-    ctx.events.on('type-search:open', disable);
-    ctx.events.on('type-search:close', enable);
-  }
-
-  protected _configureMouseEventHandlers() {
-    const {
-      hide
-    } = this.rebind([
-        'hide'
-      ])
-
-    $('#header-shade').on('mousedown', hide);
-    $('#editor-shade').on('mousedown', hide);
-    $('#palette-shade').on('mousedown', hide);
-    $('#sidebar-shade').on('mousedown', hide);
+    // use SearchConfiguration delegate class to configure
+    new SearchConfiguration(this)
   }
 
   /**
@@ -171,13 +81,13 @@ export class Search extends Context {
    */
   indexNode(node) {
     const {
-      ctx,
+      RED,
       index
     } = this
 
-    this._validateObj(ctx.utils, 'ctx.utils', 'indexNode')
+    this._validateObj(RED.utils, 'RED.utils', 'indexNode')
 
-    var label = ctx.utils.getNodeLabel(node);
+    var label = RED.utils.getNodeLabel(node);
 
     this._validateStr(label, 'label', 'indexNode')
     if (label) {
@@ -220,23 +130,23 @@ export class Search extends Context {
    */
   indexWorkspace() {
     let {
-      ctx,
+      RED,
       keys,
       index,
       indexNode
     } = this
 
     index = {};
-    if (!ctx.nodes) {
-      this.handleError('indexWorkspace: ctx missing nodes object', {
-        ctx
+    if (!RED.nodes) {
+      this.handleError('indexWorkspace: RED missing nodes object', {
+        RED
       })
     }
 
-    ctx.nodes.eachWorkspace(indexNode);
-    ctx.nodes.eachSubflow(indexNode);
-    ctx.nodes.eachConfig(indexNode);
-    ctx.nodes.eachNode(indexNode);
+    RED.nodes.eachWorkspace(indexNode);
+    RED.nodes.eachSubflow(indexNode);
+    RED.nodes.eachConfig(indexNode);
+    RED.nodes.eachNode(indexNode);
     keys = Object.keys(index);
     keys.sort();
     keys.forEach(function (key) {
@@ -332,11 +242,15 @@ export class Search extends Context {
       var scrollOffset = scrollWindow.scrollTop();
       var y = selectedEntry.position().top;
       var h = selectedEntry.height();
+
+      // scroll up if needed
       if (y + h > scrollHeight) {
         scrollWindow.animate({
           scrollTop: '-=' + (scrollHeight - (y + h) - 10)
         }, 50);
-      } else if (y < 0) {
+      }
+      // scroll down if y too low
+      if (y < 0) {
         scrollWindow.animate({
           scrollTop: '+=' + (y - 10)
         }, 50);
@@ -345,143 +259,21 @@ export class Search extends Context {
   }
 
   /**
-   * The selector for the main container elements
+   * Build SearchResults element using delegate builder class
    */
-  get $mainContainer() {
-    return '#main-container'
-  }
-
-  /**
-   * Create a search dialog container element
-   */
-  protected _createSearchDialog() {
-    const {
-      $mainContainer
-    } = this
-
-    return $('<div>', {
-      id: 'red-ui-search',
-      class: 'red-ui-search'
-    }).appendTo($mainContainer);
-  }
-
-  /**
-   * Create a search container element
-   */
-  protected _createSearchContainer() {
-    const searchDialog = this._createSearchDialog()
-    return $('<div>', {
-      class: 'red-ui-search-container'
-    }).appendTo(searchDialog);
-  }
-
-  /**
-   * Configure Search results element
-   * - turns element into an editableList
-   * - adds addItem event handler
-   */
-  _configureSearchResultsElement() {
-    let {
-      ctx,
-      dialog,
-      results,
-      selected,
-      reveal
-    } = this
-
-    // TODO: use SearchResults helper class
-    var searchResultsDiv = $('<div>', {
-      class: 'red-ui-search-results-container'
-    }).appendTo(dialog);
-
-    const searchResults = <ISearchResults>$('<ol>', {
-      id: 'search-result-list',
-      style: 'position: absolute;top: 5px;bottom: 5px;left: 5px;right: 5px;'
-    })
-    searchResults.appendTo(searchResultsDiv)
-
-    if (!searchResults.editableList) {
-      this.handleError('createDialog: searchResults missing editableList. Call createDialog to init searchResults', {
-        searchResults
-      })
-    }
-
-    searchResults.editableList({
-      addButton: false,
-      addItem: (container, i, object) => {
-        var node = object.node;
-        if (node === undefined) {
-          $('<div>', {
-            class: 'red-ui-search-empty'
-          }).html(ctx._('search.empty')).appendTo(container);
-
-        } else {
-          var def = node._def;
-          var div = $('<a>', {
-            href: '#',
-            class: 'red-ui-search-result'
-          }).appendTo(container);
-
-          var nodeDiv = $('<div>', {
-            class: 'red-ui-search-result-node'
-          }).appendTo(div);
-          var colour = def.color;
-          var icon_url = ctx.utils.getNodeIcon(def, node);
-          if (node.type === 'tab') {
-            colour = '#C0DEED';
-          }
-          nodeDiv.css('backgroundColor', colour);
-
-          var iconContainer = $('<div/>', {
-            class: 'palette_icon_container'
-          }).appendTo(nodeDiv);
-          $('<div/>', {
-            class: 'palette_icon',
-            style: 'background-image: url(' + icon_url + ')'
-          }).appendTo(iconContainer);
-
-          var contentDiv = $('<div>', {
-            class: 'red-ui-search-result-description'
-          }).appendTo(div);
-          if (node.z) {
-            var workspace = ctx.nodes.workspace(node.z);
-            if (!workspace) {
-              workspace = ctx.nodes.subflow(node.z);
-              workspace = 'subflow:' + workspace.name;
-            } else {
-              workspace = 'flow:' + workspace.label;
-            }
-            $('<div>', {
-              class: 'red-ui-search-result-node-flow'
-            }).html(workspace).appendTo(contentDiv);
-          }
-
-          $('<div>', {
-            class: 'red-ui-search-result-node-label'
-          }).html(object.label || node.id).appendTo(contentDiv);
-          $('<div>', {
-            class: 'red-ui-search-result-node-type'
-          }).html(node.type).appendTo(contentDiv);
-          $('<div>', {
-            class: 'red-ui-search-result-node-id'
-          }).html(node.id).appendTo(contentDiv);
-
-          div.click(function (evt) {
-            evt.preventDefault();
-            reveal(node);
-          });
-        }
-      },
-      scrollOnAdd: false
-    });
+  protected _buildSearchResultsElement() {
+    // lazy instantiation
+    const searchResultsBuilder = new SearchResultsBuilder(this)
+    const searchResults = searchResultsBuilder.buildSearchResultsElement()
 
     this.setInstanceVars({
       searchResults
     })
-
-    return searchResults
   }
 
+  /**
+   * Build SearchInput element using delegate builder class
+   */
   protected _buildSearchInputElement() {
     // lazy instantiation
     const searchInputBuilder = new SearchInputBuilder(this)
@@ -496,10 +288,8 @@ export class Search extends Context {
    * Create a search dialog with search input and results
    */
   createDialog() {
-    // using delegate Builder class
     this._buildSearchInputElement()
-
-    this._configureSearchResultsElement()
+    this._buildSearchResultsElement()
     return this
   }
 
@@ -509,7 +299,7 @@ export class Search extends Context {
    */
   reveal(node) {
     this.hide();
-    this.ctx.view.reveal(node.id);
+    this.RED.view.reveal(node.id);
     return this
   }
 
@@ -518,10 +308,19 @@ export class Search extends Context {
    * TODO: When is this called/used? after search is complete?
    */
   show() {
-    let {
-      ctx,
+    const {
+      RED,
       dialog,
       disabled,
+
+      $headerShade,
+      $editorShade,
+      $paletteShade,
+      $sidebarShade,
+      $sidebarSeparator
+    } = this
+
+    let {
       visible,
       searchInput
     } = this
@@ -540,20 +339,23 @@ export class Search extends Context {
       return this;
     }
     if (!visible) {
-      ctx.keyboard.add('*', 'escape', function () {
+      RED.keyboard.add('*', 'escape', function () {
         hide()
       });
-      $('#header-shade').show();
-      $('#editor-shade').show();
-      $('#palette-shade').show();
-      $('#sidebar-shade').show();
-      $('#sidebar-separator').hide();
+
+      // toggle visibility
+      $headerShade.show()
+      $editorShade.show()
+      $paletteShade.show()
+      $sidebarShade.show()
+      $sidebarSeparator.hide()
+
       indexWorkspace();
       if (dialog === null) {
         createDialog();
       }
       dialog.slideDown(300);
-      ctx.events.emit('search:open');
+      RED.events.emit('search:open');
       visible = true;
     }
     if (!searchInput) {
@@ -562,6 +364,11 @@ export class Search extends Context {
     }
 
     this._validateObj(searchInput, 'searchInput', 'show')
+
+    this.setInstanceVars({
+      visible,
+      searchInput
+    })
 
     searchInput.focus();
     return this
@@ -573,27 +380,42 @@ export class Search extends Context {
    * TODO: add documentation - I think while searching, parts of UI are hidden?
    */
   hide() {
-    let {
-      ctx,
+    const {
+      RED,
       dialog,
-      visible,
-      searchInput
+      searchInput,
+
+      $headerShade,
+      $editorShade,
+      $paletteShade,
+      $sidebarShade,
+      $sidebarSeparator
+    } = this
+    let {
+      visible
     } = this
 
     if (visible) {
-      ctx.keyboard.remove('escape');
+      RED.keyboard.remove('escape');
       visible = false;
-      $('#header-shade').hide();
-      $('#editor-shade').hide();
-      $('#palette-shade').hide();
-      $('#sidebar-shade').hide();
-      $('#sidebar-separator').show();
+
+      // toggle visibility
+      $headerShade.hide();
+      $editorShade.hide();
+      $paletteShade.hide();
+      $sidebarShade.hide();
+      $sidebarSeparator.show();
+
       if (dialog !== null) {
         dialog.slideUp(200, () => {
           searchInput.searchBox('value', '');
         });
       }
-      ctx.events.emit('search:close');
+
+      this.setInstanceVars({
+        visible
+      })
+      RED.events.emit('search:close');
     }
   }
 }
