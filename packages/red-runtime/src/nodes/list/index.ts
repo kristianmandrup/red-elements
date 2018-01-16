@@ -1,13 +1,14 @@
 import {
-  Context,
-  $
+  Context
 } from '../../context'
 
 import {
+  INodesRegistry,
   NodesRegistry
 } from '../registry'
 
 export {
+  INodesRegistry,
   NodesRegistry
 }
 
@@ -59,29 +60,276 @@ import {
 const { log } = console
 
 import {
-  Node,
-  Link,
-  Workspace,
-  Subflow,
-  NodeDef,
-  Flow,
-} from '../interfaces'
+  INode,
+  ILink,
+  IWorkspace,
+  ISubflow,
+  INodeDef,
+  IFlow,
+  INodeSet,
+} from '../../interfaces'
 
-import {
-  NodeSet
-} from '../registry/node-set'
+export interface INodes {
+  RED: any
+  registry: INodesRegistry
+  configNodes: any
+  nodes: INode[]
+  links: ILink[]
+  workspaces: any // workspace map?
+  workspacesOrder: IWorkspace[]
+  subflows: any
+  n: INode
+  initialLoad: any
+  loadedFlowVersion: string
+  defaultWorkspace: any // IWorkspace
+
+  setNodeList(list: INode[])
+  getNodeSet(id: string)
+  addNodeSet(ns: INodeSet)
+  removeNodeSet(id: string)
+  enableNodeSet(id: string)
+  disableNodeSet(id: string)
+
+  registerType(nt: string, def: any)
+
+  getType(nt: string)
+
+  /**
+   * Converts the current node selection to an exportable JSON Object
+   * @param set { Node[] } set of nodes to export
+   * @param exportedSubflows { object } map of subflows by ID to be exported
+   * @param exportedConfigNodes { object } map of config nodes by ID to be exported
+   */
+  createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object)
+
+  /**
+   * Create a complete node set for export
+   * @param exportCredentials { boolean } whether credentials should also be exported
+   */
+  createCompleteNodeSet(exportCredentials: boolean)
+
+  /**
+   * Import nodes from a string (JSON serialization) reprepresentation
+   * @param newNodesObj { Node } the node definitions to import
+   * @param createNewIds { boolean } create IDs of imported nodes if not in import definitions
+   * @param createMissingWorkspace { boolean } create missing workspace if no such workspace exists
+   */
+  importNodes(newNodesObj: string, createNewIds: boolean, createMissingWorkspace: boolean)
+
+  /**
+   * Convert a node to a workspace
+   * @param n { Node } the node to convert
+   */
+  convertWorkspace(n: INode): IWorkspace
+
+  /**
+   * Converts a node to an exportable JSON Object
+   * @param n { Node } the node to convert
+   * @param exportCreds { boolean } if node (user) credentials should also be exported
+   **/
+  convertNode(n: INode, exportCreds: boolean): INode
+
+  /**
+   * Convert a node to a Subflow
+   * @param n { Node } node to convert
+   */
+  convertSubflow(n: INode): ISubflow
+
+  /**
+   * Filter nodes based on a filter criteria
+   * @param filter { object } filter criteria (Node) all filtered nodes must match
+   */
+  filterNodes(filter: INode): INode[]
+
+  /**
+   * Filter links based on a filter criteria
+   * @param filter { object } filter criteria (Link) all filtered links must match
+   */
+  filterLinks(filter: ILink): ILink[]
+
+  /**
+   * Add a Subflow of nodes
+   * @param sf { Subflow } subflow to add
+   * @param createNewIds { boolean } whether to create new node IDs as well
+   */
+  addSubflow(sf: ISubflow, createNewIds: boolean): INodes
+
+  /**
+   * Get a subflow by ID
+   * @param id { string } ID of subflow to get
+   */
+  getSubflow(id: string): ISubflow
+
+  /**
+   * Remove a subflow
+   * @param sf { string | Subflow } subflow to remove
+   */
+  removeSubflow(sf: string | ISubflow): INodes
+
+  /**
+   * Test if subflow contains a node with a specific ID
+   * @param sfid { Subflow } subflow to test on
+   * @param nodeid { string } node ID to test each node in flow for
+   * @returns { boolean } whether subflow contains node with given ID
+   */
+  subflowContains(sfid: string, nodeid: string): boolean
+
+  /**
+   * Get all the flow nodes related to a node
+   * @param node { Node } the node to find all flow nodes from
+   * @returns { Node[] } all the flow nodes found for the node
+   */
+  getAllFlowNodes(node: INode): INode[]
+
+  /**
+   * get/set the flow version
+   * @param version { string } version of flow
+   * @returns { string } flow version
+   */
+  flowVersion(version): string
+
+  /**
+   * Return the original flow definition
+   * @param flow { IFlow } the flow
+   */
+  originalFlow(flow: IFlow)
+
+  /**
+   * Iterate all nodes
+   * @param cb { function } For each iterated node, call this callback function
+   */
+  eachNode(cb: Function): void
+
+  /**
+   * Iterate all links
+   * @param cb { function } For each iterated link, call this callback function
+   */
+  eachLink(cb: Function): void
+
+  /**
+   * Iterate all config nodes
+   * @param cb { function } For each iterated config node, call this callback function
+   */
+  eachConfig(cb: Function): void
+
+  /**
+   * Iterate all subflows
+   * @param cb { function } For each iterated subflow, call this callback function
+   */
+  eachSubflow(cb: Function): void
+
+  /**
+   * Iterate all workspaces
+   * @param cb { function } For each iterated workspace, call this callback function
+   */
+  eachWorkspace(cb: Function): void
+
+  /**
+   * Remove a link
+   * @param link {string} link to remove
+   */
+  removeLink(link: ILink)
+
+  /**
+   * Add a link
+   * @param link {string} link to add
+   */
+  addLink(link: ILink)
+
+  /**
+   * Check if a subflow has a node that matches a given node
+   * @param subflow { Node } node subflow
+   * @param subflowNodes list of subflow nodes
+   */
+  checkForMatchingSubflow(subflow: INode, subflowNodes: INode[]): ISubflow | null
+
+  /**
+   * Compare if nodes match (equality)
+   * @param nodeA node to to compare
+   * @param nodeB { Node } node to compare with
+   * @param idMustMatch { boolean } if IDs must match as well to be truly equal
+   */
+  compareNodes(nodeA: INode, nodeB: INode, idMustMatch: boolean): boolean
+
+  /**
+   * Add a node
+   * @param n { Node } the node to add
+   */
+  addNode(n: INode): INodes
+
+  /**
+   * Find and return a node by ID
+   * @param id {string} id of node to find
+   */
+  getNode(id: string): INode
+
+  /**
+   * Remove a node from the canvas by ID
+   * @param id {string} id of node to remove
+   */
+  removeNode(id: string): any
+
+  /**
+   * Add a workspace
+   * @param ws { Workspace } workspace to add
+   */
+  addWorkspace(ws: IWorkspace): INodes
+
+  /**
+   * Remove workspace by ID
+   * @param id { string } ID of workspace
+   */
+  removeWorkspace(id: string): any
+
+  /**
+   * Get a workspae by ID
+   * @param id { string } ID of workspace
+   */
+  getWorkspace(id: string): IWorkspace
+
+  /**
+   * Get the current workspace order
+   * @returns { Workspace[] } list of workspaces in current order
+   */
+  getWorkspaceOrder(): IWorkspace[]
+
+  /**
+   * Set the workspace order
+   * @param order { Workspace[] } list of workspaces in a given order
+   */
+  setWorkspaceOrder(order: any[]): INodes
+
+  // core nodes methods
+
+  // TODO: refactor using getter
+  getID(): string
+
+  /**
+   * Clear all the node flows and instance vars
+   */
+  clear(): INodes
+
+  // TODO: refactor using getter/setter instead!
+  setDirty(d: boolean)
+
+  /**
+   * Return (or set) Nodes dirty state
+   * @param d { boolean } set dirty state
+   */
+  dirty(d: boolean): INodes | boolean
+}
 
 /**
  * A set of Nodes that form a subflow or similar grouping
  */
-export class Nodes extends Context {
+export class Nodes extends Context implements INodes {
   public registry = new NodesRegistry()
   public configNodes = {
     users: {}
   }
   protected _dirty: boolean = false
-  public nodes = []
-  public links = []
+  public nodes: INode[] = []
+  public links: ILink[] = []
   public workspaces = {}
   public workspacesOrder = []
   public subflows = {}
@@ -137,12 +385,12 @@ export class Nodes extends Context {
 
       this._validateObj(RED.nodes, 'RED.nodes', 'Nodes events.on handler')
 
-      RED.nodes.eachNode((n: Node) => {
+      RED.nodes.eachNode((n: INode) => {
         if (n.type === "unknown" && n.name === type) {
           replaceNodes.push(n);
         }
       });
-      RED.nodes.eachConfig((n: Node) => {
+      RED.nodes.eachConfig((n: INode) => {
         if (n.type === "unknown" && n.name === type) {
           replaceNodes.push(n);
         }
@@ -154,7 +402,7 @@ export class Nodes extends Context {
     });
   }
 
-  _replaceNodes(replaceNodes: Node[]) {
+  _replaceNodes(replaceNodes: INode[]) {
     const {
       RED,
       registry,
@@ -171,7 +419,7 @@ export class Nodes extends Context {
       ])
 
     var reimportList = [];
-    replaceNodes.forEach(function (n: Node) {
+    replaceNodes.forEach(function (n: INode) {
       if (configNodes.hasOwnProperty(n.id)) {
         delete configNodes[n.id];
       } else {
@@ -182,10 +430,10 @@ export class Nodes extends Context {
     RED.view.redraw(true);
     var result = importNodes(reimportList, false);
     var newNodeMap = {};
-    result[0].forEach(function (n: Node) {
+    result[0].forEach(function (n: INode) {
       newNodeMap[n.id] = n;
     });
-    RED.nodes.eachLink(function (l: Link) {
+    RED.nodes.eachLink(function (l: ILink) {
       if (newNodeMap.hasOwnProperty(l.source.id)) {
         l.source = newNodeMap[l.source.id];
       }
@@ -197,7 +445,7 @@ export class Nodes extends Context {
   }
 
   // delegate to registry
-  setNodeList(list: Node[]) {
+  setNodeList(list: INode[]) {
     this.registry.setNodeList(list)
   }
 
@@ -205,7 +453,7 @@ export class Nodes extends Context {
     this.registry.getNodeSet(id)
   }
 
-  addNodeSet(ns: NodeSet) {
+  addNodeSet(ns: INodeSet) {
     this.registry.addNodeSet(ns)
   }
 
@@ -237,7 +485,7 @@ export class Nodes extends Context {
    * @param exportedSubflows { object } map of subflows by ID to be exported
    * @param exportedConfigNodes { object } map of config nodes by ID to be exported
    */
-  createExportableNodeSet(set: Node[], exportedSubflows: object, exportedConfigNodes: object) {
+  createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object) {
     return this.serializer.createExportableNodeSet(set, exportedSubflows, exportedConfigNodes)
   }
 
@@ -266,7 +514,7 @@ export class Nodes extends Context {
    * Convert a node to a workspace
    * @param n { Node } the node to convert
    */
-  convertWorkspace(n: Node): Workspace {
+  convertWorkspace(n: INode): IWorkspace {
     return this.converter.convertWorkspace(n)
   }
 
@@ -275,7 +523,7 @@ export class Nodes extends Context {
    * @param n { Node } the node to convert
    * @param exportCreds { boolean } if node (user) credentials should also be exported
    **/
-  convertNode(n: Node, exportCreds: boolean): Node {
+  convertNode(n: INode, exportCreds: boolean): INode {
     return this.converter.convertNode(n, exportCreds)
   }
 
@@ -283,7 +531,7 @@ export class Nodes extends Context {
    * Convert a node to a Subflow
    * @param n { Node } node to convert
    */
-  convertSubflow(n: Node): Subflow {
+  convertSubflow(n: INode): ISubflow {
     return this.converter.convertSubflow(n)
   }
 
@@ -293,7 +541,7 @@ export class Nodes extends Context {
    * Filter nodes based on a filter criteria
    * @param filter { object } filter criteria (Node) all filtered nodes must match
    */
-  filterNodes(filter: Node): Node[] {
+  filterNodes(filter: INode): INode[] {
     return this.filter.filterNodes(filter)
   }
 
@@ -301,7 +549,7 @@ export class Nodes extends Context {
    * Filter links based on a filter criteria
    * @param filter { object } filter criteria (Link) all filtered links must match
    */
-  filterLinks(filter: Link): Link[] {
+  filterLinks(filter: ILink): ILink[] {
     return this.filter.filterLinks(filter)
   }
 
@@ -312,7 +560,7 @@ export class Nodes extends Context {
    * @param sf { Subflow } subflow to add
    * @param createNewIds { boolean } whether to create new node IDs as well
    */
-  addSubflow(sf: Subflow, createNewIds: boolean): Nodes {
+  addSubflow(sf: ISubflow, createNewIds: boolean): INodes {
     return this.flowManager.addSubflow(sf, createNewIds)
   }
 
@@ -320,7 +568,7 @@ export class Nodes extends Context {
    * Get a subflow by ID
    * @param id { string } ID of subflow to get
    */
-  getSubflow(id: string): Subflow {
+  getSubflow(id: string): ISubflow {
     return this.flowManager.getSubflow(id)
   }
 
@@ -328,7 +576,7 @@ export class Nodes extends Context {
    * Remove a subflow
    * @param sf { string | Subflow } subflow to remove
    */
-  removeSubflow(sf: string | Subflow): Nodes {
+  removeSubflow(sf: string | ISubflow): INodes {
     return this.flowManager.removeSubflow(sf)
   }
 
@@ -347,7 +595,7 @@ export class Nodes extends Context {
    * @param node { Node } the node to find all flow nodes from
    * @returns { Node[] } all the flow nodes found for the node
    */
-  getAllFlowNodes(node: Node): Node[] {
+  getAllFlowNodes(node: INode): INode[] {
     return this.flowManager.getAllFlowNodes(node)
   }
 
@@ -362,9 +610,9 @@ export class Nodes extends Context {
 
   /**
    * Return the original flow definition
-   * @param flow { Flow } the flow
+   * @param flow { IFlow } the flow
    */
-  originalFlow(flow: Flow) {
+  originalFlow(flow: IFlow) {
     return this.flowManager.originalFlow(flow)
   }
 
@@ -416,7 +664,7 @@ export class Nodes extends Context {
    * Remove a link
    * @param link {string} link to remove
    */
-  removeLink(link: Link) {
+  removeLink(link: ILink) {
     return this.linkManager.removeLink(link)
   }
 
@@ -424,7 +672,7 @@ export class Nodes extends Context {
    * Add a link
    * @param link {string} link to add
    */
-  addLink(link: Link) {
+  addLink(link: ILink) {
     return this.linkManager.addLink(link)
   }
 
@@ -436,7 +684,7 @@ export class Nodes extends Context {
    * @param subflow { Node } node subflow
    * @param subflowNodes list of subflow nodes
    */
-  checkForMatchingSubflow(subflow: Node, subflowNodes: Node[]): Subflow | null {
+  checkForMatchingSubflow(subflow: INode, subflowNodes: INode[]): ISubflow | null {
     return this.nodeMatcher.checkForMatchingSubflow(subflow, subflowNodes)
   }
 
@@ -447,7 +695,7 @@ export class Nodes extends Context {
    * @param nodeB { Node } node to compare with
    * @param idMustMatch { boolean } if IDs must match as well to be truly equal
    */
-  compareNodes(nodeA: Node, nodeB: Node, idMustMatch: boolean): boolean {
+  compareNodes(nodeA: INode, nodeB: INode, idMustMatch: boolean): boolean {
     return this.nodeMatcher.compareNodes(nodeA, nodeB, idMustMatch)
   }
 
@@ -458,7 +706,7 @@ export class Nodes extends Context {
    * Add a node
    * @param n { Node } the node to add
    */
-  addNode(n: Node): Nodes {
+  addNode(n: INode): INodes {
     return this.nodeManager.addNode(n)
   }
 
@@ -466,7 +714,7 @@ export class Nodes extends Context {
    * Find and return a node by ID
    * @param id {string} id of node to find
    */
-  getNode(id: string): Node {
+  getNode(id: string): INode {
     return this.nodeManager.getNode(id)
   }
 
@@ -485,7 +733,7 @@ export class Nodes extends Context {
    * Add a workspace
    * @param ws { Workspace } workspace to add
    */
-  addWorkspace(ws: Workspace): Nodes {
+  addWorkspace(ws: IWorkspace): INodes {
     return this.workspaceManager.addWorkspace(ws)
   }
 
@@ -501,7 +749,7 @@ export class Nodes extends Context {
    * Get a workspae by ID
    * @param id { string } ID of workspace
    */
-  getWorkspace(id: string): Workspace {
+  getWorkspace(id: string): IWorkspace {
     return this.workspaceManager.getWorkspace(id)
   }
 
@@ -509,7 +757,7 @@ export class Nodes extends Context {
    * Get the current workspace order
    * @returns { Workspace[] } list of workspaces in current order
    */
-  getWorkspaceOrder(): Workspace[] {
+  getWorkspaceOrder(): IWorkspace[] {
     return this.workspaceManager.getWorkspaceOrder()
   }
 
@@ -517,7 +765,7 @@ export class Nodes extends Context {
    * Set the workspace order
    * @param order { Workspace[] } list of workspaces in a given order
    */
-  setWorkspaceOrder(order: any[]): Nodes {
+  setWorkspaceOrder(order: any[]): INodes {
     return this.workspaceManager.setWorkspaceOrder(order)
   }
 
@@ -531,7 +779,7 @@ export class Nodes extends Context {
   /**
    * Clear all the node flows and instance vars
    */
-  clear(): Nodes {
+  clear(): INodes {
     let {
       RED,
       defaultWorkspace,
@@ -591,7 +839,7 @@ export class Nodes extends Context {
    * Return (or set) Nodes dirty state
    * @param d { boolean } set dirty state
    */
-  dirty(d: boolean): Nodes | boolean {
+  dirty(d: boolean): INodes | boolean {
     const {
       setDirty,
     } = this.rebind([

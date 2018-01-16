@@ -1,33 +1,43 @@
 export {
   History,
-  UndoEvent
+  UndoEvent,
+  IHistory,
+  IUndoEvent
 } from './history'
 
 export {
   Node,
+  INode
 } from './node'
 
 export {
   Nodes,
-  NodesRegistry
+  NodesRegistry,
+  INodes,
+  INodesRegistry
 } from './nodes'
 
 export {
-  Communications
+  Communications,
+  ICommunications
 } from './comms'
 
 export {
-  Events
+  Events,
+  IEvents
 } from './events'
 
 export {
-  I18n
+  I18n,
+  II18n
 } from './i18n'
 
 export {
-  Settings
+  Settings,
+  ISettings
 } from './settings'
 
 export {
-  Validators
+  Validators,
+  IValidators
 } from './validators'

@@ -1,5 +1,5 @@
 import {
-  Nodes
+  INodes
 } from '../'
 
 import {
@@ -7,9 +7,9 @@ import {
 } from '../../../context'
 
 import {
-  Node,
-  NodeDef
-} from '../../interfaces'
+  INode,
+  INodeDef
+} from '../../../interfaces'
 
 export interface IImporter {
   importNodes(newNodesObj: string, createNewIds: boolean, createMissingWorkspace: boolean)
@@ -22,11 +22,11 @@ export interface IImporter {
  * Perhaps introduce additional helper classes for complex parts of Import flow
  */
 export class Importer extends Context {
-  constructor(public nodes: Nodes) {
+  constructor(public nodes: INodes) {
     super()
   }
 
-  _parse(newNodesObj: string): Node[] {
+  _parse(newNodesObj: string): INode[] {
     const {
       RED
     } = this.nodes
@@ -46,12 +46,12 @@ export class Importer extends Context {
   }
 
 
-  protected _normalize(newNodesObj: any): Node[] {
+  protected _normalize(newNodesObj: any): INode[] {
     let newNodes = typeof newNodesObj === 'string' ? this._parse(newNodesObj) : newNodesObj
     return !$.isArray(newNodes) ? [newNodes] : newNodes
   }
 
-  protected _findUnknownTypes(newNodes: Node[]) {
+  protected _findUnknownTypes(newNodes: INode[]) {
     const {
       nodes
     } = this
@@ -61,7 +61,7 @@ export class Importer extends Context {
     } = nodes
 
     let nodeZmap = {};
-    let n: Node;
+    let n: INode;
     let unknownTypes = [];
     for (let i = 0; i < newNodes.length; i++) {
       n = newNodes[i];
@@ -98,7 +98,7 @@ export class Importer extends Context {
     }
   }
 
-  protected _validateSubflows(newNodes: Node[]) {
+  protected _validateSubflows(newNodes: INode[]) {
     const {
       nodes,
       RED,
@@ -146,7 +146,7 @@ export class Importer extends Context {
     }
   }
 
-  _findTabsAndSubflowTemplates(newNodes: Node[], nodeZmap, createNewIds: boolean) {
+  _findTabsAndSubflowTemplates(newNodes: INode[], nodeZmap, createNewIds: boolean) {
     const {
       nodes,
       RED
@@ -416,9 +416,9 @@ export class Importer extends Context {
    * Find regular flow nodes and subflow instances
    * @param newNodes { Node[] }
   */
-  _findRegularNodesAndSubflows(newNodes: Node[], createNewIds: boolean, createMissingWorkspace: boolean, config: any) {
-    let n: Node
-    let def: NodeDef
+  _findRegularNodesAndSubflows(newNodes: INode[], createNewIds: boolean, createMissingWorkspace: boolean, config: any) {
+    let n: INode
+    let def: INodeDef
 
     let {
       subflow_blacklist,
@@ -587,7 +587,7 @@ export class Importer extends Context {
    * @param config { Object } related collections to be used for processing/updating
    * @returns void
    */
-  _remapWiresAndConfigNodeRefs(new_nodes: Node[], config: any) {
+  _remapWiresAndConfigNodeRefs(new_nodes: INode[], config: any) {
     const {
       RED,
       nodes
@@ -681,7 +681,7 @@ export class Importer extends Context {
    * @param config { Object } subflow related colletions
    * @returns void
    */
-  _processNewSubflows(new_subflows: Node[], config: any): void {
+  _processNewSubflows(new_subflows: INode[], config: any): void {
     const {
       nodes
     } = this

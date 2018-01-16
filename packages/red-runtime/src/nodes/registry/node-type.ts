@@ -2,16 +2,9 @@ import {
   NodesRegistry
 } from '.'
 
-export interface NodeSet {
-  id: string
-  name: string
-  added: boolean
-  module: any
-  local: boolean
-  types: string[]
-  version: string
-  pending_version: string
-}
+import {
+  INodeSet
+} from '../interfaces'
 
 export interface INodeTypeManager {
   registerNodeType(nt: string, def: any): NodesRegistry
@@ -58,7 +51,7 @@ export class NodeTypeManager extends Context implements INodeTypeManager {
         nodeSets,
       })
 
-      let nodeSet = nodeSets[id]
+      let nodeSet: INodeSet = nodeSets[id]
 
       log({
         nodeSet

@@ -27,7 +27,6 @@ import {
   Subscriber
 } from './subscriber'
 
-
 const { log } = console
 
 // https://www.npmjs.com/package/@types/ws
@@ -35,13 +34,20 @@ import * as WebSocket from 'ws'
 
 // https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
 
+export interface ICommunications {
+  connect()
+  subscribe(topic: string, callback: Function)
+  unsubscribe(topic, callback)
+}
+
 export class Communications extends Context {
+
+  // TODO: perhaps make most/all protected?
   public errornotification: any
   public clearErrorTimer: any
   public connectCountdownTimer: any
   public connectCountdown: number = 10;
   public subscriptions = {};
-  // ws;
   public pendingAuth: Boolean = false;
   public reconnectAttempts: number = 0;
   public active: Boolean = false

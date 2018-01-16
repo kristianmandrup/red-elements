@@ -19,6 +19,16 @@ import {
 } from '../context'
 
 const { log } = console
+
+export interface IEvents {
+  handlers: any
+  lastEmitted: any
+
+  on(evt, func)
+  off(evt, func)
+  emit(evt, arg)
+}
+
 export class Events extends Context {
   public handlers: any = {}
   public lastEmitted: any

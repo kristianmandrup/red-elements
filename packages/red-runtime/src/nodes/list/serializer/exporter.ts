@@ -1,22 +1,22 @@
 import {
-  Nodes,
+  INodes
 } from '../'
 
 import {
-  Node,
-} from '../../interfaces'
+  INode,
+} from '../../../interfaces'
 
 import {
   Context
 } from '../../../context'
 
 export interface IExporter {
-  createExportableNodeSet(set: Node[], exportedSubflows: object, exportedConfigNodes: object)
+  createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object)
   createCompleteNodeSet(exportCredentials: boolean)
 }
 
 export class Exporter extends Context {
-  constructor(public nodes: Nodes) {
+  constructor(public nodes: INodes) {
     super()
   }
 
@@ -26,7 +26,7 @@ export class Exporter extends Context {
    * @param exportedSubflows { object } map of subflows by ID to be exported
    * @param exportedConfigNodes { object } map of config nodes by ID to be exported
    */
-  createExportableNodeSet(set: Node[], exportedSubflows: object, exportedConfigNodes: object) {
+  createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object) {
     const {
       nodes
     } = this
@@ -52,7 +52,7 @@ export class Exporter extends Context {
     exportedConfigNodes = exportedConfigNodes || {};
     exportedSubflows = exportedSubflows || {};
     for (var n = 0; n < set.length; n++) {
-      var node: Node = set[n];
+      var node: INode = set[n];
 
       this._validateNode(node, 'node', 'createExportableNodeSet', 'iterate node set')
       this._validateStr(node.type, 'node.type', 'createExportableNodeSet', 'iterate node set')

@@ -19,8 +19,10 @@ import {
 
 export {
   Nodes,
+  INodes
 } from './list'
 
 export {
   NodesRegistry,
+  INodesRegistry
 } from './registry'

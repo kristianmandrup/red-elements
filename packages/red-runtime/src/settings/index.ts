@@ -14,14 +14,42 @@
  * limitations under the License.
  **/
 import {
-  Context,
-  $
+  Context
 } from '../context'
 
 import {
   ILocalStorage,
   LocalStorage
 } from './localstorage'
+
+export interface ISettings {
+  hasLocalStorage(): boolean
+  get(key: string): string
+  set(key: string, value: any)
+
+  /**
+   * Initialize user settings by preparing access token and ajax call
+   */
+  init()
+
+  /**
+   * load user settings via Ajax call to server API: /settings
+   */
+  load()
+
+  /**
+   * Set properties of user settings with data loaded
+   * @param data
+   */
+  setProperties(data)
+
+  /**
+   * Get theme from settings.editorTheme
+   * @param property { string } theme property
+   * @param defaultValue { object } default value to use if property not set in user settings
+   */
+  theme(property: string, defaultValue: any)
+}
 
 const { log } = console
 export class Settings extends Context {
@@ -63,6 +91,10 @@ export class Settings extends Context {
     return await this.load();
   }
 
+  /**
+   * Set properties of user settings with data loaded
+   * @param data
+   */
   setProperties(data) {
     let {
       ctx,

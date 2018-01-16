@@ -1,15 +1,17 @@
 import {
-  Context,
-  $
+  Context
 } from '../../context'
 
 const { log } = console
 
 import {
   INodeSetManager,
-  NodeSetManager,
-  NodeSet
+  NodeSetManager
 } from './node-set'
+
+import {
+  INodeSet
+} from '../interfaces'
 
 import {
   INodeTypeManager,
@@ -17,29 +19,29 @@ import {
 } from './node-type'
 
 import {
-  Node
-} from '../interfaces'
+  INode
+} from '../../interfaces'
 
 export interface INodesRegistry {
   // delegating to NodeSetManager
-  addNodeSet(ns: NodeSet): NodesRegistry
-  removeNodeSet(id: string): NodeSet
-  getNodeSet(id: string): NodeSet
-  getNodeSet(id: string): NodeSet
-  enableNodeSet(id: string): NodesRegistry
-  disableNodeSet(id: string): NodesRegistry
-  getNodeSetForType(nodeType: string): NodeSet
+  addNodeSet(ns: INodeSet): INodesRegistry
+  removeNodeSet(id: string): INodeSet
+  getNodeSet(id: string): INodeSet
+  getNodeSet(id: string): INodeSet
+  enableNodeSet(id: string): INodesRegistry
+  disableNodeSet(id: string): INodesRegistry
+  getNodeSetForType(nodeType: string): INodeSet
 
   // delegating to NodeTypeManager
   registerNodeType(nt: string, def: any)
-  removeNodeType(nt: string): NodesRegistry
+  removeNodeType(nt: string): INodesRegistry
   getNodeType(nt: string): any
   setModulePendingUpdated(moduleId, version)
   getModule(moduleId: string)
   getModuleList()
   getNodeList()
   getNodeTypes()
-  setNodeList(list: Node[])
+  setNodeList(list: INode[])
 }
 
 export class NodesRegistry extends Context {
@@ -74,24 +76,24 @@ export class NodesRegistry extends Context {
   }
 
   // delegating to NodeSetManager
-  addNodeSet(ns: NodeSet): NodesRegistry {
+  addNodeSet(ns: INodeSet): INodesRegistry {
     return this.nodeSetManager.addNodeSet(ns)
   }
-  removeNodeSet(id: string): NodeSet {
+  removeNodeSet(id: string): INodeSet {
     return this.nodeSetManager.removeNodeSet(id)
   }
-  getNodeSet(id: string): NodeSet {
+  getNodeSet(id: string): INodeSet {
     return this.nodeSetManager.getNodeSet(id)
   }
-  enableNodeSet(id: string): NodesRegistry {
+  enableNodeSet(id: string): INodesRegistry {
     return this.nodeSetManager.enableNodeSet(id)
   }
 
-  disableNodeSet(id: string): NodesRegistry {
+  disableNodeSet(id: string): INodesRegistry {
     return this.nodeSetManager.disableNodeSet(id)
   }
 
-  getNodeSetForType(nodeType: string): NodeSet {
+  getNodeSetForType(nodeType: string): INodeSet {
     return this.nodeSetManager.getNodeSetForType(nodeType)
   }
 
@@ -100,7 +102,7 @@ export class NodesRegistry extends Context {
     return this.nodeTypeManager.registerNodeType(nt, def)
   }
 
-  removeNodeType(nt: string): NodesRegistry {
+  removeNodeType(nt: string): INodesRegistry {
     return this.nodeTypeManager.removeNodeType(nt)
   }
 
@@ -153,7 +155,7 @@ export class NodesRegistry extends Context {
     return Object.keys(this.nodeDefinitions);
   }
 
-  setNodeList(list: Node[]) {
+  setNodeList(list: INode[]) {
     let {
       nodeList,
       addNodeSet

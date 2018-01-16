@@ -1,5 +1,5 @@
 import {
-  Nodes
+  INodes
 } from '../'
 
 import {
@@ -7,26 +7,26 @@ import {
 } from '../../../context'
 
 import {
-  Flow,
-  Subflow,
-  Node
-} from '../../interfaces'
+  IFlow,
+  ISubflow,
+  INode
+} from '../../../interfaces'
 
 const { log } = console
 
 export interface IFlowManager {
-  addSubflow(sf: Subflow, createNewIds: boolean): Nodes
-  getSubflow(id: string): Subflow
-  removeSubflow(sf: string | Subflow): Nodes
+  addSubflow(sf: ISubflow, createNewIds: boolean): INodes
+  getSubflow(id: string): ISubflow
+  removeSubflow(sf: string | ISubflow): INodes
   subflowContains(sfid: string, nodeid: string): boolean
-  getAllFlowNodes(node: Node)
+  getAllFlowNodes(node: INode)
   flowVersion(version): string
-  originalFlow(flow: Flow)
+  originalFlow(flow: IFlow)
 }
 
 
 export class FlowManager extends Context implements IFlowManager {
-  constructor(public nodes: Nodes) {
+  constructor(public nodes: INodes) {
     super()
   }
 
@@ -35,7 +35,7 @@ export class FlowManager extends Context implements IFlowManager {
    * @param sf { Subflow } subflow to add
    * @param createNewIds { boolean } whether to create new node IDs as well
    */
-  addSubflow(sf: Subflow, createNewIds: boolean): Nodes {
+  addSubflow(sf: ISubflow, createNewIds: boolean): INodes {
     const {
       RED,
       subflows
@@ -109,7 +109,7 @@ export class FlowManager extends Context implements IFlowManager {
    * Remove a subflow
    * @param sf { string | Subflow } subflow to remove
    */
-  removeSubflow(sf: string | Subflow): Nodes {
+  removeSubflow(sf: string | ISubflow): INodes {
     const { subflows, registry } = this.nodes
 
     const id: string = typeof sf === 'string' ? sf : sf.id
@@ -191,7 +191,7 @@ export class FlowManager extends Context implements IFlowManager {
    * @param node { Node } the node to find all flow nodes from
    * @returns { Node[] } all the flow nodes found for the node
    */
-  getAllFlowNodes(node: Node): Node[] {
+  getAllFlowNodes(node: INode): INode[] {
     const {
       links
     } = this.nodes
@@ -245,7 +245,7 @@ export class FlowManager extends Context implements IFlowManager {
    * Return the original flow definition
    * @param flow { Flow } the flow
    */
-  originalFlow(flow: Flow) {
+  originalFlow(flow: IFlow) {
     let {
       initialLoad
     } = this.nodes

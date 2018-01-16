@@ -1,5 +1,5 @@
 import {
-  Nodes
+  INodes
 } from '../'
 
 import {
@@ -15,7 +15,7 @@ export interface IIterator {
 }
 
 export class Iterator extends Context {
-  constructor(public nodes: Nodes) {
+  constructor(public nodes: INodes) {
     super()
   }
 

@@ -6,15 +6,15 @@ import {
   Context
 } from '../context'
 
-export interface IConnector {
-  connect: () => void
-}
-
 interface AuthTokens {
   access_token: string
 }
 
 const { log } = console
+
+export interface IConnector {
+  connect()
+}
 
 /**
  * Connect to WebSocket and set up event handlers for:

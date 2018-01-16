@@ -1,5 +1,5 @@
 import {
-  Nodes
+  INodes
 } from '../'
 
 import {
@@ -7,17 +7,17 @@ import {
 } from '../../../context'
 
 import {
-  Node,
-  Link
-} from '../../interfaces'
+  INode,
+  ILink
+} from '../../../interfaces'
 
 export interface IFilter {
-  filterNodes(filter: Node): Node[]
-  filterLinks(filter: Link): Link[]
+  filterNodes(filter: INode): INode[]
+  filterLinks(filter: ILink): ILink[]
 }
 
 export class Filter extends Context {
-  constructor(public nodes: Nodes) {
+  constructor(public nodes: INodes) {
     super()
   }
 
@@ -26,7 +26,7 @@ export class Filter extends Context {
    * Filter nodes based on a filter criteria
    * @param filter { object } filter criteria (Node) all filtered nodes must match
    */
-  filterNodes(filter: Node): Node[] {
+  filterNodes(filter: INode): INode[] {
     const {
       nodes
     } = this.nodes
@@ -53,7 +53,7 @@ export class Filter extends Context {
    * Filter links based on a filter criteria
    * @param filter { object } filter criteria (Link) all filtered links must match
    */
-  filterLinks(filter: Link): Link[] {
+  filterLinks(filter: ILink): ILink[] {
     const {
       nodes
     } = this

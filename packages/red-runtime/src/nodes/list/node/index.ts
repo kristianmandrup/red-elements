@@ -1,5 +1,6 @@
 import {
-  Nodes
+  Nodes,
+  INodes
 } from '../'
 
 import {
@@ -7,19 +8,19 @@ import {
 } from '../../../context'
 
 import {
-  Node
-} from '../../interfaces'
+  INode
+} from '../../../interfaces'
 
 const { log } = console
 
 export interface INodeManager {
-  addNode(n: Node): Nodes
-  getNode(id: string): Node
+  addNode(n: INode): INodes
+  getNode(id: string): INode
   removeNode(id: string): any
 }
 
 export class NodeManager extends Context {
-  constructor(public nodes: Nodes) {
+  constructor(public nodes: INodes) {
     super()
   }
 
@@ -27,7 +28,7 @@ export class NodeManager extends Context {
    * Add a node
    * @param n { Node } the node to add
    */
-  addNode(n: Node): Nodes {
+  addNode(n: INode): INodes {
     const {
       nodes,
       RED,
@@ -64,7 +65,7 @@ export class NodeManager extends Context {
       _updateConfigNodeUsers(n);
       if (n._def.category == "subflows" && typeof n.i === "undefined") {
         var nextId = 0;
-        RED.nodes.eachNode(function (node: Node) {
+        RED.nodes.eachNode(function (node: INode) {
           nextId = Math.max(nextId, node.i || 0);
         });
         n.i = nextId + 1;
@@ -80,7 +81,7 @@ export class NodeManager extends Context {
    * Find and return a node by ID
    * @param id {string} id of node to find
    */
-  getNode(id: string): Node | null {
+  getNode(id: string): INode | null {
     const {
       nodes,
       configNodes
@@ -187,7 +188,7 @@ export class NodeManager extends Context {
    * Update configured users with the user of a given node
    * @param n { Node } update config users of node
    */
-  protected _updateConfigNodeUsers(n: Node) {
+  protected _updateConfigNodeUsers(n: INode) {
     const {
       registry,
       configNodes

@@ -7,14 +7,14 @@ import {
 } from '../../../context'
 
 import {
-  Link
-} from '../../interfaces'
+  ILink
+} from '../../../interfaces'
 
 const { log } = console
 
 export interface ILinkManager {
-  removeLink(l: Link)
-  addLink(link: Link)
+  removeLink(l: ILink)
+  addLink(link: ILink)
 }
 
 export class LinkManager extends Context {
@@ -26,7 +26,7 @@ export class LinkManager extends Context {
    * Remove a link
    * @param link {string} link to remove
    */
-  removeLink(link: Link) {
+  removeLink(link: ILink) {
     const { links } = this.nodes
 
     var index = links.indexOf(link);
@@ -40,7 +40,7 @@ export class LinkManager extends Context {
    * Add a link
    * @param link {string} link to add
    */
-  addLink(link: Link) {
+  addLink(link: ILink) {
     const { links } = this.nodes
     this._validateLink(link, 'link', 'addLink')
     links.push(link);

@@ -15,7 +15,8 @@
  **/
 
 import {
-  UndoEvent
+  UndoEvent,
+  IUndoEvent,
 } from './undo'
 
 import {
@@ -23,7 +24,22 @@ import {
 } from '../context'
 
 export {
-  UndoEvent
+  UndoEvent,
+  IUndoEvent
+}
+
+export interface IHistory {
+  undoEvent(ev)
+
+  // TODO: this function is a placeholder
+  // until there is a 'save' event that can be listened to
+  markAllDirty()
+
+  list()
+  depth()
+  push(ev)
+  pop()
+  peek()
 }
 
 export class History extends Context {

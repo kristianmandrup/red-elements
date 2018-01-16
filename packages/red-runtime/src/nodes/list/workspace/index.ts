@@ -7,17 +7,17 @@ import {
 } from '../../../context'
 
 import {
-  Workspace
-} from '../../interfaces'
+  IWorkspace
+} from '../../../interfaces'
 
 export interface Subflow extends Node {
 }
 
 export interface IWorkspaceManager {
-  addWorkspace(ws: Workspace): Nodes
+  addWorkspace(ws: IWorkspace): Nodes
   removeWorkspace(id: string): any
-  getWorkspace(id: string): Workspace
-  getWorkspaceOrder(): Workspace[]
+  getWorkspace(id: string): IWorkspace
+  getWorkspaceOrder(): IWorkspace[]
   setWorkspaceOrder(order: any[]): Nodes
 }
 
@@ -31,7 +31,7 @@ export class WorkspaceManager extends Context implements IWorkspaceManager {
    * Add a workspace
    * @param ws { Workspace } workspace to add
    */
-  addWorkspace(ws: Workspace) {
+  addWorkspace(ws: IWorkspace) {
     const {
       nodes
     } = this
@@ -52,7 +52,7 @@ export class WorkspaceManager extends Context implements IWorkspaceManager {
    * Get a workspae by ID
    * @param id { string } ID of workspace
    */
-  getWorkspace(id: string): Workspace {
+  getWorkspace(id: string): IWorkspace {
     const {
       nodes
     } = this
@@ -119,7 +119,7 @@ export class WorkspaceManager extends Context implements IWorkspaceManager {
    * Get the current workspace order
    * @returns { Workspace[] } list of workspaces in current order
    */
-  getWorkspaceOrder(): Workspace[] {
+  getWorkspaceOrder(): IWorkspace[] {
     const {
       nodes
     } = this

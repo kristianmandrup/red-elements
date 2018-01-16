@@ -3,15 +3,12 @@ import {
 } from '../context'
 
 // TODO: Fix - reuse interfaces from nodes/interfaces.ts
-interface Node {
-  id: string,
-  type: string,
-  _def: any,
-  out: any[],
-  in: any[],
-  dirty: boolean,
-  changed: boolean
-}
+import {
+  INode,
+  ILink,
+  ISubflow,
+  IWorkspace
+} from '../interfaces'
 
 type EventType =
   'multi' |
@@ -23,23 +20,23 @@ type EventType =
   'createSubflow' |
   'reorder'
 
-export interface Event {
+export interface IEvent {
   t: EventType,
-  events: any[],
+  events: IEvent[],
   changed: boolean,
   config: object,
-  rev: string,
-  links: string[],
-  workspaces: any[],
-  activeWorkspace: any,
-  nodes: any[],
-  subflow: any,
+  rev: string, // revision (ie. version)
+  links: ILink[],
+  workspaces: any,
+  activeWorkspace: IWorkspace,
+  nodes: INode[],
+  subflow: ISubflow,
   subflows: any,
-  removedLinks: string[],
+  removedLinks: any[],
   subflowOutputs: any[],
   subflowInputs: any[],
   changes: any[],
-  node: Node,
+  node: INode,
   outputMap: object,
   order: any[],
   dirty: boolean
@@ -50,6 +47,11 @@ export interface Event {
  * - undo effect of event
  * - remove event from event history
  */
+
+export interface IUndoEvent {
+  undoEvent(ev: IEvent): void
+}
+
 export class UndoEvent extends Context {
   public nodes: any
 
@@ -63,7 +65,7 @@ export class UndoEvent extends Context {
    * Undo an event
    * @param ev { Event } the event to undo and remove from history
    */
-  undoEvent(ev: Event): void {
+  undoEvent(ev: IEvent): void {
     const {
       ctx,
       nodes

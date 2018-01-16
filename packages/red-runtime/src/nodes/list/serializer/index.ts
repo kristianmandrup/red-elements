@@ -3,7 +3,7 @@ import {
 } from '../../../context'
 
 import {
-  Nodes
+  INodes
 } from '../'
 
 import {
@@ -17,12 +17,12 @@ import {
 } from './exporter'
 
 import {
-  Node
-} from '../../interfaces'
+  INode
+} from '../../../interfaces'
 
 export interface ISerializer {
   importNodes(newNodesObj: string, createNewIds: boolean, createMissingWorkspace: boolean)
-  createExportableNodeSet(set: Node[], exportedSubflows: object, exportedConfigNodes: object)
+  createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object)
   createCompleteNodeSet(exportCredentials: boolean)
 }
 
@@ -37,7 +37,7 @@ export class Serializer extends Context {
    *
    * TODO: use @injectable decorator for importer and exporter
    */
-  constructor(public nodes: Nodes) {
+  constructor(public nodes: INodes) {
     super()
     this.importer = new Importer(this.nodes)
     this.exporter = new Exporter(this.nodes)
@@ -49,7 +49,7 @@ export class Serializer extends Context {
    * @param exportedSubflows { object } map of subflows by ID to be exported
    * @param exportedConfigNodes { object } map of config nodes by ID to be exported
    */
-  createExportableNodeSet(set: Node[], exportedSubflows: object, exportedConfigNodes: object) {
+  createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object) {
     return this.exporter.createExportableNodeSet(set, exportedSubflows, exportedConfigNodes)
   }
 

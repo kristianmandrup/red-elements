@@ -2,24 +2,17 @@ import {
   NodesRegistry
 } from '.'
 
-export interface NodeSet {
-  id: string
-  name: string
-  added: boolean
-  module: any
-  local: boolean
-  types: string[]
-  version: string
-  pending_version: string
-}
+import {
+  INodeSet
+} from '../interfaces'
 
 export interface INodeSetManager {
-  addNodeSet(ns: NodeSet): NodesRegistry
-  removeNodeSet(id: string): NodeSet
-  getNodeSet(id: string): NodeSet
+  addNodeSet(ns: INodeSet): NodesRegistry
+  removeNodeSet(id: string): INodeSet
+  getNodeSet(id: string): INodeSet
   enableNodeSet(id: string): NodesRegistry
   disableNodeSet(id: string): NodesRegistry
-  getNodeSetForType(nodeType: string): NodeSet
+  getNodeSetForType(nodeType: string): INodeSet
 }
 
 import {
@@ -33,7 +26,7 @@ export class NodeSetManager extends Context implements INodeSetManager {
     super()
   }
 
-  addNodeSet(ns: NodeSet): NodesRegistry {
+  addNodeSet(ns: INodeSet): NodesRegistry {
     const {
       registry
     } = this
@@ -52,7 +45,7 @@ export class NodeSetManager extends Context implements INodeSetManager {
 
     this._validateNodeSet(ns, 'ns', 'addNodeSet')
 
-    log('addNodeSet: populate typeToId with type map for node set ids')
+    log('addINodeSet: populate typeToId with type map for node set ids')
     for (var j = 0; j < ns.types.length; j++) {
       const type = ns.types[j]
       log({
@@ -90,7 +83,7 @@ export class NodeSetManager extends Context implements INodeSetManager {
     return registry
   }
 
-  removeNodeSet(id: string): NodeSet {
+  removeNodeSet(id: string): INodeSet {
     const {
       registry
     } = this
@@ -122,7 +115,7 @@ export class NodeSetManager extends Context implements INodeSetManager {
     return ns;
   }
 
-  getNodeSet(id: string): NodeSet {
+  getNodeSet(id: string): INodeSet {
     const {
       registry
     } = this
@@ -163,7 +156,7 @@ export class NodeSetManager extends Context implements INodeSetManager {
     return registry
   }
 
-  getNodeSetForType(nodeType: string): NodeSet {
+  getNodeSetForType(nodeType: string): INodeSet {
     const {
       registry
     } = this
@@ -171,7 +164,7 @@ export class NodeSetManager extends Context implements INodeSetManager {
       typeToId
     } = registry
 
-    this._validateStr(nodeType, 'nodeType', 'getNodeSetForType')
+    this._validateStr(nodeType, 'nodeType', 'getINodeSetForType')
 
     const {
       getNodeSet,

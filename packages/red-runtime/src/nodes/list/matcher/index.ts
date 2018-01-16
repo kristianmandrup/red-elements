@@ -1,5 +1,5 @@
 import {
-  Nodes
+  INodes
 } from '../'
 
 import {
@@ -7,19 +7,19 @@ import {
 } from '../../../context'
 
 import {
-  Subflow,
-  Node
-} from '../../interfaces'
+  ISubflow,
+  INode
+} from '../../../interfaces'
 
 const { log } = console
 
 export interface INodeMatcher {
-  checkForMatchingSubflow(subflow: Node, subflowNodes: Node[]): Subflow | null
-  compareNodes(nodeA: Node, nodeB: Node, idMustMatch: boolean): boolean
+  checkForMatchingSubflow(subflow: INode, subflowNodes: INode[]): ISubflow | null
+  compareNodes(nodeA: INode, nodeB: INode, idMustMatch: boolean): boolean
 }
 
 export class NodeMatcher extends Context {
-  constructor(public nodes: Nodes) {
+  constructor(public nodes: INodes) {
     super()
   }
 
@@ -28,7 +28,7 @@ export class NodeMatcher extends Context {
    * @param subflow { Node } node subflow
    * @param subflowNodes list of subflow nodes
    */
-  checkForMatchingSubflow(subflow: Node, subflowNodes: Node[]): Subflow | null {
+  checkForMatchingSubflow(subflow: INode, subflowNodes: INode[]): ISubflow | null {
     const {
       RED
     } = this
@@ -145,7 +145,7 @@ export class NodeMatcher extends Context {
    * @param nodeB { Node } node to compare with
    * @param idMustMatch { boolean } if IDs must match as well to be truly equal
    */
-  compareNodes(nodeA: Node, nodeB: Node, idMustMatch: boolean) {
+  compareNodes(nodeA: INode, nodeB: INode, idMustMatch: boolean) {
     if (idMustMatch && nodeA.id != nodeB.id) {
       return false;
     }

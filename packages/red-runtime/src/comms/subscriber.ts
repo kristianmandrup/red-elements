@@ -7,8 +7,8 @@ import {
 } from '../context'
 
 export interface ISubscriber {
-  subscribe: (topic: string, callback: Function) => void
-  unsubscribe: (topic: string, callback: Function) => void
+  subscribe(topic: string, callback: Function): void
+  unsubscribe(topic: string, callback: Function): void
 }
 
 const { log } = console

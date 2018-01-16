@@ -3,23 +3,25 @@ import {
 } from '../../../context'
 
 import {
+  INodes,
   Nodes
 } from '../'
 
 import {
-  Node,
-  Subflow,
-  Workspace
-} from '../../interfaces'
+  INode,
+  ISubflow,
+  IWorkspace,
+  ILink
+} from '../../../interfaces'
 
 export interface IConverter {
-  convertWorkspace(n: Node): Workspace
-  convertNode(n: Node, exportCreds: boolean): Node
-  convertSubflow(n: Node): Subflow
+  convertWorkspace(n: INode): IWorkspace
+  convertNode(n: INode, exportCreds: boolean): INode
+  convertSubflow(n: INode): ISubflow
 }
 
 export class Converter extends Context {
-  constructor(public nodes: Nodes) {
+  constructor(public nodes: INodes) {
     super()
   }
 
@@ -27,8 +29,8 @@ export class Converter extends Context {
    * Convert a node to a workspace
    * @param n { Node } the node to convert
    */
-  convertWorkspace(n: Node): Workspace {
-    var node: Workspace = {
+  convertWorkspace(n: INode): IWorkspace {
+    var node: IWorkspace = {
       name: null,
       id: null,
       type: null
@@ -49,7 +51,7 @@ export class Converter extends Context {
    * @param n { Node } the node to convert
    * @param exportCreds { boolean } if node (user) credentials should also be exported
    **/
-  convertNode(n: Node, exportCreds: boolean): Node {
+  convertNode(n: INode, exportCreds: boolean): INode {
     const {
       links
     } = this.nodes
@@ -119,7 +121,7 @@ export class Converter extends Context {
       for (var i = 0; i < n.outputs; i++) {
         node.wires.push([]);
       }
-      var wires = links.filter(function (d: Link) {
+      var wires = links.filter(function (d: ILink) {
         return d.source === n;
       });
       for (var j = 0; j < wires.length; j++) {
@@ -143,7 +145,11 @@ export class Converter extends Context {
    * Convert a node to a Subflow
    * @param n { Node } node to convert
    */
-  convertSubflow(n: Node): Subflow {
+  convertSubflow(n: INode): ISubflow {
+    const {
+      links
+    } = this.nodes
+
     this._validateNode(n, 'n', 'convertSubflow')
 
     var node: any = {
@@ -164,7 +170,7 @@ export class Converter extends Context {
         y: p.y,
         wires: []
       };
-      var wires = this.links.filter((d) => {
+      var wires = links.filter((d) => {
         return d.source === p
       });
       for (var i = 0; i < wires.length; i++) {
@@ -183,7 +189,7 @@ export class Converter extends Context {
         y: p.y,
         wires: []
       };
-      var wires = this.links.filter(function (d: Link) {
+      var wires = links.filter(function (d: ILink) {
         return d.target === p
       });
       for (var i = 0; i < wires.length; i++) {
@@ -208,8 +214,6 @@ export class Converter extends Context {
     if (node.out.length > 0 && n.outputLabels && !/^\s*$/.test(n.outputLabels.join(""))) {
       node.outputLabels = n.outputLabels.slice();
     }
-
-
     return node;
   }
 }
