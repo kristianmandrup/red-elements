@@ -255,6 +255,6 @@ export class RED implements IRED {
     copyText(key, copyPath, msgPath) { }
   }
 }
-container.bind<IRED>(TYPES.RED).to(RED);
-export { container };
+container.bind<IRED>(TYPES.RED).to(RED)
+export { container }
 

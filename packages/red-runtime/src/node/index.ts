@@ -7,6 +7,7 @@ export interface INodeDef {
   credentials?: Object,
   category?: string,
   _?: any
+  set?: any
 }
 
 export interface INode {
