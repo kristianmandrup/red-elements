@@ -3,8 +3,8 @@ import {
 } from '../../..'
 
 import {
-  INode
-} from '../../../src/interfaces'
+  fakeNode
+} from '../../_infra'
 
 function create() {
   return new Nodes()
@@ -21,27 +21,6 @@ const FAKE_RED = {}
 
 function merge(a, b) {
   return Object.assign(a, b)
-}
-
-function fakeNode(override = {}, def = true) {
-  let base: INode = {
-    id: 'x',
-    in: [],
-    out: [],
-    type: 'subflow'
-  }
-
-  if (def) {
-    base._def = {
-      credentials: {},
-      defaults: {},
-      set: {
-        module: 'node-red'
-      }
-    }
-  }
-
-  return Object.assign(base, override)
 }
 
 test('Nodes: create', () => {
