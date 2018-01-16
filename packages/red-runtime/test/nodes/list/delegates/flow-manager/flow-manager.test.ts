@@ -1,14 +1,14 @@
 import {
   Nodes,
-} from '../../../..'
+} from '../../../../..'
 
 import {
   FlowManager
-} from '../../../../src/nodes/list/flow-manager'
+} from '../../../../../src/nodes/list/flow-manager'
 
 import {
   fakeNode
-} from '../../../_infra'
+} from '../../../../_infra'
 
 function create() {
   const nodes = new Nodes()
