@@ -26,17 +26,9 @@ interface ISearchResults extends JQuery<HTMLElement> {
   editableList: Function
 }
 
-interface ISearchboxWidget extends JQuery<HTMLElement> {
-  searchBox: Function
-}
-
-interface ISearchInput extends JQuery<HTMLElement> {
-  i18n: Function
-  searchBox: Function
-}
-
 import {
-  SearchInput
+  SearchInputBuilder,
+  ISearchInput
 } from './input'
 
 import {
@@ -66,7 +58,6 @@ export class Search extends Context {
     new EditableList()
     new Searchbox()
   }
-
 
   /**
    * Ensure RED context has actions and events containers
@@ -376,99 +367,6 @@ export class Search extends Context {
   }
 
   /**
-   * Create a search input element
-   */
-  protected _createSearchInput() {
-    const {
-      search
-    } = this.rebind([
-        'search'
-      ])
-
-    const searchDiv = this._createSearchContainer()
-    const searchInputElem: ISearchboxWidget = <ISearchboxWidget>$('<input type="text" data-i18n="[placeholder]menu.label.searchInput">').appendTo(searchDiv)
-    return searchInputElem.searchBox({
-      delay: 200,
-      change: () => {
-        search($(this).val());
-      }
-    });
-  }
-
-  /**
-   * TODO: Single Responsibility.
-   * !! Either build and configure and call method _build or only configure
-   *
-   * Build/Configure Search input element
-   * - builds input element
-   * - on keydown event handler
-   */
-  protected _configureSearchInputElement() {
-    let {
-      ctx,
-      dialog,
-      searchResults,
-      results,
-      selected,
-      reveal
-    } = this
-
-    // TODO: use SearchInput helper class
-    const searchInput = this._createSearchInput()
-
-    searchInput.on('keydown', (evt) => {
-      var children;
-      if (results.length > 0) {
-        if (evt.keyCode === 40) {
-          // Down
-          children = searchResults.children();
-          if (selected < children.length - 1) {
-            if (selected > -1) {
-              $(children[selected]).removeClass('selected');
-            }
-            selected++;
-          }
-          $(children[selected]).addClass('selected');
-          this.ensureSelectedIsVisible();
-          evt.preventDefault();
-        } else if (evt.keyCode === 38) {
-          // Up
-          children = searchResults.children();
-          if (selected > 0) {
-            if (selected < children.length) {
-              $(children[selected]).removeClass('selected');
-            }
-            selected--;
-          }
-          $(children[selected]).addClass('selected');
-          this.ensureSelectedIsVisible();
-          evt.preventDefault();
-        } else if (evt.keyCode === 13) {
-          // Enter
-          if (results.length > 0) {
-            reveal(results[Math.max(0, selected)].node);
-          }
-        }
-      }
-    });
-    if (!searchInput.i18n) {
-      this.handleError('searchInput (searchBox widget) missing i18n function', {
-        searchInput
-      })
-    }
-
-    // TODO: ensure i18n widget factory is instantiated! is i18n method native to jQuery UI??
-    // new I18n()
-    searchInput.i18n();
-
-    this.setInstanceVars({
-      searchInput
-    })
-
-    return searchInput
-  }
-
-  /**
    * Configure Search results element
    * - turns element into an editableList
    * - adds addItem event handler
@@ -575,11 +473,23 @@ export class Search extends Context {
     return searchResults
   }
 
+  protected _buildSearchInputElement() {
+    // lazy instantiation
+    const searchInputBuilder = new SearchInputBuilder(this)
+    const searchInput = searchInputBuilder.buildSearchInputElement()
+
+    this.setInstanceVars({
+      searchInput
+    })
+  }
+
   /**
    * Create a search dialog with search input and results
    */
   createDialog() {
-    this._configureSearchInputElement()
+    // using delegate Builder class
+    this._buildSearchInputElement()
+
     this._configureSearchResultsElement()
     return this
   }
