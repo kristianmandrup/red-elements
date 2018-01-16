@@ -64,6 +64,7 @@ class Search extends Context {
     super()
   }
 }
+```
 
 We need to use a real/live `RED` object for testing, not the fake currently used!
 See the `src/red` folder of `red-widgets`
