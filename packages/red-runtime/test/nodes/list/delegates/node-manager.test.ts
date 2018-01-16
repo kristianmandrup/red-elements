@@ -1,6 +1,6 @@
 import {
   NodeManager
-} from '../../../../src/nodes/list/node'
+} from '../../../../src/nodes/list/node-manager'
 
 import {
   Nodes
@@ -19,27 +19,6 @@ beforeEach(() => {
 const { log } = console
 
 const FAKE_RED = {}
-
-function fakeNode(override = {}, def = true) {
-  let base: any = {
-    id: 'x',
-    in: {},
-    out: {},
-    type: 'subflow'
-  }
-
-  if (def) {
-    base._def = {
-      credentials: {},
-      defaults: {},
-      set: {
-        module: 'node-red'
-      }
-    }
-  }
-
-  return Object.assign(base, override)
-}
 
 test.only('Nodes: updateConfigNodeUsers', () => {
   let node = fakeNode({
