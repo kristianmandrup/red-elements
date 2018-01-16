@@ -41,16 +41,26 @@ test.only('i18n: loadCatalog - unknown namespace fails', async () => {
   }
 })
 
-test('i18n: loadCatalog - valid my-catalog namespace loads', async () => {
+
+async function testCatalog(name: string) {
   await inst.init()
   try {
-    const loaded = await inst.loadCatalog('unknown')
+    const loaded = await inst.loadCatalog(name)
     expect(loaded).toBeDefined()
   } catch (err) {
     log('unexpected', {
       err
     })
   }
+}
+
+test('i18n: loadCatalog - valid my-catalog namespace loads', async () => {
+  const validName = 'my-catalog'
+
+  // TODO: register my-catalog as valid catalog
+
+  // use test helper method to avoid duplication
+  testCatalog(validName)
 })
 
 
