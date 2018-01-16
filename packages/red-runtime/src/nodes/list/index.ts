@@ -114,7 +114,7 @@ export interface INodes {
    * @param createNewIds { boolean } create IDs of imported nodes if not in import definitions
    * @param createMissingWorkspace { boolean } create missing workspace if no such workspace exists
    */
-  importNodes(newNodesObj: string, createNewIds: boolean, createMissingWorkspace: boolean)
+  importNodes(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean)
 
   /**
    * Convert a node to a workspace
@@ -504,7 +504,7 @@ export class Nodes extends Context implements INodes {
    * @param createNewIds { boolean } create IDs of imported nodes if not in import definitions
    * @param createMissingWorkspace { boolean } create missing workspace if no such workspace exists
    */
-  importNodes(newNodesObj: string, createNewIds: boolean, createMissingWorkspace: boolean) {
+  importNodes(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean) {
     return this.serializer.importNodes(newNodesObj, createNewIds, createMissingWorkspace)
   }
 
@@ -560,7 +560,7 @@ export class Nodes extends Context implements INodes {
    * @param sf { Subflow } subflow to add
    * @param createNewIds { boolean } whether to create new node IDs as well
    */
-  addSubflow(sf: ISubflow, createNewIds: boolean): INodes {
+  addSubflow(sf: ISubflow, createNewIds?: boolean): INodes {
     return this.flowManager.addSubflow(sf, createNewIds)
   }
 

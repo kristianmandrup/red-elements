@@ -3,6 +3,11 @@ import {
 } from '../../../../..'
 
 import {
+  INode
+} from '../../../../../src/interfaces'
+
+
+import {
   FlowManager
 } from '../../../../../src/nodes/list/flow-manager'
 
@@ -21,8 +26,8 @@ function create() {
   flowManager = new FlowManager($nodes)
 }
 
-function createMatcher(sfid, nodeid, nodes?) {
-  nodes = nodes || $nodes
+function createMatcher(sfid: string, nodeid: string, nodes?: INode[]) {
+  nodes = nodes || $nodes.nodes
   return new SubflowMatcher(flowManager, sfid, nodeid, nodes)
 }
 
@@ -34,7 +39,6 @@ beforeEach(() => {
 test('contains', () => {
   let sfid = 'x'
   let nodeid = 'a'
-  const matcher = createMatcher(sfid, nodeid)
 
   let subflowConfig = fakeNode({
     z: sfid,
@@ -48,9 +52,10 @@ test('contains', () => {
   $nodes.addNode(subflowConfig)
   $nodes.addSubflow(subflow)
 
+  const matcher = createMatcher(sfid, nodeid)
+
   let found = matcher.contains()
   expect(found).toBeTruthy()
-
 })
 
 // add more tests as needed for smaller helper functions used in nested logic...

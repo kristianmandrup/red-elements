@@ -21,7 +21,7 @@ import {
 } from '../../../interfaces'
 
 export interface ISerializer {
-  importNodes(newNodesObj: string, createNewIds: boolean, createMissingWorkspace: boolean)
+  importNodes(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean)
   createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object)
   createCompleteNodeSet(exportCredentials: boolean)
 }
@@ -68,7 +68,7 @@ export class Serializer extends Context {
    * @param createNewIds { boolean } create IDs of imported nodes if not in import definitions
    * @param createMissingWorkspace { boolean } create missing workspace if no such workspace exists
    */
-  importNodes(newNodesObj: string, createNewIds: boolean, createMissingWorkspace: boolean) {
+  importNodes(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean) {
     return this.importer.importNodes(newNodesObj, createNewIds, createMissingWorkspace)
   }
 }

@@ -12,7 +12,7 @@ import {
 } from '../../../interfaces'
 
 export interface IImporter {
-  importNodes(newNodesObj: string, createNewIds: boolean, createMissingWorkspace: boolean)
+  importNodes(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean)
 }
 
 /**
@@ -146,7 +146,7 @@ export class Importer extends Context {
     }
   }
 
-  _findTabsAndSubflowTemplates(newNodes: INode[], nodeZmap, createNewIds: boolean) {
+  _findTabsAndSubflowTemplates(newNodes: INode[], nodeZmap, createNewIds?: boolean) {
     const {
       nodes,
       RED
@@ -758,7 +758,7 @@ export class Importer extends Context {
    *
    * TODO: should return an object NodesImport rather than a list!
    */
-  importNodes(newNodesObj: any, createNewIds: boolean, createMissingWorkspace: boolean): any[] {
+  importNodes(newNodesObj: any, createNewIds?: boolean, createMissingWorkspace?: boolean): any[] {
     const {
       nodes
     } = this

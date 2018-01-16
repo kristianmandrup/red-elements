@@ -16,6 +16,7 @@ export class SubflowMatcher extends Context {
   constructor(protected manager: ISubflowManager, protected sfid: string, protected nodeid: string, protected nodes: INode[]) {
     super()
 
+    this._validateArray(nodes, 'nodes', 'SubflowMatcher:constructor')
   }
 
   contains(): boolean {

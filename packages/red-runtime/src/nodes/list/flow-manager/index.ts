@@ -19,7 +19,7 @@ import {
 const { log } = console
 
 export interface IFlowManager {
-  addSubflow(sf: ISubflow, createNewIds: boolean): INodes
+  addSubflow(sf: ISubflow, createNewIds?: boolean): INodes
   getSubflow(id: string): ISubflow
   removeSubflow(sf: string | ISubflow): INodes
   subflowContains(sfid: string, nodeid: string): boolean
@@ -138,7 +138,8 @@ export class FlowManager extends Context implements IFlowManager {
     const { nodes } = this.nodes
     log('subflowContains', {
       sfid,
-      nodeid
+      nodeid,
+      nodes
     })
 
     // instantiate a helper class SubflowMatcher with sfid and nodeid and constructor params
