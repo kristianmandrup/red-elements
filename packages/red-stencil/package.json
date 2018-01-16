@@ -22,7 +22,7 @@
     "@stencil/core": "next",
     "@stencil/router": "latest",
     "@tecla5/red-widgets": "^0.0.1",
-    "@tecla5/red-shared": "^0.0.1"
+    "@tecla5/red-runtime": "^0.0.1"
   },
   "devDependencies": {
     "@stencil/dev-server": "latest",

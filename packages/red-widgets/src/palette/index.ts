@@ -1,19 +1,18 @@
 import {
-  controllers
-}
-  from './controllers'
+  Palette,
+  PaletteEditor
+
+} from './lib'
 
 export const palette = {
-  controllers
+  Palette,
+  PaletteEditor
+
 }
 
 export default palette
 
 export {
-  controllers
-}
-
-export const {
   Palette,
   PaletteEditor
-} = controllers
+}

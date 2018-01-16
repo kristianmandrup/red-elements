@@ -68,9 +68,9 @@ In the end we can reuse the custom elements in a Vue app inside Vue components o
 
 ## shared assets
 
-Please note that the is a `src/_shared` folder to be used for shared functionality. You could put the `_widgets.ts` file here and iny other resources that act as bridges to external logic, such as the `red-widgets` or `red-shared` package.
+Please note that the is a `src/_shared` folder to be used for shared functionality. You could put the `_widgets.ts` file here and iny other resources that act as bridges to external logic, such as the `red-widgets` or `red-runtime` package.
 
-Note that the `red-shared` package contains a bunch of static asset files, tests and more that can be useful to include or to use as reference (such as looking at tests etc.)
+Note that the `red-runtime` package contains a bunch of static asset files, tests and more that can be useful to include or to use as reference (such as looking at tests etc.)
 
 ## components
 

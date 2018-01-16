@@ -5,7 +5,7 @@
 <script>
 const log = console.log;
 import { Tray } from "./controllers/tray";
-import { Events } from "@tecla5/red-shared/src/events";
+import { Events } from "@tecla5/red-runtime/src/events";
 
 export default {
   name: "tray",

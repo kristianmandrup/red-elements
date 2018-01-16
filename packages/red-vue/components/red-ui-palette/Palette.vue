@@ -14,7 +14,7 @@
 const log = console.log;
 import { Palette } from "./controllers/palette";
 import PaletteEditor from "./PaletteEditor";
-import { Events } from "@tecla5/red-shared/src/events";
+import { Events } from "@tecla5/red-runtime/src/events";
 
 let RED = {
   events: new Events(RED)

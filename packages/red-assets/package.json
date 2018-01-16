@@ -1,0 +1,19 @@
+{
+  "name": "@tecla5/red-assets",
+  "version": "0.0.1",
+  "description": "shared ui assets",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "ava"
+  },
+  "keywords": [
+    "node-red"
+  ],
+  "author": "Kristian Mandrup",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {}
+}

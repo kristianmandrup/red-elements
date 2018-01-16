@@ -1,19 +1,17 @@
 import {
-  controllers
+  Search,
+  TypeSearch
 }
-  from './controllers'
+  from './lib'
 
 export const search = {
-  controllers
+  Search,
+  TypeSearch
 }
 
 export default search
 
 export {
-  controllers
-}
-
-export const {
   Search,
   TypeSearch
-} = controllers
+}

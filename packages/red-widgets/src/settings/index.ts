@@ -1,18 +1,13 @@
 import {
-  controllers
-}
-from './controllers'
+  UserSettings
+} from './lib'
 
 export const settings = {
-  controllers
+  UserSettings
 }
 
 export default settings
 
 export {
-  controllers
-}
-
-export const {
   UserSettings
-} = controllers
+}

@@ -1,12 +1,18 @@
 import {
-  canvas
-}
-  from './canvas'
+  canvas,
+  Canvas
+} from './canvas'
 
 import {
   common,
   Tabs,
-  Stack
+  Stack,
+  Menu,
+  Popover,
+  Searchbox,
+  EditableList,
+  CheckboxSet,
+  TypedInput
 } from './common'
 
 import {
@@ -19,25 +25,61 @@ import {
   LibraryUI
 } from './library'
 
-// import {
-//   mainContainer
-// }
-// from './main-container'
+import {
+  Main,
+} from './main'
 
 import {
-  nodeDiff,
+  User,
+} from './user'
+
+import {
+  TextFormat,
+  Bidi
+} from './text'
+
+import {
+  Actions
+} from './actions'
+
+import {
+  Clipboard
+} from './clipboard'
+
+import {
+  Deploy
+} from './deploy'
+
+import {
+  Keyboard
+} from './keyboard'
+
+import {
+  Notifications
+} from './notifications'
+
+import {
+  STATE
+} from './state'
+
+import {
+  Utils
+} from './utils'
+
+import {
+  diff,
   NodeDiff
 } from './node-diff'
 
 import {
-  nodeEditor,
-  Editor
+  editor,
+  NodeEditor
 }
   from './node-editor'
 
 import {
-  workspaces,
-  Workspaces
+  Workspaces,
+  workspaces
 } from './workspaces'
 
 import {
@@ -51,12 +93,17 @@ import {
   Sidebar,
   SidebarTabConfig,
   SidebarTabInfo,
+  Tips,
 } from './sidebar'
 
 import {
   settings,
   UserSettings
 } from './settings'
+
+import {
+  RadialMenu
+} from './touch'
 
 import {
   tray,
@@ -69,12 +116,12 @@ import {
   TypeSearch
 } from './search'
 
-export const widgets = {
+export const libs = {
   canvas,
   common,
   library,
-  nodeEditor,
-  nodeDiff,
+  editor,
+  diff,
   palette,
   search,
   settings,
@@ -82,10 +129,29 @@ export const widgets = {
   workspaces
 }
 
-export default widgets
-
-export {
-  Editor,
+export const widgets = {
+  common,
+  Tabs,
+  Stack,
+  Menu,
+  Popover,
+  Searchbox,
+  EditableList,
+  CheckboxSet,
+  TypedInput,
+  Main,
+  User,
+  Utils,
+  Actions,
+  Deploy,
+  Keyboard,
+  TextFormat,
+  Bidi,
+  Canvas,
+  Notifications,
+  Clipboard,
+  RadialMenu,
+  NodeEditor,
   Palette,
   PaletteEditor,
   NodeDiff,
@@ -95,24 +161,49 @@ export {
   Sidebar,
   SidebarTabConfig,
   SidebarTabInfo,
+  Tips,
   Search,
   TypeSearch,
   UserSettings,
   Workspaces
 }
 
-// export {
-//   // canvas,
-//   common,
-//   // header,
-//   // library,
-//   // mainContainer,
-//   // nodeDiff,
-//   // nodeEditor,
-//   palette,
-//   // search,
-//   // settings,
-//   // sidebar,
-//   tray,
-//   // workspaces
-// }
+export default libs
+
+export {
+  Main,
+  User,
+  Menu,
+  Stack,
+  Popover,
+  Searchbox,
+  EditableList,
+  CheckboxSet,
+  TypedInput,
+  Utils,
+  Canvas,
+  Actions,
+  Deploy,
+  Keyboard,
+  TextFormat,
+  Bidi,
+  Notifications,
+  Clipboard,
+  RadialMenu,
+  NodeEditor,
+  Palette,
+  PaletteEditor,
+  NodeDiff,
+  Library,
+  LibraryUI,
+  Tray,
+  Sidebar,
+  SidebarTabConfig,
+  SidebarTabInfo,
+  Tips,
+  Search,
+  TypeSearch,
+  UserSettings,
+  Workspaces
+}
+

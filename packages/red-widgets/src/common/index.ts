@@ -1,26 +1,25 @@
 
 import {
-  controllers
-}
-  from './controllers'
+  widgets
+} from './lib'
 
 export {
-  BaseContext,
-  Context,
   lazyInject,
   IRED,
   TYPES,
+  Context,
   $
-} from './base'
+} from '../context'
+
 
 export const common = {
-  controllers
+  widgets
 }
 
 export default common
 
 export {
-  controllers
+  widgets
 }
 
 export const {
@@ -34,4 +33,4 @@ export const {
   Searchbox,
   Validators,
   CheckboxSet
-} = controllers
+} = widgets

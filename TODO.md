@@ -4,7 +4,17 @@ First make each of the original Node-red Editor components into Custom Elements 
 
 Then wrap the custom elements as Vue components and build up a Vue app, composed from these Vue components.
 
-## Status
+## red-runtime
+
+Should possibly be renamed to red-runtime, to reflect that it contains the runtime (in-memory) model. For shared assets etc. we should have a red-assets module.
+
+## red-widgets
+
+Ensure all tests pass after major refactoring.
+
+## stencil
+
+### Status
 
 Currently some skeleton StencilJS components have been defined for most of the original widgets/components in *red-widgets* package.
 

@@ -1,19 +1,16 @@
 import {
-  controllers
-}
-  from './controllers'
+  Library,
+  LibraryUI
+} from './lib'
 
 export const library = {
-  controllers
+  Library,
+  LibraryUI
 }
 
 export default library
 
 export {
-  controllers
-}
-
-export const {
   Library,
   LibraryUI
-} = controllers
+}

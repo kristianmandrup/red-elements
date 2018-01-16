@@ -1,6 +1,16 @@
-# Red UI
+# Red Elements
 
-Node-red UI using Custom Elements (possibly wrapped for Vue 2+)
+Node-red UI using native browser Custom Elements (aka. Web components).
+
+The custom elements can be used stand-alone or with any modern view framework that is compatible with Custom Elements, such as Vue 2+ and Angular 2+.
+
+## Packages
+
+- `red-assets` (shared assets, including vendor files, stylesheets, images etc)
+- `red-runtime` (in-memory runtime model)
+- `red-widgets` (widgets in TypeScript)
+- `red-stencil` (native custom elements via StencilJS )
+- `red-vue` (vue components - wrapping custom elements?)
 
 This project contains packages for the (main) components used in the [node-red](nodered.org/) [editor](https://github.com/node-red/node-red/tree/master/editor), originally extracted and partly refactored in [red-editor](https://github.com/tecla5/red-editor).
 
@@ -14,7 +24,7 @@ One "ring" to rule them all!!!
 
 This [lerna](https://lernajs.io/) project contains the following packages:
 
-- `red-shared` shared assets, styles and utility scripts
+- `red-runtime` shared assets, styles and utility scripts
 - `red-stencil` stencil app with stencil custom elements (native browser elements)
 - `red-vue` Vue components, wrapping custom elements
 - `red-widgets` original jQuery elements/widgets from node red
@@ -32,7 +42,7 @@ This [lerna](https://lernajs.io/) project contains the following packages:
 - `red-ui-palette` Palette of available nodes to be used on canvas
 - `red-ui-search` Search for matching nodes
 - `red-ui-settings` User settings management
-- `red-shared` Various shared assets
+- `red-runtime` Various shared assets
 - `red-ui-sidebar` Sidebar with tabs for extra info and management
 - `red-ui-tray` Slide-over modal tray panel (for Node Editor etc.)
 - `red-ui-workspaces` Manage workspaces (ie. projects)
@@ -203,7 +213,7 @@ This should also create a brand new `package.json.lock`
 - `red-ui-search` search for nodes
 - `red-ui-settings` user settings form
 - `red-ui-sidebar` sidebar with multiple tabs
-- `red-shared` shared assets and logic used across multiple components
+- `red-runtime` shared assets and logic used across multiple components
 - `red-ui-tray` sliding tray panel overlay
 - `red-ui-workspaces` workspaces
 
@@ -215,5 +225,5 @@ Some components will be refactored into multiple smaller components to make them
 
 ## HTML templates
 
-For the "base" HTML to be used in the components (and main app), please reference `/assets/templates` folder under `/red-shared` package.
+For the "base" HTML to be used in the components (and main app), please reference `/assets/templates` folder under `/red-runtime` package.
 

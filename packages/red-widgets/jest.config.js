@@ -31,5 +31,5 @@ module.exports = {
     "node_modules",
     "src"
   ],
-
+  "setupTestFrameworkScriptFile": "<rootDir>/jest/setup.js"
 }

@@ -1,18 +1,13 @@
 import {
-  controllers
-}
-  from './controllers'
+  Workspaces
+} from './lib'
 
 export const workspaces = {
-  controllers
+  Workspaces
 }
 
 export default workspaces
 
 export {
-  controllers
-}
-
-export const {
   Workspaces
-} = controllers
+}

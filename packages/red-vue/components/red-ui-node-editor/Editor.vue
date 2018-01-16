@@ -5,7 +5,7 @@
 <script>
 const log = console.log;
 import { Editor } from "./controllers/editor";
-import { Actions } from "@tecla5/red-shared/src/ui/actions";
+import { Actions } from "@tecla5/red-runtime/src/ui/actions";
 
 export default {
   name: "editor",

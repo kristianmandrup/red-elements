@@ -1,4 +1,0 @@
-export {
-  A
-}
-from './imported'
