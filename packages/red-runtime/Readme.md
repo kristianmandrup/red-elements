@@ -1,16 +1,51 @@
-# Red shared
+# Red runtime
 
-*Red shared* is the node-red runtime and in-memory model, such as the internal node graph being edited, with some code shared between both client and server (backend API) applications.
+*Red runtime* is the node-red runtime and in-memory model, such as the internal node graph being edited, with some code shared between both client and server (backend API) applications.
 
 This module is NOT a lerna project, as it has no local package dependencies in the `red-elements` repo.
 
 ## Getting started
 
-
 ```bash
 $ npm install
 ...
 ```
+
+## Design/Architecture
+
+- `src` contains all the source files in TypeScript
+- `test` contains the test files used to test source
+- `dist` contains the compiled `.js` files for distribution and compiled test files
+
+## Src architecture
+
+The source code is written in TypeScript. Use the full power, including types and interfaces etc.
+
+### Infrastructure
+
+- configures fakes such as the fake `RED` object used for testing
+- configures and exports injectable
+
+### RED
+
+We might have to move `RED` from `red-widgets` to `red-runtime`?
+We need to use a real/live `RED` object for testing, not the fake currently used!
+
+## Testing
+
+See the [Test](https://github.com/kristianmandrup/red-elements/blob/major-refactor/packages/red-widgets/docs/Test.md) document for testing details
+
+Note that the test are run from `dist`. Running:
+
+`$ jest test/nodes/nodes.test.ts`
+
+Will actually run the equivalent `.js` file in `dist`
+
+`$ jest dist/test/nodes/nodes.test.js`
+
+Ensure files in dist reflect your latest update. Ensure you have setup a task to auto-compile your .ts files to `/dist` folder on any change.
+
+Note: You might also want to sometimes clean the `dist` folder to ensure you don't have leftover files from refactoring file names and locations.
 
 ## Jest with TypeScript
 
@@ -43,7 +78,7 @@ Please mock and stub whatever you need to make tests pass. Jest includes advance
 
 We use the following testing stack for headless browser testing (E2E) on Travic CI.
 
-`red-elements/packages/red-runtime $ jest test/nodes/node.test.ts`
+`red-elements/packages/red-runtime $ jest test/nodes/nodes.test.ts`
 
 Note: You need `jest-cli` installed for the project.
 
