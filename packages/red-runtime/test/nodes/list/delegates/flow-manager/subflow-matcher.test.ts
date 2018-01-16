@@ -26,9 +26,8 @@ function create() {
   flowManager = new FlowManager($nodes)
 }
 
-function createMatcher(sfid: string, nodeid: string, nodes?: INode[]) {
-  nodes = nodes || $nodes.nodes
-  return new SubflowMatcher(flowManager, sfid, nodeid, nodes)
+function createMatcher(sfid: string, nodeid: string) {
+  return new SubflowMatcher(flowManager, sfid, nodeid)
 }
 
 let matcher
@@ -37,24 +36,72 @@ beforeEach(() => {
 })
 
 
+test.only('_isSubflowNode(node) - matches', () => {
+  const node = fakeNode({
+    type: 'subflow:hello'
+  })
+
+  const matcher = createMatcher('abc', 'abc')
+  const match = matcher._isSubflowNode(node)
+  expect(match).toEqual('hello')
+})
+
+test.only('_isSubflowNode(node) - no match', () => {
+  const node = fakeNode({
+    type: 'unknown:hello'
+  })
+  const matcher = createMatcher('abc', 'abc')
+  const match = matcher._isSubflowNode(node)
+  expect(match).not.toEqual('hello')
+  expect(match).toBe(null)
+})
+
 
 test.only('_matchingNodeZ(node)', () => {
   // TODO
 })
 
-test.only('_matchNodeIsSubflow(match)', () => {
+test.only('_matchNodeIsSubflow(match) - no match', () => {
+  const matcher = createMatcher('abc', 'abc')
+  const match = matcher._matchNodeIsSubflow('hello')
+  expect(match).toBeFalsy()
+})
+
+test.only('_matchNodeIsSubflow(match) - matches', () => {
+  const matcher = createMatcher('abc', 'abc')
+  const match = matcher._matchNodeIsSubflow('abc')
+  expect(match).toBeTruthy()
+})
+
+
+test.only('_checkSubflowContains(node) - no match', () => {
+  const matcher = createMatcher('abc', 'abc')
+  const node = fakeNode({
+    // ... ??? set props to NOT match
+  })
+  const match = matcher._checkSubflowContains(node)
+  expect(match).toBeTruthy()
+})
+
+test.only('_checkSubflowContains(node) - matches', () => {
+  const matcher = createMatcher('abc', 'abc')
+  const node = fakeNode({
+    // ... ??? set props to match
+  })
+  const match = matcher._checkSubflowContains(node)
+  expect(match).toBeTruthy()
+})
+
+test.skip('contains - no match', () => {
   // TODO
 })
 
-test.only('_checkSubflowContains(node)', () => {
-})
-
-test('contains', () => {
+test('contains - matches', () => {
   let sfid = 'x'
   let nodeid = 'a'
 
   let subflowConfig = fakeNode({
-    z: sfid,
+    z: sfid, // must have a .z property to be compared with subflow ID sfid
     id: sfid,
     type: 'subflow:config'
   })
@@ -71,4 +118,3 @@ test('contains', () => {
   expect(found).toBeTruthy()
 })
 
-// add more tests as needed for smaller helper functions used in nested logic...

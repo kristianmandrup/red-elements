@@ -28,7 +28,7 @@ export interface INode {
   _def?: INodeDef,
   x?: number,
   y?: number,
-  z?: number | string, // TODO: FIX this - what is correct type?
+  z?: string, // used for subflow ID compare, so must be a string
   dirty?: boolean,
   i?: number
 }

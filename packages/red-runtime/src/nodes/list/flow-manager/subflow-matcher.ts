@@ -3,27 +3,37 @@ import {
 } from '../../../context'
 
 import {
+  IFlowManager
+} from '.'
+
+import {
   INode
 } from '../../../interfaces'
 
 const { log } = console
 
-interface ISubflowManager {
-  subflowContains(sfid: string, nodeid: string): boolean
-}
-
 export class SubflowMatcher extends Context {
-  constructor(protected manager: ISubflowManager, protected sfid: string, protected nodeid: string, protected nodes: INode[]) {
-    super()
+  protected sfid: string
+  protected nodeid: string
+  protected nodeList: INode[]
 
-    this._validateArray(nodes, 'nodes', 'SubflowMatcher:constructor')
+  constructor(protected manager: IFlowManager) {
+    super()
+    this.nodeList = manager.nodes.nodes
+    this._validateArray(this.nodeList, 'nodes', 'SubflowMatcher:constructor')
+  }
+
+  configure(sfid: string, nodeid: string) {
+    this.sfid = sfid
+    this.nodeid = nodeid
+    return this
   }
 
   contains(): boolean {
     const {
       sfid,
       nodeid,
-      nodes
+      nodeList
     } = this
 
     const {
@@ -32,58 +42,37 @@ export class SubflowMatcher extends Context {
         '_checkSubflowContains'
       ])
 
-    log('contains', {
-      nodes,
-      type: typeof nodes,
-      isArray: Array.isArray(nodes)
-    })
-
-    return Boolean(nodes.find(_checkSubflowContains))
+    this._validateStr(sfid, 'sfid', 'contains')
+    this._validateStr(sfid, 'nodeid', 'contains')
+    this._validateArray(nodeList, 'nodes', 'contains')
+    return Boolean(nodeList.find(_checkSubflowContains))
   }
 
   _checkSubflowContains(node: INode): boolean {
-    const { sfid, nodeid, nodes } = this
     const {
       manager
     } = this
 
-    const {
-      subflowContains
-    } = this.rebind([
-        'subflowContains'
-      ])
-
-    this._validateDefined(node.z, 'node.z', '_checkSubflowContains')
-
-    // TODO: further decompose into smaller functions to reduce complexity and avoid nested ifs
-    if (node.z === sfid) {
-      return this._matchingNodeZ(node)
-    }
-    log('node not matching on .z', {
-      sfid,
-      z: node.z,
-    })
-    return false
+    this._validateStr(node.z, 'node.z', '_checkSubflowContains')
+    return this._matchingNodeZ(node)
   }
 
+  _isSubflowNode(node) {
+    const match = /^subflow:(.+)$/.exec(node.type);
+    return match ? match[1] : null
+  }
 
   _matchingNodeZ(node) {
-    // https://developer.mozilla.org/th/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
-    var m = /^subflow:(.+)$/.exec(node.type);
+    const { sfid, nodeid, nodeList } = this
+    if (node.z !== sfid) {
+      return false
+    }
+    const match = this._isSubflowNode(node)
     log('match', {
       type: node.type,
-      m
+      match
     })
-
-    // make this a new protected function
-    if (m) {
-      return this._matchNodeIsSubflow(m[1])
-    }
-
-    log('node not matching on ^subflow:(.+)$', {
-      m,
-      type: node.type,
-    })
+    return this._matchNodeIsSubflow(match)
   }
 
   _matchNodeIsSubflow(match) {
@@ -91,6 +80,10 @@ export class SubflowMatcher extends Context {
       manager,
       nodeid
     } = this
+
+    if (!match) {
+      return false
+    }
 
     log('node matching on ^subflow:(.+)$', {
       match
