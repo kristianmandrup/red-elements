@@ -39,7 +39,7 @@ export class NodeManager extends Context {
       _updateConfigNodeUsers
     } = this.rebind([
         '_updateConfigNodeUsers'
-      ], this.nodes)
+      ], this)
 
     this._validateNode(n, 'n', 'addNode')
     this._validateNodeDef(n._def, 'n._def', 'addNode')
