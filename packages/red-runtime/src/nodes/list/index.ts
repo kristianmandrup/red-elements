@@ -152,7 +152,7 @@ export interface INodes {
    * @param sf { Subflow } subflow to add
    * @param createNewIds { boolean } whether to create new node IDs as well
    */
-  addSubflow(sf: ISubflow, createNewIds: boolean): INodes
+  addSubflow(sf: ISubflow, createNewIds?: boolean): INodes
 
   /**
    * Get a subflow by ID

@@ -18,7 +18,7 @@ const $nodes = new Nodes()
 
 let flowManager
 function create() {
-  flowManager = new FlowManager(nodes)
+  flowManager = new FlowManager($nodes)
 }
 
 function createMatcher(sfid, nodeid, nodes?) {
@@ -32,9 +32,25 @@ beforeEach(() => {
 })
 
 test('contains', () => {
-  const sfid = 'xyz'
-  const nodeid = 'abc'
+  let sfid = 'x'
+  let nodeid = 'a'
   const matcher = createMatcher(sfid, nodeid)
+
+  let subflowConfig = fakeNode({
+    z: sfid,
+    id: sfid,
+    type: 'subflow:config'
+  })
+  let subflow = fakeNode({
+    id: sfid,
+    type: 'config'
+  })
+  $nodes.addNode(subflowConfig)
+  $nodes.addSubflow(subflow)
+
+  let found = matcher.contains()
+  expect(found).toBeTruthy()
+
 })
 
 // add more tests as needed for smaller helper functions used in nested logic...
