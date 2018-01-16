@@ -1,4 +1,6 @@
 export {
+  expectIs,
+  expectEqual,
   expectObj,
   expectFunction,
   expectString,
@@ -6,6 +8,7 @@ export {
   expectTruthy,
   expectDefined,
   expectUndefined,
+
   expectObjs,
   expectFunctions
 } from './helpers'

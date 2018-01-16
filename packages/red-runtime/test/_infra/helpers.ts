@@ -1,3 +1,11 @@
+export function expectIs(value) {
+  expect(value).toBe(value)
+}
+
+export function expectEqual(value) {
+  expect(value).toEqual(value)
+}
+
 export function expectObj(value) {
   expect(typeof value).toBe('object')
 }

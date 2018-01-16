@@ -2,6 +2,10 @@ import {
   Settings
 } from '../'
 
+import {
+  expectTruthy
+} from './_infra'
+
 function create() {
   return new Settings()
 }
@@ -23,7 +27,7 @@ test('settings: init', async () => {
 })
 
 test('settings: localstorage', () => {
-  expect(settings.hasLocalStorage()).toBeTruthy()
+  expectTruthy(settings.hasLocalStorage())
 })
 
 test('settings: properties', () => {

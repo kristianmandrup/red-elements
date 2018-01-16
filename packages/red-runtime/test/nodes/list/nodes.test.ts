@@ -1,6 +1,6 @@
 import {
   Nodes
-} from '../..'
+} from '../../..'
 
 function create() {
   return new Nodes()

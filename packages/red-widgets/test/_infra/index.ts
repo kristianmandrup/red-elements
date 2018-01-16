@@ -1,3 +1,18 @@
+export {
+  expectIs,
+  expectEqual,
+  expectObj,
+  expectFunction,
+  expectString,
+  expectArray,
+  expectTruthy,
+  expectDefined,
+  expectUndefined,
+
+  expectObjs,
+  expectFunctions
+} from '@tecla5/red-runtime/test/_infra'
+
 var matchers = require('jest-jquery-matchers');
 
 beforeAll(() => {

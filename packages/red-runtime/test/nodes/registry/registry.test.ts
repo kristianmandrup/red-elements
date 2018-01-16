@@ -1,6 +1,6 @@
 import {
   NodesRegistry
-} from '../..'
+} from '../../..'
 
 
 function create() {

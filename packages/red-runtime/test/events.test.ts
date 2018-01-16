@@ -19,6 +19,12 @@ function create() {
 
 const { log } = console
 
+function expectHandler(events, func, reverse: boolean = false) {
+  let { handlers } = events
+  let handler = handlers[evt]
+  reverse ? expect(handler).not.toContain(func) : expect(handler).toContain(func)
+}
+
 let events
 beforeEach(() => {
   events = create()
@@ -35,23 +41,15 @@ test('Events: create', () => {
 
 test('events: on', () => {
   events.on(evt, func)
-  let { handlers } = events
-  let handler = handlers[evt]
-  expect(handler).toContain(func)
+  expectHandler(events, func)
 })
 
 test('events: off', () => {
   events.on(evt, func)
-
-  // TODO: add utility function to avoid duplication!!!
-  let { handlers } = events
-  let handler = handlers[evt]
-  expect(handler).toContain(func)
+  expectHandler(events, func)
 
   events.off(evt, func)
-  handler = handlers[evt]
-  expect(handler).not.toContain(func)
-
+  expectHandler(events, func, false)
 })
 
 test('events: emit', async () => {

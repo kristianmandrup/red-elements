@@ -1,10 +1,11 @@
 import {
   readPage,
-} from './imports'
+  expectTruthy
+} from '../_infra'
 
 import {
   Validators
-} from '../'
+} from '../../src'
 
 function create() {
   return new Validators()
