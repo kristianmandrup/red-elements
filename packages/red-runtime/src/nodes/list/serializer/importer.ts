@@ -48,7 +48,7 @@ export class Importer extends Context {
 
   protected _normalize(newNodesObj: any): INode[] {
     let newNodes = typeof newNodesObj === 'string' ? this._parse(newNodesObj) : newNodesObj
-    return !$.isArray(newNodes) ? [newNodes] : newNodes
+    return !Array.isArray(newNodes) ? [newNodes] : newNodes
   }
 
   protected _findUnknownTypes(newNodes: INode[]) {
@@ -160,18 +160,14 @@ export class Importer extends Context {
     } = nodes
 
     const {
-      subflowContains,
-      getSubflow,
       addWorkspace,
       addSubflow,
       checkForMatchingSubflow,
       getID,
-      compareNodes,
-      addNode,
-      addLink
     } = this.rebind([
         'addWorkspace',
         'addSubflow',
+        'checkForMatchingSubflow',
         'getID',
       ], nodes)
 

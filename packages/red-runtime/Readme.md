@@ -77,11 +77,11 @@ See the [Test](https://github.com/kristianmandrup/red-elements/blob/major-refact
 
 Note that the test are run from `dist`. Running:
 
-`$ jest test/nodes/nodes.test.ts`
+`$ jest test/nodes/list/nodes.test.ts`
 
 Will actually run the equivalent `.js` file in `dist`
 
-`$ jest dist/test/nodes/nodes.test.js`
+`$ jest test/nodes/list/nodes.test.ts`
 
 Ensure files in dist reflect your latest update. Ensure you have setup a task to auto-compile your .ts files to `/dist` folder on any change.
 

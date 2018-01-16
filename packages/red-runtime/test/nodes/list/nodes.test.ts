@@ -216,7 +216,7 @@ test('Nodes: removeSubflow - by subflow node removes it', () => {
 })
 
 
-test('Nodes: subflowContains', () => {
+test.only('Nodes: subflowContains', () => {
   let sfid = 'x'
   let nodeid = 'a'
   let subflowConfig = fakeNode({
@@ -363,7 +363,7 @@ test('Nodes: createCompleteNodeSet w exportCredentials', () => {
   expect(set).toBeTruthy()
 })
 
-test('Nodes: checkForMatchingSubflow', () => {
+test.only('Nodes: checkForMatchingSubflow', () => {
   const id = 'a'
   const name = 'test-123'
   let node = fakeNode({
@@ -423,7 +423,7 @@ test('Nodes: importNodes - missing in/out', () => {
   expect(() => nodes.importNodes(newNodesObj, createNewIds, createMissingWorkspace)).toThrow()
 })
 
-test('Nodes: importNodes', () => {
+test.only('Nodes: importNodes', () => {
   const id = 'a'
   let newNodesObj = fakeNode({
     id,
@@ -485,53 +485,6 @@ test('Nodes: filterLinks', () => {
   let filtered = nodes.filterLinks(filter)
   expect(filtered.length).toBe(1)
   expect(filtered[0]).toBe(linkA)
-})
-
-test('Nodes: updateConfigNodeUsers', () => {
-  let node = fakeNode({
-    id: 'a',
-    type: 'x',
-    _def: {
-      set: {},
-      defaults: {
-        custom: {
-          // registry.getNodeType(property.type) must be able to find the node type
-          type: 'age',
-          category: 'config'
-        }
-      }
-    }
-  })
-
-  // TODO: Fix and also add Type interface for it!?
-  const ns = {
-    id: 'basic',
-    types: {
-      age: {
-
-      }
-    },
-    module: 'demo',
-    version: 1,
-    local: true,
-    pending_version: 2
-  }
-
-  nodes.registry.addNodeSet(ns)
-
-  // Note: the node type is looked up in the node sets registered in registry
-  nodes.registry.registerNodeType('age', {
-    category: 'config'
-  })
-
-  nodes.updateConfigNodeUsers(node)
-  log({
-    users: nodes.configNodes.users
-  })
-  // TODO: not sure this is correct approach. users might be keyed by ID?
-  let user = nodes.configNodes.users[0]
-  let expectedUser = {}
-  expect(user).toEqual(expectedUser)
 })
 
 test('Nodes: flowVersion', () => {
