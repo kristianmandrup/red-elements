@@ -24,9 +24,9 @@ export interface IEvents {
   handlers: any
   lastEmitted: any
 
-  on(evt, func)
-  off(evt, func)
-  emit(evt, arg)
+  on(evt: string, func: Function)
+  off(evt: string, func: Function)
+  emit(evt: string, arg?: any)
 }
 
 export class Events extends Context implements IEvents {
@@ -37,13 +37,23 @@ export class Events extends Context implements IEvents {
     super()
   }
 
-  on(evt, func) {
+  /**
+   * Add event handler
+   * @param evt { string } event name (identifier)
+   * @param func {Function} event handler function
+   */
+  on(evt: string, func: Function) {
     this.handlers[evt] = this.handlers[evt] || [];
     this.handlers[evt].push(func);
     return this
   }
 
-  off(evt, func) {
+  /**
+   * Remove event handler
+   * @param evt { string } event name (identifier)
+   * @param func {Function} event handler function
+   */
+  off(evt: string, func: Function) {
     var handler = this.handlers[evt];
     if (handler) {
       for (var i = 0; i < handler.length; i++) {
@@ -56,7 +66,12 @@ export class Events extends Context implements IEvents {
     return this
   }
 
-  emit(evt, arg) {
+  /**
+   * Emit event
+   * @param evt { string } event name (identifier)
+   * @param arg { any } optional data to pass along
+   */
+  emit(evt: string, arg?: any) {
     var handlers = this.handlers[evt];
     if (!handlers) {
       return this

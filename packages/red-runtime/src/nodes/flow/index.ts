@@ -14,18 +14,30 @@
  * limitations under the License.
  **/
 
-var when = require("when");
-var clone = require("clone");
-var typeRegistry = require("../registry");
-var Log = require("../../log");
-var redUtil = require("../../util");
-var flowUtil = require("./util");
+import clone from 'clone'
+import { NodesRegistry } from '../registry/index';
+
+import {
+  FlowUtils
+} from '../flows/util'
+
+import {
+  Logger
+} from '../../log'
+import {
+  Util as RedUtil
+} from '../../util'
 
 export class Flow {
   protected activeNodes = {}
   protected subflowInstanceNodes = {}
   protected catchNodeMap = {}
   protected statusNodeMap = {}
+
+  typeRegistry: any = new NodesRegistry()
+  log: any = new Logger()
+  redUtil: any = new RedUtil()
+  flowUtil: any = new FlowUtils()
 
   constructor($global, flow) {
     if (typeof flow === 'undefined') {

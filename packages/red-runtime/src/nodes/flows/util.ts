@@ -1,46 +1,61 @@
 /**
  * Copyright JS Foundation and other contributors, http://js.foundation
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-var clone = require("clone");
+import {
+  Context
+} from '../../context'
 
-// var redUtil = require("../../util");
+var clone = require('clone');
+
+// var redUtil = require('../../util');
 
 // use as injectable service
 import {
   NodesRegistry
 } from '../registry'
 
-const subflowInstanceRE = /^subflow:(.+)$/;
+import {
+  Util as RedUtil
+} from '../../util'
 
-class FlowUtils {
+export class FlowUtils extends Context {
   static EnvVarPropertyRE = /^\$\((\S+)\)$/;
+  static subflowInstanceRE = /^subflow:(.+)$/;
+
+  // TODO: Fix - inject services instead
+  redUtil: any = new RedUtil()
+  typeRegistry: any = new NodesRegistry()
 
   // TODO: add injectable services via decorators
   constructor() {
-
+    super()
   }
 
   diffNodes(oldNode, newNode) {
+    const {
+      redUtil
+    } = this
+
     if (oldNode == null) {
       return true;
     }
     var oldKeys = Object.keys(oldNode).filter(function (p) {
-      return p != "x" && p != "y" && p != "wires"
+      return p != 'x' && p != 'y' && p != 'wires'
     });
     var newKeys = Object.keys(newNode).filter(function (p) {
-      return p != "x" && p != "y" && p != "wires"
+      return p != 'x' && p != 'y' && p != 'wires'
     });
     if (oldKeys.length != newKeys.length) {
       return true;
@@ -56,6 +71,14 @@ class FlowUtils {
   }
 
   mapEnvVarProperties(obj, prop) {
+    const {
+      mapEnvVarProperties
+    } = this.rebind([
+        'mapEnvVarProperties'
+      ])
+
+    const EnvVarPropertyRE = FlowUtils.EnvVarPropertyRE
+
     if (Buffer.isBuffer(obj[prop])) {
       return;
     } else if (Array.isArray(obj[prop])) {
@@ -80,7 +103,12 @@ class FlowUtils {
 
 
   parseConfig(config) {
-    var flow = {};
+    const {
+      typeRegistry
+    } = this
+    const subflowInstanceRE = FlowUtils.subflowInstanceRE
+
+    const flow: any = {};
     flow.allNodes = {};
     flow.subflows = {};
     flow.configs = {};
@@ -196,6 +224,15 @@ class FlowUtils {
   }
 
   diffConfigs(oldConfig, newConfig) {
+    const {
+      redUtil
+    } = this
+    const {
+      diffNodes
+    } = this.rebind([
+        'diffNodes'
+      ])
+
     var id;
     var node;
     var nn;
@@ -235,7 +272,7 @@ class FlowUtils {
           // Mark the container as changed
           if (newConfig.allNodes[removed[id].z]) {
             changed[removed[id].z] = newConfig.allNodes[removed[id].z];
-            if (changed[removed[id].z].type === "subflow") {
+            if (changed[removed[id].z].type === 'subflow') {
               changedSubflows[removed[id].z] = changed[removed[id].z];
               //delete removed[id];
             }
@@ -244,13 +281,13 @@ class FlowUtils {
           // This node has a material configuration change
           if (diffNodes(node, newConfig.allNodes[id]) || newConfig.allNodes[id].credentials) {
             changed[id] = newConfig.allNodes[id];
-            if (changed[id].type === "subflow") {
+            if (changed[id].type === 'subflow') {
               changedSubflows[id] = changed[id];
             }
             // Mark the container as changed
             if (newConfig.allNodes[changed[id].z]) {
               changed[changed[id].z] = newConfig.allNodes[changed[id].z];
-              if (changed[changed[id].z].type === "subflow") {
+              if (changed[changed[id].z].type === 'subflow') {
                 changedSubflows[changed[id].z] = changed[changed[id].z];
                 delete changed[id];
               }
@@ -262,7 +299,7 @@ class FlowUtils {
             // Mark the container as changed
             if (newConfig.allNodes[wiringChanged[id].z]) {
               changed[wiringChanged[id].z] = newConfig.allNodes[wiringChanged[id].z];
-              if (changed[wiringChanged[id].z].type === "subflow") {
+              if (changed[wiringChanged[id].z].type === 'subflow') {
                 changedSubflows[wiringChanged[id].z] = changed[wiringChanged[id].z];
                 delete wiringChanged[id];
               }
@@ -300,7 +337,7 @@ class FlowUtils {
           // Mark the container as changed
           if (newConfig.allNodes[added[id].z]) {
             changed[added[id].z] = newConfig.allNodes[added[id].z];
-            if (changed[added[id].z].type === "subflow") {
+            if (changed[added[id].z].type === 'subflow') {
               changedSubflows[added[id].z] = changed[added[id].z];
               delete added[id];
             }
@@ -320,7 +357,7 @@ class FlowUtils {
         if (newConfig.allNodes.hasOwnProperty(id)) {
           node = newConfig.allNodes[id];
           for (var prop in node) {
-            if (node.hasOwnProperty(prop) && prop != "z" && prop != "id" && prop != "wires") {
+            if (node.hasOwnProperty(prop) && prop != 'z' && prop != 'id' && prop != 'wires') {
               // This node has a property that references a changed/removed node
               // Assume it is a config node change and mark this node as
               // changed.
@@ -332,7 +369,7 @@ class FlowUtils {
                   // Mark the template as having changed
                   if (newConfig.allNodes[node.z]) {
                     changed[node.z] = newConfig.allNodes[node.z];
-                    if (changed[node.z].type === "subflow") {
+                    if (changed[node.z].type === 'subflow') {
                       changedSubflows[node.z] = changed[node.z];
                     }
                   }
@@ -349,7 +386,7 @@ class FlowUtils {
     for (id in newConfig.allNodes) {
       if (newConfig.allNodes.hasOwnProperty(id)) {
         node = newConfig.allNodes[id];
-        if (newConfig.allNodes[node.z] && newConfig.allNodes[node.z].type === "subflow") {
+        if (newConfig.allNodes[node.z] && newConfig.allNodes[node.z].type === 'subflow') {
           delete changed[node.id];
         }
       }
@@ -367,7 +404,7 @@ class FlowUtils {
               changed[node.id] = node;
               if (!changed[changed[node.id].z] && newConfig.allNodes[changed[node.id].z]) {
                 changed[changed[node.id].z] = newConfig.allNodes[changed[node.id].z];
-                if (newConfig.allNodes[changed[node.id].z].type === "subflow") {
+                if (newConfig.allNodes[changed[node.id].z].type === 'subflow') {
                   // This subflow instance is inside a subflow. Add the
                   // containing subflow to the stack to mark
                   changedSubflowStack.push(changed[node.id].z);
@@ -406,18 +443,18 @@ class FlowUtils {
 
     // for (id in newConfig.allNodes) {
     //     console.log(
-    //         (added[id]?"+":(changed[id]?"!":" "))+(wiringChanged[id]?"w":" ")+(diff.linked.indexOf(id)!==-1?"~":" "),
+    //         (added[id]?'+':(changed[id]?'!':' '))+(wiringChanged[id]?'w':' ')+(diff.linked.indexOf(id)!==-1?'~':' '),
     //         id,
     //         newConfig.allNodes[id].type,
-    //         newConfig.allNodes[id].name||newConfig.allNodes[id].label||""
+    //         newConfig.allNodes[id].name||newConfig.allNodes[id].label||''
     //     );
     // }
     // for (id in removed) {
     //     console.log(
-    //         "- "+(diff.linked.indexOf(id)!==-1?"~":" "),
+    //         '- '+(diff.linked.indexOf(id)!==-1?'~':' '),
     //         id,
     //         oldConfig.allNodes[id].type,
-    //         oldConfig.allNodes[id].name||oldConfig.allNodes[id].label||""
+    //         oldConfig.allNodes[id].name||oldConfig.allNodes[id].label||''
     //     );
     // }
 
