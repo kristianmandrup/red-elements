@@ -8,20 +8,20 @@ test('RED: text', () => {
   expectObjs(RED.text.bidi, RED.text.format)
 })
 test('RED: i18n', () => {
-  expect(typeof RED.i18n).toBe('object')
+  expectObj(RED.i18n)
 })
 test('RED: events', () => {
-  expect(typeof RED.events).toBe('object')
+  expectObj(RED.events)
 })
 test('RED: comms', () => {
-  expect(typeof RED.comms).toBe('object')
+  expectObj(RED.comms)
 })
 test('RED: settings', () => {
-  expect(typeof RED.settings).toBe('object')
+  expectObj(RED.settings)
 })
 test('RED: user', () => {
-  expect(typeof RED.user).toBe('object')
+  expectObj(RED.user)
 })
 test('RED: validators', () => {
-  expect(typeof RED.validators).toBe('object')
+  expectObj(RED.validators)
 })

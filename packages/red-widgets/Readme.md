@@ -64,8 +64,23 @@ A widget subfolder usually has the following structure:
 
 ### RED
 
-The folder `/red` contains the global `RED` context object.
+The folder `/red` contains the global `RED` context object (service).
 Currently we are only using a fake/mock `RED` object, but we need to use a full (live) one ASAP!
+
+The `Main` class builds the entire `RED` object and should be the way to go for real.
+
+`RED` is currently injected in all classes that subclass `Context`. The `Context` class also contains a lot of useful base functionality such as:
+
+- error handling (via `handleError`)
+- logging (turn on via `logging` property)
+- validation (via `Validator`)
+- and much more...
+
+It would make sense to allow classes to gain all this functionality without injecting RED as well. We thus might need a deeper hierarchy of `BaseContext` and `Context`.
+
+`RED` is actually just a container object for services. We might as well make each service (class) indepently injectable. Then we can specify the exact service requirements for each class via lazy injectors (just like in Angular ans similar frameworks) and avoid polluting with entire RED object each time!
+
+Note that some services have their own service requirements. Injecting services on a per need basis get rid of any problems with circular dependencies as well :)
 
 ## Test architecture
 
