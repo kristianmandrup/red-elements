@@ -110,7 +110,7 @@ export class Logger {
   AUDIT: 98
   METRIC: 99
 
-  constructor(settings) {
+  constructor(settings: any = {}) {
     metricsEnabled = false;
     logHandlers = [];
     var loggerSettings = {};

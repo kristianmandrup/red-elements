@@ -30,7 +30,7 @@ import {
   Util as RedUtil
 } from '../../util'
 
-class FlowUtils extends Context {
+export class FlowUtils extends Context {
   static EnvVarPropertyRE = /^\$\((\S+)\)$/;
   static subflowInstanceRE = /^subflow:(.+)$/;
 

@@ -26,7 +26,7 @@ import {
 } from '../context'
 
 // make into injectable service
-class Util extends Context {
+export class Util extends Context {
   generateId() {
     return (1 + Math.random() * 4294967295).toString(16);
   }

@@ -14,55 +14,116 @@
  * limitations under the License.
  **/
 
-var when = require("when");
-var crypto = require('crypto');
-var settings;
-var log;
+import * as crypto from 'crypto'
 
-var encryptedCredentials = null;
-var credentialCache = {};
-var credentialsDef = {};
-var dirty = false;
+import {
+  Logger
+} from '../../log'
 
-var removeDefaultKey = false;
-var encryptionEnabled = null;
-var encryptionAlgorithm = "aes-256-ctr";
-var encryptionKey;
+import {
+  Settings
+} from '../../settings'
 
-function decryptCredentials(key, credentials) {
-  var creds = credentials["$"];
-  var initVector = new Buffer(creds.substring(0, 32), 'hex');
-  creds = creds.substring(32);
-  var decipher = crypto.createDecipheriv(encryptionAlgorithm, key, initVector);
-  var decrypted = decipher.update(creds, 'base64', 'utf8') + decipher.final('utf8');
-  return JSON.parse(decrypted);
-}
+import {
+  Context
+} from '../../context'
 
-var api = module.exports = {
-  init: function (runtime) {
-    log = runtime.log;
-    settings = runtime.settings;
+export class NodeCredentials extends Context {
+  encryptedCredentials = null;
+  credentialCache = {};
+  credentialsDef = {};
+
+  protected _dirty = false;
+
+  removeDefaultKey = false;
+  encryptionEnabled = null;
+  encryptionAlgorithm = "aes-256-ctr";
+  encryptionKey;
+
+  // TOODO: Fix - use service injection instead
+  log: any = new Logger()
+  settings: any = new Settings()
+
+  // use service injection instead
+  constructor(runtime?: any) {
+    super()
+    let {
+      dirty,
+      credentialCache,
+      credentialsDef,
+      encryptionEnabled
+    } = this
+
     dirty = false;
     credentialCache = {};
     credentialsDef = {};
     encryptionEnabled = null;
-  },
+
+    this.setInstanceVars({
+      dirty,
+      credentialCache,
+      credentialsDef,
+      encryptionEnabled
+    })
+  }
+
+  protected _decryptCredentials(key, credentials) {
+    const {
+      encryptionAlgorithm
+    } = this
+
+    var creds = credentials["$"];
+    var initVector = new Buffer(creds.substring(0, 32), 'hex');
+    creds = creds.substring(32);
+    var decipher = crypto.createDecipheriv(encryptionAlgorithm, key, initVector);
+    var decrypted = decipher.update(creds, 'base64', 'utf8') + decipher.final('utf8');
+    return JSON.parse(decrypted);
+  }
+
 
   /**
    * Sets the credentials from storage.
+   * Loads asynchronously
    */
-  load: function (credentials) {
-    dirty = false;
+  async load(credentials) {
+    const {
+      log,
+      settings,
+      _decryptCredentials
+    } = this
+    let {
+      encryptedCredentials,
+      encryptionKey,
+      removeDefaultKey,
+      encryptionEnabled,
+      dirty,
+      credentialCache
+    } = this
+
+    const {
+      markClean,
+      markDirty,
+      decryptCredentials
+    } = this.rebind([
+        'markClean',
+        'markDirty',
+        'decryptCredentials'
+      ])
+
+    markClean()
     /*
       - if encryptionEnabled === null, check the current configuration
     */
     var credentialsEncrypted = credentials.hasOwnProperty("$") && Object.keys(credentials).length === 1;
-    var setupEncryptionPromise = when.resolve();
+
+    // TODO: use native Promise via async/await instead!
+    let setupEncryption = null
+
     if (encryptionEnabled === null) {
       var defaultKey;
       try {
         defaultKey = settings.get('_credentialSecret');
-      } catch (err) {}
+      } catch (err) { }
       if (defaultKey) {
         defaultKey = crypto.createHash('sha256').update(defaultKey).digest();
       }
@@ -81,7 +142,7 @@ var api = module.exports = {
           log.debug("red/runtime/nodes/credentials.load : default key present. Will migrate");
           if (credentialsEncrypted) {
             try {
-              credentials = decryptCredentials(defaultKey, credentials)
+              credentials = _decryptCredentials(defaultKey, credentials)
             } catch (err) {
               credentials = {};
               log.warn(log._("nodes.credentials.error", {
@@ -89,7 +150,7 @@ var api = module.exports = {
               }))
             }
           }
-          dirty = true;
+          markDirty()
           removeDefaultKey = true;
         }
       } else if (typeof userKey === 'string') {
@@ -104,7 +165,7 @@ var api = module.exports = {
           // Decrypt using default key
           if (credentialsEncrypted) {
             try {
-              credentials = decryptCredentials(defaultKey, credentials)
+              credentials = _decryptCredentials(defaultKey, credentials)
             } catch (err) {
               credentials = {};
               log.warn(log._("nodes.credentials.error", {
@@ -126,7 +187,7 @@ var api = module.exports = {
           // Generate a new key
           defaultKey = crypto.randomBytes(32).toString('hex');
           try {
-            setupEncryptionPromise = settings.set('_credentialSecret', defaultKey);
+            setupEncryption = settings.set('_credentialSecret', defaultKey);
             encryptionKey = crypto.createHash('sha256').update(defaultKey).digest();
           } catch (err) {
             log.debug("red/runtime/nodes/credentials.load : settings unavailable - disabling encryption");
@@ -143,68 +204,94 @@ var api = module.exports = {
     if (encryptionEnabled && !dirty) {
       encryptedCredentials = credentials;
     }
-    return setupEncryptionPromise.then(function () {
-      if (credentials.hasOwnProperty("$")) {
-        // These are encrypted credentials
-        try {
-          credentialCache = decryptCredentials(encryptionKey, credentials)
-        } catch (err) {
-          credentialCache = {};
-          dirty = true;
-          log.warn(log._("nodes.credentials.error", {
-            message: err.toString()
-          }))
-        }
-      } else {
-        credentialCache = credentials;
+
+    await setupEncryption()
+
+    if (credentials.hasOwnProperty("$")) {
+      // These are encrypted credentials
+      try {
+        credentialCache = decryptCredentials(encryptionKey, credentials)
+      } catch (err) {
+        credentialCache = {};
+        markDirty();
+        log.warn(log._("nodes.credentials.error", {
+          message: err.toString()
+        }))
+
       }
-    });
-  },
+    } else {
+      credentialCache = credentials;
+    }
+  }
 
   /**
    * Adds a set of credentials for the given node id.
    * @param id the node id for the credentials
    * @param creds an object of credential key/value pairs
-   * @return a promise for backwards compatibility TODO: can this be removed?
    */
-  add: function (id, creds) {
+  add(id, creds) {
+    const {
+      credentialCache
+    } = this
+    let {
+      _dirty
+    } = this
+
     if (!credentialCache.hasOwnProperty(id) || JSON.stringify(creds) !== JSON.stringify(credentialCache[id])) {
       credentialCache[id] = creds;
-      dirty = true;
+      _dirty = true;
     }
-    return when.resolve();
-  },
+
+    this.setInstanceVars({
+      _dirty
+    })
+  }
 
   /**
    * Gets the credentials for the given node id.
    * @param id the node id for the credentials
    * @return the credentials
    */
-  get: function (id) {
-    return credentialCache[id];
-  },
+  get(id) {
+    return this.credentialCache[id];
+  }
 
   /**
    * Deletes the credentials for the given node id.
    * @param id the node id for the credentials
-   * @return a promise for the saving of credentials to storage
+   * @return a promise for the deletion of credentials to storage ??
    */
-  delete: function (id) {
-    delete credentialCache[id];
-    dirty = true;
-  },
+  delete(id) {
+    delete this.credentialCache[id];
+    this._dirty = true;
+    return this
+  }
 
   /**
    * Deletes any credentials for nodes that no longer exist
    * @param config a flow config
    * @return a promise for the saving of credentials to storage
    */
-  clean: function (config) {
+  clean(config) {
+    const {
+      credentialCache,
+    } = this
+    let {
+      dirty
+    } = this
+    const {
+      markDirty,
+      extract
+    } = this.rebind([
+        'markDirty',
+        'extract'
+      ])
+
     var existingIds = {};
-    config.forEach(function (n) {
+    config.forEach((n) => {
       existingIds[n.id] = true;
       if (n.credentials) {
-        api.extract(n);
+        extract(n);
       }
     });
     var deletedCredentials = false;
@@ -217,20 +304,24 @@ var api = module.exports = {
       }
     }
     if (deletedCredentials) {
-      dirty = true;
+      markDirty()
     }
-    return when.resolve();
-  },
+    return this
+  }
 
   /**
    * Registers a node credential definition.
    * @param type the node type
    * @param definition the credential definition
    */
-  register: function (type, definition) {
+  register(type, definition) {
+    const {
+      credentialsDef
+    } = this
+
     var dashedType = type.replace(/\s+/g, '-');
     credentialsDef[dashedType] = definition;
-  },
+  }
 
   /**
    * Extracts and stores any credential updates in the provided node.
@@ -244,7 +335,19 @@ var api = module.exports = {
    *
    * @param node the node to extract credentials from
    */
-  extract: function (node) {
+  extract(node) {
+    const {
+      credentialsDef,
+      credentialCache,
+      log
+    } = this
+
+    const {
+      markDirty
+    } = this.rebind([
+        'markDirty'
+      ])
+
     var nodeID = node.id;
     var nodeType = node.type;
     var newCreds = node.credentials;
@@ -270,33 +373,62 @@ var api = module.exports = {
           }
           if (0 === newCreds[cred].length || /^\s*$/.test(newCreds[cred])) {
             delete savedCredentials[cred];
-            dirty = true;
+            markDirty()
             continue;
           }
           if (!savedCredentials.hasOwnProperty(cred) || JSON.stringify(savedCredentials[cred]) !== JSON.stringify(newCreds[cred])) {
             savedCredentials[cred] = newCreds[cred];
-            dirty = true;
+            markDirty()
           }
         }
       }
       credentialCache[nodeID] = savedCredentials;
     }
-  },
+  }
 
   /**
    * Gets the credential definition for the given node type
    * @param type the node type
    * @return the credential definition
    */
-  getDefinition: function (type) {
-    return credentialsDef[type];
-  },
+  getDefinition(type) {
+    return this.credentialsDef[type];
+  }
 
-  dirty: function () {
-    return dirty;
-  },
+  get dirty(): boolean {
+    return this._dirty;
+  }
 
-  export: function () {
+  markDirty() {
+    this._dirty = true
+  }
+
+  markClean() {
+    this._dirty = false
+  }
+
+  async export() {
+    let {
+      dirty,
+      markDirty,
+      markClean,
+      removeDefaultKey
+    } = this
+
+    const {
+      log,
+      settings,
+      credentialCache,
+      encryptedCredentials,
+      encryptionEnabled,
+      encryptionAlgorithm,
+      encryptionKey
+    } = this
+
+    // const {
+    // } = this.rebind([
+    //   ])
+
     var result = credentialCache;
     if (encryptionEnabled) {
       if (dirty) {
@@ -316,7 +448,9 @@ var api = module.exports = {
         result = encryptedCredentials;
       }
     }
-    dirty = false;
+
+    markClean()
+
     if (removeDefaultKey) {
       log.debug("red/runtime/nodes/credentials.export : removing unused default key");
       return settings.delete('_credentialSecret').then(function () {
@@ -324,7 +458,7 @@ var api = module.exports = {
         return result;
       })
     } else {
-      return when.resolve(result);
+      return await result
     }
   }
 }
