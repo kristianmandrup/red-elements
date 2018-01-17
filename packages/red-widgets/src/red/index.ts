@@ -19,7 +19,6 @@ import {
   Events,
   I18n,
   Settings,
-  Validators,
   History,
   Nodes,
 } from '@tecla5/red-runtime/src'
@@ -28,79 +27,19 @@ import {
   TextFormat,
   Bidi,
   Main,
-  User
-} from '../'
-
-console.log({
-  Communications,
-  Events,
-  I18n,
-  Main,
-  Settings,
   User,
   Validators,
-
-  History,
-  Nodes,
-  TextFormat,
-  Bidi,
-})
-
-var ctx: any = {};
-ctx.text = {
-  bidi: new Bidi(),
-  format: new TextFormat()
-}
-ctx.history = new History()
-// ctx.nodes = new Nodes(ctx)
-
-// See legacy/main.js
-// RED.view.init();
-// RED.userSettings.init();
-// RED.user.init();
-// RED.library.init();
-// RED.keyboard.init();
-// RED.palette.init();
-// if (RED.settings.theme('palette.editable') !== false) {
-//     RED.palette.editor.init();
-// }
-
-// RED.sidebar.init();
-// RED.subflow.init();
-// RED.workspaces.init();
-// RED.clipboard.init();
-// RED.search.init();
-// RED.editor.init();
-// RED.diff.init();
-
-// RED.menu.init({id:"btn-sidemenu",options: menuOptions});
-
-// RED.deploy.init(RED.settings.theme("deployButton",null));
-
-// RED.actions.add("core:show-about", showAbout);
-// RED.nodes.init();
-// RED.comms.connect();
-
-ctx.i18n = new I18n()
-ctx.events = new Events()
-ctx.comms = new Communications()
-ctx.settings = new Settings()
-ctx.user = new User()
-ctx.validators = new Validators()
-
-// NOTE: All wired up inside main.loadEditor()
-import {
   Actions,
   Clipboard,
+  Canvas,
   Deploy,
-  Diff,
-  Editor,
+  NodeDiff,
+  NodeEditor,
   Keyboard,
   Library,
   Notifications,
   Search,
-  state,
-  Subflow,
+  // Subflow, // TODO: Extract from original node-red project
   Tray,
   TypeSearch,
   UserSettings,
@@ -110,45 +49,82 @@ import {
   SidebarTabConfig,
   SidebarTabInfo,
   Palette,
-  PaletteEditor
-}
-  from './ui'
+  PaletteEditor,
+  RadialMenu
+} from '../'
 
+var RED: any = {};
+RED.text = {
+  bidi: new Bidi(),
+  format: new TextFormat()
+}
+RED.history = new History()
+RED.nodes = new Nodes()
+
+// See legacy/main.js
+RED.view = new Canvas()
+RED.user = new User()
+
+RED.library = new Library()
+RED.keyboard = new Keyboard()
+RED.palette = new Palette()
+if (RED.settings.theme('palette.editable') !== false) {
+  RED.palette.editor = new PaletteEditor();
+}
+
+RED.sidebar = new Sidebar();
+// RED.subflow.init();
+RED.workspaces = new Workspaces()
+RED.clipboard = new Clipboard()
+RED.search = new Search()
+RED.editor = new NodeEditor()
+RED.diff = new NodeDiff()
+
+// RED.menu.init({id:"btn-sidemenu",options: menuOptions});
+// RED.deploy.init(RED.settings.theme("deployButton",null));
+// RED.actions.add("core:show-about", showAbout);
+
+RED.nodes = new Nodes();
+RED.comms = new Communications().connect()
+
+RED.i18n = new I18n()
+RED.events = new Events()
+RED.settings = new Settings()
+RED.validators = new Validators()
+
+// NOTE: All wired up inside main.loadEditor()
 // // TODO: All UI editor wiring should be done in ui/main loadEditor() method
 
-// ctx.actions = new Actions(ctx)
-// ctx.clipboard = new Clipboard(ctx)
-
-// // RED.settings.theme("deployButton",null
-// var deployCtx = ctx.settings.theme('deployButton', null)
-// ctx.deploy = new Deploy(deployCtx)
-// ctx.diff = new Diff(ctx)
-// ctx.editor = new Editor(ctx)
-// ctx.keyboard = new Keyboard(ctx)
-// ctx.library = new Library(ctx)
-// ctx.notifications = new Notifications(ctx)
-// ctx.search = new Search(ctx)
-// ctx.subflow = new Subflow(ctx)
-// ctx.tray = new Tray(ctx)
-// ctx.typeSearch = new TypeSearch(ctx)
-// ctx.userSettings = new UserSettings(ctx)
-// ctx.utils = new Utils(ctx)
-// ctx.workspaces = new Workspaces(ctx)
-// ctx.sidebar = new Sidebar(ctx)
+RED.actions = new Actions()
+RED.clipboard = new Clipboard()
+const deployCtx = RED.settings.theme('deployButton', null)
+RED.deploy = new Deploy(deployCtx)
+RED.editor = new NodeEditor()
+RED.keyboard = new Keyboard()
+RED.library = new Library()
+RED.notifications = new Notifications()
+RED.search = new Search()
+// RED.subflow = new Subflow()
+RED.tray = new Tray()
+RED.typeSearch = new TypeSearch()
+RED.userSettings = new UserSettings()
+RED.utils = new Utils()
+RED.workspaces = new Workspaces()
+RED.sidebar = new Sidebar()
 
 // // NOTE: created within sidebar constructor
-// // ctx.sidebar.config = new SidebarTabConfig(ctx)
-// // ctx.sidebar.info = new SidebarTabInfo(ctx)
+RED.sidebar.config = new SidebarTabConfig()
+RED.sidebar.info = new SidebarTabInfo()
 
-// ctx.palette = new Palette(ctx)
+RED.palette = new Palette()
 
 // // see above or legacy/main
-// if (ctx.settings.theme('palette.editable') !== false) {
-//   ctx.palette.editor = new PaletteEditor(ctx)
-// }
+if (RED.settings.theme('palette.editable') !== false) {
+  RED.palette.editor = new PaletteEditor()
+}
 
-// ctx.touch = {
-//   radialMenu: new RadialMenu(ctx)
-// }
+RED.touch = {
+  radialMenu: new RadialMenu()
+}
 
-export default ctx
+export default RED

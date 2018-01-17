@@ -7,7 +7,7 @@ const { log } = console
 import {
   INodeSetManager,
   NodeSetManager
-} from './node-set'
+} from './node-set-manager'
 
 import {
   INodeSet
@@ -16,7 +16,7 @@ import {
 import {
   INodeTypeManager,
   NodeTypeManager
-} from './node-type'
+} from './node-type-manager'
 
 import {
   INode

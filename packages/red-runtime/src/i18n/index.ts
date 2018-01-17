@@ -81,7 +81,7 @@ export interface II18n {
 }
 
 // See: https://www.i18next.com/getting-started.html
-export class I18n extends Context {
+export class I18n extends Context implements II18n {
   public i18n: any
   protected catalog: Catalog
 

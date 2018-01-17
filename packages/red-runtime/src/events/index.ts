@@ -29,7 +29,7 @@ export interface IEvents {
   emit(evt, arg)
 }
 
-export class Events extends Context {
+export class Events extends Context implements IEvents {
   public handlers: any = {}
   public lastEmitted: any
 

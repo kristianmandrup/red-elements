@@ -36,7 +36,8 @@ export interface INode {
 /**
  * A single Node definition
  */
-export class Node extends Context {
+export class Node extends Context implements INode {
+  public id: string
   public node_defs = {};
   public nodes = [];
   public configNodes = {};

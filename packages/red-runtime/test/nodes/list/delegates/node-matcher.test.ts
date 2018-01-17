@@ -3,8 +3,8 @@ import {
 } from '../../../..'
 
 import {
-  WorkspaceManager
-} from '../../../../src/nodes/list/workspace-manager'
+  NodeMatcher
+} from '../../../../src/nodes/list/node-matcher'
 
 import {
   fakeNode
@@ -15,20 +15,20 @@ import { expectObj } from '../../../_infra/helpers';
 const $nodes = new Nodes()
 
 function create() {
-  return new WorkspaceManager($nodes)
+  return new NodeMatcher($nodes)
 }
 
-let workspaceManager
+let matcher
 beforeEach(() => {
-  workspaceManager = create()
+  matcher = create()
 })
 
 const { log } = console
 
 const FAKE_RED = {}
 
-test('WorkspaceManager: create', () => {
-  expectObj(workspaceManager)
+test('Matcher: create', () => {
+  expectObj(matcher)
 })
 
 // TODO: more tests

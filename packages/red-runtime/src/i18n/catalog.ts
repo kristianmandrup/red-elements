@@ -12,7 +12,7 @@ export interface ICatalog {
 /**
  * Catalog loader for i18n translation resource bundles
  */
-export class Catalog {
+export class Catalog implements ICatalog {
   constructor(public i18n: I18n) {
   }
 

@@ -20,7 +20,7 @@ import {
 import {
   INodeMatcher,
   NodeMatcher
-} from './matcher'
+} from './node-matcher'
 
 import {
   IConverter,
@@ -55,7 +55,7 @@ import {
 import {
   WorkspaceManager,
   IWorkspaceManager
-} from './workspace'
+} from './workspace-manager'
 
 const { log } = console
 

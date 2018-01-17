@@ -52,7 +52,7 @@ export interface IUndoEvent {
   undoEvent(ev: IEvent): void
 }
 
-export class UndoEvent extends Context {
+export class UndoEvent extends Context implements IUndoEvent {
   public nodes: any
 
   constructor() {

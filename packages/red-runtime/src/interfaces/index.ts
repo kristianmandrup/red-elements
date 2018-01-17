@@ -19,6 +19,10 @@ export {
 }
 
 export {
+  IEvents
+} from '../events'
+
+export {
   INodeSet
 } from '../nodes/interfaces'
 

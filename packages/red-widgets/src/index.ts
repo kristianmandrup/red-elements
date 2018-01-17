@@ -16,6 +16,10 @@ import {
 } from './common'
 
 import {
+  Validators
+} from './validators'
+
+import {
   header
 } from './header'
 
@@ -165,7 +169,8 @@ export const widgets = {
   Search,
   TypeSearch,
   UserSettings,
-  Workspaces
+  Workspaces,
+  Validators
 }
 
 export default libs
@@ -189,7 +194,6 @@ export {
   Bidi,
   Notifications,
   Clipboard,
-  RadialMenu,
   NodeEditor,
   Palette,
   PaletteEditor,
@@ -204,6 +208,8 @@ export {
   Search,
   TypeSearch,
   UserSettings,
-  Workspaces
+  Workspaces,
+  Validators,
+  RadialMenu
 }
 

@@ -52,7 +52,7 @@ export interface ISettings {
 }
 
 const { log } = console
-export class Settings extends Context {
+export class Settings extends Context implements ISettings {
   public loadedSettings: any = {}
 
   protected localStorage: ILocalStorage

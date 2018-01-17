@@ -42,7 +42,7 @@ export interface IHistory {
   peek()
 }
 
-export class History extends Context {
+export class History extends Context implements IHistory {
   public undo_history = [];
   public undo: any = new UndoEvent()
 
