@@ -13,7 +13,7 @@ export interface INodeDef {
 export interface INode {
   id: string,
   name?: string,
-  info?: string,
+  info?: any,
   type: string,
   credentials?: any,
   ports?: any[],

@@ -31,6 +31,7 @@ export interface ILogger {
   debug(msg: any)
   metric()
   audit(msg: ILogMessage, req: any)
+  _: Function
 }
 
 export class Logger extends Context implements ILogger {
@@ -41,6 +42,7 @@ export class Logger extends Context implements ILogger {
   // TODO: Fix - use service injection
   settings = new Settings()
   verbose: boolean
+  _: Function
 
   constructor(settings: any = {}) {
     super()

@@ -14,19 +14,24 @@
  * limitations under the License.
  **/
 export {
-  NodesContext
+  NodesContext,
+  INodesContext
 } from './context'
 
 export {
+  INodeCredentials,
   NodeCredentials
 } from './credentials'
 
 export {
   Flows,
-  FlowUtils
+  FlowUtils,
+  IFlows,
+  IFlowUtils
 } from './flows'
 
 export {
+  IFlow,
   Flow
 } from './flow'
 

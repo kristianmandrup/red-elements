@@ -22,6 +22,7 @@ import clone from 'clone'
 import when from 'when'
 
 import {
+  INodesContext,
   NodesContext
 } from '../context'
 
@@ -44,6 +45,12 @@ import {
   INodesRegistry,
   NodesRegistry
 } from '../registry'
+
+import {
+  IUtil as IRedUtils,
+  Util as RedUtils
+} from '../../util'
+
 
 // TODO: register as services and inject instead!
 import {
@@ -71,6 +78,10 @@ import {
 
 // var deprecated = require("../registry/deprecated");
 
+export interface IFlows {
+
+}
+
 export class Flows extends Context {
   storage = null
   activeConfig = null
@@ -82,6 +93,8 @@ export class Flows extends Context {
   protected _started = false
 
   // TODO: Fix - temporary until proper service injection
+  context: INodesContext = new NodesContext()
+  credentials: INodeCredentials = new NodeCredentials()
   settings: ISettings = new Settings()
   events: IEvents = new Events()
   log: ILogger = new Logger()
@@ -181,6 +194,8 @@ export class Flows extends Context {
     const {
       started,
       storage,
+      context, // service
+      credentials, // service
       log, // service
       flowUtil // service
     } = this
@@ -221,7 +236,7 @@ export class Flows extends Context {
         diff = flowUtil.diffConfigs(activeFlowConfig, newFlowConfig);
       }
       credentials.clean(config);
-      var credsDirty = credentials.dirty();
+      var credsDirty = credentials.dirty;
       configSavePromise = credentials.export().then(function (creds) {
         var saveConfig = {
           flows: config,

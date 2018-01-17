@@ -101,25 +101,25 @@ export class Context {
     return deepEquals(a, b)
   }
 
-  protected _validateArray(value: any[], name: string, methodName: string, info?: string) {
+  protected _validateArray(value: any[], name: string, methodName: string, info?: any) {
     this.validator._validateArray(value, name, methodName, info)
   }
 
-  protected _validateObj(value: object, name: string, methodName: string, info?: string) {
+  protected _validateObj(value: object, name: string, methodName: string, info?: any) {
     this.validator._validateObj(value, name, methodName, info)
   }
-  protected _validateStr(value: string, name: string, methodName: string, info?: string) {
+  protected _validateStr(value: string, name: string, methodName: string, info?: any) {
     this.validator._validateStr(value, name, methodName, info)
   }
-  protected _validateNum(value: number, name: string, methodName: string, info?: string) {
+  protected _validateNum(value: number, name: string, methodName: string, info?: any) {
     this.validator._validateNum(value, name, methodName, info)
   }
 
-  protected _validateBool(value: boolean, name: string, methodName: string, info?: string) {
+  protected _validateBool(value: boolean, name: string, methodName: string, info?: any) {
     this.validator._validateBool(value, name, methodName, info)
   }
 
-  protected _validateJQ(obj: JQuery<HTMLElement>, name, methodName: string, info?: string) {
+  protected _validateJQ(obj: JQuery<HTMLElement>, name, methodName: string, info?: any) {
     this.validator._validateJQ(obj, name, methodName, info)
   }
   protected _validateDefined(value, name: string, methodName: string, info?: any) {
@@ -128,22 +128,22 @@ export class Context {
   protected _validateProps(obj: object, props: string[], methodName: string) {
     this.validator._validateProps(obj, props, methodName)
   }
-  protected _validateNodeSet(node: INodeSet, name: string, methodName: string, info?: string) {
+  protected _validateNodeSet(node: INodeSet, name: string, methodName: string, info?: any) {
     this.validator._validateNodeSet(node, name, methodName, info)
   }
-  protected _validateEvent(ev: IEvent, name: string, methodName: string, info?: string) {
+  protected _validateEvent(ev: IEvent, name: string, methodName: string, info?: any) {
     this.validator._validateEvent(ev, name, methodName, info)
   }
-  protected _validateNode(node: INode, name: string, methodName: string, info?: string) {
+  protected _validateNode(node: INode, name: string, methodName: string, info?: any) {
     this.validator._validateNode(node, name, methodName, info)
   }
-  protected _validateLink(link: ILink, name: string, methodName: string, info?: string) {
+  protected _validateLink(link: ILink, name: string, methodName: string, info?: any) {
     this.validator._validateLink(link, name, methodName, info)
   }
   protected _validateNodeDef(def, name, methodName, info?) {
     this.validator._validateNodeDef(def, name, methodName, info)
   }
-  protected _validateStrOrNum(value, name: string, methodName: string, info?: string) {
+  protected _validateStrOrNum(value, name: string, methodName: string, info?: any) {
     this.validator._validateStrOrNum(value, name, methodName, info)
   }
 }

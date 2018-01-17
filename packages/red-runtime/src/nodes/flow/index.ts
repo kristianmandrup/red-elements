@@ -60,7 +60,8 @@ export class Flow extends Context {
   protected statusNodeMap = {}
 
   // TODO: FIX - see node-red Flow.js
-  protected $global
+  protected $global: any // IFlow ??
+  protected $flow: any // IFlow ??
 
   public nodes: any[] // INode[] ??
   public subflows: any[] // ISubflow[] or IFlow[]
@@ -231,8 +232,10 @@ export class Flow extends Context {
   }
 
   update(_global, _flow) {
-    global = _global;
-    flow = _flow;
+    this.$global = _global;
+
+    // TODO: FIX - see node-red Flow.js
+    this.$flow = _flow;
   }
 
   getNode(id) {
@@ -356,7 +359,9 @@ export class Flow extends Context {
   protected createNode(type, config) {
     const {
       keys,
-      logger
+      logger,
+      typeRegistry,
+      flowUtil
     } = this
     const {
       log,
@@ -367,6 +372,11 @@ export class Flow extends Context {
       ])
 
     var nn = null;
+    // TODO: Fix - see node-red Flow.js
+    // Registry:
+    // function getNodeConstructor(type) {
+    //   var id = nodeTypeToId[type];
+
     var nt = typeRegistry.get(type);
     if (nt) {
       var conf = clone(config);
