@@ -16,7 +16,25 @@ import {
   keys
 } from './constants'
 
-export class Logger extends Context {
+import {
+  ILogMessage
+} from './interfaces'
+
+export interface ILogger {
+  addHandler(func: Function)
+  removeHandler(func: Function)
+  log(msg: ILogMessage)
+  info(msg: any): void
+  warn(msg: any)
+  error(msg: any)
+  trace(msg: any)
+  debug(msg: any)
+  metric()
+  audit(msg: ILogMessage, req: any)
+  _: Function
+}
+
+export class Logger extends Context implements ILogger {
   metricsEnabled: boolean = false
   logHandlers = []
   loggerSettings = {}
@@ -24,6 +42,7 @@ export class Logger extends Context {
   // TODO: Fix - use service injection
   settings = new Settings()
   verbose: boolean
+  _: Function
 
   constructor(settings: any = {}) {
     super()
@@ -62,10 +81,10 @@ export class Logger extends Context {
     this['_'] = i18n._
   }
 
-  addHandler(func) {
+  addHandler(func: Function) {
     this.logHandlers.push(func);
   }
-  removeHandler(func) {
+  removeHandler(func: Function) {
     let {
       logHandlers
     } = this
@@ -76,30 +95,30 @@ export class Logger extends Context {
     }
   }
 
-  log(msg) {
+  log(msg: ILogMessage) {
     msg.timestamp = Date.now();
     this.logHandlers.forEach(function (handler) {
       handler.emit('log', msg);
     });
   }
 
-  info(msg) {
+  info(msg: any): void {
     this.log({ level: keys.INFO, msg: msg });
   }
 
-  warn(msg) {
+  warn(msg: any) {
     this.log({ level: keys.WARN, msg: msg });
   }
 
-  error(msg) {
+  error(msg: any) {
     this.log({ level: keys.ERROR, msg: msg });
   }
 
-  trace(msg) {
+  trace(msg: any) {
     this.log({ level: keys.TRACE, msg: msg });
   }
 
-  debug(msg) {
+  debug(msg: any) {
     this.log({ level: keys.DEBUG, msg: msg });
   }
 
@@ -107,7 +126,7 @@ export class Logger extends Context {
     return this.metricsEnabled;
   }
 
-  audit(msg, req) {
+  audit(msg: ILogMessage, req: any) {
     msg.level = keys.AUDIT;
     if (req) {
       msg.user = req.user;

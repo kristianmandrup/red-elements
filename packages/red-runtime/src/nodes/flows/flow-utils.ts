@@ -17,7 +17,7 @@ import {
   Context
 } from '../../context'
 
-var clone = require('clone');
+import clone from 'clone'
 
 // var redUtil = require('../../util');
 
@@ -30,7 +30,28 @@ import {
   Util as RedUtil
 } from '../../util'
 
-export class FlowUtils extends Context {
+import {
+  INode,
+  IFlow
+} from '../../interfaces'
+
+interface INodeDiffChanges {
+  added: string[]
+  changed: string[]
+  removed: string[]
+  rewired: string[]
+  linked: string[]
+}
+
+
+export interface IFlowUtils {
+  diffNodes(oldNode, newNode): any
+  mapEnvVarProperties(obj: any, prop: string): void
+  parseConfig(config: any): IFlow
+  diffConfigs(oldConfig: any, newConfig: any): any
+}
+
+export class FlowUtils extends Context implements IFlowUtils {
   static EnvVarPropertyRE = /^\$\((\S+)\)$/;
   static subflowInstanceRE = /^subflow:(.+)$/;
 
@@ -43,7 +64,7 @@ export class FlowUtils extends Context {
     super()
   }
 
-  diffNodes(oldNode, newNode) {
+  diffNodes(oldNode: INode, newNode: INode): any {
     const {
       redUtil
     } = this
@@ -70,7 +91,7 @@ export class FlowUtils extends Context {
     return false;
   }
 
-  mapEnvVarProperties(obj, prop) {
+  mapEnvVarProperties(obj: any, prop: string): void {
     const {
       mapEnvVarProperties
     } = this.rebind([
@@ -102,7 +123,7 @@ export class FlowUtils extends Context {
   }
 
 
-  parseConfig(config) {
+  parseConfig(config: any): IFlow {
     const {
       typeRegistry
     } = this
@@ -223,7 +244,7 @@ export class FlowUtils extends Context {
     return flow;
   }
 
-  diffConfigs(oldConfig, newConfig) {
+  diffConfigs(oldConfig: any, newConfig: any) {
     const {
       redUtil
     } = this
@@ -417,7 +438,7 @@ export class FlowUtils extends Context {
       }
     }
 
-    var diff = {
+    var diff: INodeDiffChanges = {
       added: Object.keys(added),
       changed: Object.keys(changed),
       removed: Object.keys(removed),

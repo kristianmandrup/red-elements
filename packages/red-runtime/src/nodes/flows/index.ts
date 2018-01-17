@@ -21,17 +21,50 @@ import {
 import clone from 'clone'
 import when from 'when'
 
-var Flow = require('../flow');
+import {
+  INodesContext,
+  NodesContext
+} from '../context'
 
-var typeRegistry = require("../registry");
-var context = require("../context")
-var credentials = require("../credentials");
+import {
+  IFlow,
+  Flow
+} from '../flow'
+
+import {
+  ISettings,
+  Settings
+} from '../../settings'
+
+import {
+  INodeCredentials,
+  NodeCredentials
+} from '../credentials'
+
+import {
+  INodesRegistry,
+  NodesRegistry
+} from '../registry'
+
+import {
+  IUtil as IRedUtils,
+  Util as RedUtils
+} from '../../util'
+
 
 // TODO: register as services and inject instead!
 import {
+  IFlowUtils,
   FlowUtils
 } from './flow-utils'
+
+export {
+  IFlowUtils,
+  FlowUtils
+}
+
 import {
+  ILogger,
   Logger
 } from '../../log'
 import {
@@ -39,14 +72,18 @@ import {
   IEvents
 } from '../../events'
 import {
+  IUtil as IRedUtil,
   Util as RedUtil
 } from '../../util'
 
-var deprecated = require("../registry/deprecated");
+// var deprecated = require("../registry/deprecated");
+
+export interface IFlows {
+
+}
 
 export class Flows extends Context {
   storage = null
-  settings = null
   activeConfig = null
   activeFlowConfig = null
   activeFlows = {}
@@ -56,10 +93,14 @@ export class Flows extends Context {
   protected _started = false
 
   // TODO: Fix - temporary until proper service injection
+  context: INodesContext = new NodesContext()
+  credentials: INodeCredentials = new NodeCredentials()
+  settings: ISettings = new Settings()
   events: IEvents = new Events()
-  log: any = new Logger()
-  redUtil: any = new RedUtil()
-  flowUtil: any = new FlowUtils()
+  log: ILogger = new Logger()
+  redUtil: IRedUtils = new RedUtils()
+  flowUtil: IFlowUtils = new FlowUtils()
+  typeRegistry: INodesRegistry = new NodesRegistry()
 
   /**
    * TODO:
@@ -153,6 +194,8 @@ export class Flows extends Context {
     const {
       started,
       storage,
+      context, // service
+      credentials, // service
       log, // service
       flowUtil // service
     } = this
@@ -193,7 +236,7 @@ export class Flows extends Context {
         diff = flowUtil.diffConfigs(activeFlowConfig, newFlowConfig);
       }
       credentials.clean(config);
-      var credsDirty = credentials.dirty();
+      var credsDirty = credentials.dirty;
       configSavePromise = credentials.export().then(function (creds) {
         var saveConfig = {
           flows: config,

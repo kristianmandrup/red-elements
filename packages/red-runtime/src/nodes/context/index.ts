@@ -23,6 +23,13 @@ import {
   Context
 } from '../../context'
 
+export interface INodesContext {
+  createContext(id: string, seed: number)
+  get(localId: string, flowId: string): any
+  delete(id: string, flowId: string): void
+  clean(flowConfig: any): void
+}
+
 export class NodesContext extends Context {
   contexts = {}
   globalContext = null
@@ -33,13 +40,13 @@ export class NodesContext extends Context {
     this.globalContext = this.createContext('global', settings.functionGlobalContext || {});
   }
 
-  createContext(id, seed) {
+  createContext(id: string, seed: number) {
     const {
       util
     } = this
 
     var data = seed || {};
-    var obj = seed || {};
+    var obj: any = seed || {};
     obj.get = function get(key) {
       return util.getMessageProperty(data, key);
     };
@@ -50,7 +57,7 @@ export class NodesContext extends Context {
   }
 
 
-  get(localId, flowId) {
+  get(localId: string, flowId: string): any {
     const {
       contexts,
       globalContext
@@ -81,7 +88,7 @@ export class NodesContext extends Context {
     return newContext;
   }
 
-  delete(id, flowId) {
+  delete(id: string, flowId: string): void {
     const {
       contexts
     } = this
@@ -93,7 +100,7 @@ export class NodesContext extends Context {
     delete contexts[contextId];
   }
 
-  clean(flowConfig) {
+  clean(flowConfig: any): void {
     const {
       contexts
     } = this

@@ -14,39 +14,70 @@
  * limitations under the License.
  **/
 
+import {
+  Context
+} from '../../context'
+
 import clone from 'clone'
-import { NodesRegistry } from '../registry/index';
+import {
+  INodesRegistry,
+  NodesRegistry
+} from '../registry/index';
 
 import {
+  IFlowUtils,
   FlowUtils
-} from '../flows/util'
+} from '../flows'
 
 import {
+  ILogger,
   Logger
 } from '../../log'
 import {
-  Util as RedUtil
+  IUtil as IRedUtils,
+  Util as RedUtils
 } from '../../util'
 
-export class Flow {
+import {
+  keys as logKeys
+} from '../../log/constants'
+
+export interface IFlow {
+  nodes: any[] // INode[] ??
+  subflows: any[] // ISubflow[] or IFlow[]
+
+  start(diff)
+  stop(stopList)
+  update(_global, _flow)
+  getNode(id)
+  getActiveNodes()
+}
+
+export class Flow extends Context {
   protected activeNodes = {}
   protected subflowInstanceNodes = {}
   protected catchNodeMap = {}
   protected statusNodeMap = {}
 
-  typeRegistry: any = new NodesRegistry()
-  log: any = new Logger()
-  redUtil: any = new RedUtil()
-  flowUtil: any = new FlowUtils()
+  // TODO: FIX - see node-red Flow.js
+  protected $global: any // IFlow ??
+  protected $flow: any // IFlow ??
 
-  constructor($global, flow) {
-    if (typeof flow === 'undefined') {
-      flow = $global;
-    }
+  public nodes: any[] // INode[] ??
+  public subflows: any[] // ISubflow[] or IFlow[]
+
+  typeRegistry: INodesRegistry = new NodesRegistry()
+  logger: ILogger = new Logger()
+  keys: any = logKeys
+  redUtil: IRedUtils = new RedUtils()
+  flowUtil: IFlowUtils = new FlowUtils()
+
+  constructor(public configs = {}) {
+    super()
   }
 
-  static create($global, conf) {
-    return new Flow($global, conf);
+  static create($global: IFlow, conf: object) {
+    return conf ? new Flow(conf) : $global
   }
 
   start(diff) {
@@ -55,6 +86,22 @@ export class Flow {
     var id;
     this.catchNodeMap = {};
     this.statusNodeMap = {};
+
+    const flow = this
+    const {
+      $global,
+      catchNodeMap,
+      statusNodeMap,
+      activeNodes,
+      subflowInstanceNodes
+    } = this
+    const {
+      createNode,
+      createSubflow
+    } = this.rebind([
+        'createNode',
+        'createSubflow'
+      ])
 
     var configNodes = Object.keys(flow.configs);
     var configNodeAttempts = {};
@@ -111,10 +158,13 @@ export class Flow {
         } else {
           if (!subflowInstanceNodes[id]) {
             try {
-              var nodes = createSubflow(flow.subflows[node.subflow] || global.subflows[node.subflow], node, flow.subflows, global.subflows, activeNodes);
+              var nodes = createSubflow(flow.subflows[node.subflow] ||
+                $global.subflows[node.subflow], node, flow.subflows, $global.subflows, activeNodes);
+
               subflowInstanceNodes[id] = nodes.map(function (n) {
                 return n.id
               });
+
               for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i]) {
                   activeNodes[nodes[i].id] = nodes[i];
@@ -142,58 +192,68 @@ export class Flow {
     }
   }
 
-  stop(stopList) {
-    return when.promise(function (resolve) {
-      var i;
-      if (stopList) {
-        for (i = 0; i < stopList.length; i++) {
-          if (subflowInstanceNodes[stopList[i]]) {
-            // The first in the list is the instance node we already
-            // know about
-            stopList = stopList.concat(subflowInstanceNodes[stopList[i]].slice(1))
-          }
-        }
-      } else {
-        stopList = Object.keys(activeNodes);
-      }
-      var promises = [];
+  async stop(stopList) {
+    const {
+      subflowInstanceNodes,
+      activeNodes
+    } = this
+
+    var i;
+    if (stopList) {
       for (i = 0; i < stopList.length; i++) {
-        var node = activeNodes[stopList[i]];
-        if (node) {
-          delete activeNodes[stopList[i]];
-          if (subflowInstanceNodes[stopList[i]]) {
-            delete subflowInstanceNodes[stopList[i]];
-          }
-          try {
-            var p = node.close();
-            if (p) {
-              promises.push(p);
-            }
-          } catch (err) {
-            node.error(err);
-          }
+        if (subflowInstanceNodes[stopList[i]]) {
+          // The first in the list is the instance node we already
+          // know about
+          stopList = stopList.concat(subflowInstanceNodes[stopList[i]].slice(1))
         }
       }
-      when.settle(promises).then(function () {
-        resolve();
-      });
-    });
+    } else {
+      stopList = Object.keys(activeNodes);
+    }
+    var promises = [];
+    for (i = 0; i < stopList.length; i++) {
+      var node = activeNodes[stopList[i]];
+      if (node) {
+        delete activeNodes[stopList[i]];
+        if (subflowInstanceNodes[stopList[i]]) {
+          delete subflowInstanceNodes[stopList[i]];
+        }
+        try {
+          var p = node.close();
+          if (p) {
+            promises.push(p);
+          }
+        } catch (err) {
+          node.error(err);
+        }
+      }
+    }
+    await Promise.all(promises)
   }
 
   update(_global, _flow) {
-    global = _global;
-    flow = _flow;
+    this.$global = _global;
+
+    // TODO: FIX - see node-red Flow.js
+    this.$flow = _flow;
   }
 
   getNode(id) {
-    return activeNodes[id];
+    return this.activeNodes[id];
   }
 
   getActiveNodes() {
-    return activeNodes;
+    return this.activeNodes;
   }
 
-  handleStatus(node, statusMessage) {
+  protected handleStatus(node, statusMessage) {
+    const {
+      statusNodeMap,
+      activeNodes,
+      catchNodeMap,
+      logger
+    } = this
+
     var targetStatusNodes = null;
     var reportingNode = node;
     var handled = false;
@@ -227,14 +287,21 @@ export class Flow {
     }
   }
 
-  handleError(node, logMessage, msg) {
+  protected $handleError(node, logMessage, msg) {
+    const {
+      logger,
+      catchNodeMap,
+      redUtil,
+      activeNodes
+    } = this
+
     var count = 1;
     if (msg && msg.hasOwnProperty("error")) {
       if (msg.error.hasOwnProperty("source")) {
         if (msg.error.source.id === node.id) {
           count = msg.error.source.count + 1;
           if (count === 10) {
-            node.warn(Log._("nodes.flow.error-loop"));
+            node.warn(logger._("nodes.flow.error-loop"));
             return;
           }
         }
@@ -281,8 +348,35 @@ export class Flow {
     }
   }
 
+  protected log(msg) {
+    this.logger.log(msg)
+  }
+
+  protected error(msg) {
+    this.logger.error(msg)
+  }
+
   protected createNode(type, config) {
+    const {
+      keys,
+      logger,
+      typeRegistry,
+      flowUtil
+    } = this
+    const {
+      log,
+      error,
+    } = this.rebind([
+        'log',
+        'error'
+      ])
+
     var nn = null;
+    // TODO: Fix - see node-red Flow.js
+    // Registry:
+    // function getNodeConstructor(type) {
+    //   var id = nodeTypeToId[type];
+
     var nt = typeRegistry.get(type);
     if (nt) {
       var conf = clone(config);
@@ -295,15 +389,15 @@ export class Flow {
       try {
         nn = new nt(conf);
       } catch (err) {
-        Log.log({
-          level: Log.ERROR,
+        log({
+          level: keys.ERROR,
           id: conf.id,
           type: type,
           msg: err
         });
       }
     } else {
-      Log.error(Log._("nodes.flow.unknown-type", {
+      error(logger._("nodes.flow.unknown-type", {
         type: type
       }));
     }
@@ -311,6 +405,17 @@ export class Flow {
   }
 
   protected createSubflow(sf, sfn, subflows, globalSubflows, activeNodes) {
+    const {
+      redUtil
+    } = this
+    const {
+      createNode,
+      createSubflow
+    } = this.rebind([
+        'createNode',
+        'createSubflow'
+      ])
+
     //console.log("CREATE SUBFLOW",sf.id,sfn.id);
     var nodes = [];
     var node_map = {};
@@ -373,7 +478,9 @@ export class Flow {
 
     // Create a subflow node to accept inbound messages and route appropriately
     var Node = require("../Node");
-    var subflowInstance = {
+
+    // TODO: Fix - IFlow
+    var subflowInstance: any = {
       id: sfn.id,
       type: sfn.type,
       z: sfn.z,

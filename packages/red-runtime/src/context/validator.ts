@@ -14,21 +14,21 @@ import {
 
 export interface IValidator {
   handleError(msg: string, data?: any)
-  _validateArray(value: any[], name: string, methodName: string, info?: string)
-  _validateObj(value: object, name: string, methodName: string, info?: string)
-  _validateStr(value: string, name: string, methodName: string, info?: string)
-  _validateNum(value: number, name: string, methodName: string, info?: string)
-  _validateBool(value: boolean, name: string, methodName: string, info?: string)
-  _validateStrOrNum(value, name: string, methodName: string, info?: string)
+  _validateArray(value: any[], name: string, methodName: string, info?: any)
+  _validateObj(value: object, name: string, methodName: string, info?: any)
+  _validateStr(value: string, name: string, methodName: string, info?: any)
+  _validateNum(value: number, name: string, methodName: string, info?: any)
+  _validateBool(value: boolean, name: string, methodName: string, info?: any)
+  _validateStrOrNum(value, name: string, methodName: string, info?: any)
 
-  _validateJQ(obj: JQuery<HTMLElement>, name, methodName: string, info?: string)
+  _validateJQ(obj: JQuery<HTMLElement>, name, methodName: string, info?: any)
   _validateDefined(value, name: string, methodName: string, info?: any)
   _validateProps(obj: object, props: string[], methodName: string)
-  _validateNodeSet(node: INodeSet, name: string, methodName: string, info?: string)
-  _validateEvent(ev: IEvent, name: string, methodName: string, info?: string)
-  _validateNode(node: INode, name: string, methodName: string, info?: string)
-  _validateLink(link: ILink, name: string, methodName: string, info?: string)
-  _validateNodeDef(def: INodeDef, name: string, methodName: string, info?: string)
+  _validateNodeSet(node: INodeSet, name: string, methodName: string, info?: any)
+  _validateEvent(ev: IEvent, name: string, methodName: string, info?: any)
+  _validateNode(node: INode, name: string, methodName: string, info?: any)
+  _validateLink(link: ILink, name: string, methodName: string, info?: any)
+  _validateNodeDef(def: INodeDef, name: string, methodName: string, info?: any)
 
 }
 
@@ -43,7 +43,7 @@ export class Validator {
     this.target.handleError(`[${this.className}] ${msg}`, data)
   }
 
-  _validateArray(value: any[], name: string, methodName: string, info?: string) {
+  _validateArray(value: any[], name: string, methodName: string, info?: any) {
     if (!Array.isArray(value)) {
       this.handleError(`${methodName}: ${name} must be an Array`, {
         [name]: value,
@@ -52,7 +52,7 @@ export class Validator {
     }
   }
 
-  _validateObj(value: object, name: string, methodName: string, info?: string) {
+  _validateObj(value: object, name: string, methodName: string, info?: any) {
     if (typeof value !== 'object') {
       this.handleError(`${methodName}: ${name} must be an Object`, {
         [name]: value,
@@ -61,7 +61,7 @@ export class Validator {
     }
   }
 
-  _validateStr(value: string, name: string, methodName: string, info?: string) {
+  _validateStr(value: string, name: string, methodName: string, info?: any) {
     if (typeof value !== 'string') {
       this.handleError(`${methodName}: ${name} must be a string`, {
         [name]: value,
@@ -70,7 +70,7 @@ export class Validator {
     }
   }
 
-  _validateNum(value: number, name: string, methodName: string, info?: string) {
+  _validateNum(value: number, name: string, methodName: string, info?: any) {
     if (typeof value !== 'number') {
       this.handleError(`${methodName}: ${name} must be a number`, {
         [name]: value,
@@ -79,7 +79,7 @@ export class Validator {
     }
   }
 
-  _validateBool(value: boolean, name: string, methodName: string, info?: string) {
+  _validateBool(value: boolean, name: string, methodName: string, info?: any) {
     if (typeof value !== 'boolean') {
       this.handleError(`${methodName}: ${name} must be a boolean`, {
         [name]: value,
@@ -88,7 +88,7 @@ export class Validator {
     }
   }
 
-  _validateJQ(obj: JQuery<HTMLElement>, name, methodName: string, info?: string) {
+  _validateJQ(obj: JQuery<HTMLElement>, name, methodName: string, info?: any) {
     if (obj instanceof jQuery) return true
     this.handleError(`${methodName}: ${name} must be a $ (jQuery) element`, {
       [name]: obj,
@@ -108,12 +108,12 @@ export class Validator {
     props.map(prop => this._validateDefined(obj[prop], prop, methodName, obj))
   }
 
-  _validateNodeSet(node: INodeSet, name: string, methodName: string, info?: string) {
+  _validateNodeSet(node: INodeSet, name: string, methodName: string, info?: any) {
     this._validateObj(node, name, methodName, info)
     this._validateArray(node.types, `${name}.types`, methodName)
   }
 
-  _validateEvent(ev: IEvent, name: string, methodName: string, info?: string) {
+  _validateEvent(ev: IEvent, name: string, methodName: string, info?: any) {
     this._validateObj(ev, name, methodName, info)
     this._validateStr(ev.t, `${name}.t`, methodName, info)
     if (ev.t === 'multi') {
@@ -130,7 +130,7 @@ export class Validator {
     this._validateBool(ev.changed, `${name}.changed`, methodName, info)
   }
 
-  _validateNode(node: INode, name: string, methodName: string, info?: string) {
+  _validateNode(node: INode, name: string, methodName: string, info?: any) {
     this._validateObj(node, name, methodName, info)
     // this._validateStr(node.id, `${name}.id`, methodName)
     this._validateStr(node.type, `${name}.type`, methodName)
@@ -141,17 +141,17 @@ export class Validator {
   }
 
   // TODO: add more guards/checks
-  _validateLink(link: ILink, name: string, methodName: string, info?: string) {
+  _validateLink(link: ILink, name: string, methodName: string, info?: any) {
     this._validateObj(link, name, methodName, info)
   }
 
-  _validateNodeDef(def: INodeDef, name: string, methodName: string, info?: string) {
+  _validateNodeDef(def: INodeDef, name: string, methodName: string, info?: any) {
     this._validateDefined(def, name, methodName, info)
     this._validateObj(def.defaults, `${name}.defaults`, methodName, info)
     this._validateObj(def.set, `${name}.set`, methodName, info)
   }
 
-  _validateStrOrNum(value, name: string, methodName: string, info?: string) {
+  _validateStrOrNum(value, name: string, methodName: string, info?: any) {
     if (typeof value !== 'string' && typeof value !== 'number') {
       this.handleError(`${methodName}: ${name} must be a string or number`, {
         [name]: value,

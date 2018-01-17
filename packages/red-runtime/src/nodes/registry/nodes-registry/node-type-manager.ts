@@ -4,7 +4,7 @@ import {
 
 import {
   INodeSet
-} from '../interfaces'
+} from '../../interfaces'
 
 export interface INodeTypeManager {
   registerNodeType(nt: string, def: any): NodesRegistry
@@ -14,7 +14,7 @@ export interface INodeTypeManager {
 
 import {
   Context
-} from '../../context'
+} from '../../../context'
 
 const { log } = console
 

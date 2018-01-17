@@ -13,9 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  Context
-} from '../context'
+export {
+  NodesContext,
+  INodesContext
+} from './context'
+
+export {
+  INodeCredentials,
+  NodeCredentials
+} from './credentials'
+
+export {
+  Flows,
+  FlowUtils,
+  IFlows,
+  IFlowUtils
+} from './flows'
+
+export {
+  IFlow,
+  Flow
+} from './flow'
 
 export {
   Nodes,

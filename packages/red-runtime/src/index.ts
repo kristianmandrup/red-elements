@@ -14,7 +14,12 @@ export {
   Nodes,
   NodesRegistry,
   INodes,
-  INodesRegistry
+  INodesRegistry,
+  NodesContext,
+  INodesContext,
+  INodeCredentials,
+  NodeCredentials
+
 } from './nodes'
 
 export {

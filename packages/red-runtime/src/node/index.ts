@@ -13,7 +13,7 @@ export interface INodeDef {
 export interface INode {
   id: string,
   name?: string,
-  info?: string,
+  info?: any,
   type: string,
   credentials?: any,
   ports?: any[],
@@ -31,6 +31,7 @@ export interface INode {
   z?: string, // used for subflow ID compare, so must be a string
   dirty?: boolean,
   i?: number
+  context?()
 }
 
 /**

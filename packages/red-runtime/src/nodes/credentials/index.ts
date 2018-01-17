@@ -28,13 +28,23 @@ import {
   Context
 } from '../../context'
 
+export interface INodeCredentials {
+  load(credentials: any): Promise<any>
+  add(id: string, creds: any): INodeCredentials
+  get(id: string): any
+  delete(id: string): INodeCredentials
+  clean(config: any): INodeCredentials
+  register(type: string, definition: any): INodeCredentials
+  export(): Promise<any>
+  dirty: boolean
+}
+
 export class NodeCredentials extends Context {
+  protected _dirty = false;
+
   encryptedCredentials = null;
   credentialCache = {};
   credentialsDef = {};
-
-  protected _dirty = false;
-
   removeDefaultKey = false;
   encryptionEnabled = null;
   encryptionAlgorithm = "aes-256-ctr";
@@ -85,7 +95,7 @@ export class NodeCredentials extends Context {
    * Sets the credentials from storage.
    * Loads asynchronously
    */
-  async load(credentials) {
+  async load(credentials: any): Promise<any> {
     const {
       log,
       settings,
@@ -229,7 +239,7 @@ export class NodeCredentials extends Context {
    * @param id the node id for the credentials
    * @param creds an object of credential key/value pairs
    */
-  add(id, creds) {
+  add(id: string, creds: any): INodeCredentials {
     const {
       credentialCache
     } = this
@@ -245,6 +255,7 @@ export class NodeCredentials extends Context {
     this.setInstanceVars({
       _dirty
     })
+    return this
   }
 
   /**
@@ -252,7 +263,7 @@ export class NodeCredentials extends Context {
    * @param id the node id for the credentials
    * @return the credentials
    */
-  get(id) {
+  get(id: string): any {
     return this.credentialCache[id];
   }
 
@@ -261,7 +272,7 @@ export class NodeCredentials extends Context {
    * @param id the node id for the credentials
    * @return a promise for the deletion of credentials to storage ??
    */
-  delete(id) {
+  delete(id: string): INodeCredentials {
     delete this.credentialCache[id];
     this._dirty = true;
     return this
@@ -272,7 +283,7 @@ export class NodeCredentials extends Context {
    * @param config a flow config
    * @return a promise for the saving of credentials to storage
    */
-  clean(config) {
+  clean(config: any): INodeCredentials {
     const {
       credentialCache,
     } = this
@@ -314,13 +325,14 @@ export class NodeCredentials extends Context {
    * @param type the node type
    * @param definition the credential definition
    */
-  register(type, definition) {
+  register(type: string, definition: any): INodeCredentials {
     const {
       credentialsDef
     } = this
 
     var dashedType = type.replace(/\s+/g, '-');
     credentialsDef[dashedType] = definition;
+    return this
   }
 
   /**
@@ -399,15 +411,15 @@ export class NodeCredentials extends Context {
     return this._dirty;
   }
 
-  markDirty() {
+  protected markDirty() {
     this._dirty = true
   }
 
-  markClean() {
+  protected markClean() {
     this._dirty = false
   }
 
-  async export() {
+  async export(): Promise<any> {
     let {
       dirty,
       markDirty,

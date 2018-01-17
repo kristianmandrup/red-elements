@@ -15,10 +15,12 @@
  **/
 
 export {
+  ILogHandler,
   LogHandler
 } from './log-handler'
 
 export {
+  ILogger,
   Logger
 } from './logger'
 
