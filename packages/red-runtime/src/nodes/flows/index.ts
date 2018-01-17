@@ -14,8 +14,12 @@
  * limitations under the License.
  **/
 
-var clone = require("clone");
-var when = require("when");
+import {
+  Context
+} from '../../context'
+
+import clone from 'clone'
+import when from 'when'
 
 var Flow = require('../flow');
 
@@ -23,69 +27,75 @@ var typeRegistry = require("../registry");
 var context = require("../context")
 var credentials = require("../credentials");
 
-var flowUtil = require("./util");
-var log = require("../../log");
-var events = require("../../events");
-var redUtil = require("../../util");
+// TODO: register as services and inject instead!
+import {
+  Util as FlowUtil
+} from './util'
+import {
+  Log
+} from '../../log'
+import {
+  Events,
+  IEvents
+} from '../../events'
+import {
+  Util as RedUtil
+} from '../../util'
+
 var deprecated = require("../registry/deprecated");
 
-var storage = null;
-var settings = null;
+export class Flows extends Context {
+  storage = null
+  settings = null
+  activeConfig = null
+  activeFlowConfig = null
+  activeFlows = {}
+  activeNodesToFlow = {}
+  subflowInstanceNodeMap = {}
+  typeEventRegistered = false
+  protected _started = false
 
-var activeConfig = null;
-var activeFlowConfig = null;
+  // TODO: Fix - temporary until proper service injection
+  events: IEvents = new Events()
+  log: any = new Log()
+  redUtil: any = new RedUtil()
+  flowUtil: any = new FlowUtil()
 
-var activeFlows = {};
-var started = false;
-
-var activeNodesToFlow = {};
-var subflowInstanceNodeMap = {};
-
-var typeEventRegistered = false;
-
-// get: getNode,
-// eachNode: eachNode,
-
-//   /**
-//    * Gets the current flow configuration
-//    */
-//   getFlows: getFlows,
-/**
- * Starts the current flow configuration
- */
-// startFlows: start,
-
-//   /**
-//    * Stops the current flow configuration
-//    * @return a promise for the stopping of the flow
-//    */
-//   stopFlows: stop,
-
-//     get started() {
-//   return started
-// },
-
-// handleError: handleError,
-//   handleStatus: handleStatus,
-
-//     checkTypeInUse: checkTypeInUse,
-
-//       addFlow: addFlow,
-//         getFlow: getFlow,
-//           updateFlow: updateFlow,
-//             removeFlow: removeFlow,
-//               disableFlow: null,
-//                 enableFlow: null
-
-// };
-
-export class Flows {
+  /**
+   * TODO:
+   * inject as services
+   * - events: Event
+   * - log: Logger
+   * - flowUtil: Util
+   *
+   * @param runtime - NOT NEEDED, use service injection!
+   */
   constructor(runtime) {
+    super()
+    let {
+      started,
+      settings,
+      storage,
+      typeEventRegistered,
+      activeFlowConfig
+    } = this
+
+    const {
+      events,
+      log
+    } = this
+
+    const {
+      startFlows
+    } = this.rebind([
+        'startFlows'
+      ])
+
     if (started) {
       throw new Error("Cannot init without a stop");
     }
-    settings = runtime.settings;
-    storage = runtime.storage;
+    settings = runtime.settings; // service
+    storage = runtime.storage; // service
     started = false;
     if (!typeEventRegistered) {
       events.on('type-registered', function (type) {
@@ -100,20 +110,32 @@ export class Flows {
               events.emit("runtime-event", {
                 id: "runtime-state"
               });
-              start();
+              startFlows();
             }
           }
         }
       });
       typeEventRegistered = true;
     }
+
+    this.setInstanceVars({
+      started,
+      settings,
+      storage,
+      typeEventRegistered
+    })
   }
+
+  get started() {
+    return this._started
+  }
+
   /**
    * Load the current flow configuration from storage
    * @return a promise for the loading of the config
    */
   load() {
-    return setFlows(null, "load", false);
+    return this.setFlows(null, "load", false);
   }
 
   /**
@@ -128,6 +150,27 @@ export class Flows {
    * muteLog - don't emit the standard log messages (used for individual flow api)
    */
   setFlows(_config, type, muteLog) {
+    const {
+      started,
+      storage,
+      log, // service
+      flowUtil // service
+    } = this
+    let {
+      activeFlowConfig,
+      activeConfig,
+    } = this
+
+    const {
+      loadFlows,
+      stopFlows,
+      startFlows
+    } = this.rebind([
+        'loadFlows',
+        'stopFlows',
+        'startFlows'
+      ])
+
     type = type || "full";
 
     var configSavePromise = null;
@@ -172,9 +215,9 @@ export class Flows {
         };
         activeFlowConfig = newFlowConfig;
         if (started) {
-          return stop(type, diff, muteLog).then(function () {
+          return stopFlows(type, diff, muteLog).then(function () {
             context.clean(activeFlowConfig);
-            start(type, diff, muteLog);
+            startFlows(type, diff, muteLog);
             return flowRevision;
           }).otherwise(function (err) { })
         }
@@ -182,6 +225,11 @@ export class Flows {
   }
 
   loadFlows() {
+    const {
+      storage,
+      log // service
+    } = this
+
     return storage.getFlows().then(function (config) {
       log.debug("loaded flow revision: " + config.rev);
       return credentials.load(config.credentials).then(function () {
@@ -196,6 +244,11 @@ export class Flows {
   }
 
   getNode(id) {
+    const {
+      activeNodesToFlow,
+      activeFlows
+    } = this
+
     var node;
     if (activeNodesToFlow[id] && activeFlows[activeNodesToFlow[id]]) {
       return activeFlows[activeNodesToFlow[id]].getNode(id);
@@ -212,6 +265,10 @@ export class Flows {
   }
 
   eachNode(cb) {
+    const {
+      activeFlowConfig
+    } = this
+
     for (var id in activeFlowConfig.allNodes) {
       if (activeFlowConfig.allNodes.hasOwnProperty(id)) {
         cb(activeFlowConfig.allNodes[id]);
@@ -220,11 +277,26 @@ export class Flows {
   }
 
   getFlows() {
-    return activeConfig;
+    return this.activeConfig;
   }
 
 
   delegateError(node, logMessage, msg) {
+    const {
+      activeNodesToFlow,
+      activeFlows,
+      activeFlowConfig,
+      subflowInstanceNodeMap
+    } = this
+
+    const {
+      delegateError,
+      getNode
+    } = this.rebind([
+        'delegateError',
+        'getNode'
+      ])
+
     if (activeFlows[node.z]) {
       activeFlows[node.z].handleError(node, logMessage, msg);
     } else if (activeNodesToFlow[node.z] && activeFlows[activeNodesToFlow[node.z]]) {
@@ -237,6 +309,15 @@ export class Flows {
   }
 
   $handleError(node, logMessage, msg) {
+    const {
+      activeFlowConfig,
+    } = this
+    const {
+      delegateError,
+    } = this.rebind([
+        'delegateError',
+      ])
+
     if (node.z) {
       delegateError(node, logMessage, msg);
     } else {
@@ -250,6 +331,11 @@ export class Flows {
   }
 
   delegateStatus(node, statusMessage) {
+    const {
+      activeFlowConfig,
+      activeFlows,
+      activeNodesToFlow
+    } = this
     if (activeFlows[node.z]) {
       activeFlows[node.z].handleStatus(node, statusMessage);
     } else if (activeNodesToFlow[node.z] && activeFlows[activeNodesToFlow[node.z]]) {
@@ -258,6 +344,16 @@ export class Flows {
   }
 
   handleStatus(node, statusMessage) {
+    const {
+      events, // service
+      activeFlowConfig,
+    } = this
+    const {
+      delegateStatus,
+    } = this.rebind([
+        'delegateStatus',
+      ])
+
     events.emit("node-status", {
       id: node.id,
       status: statusMessage
@@ -274,7 +370,20 @@ export class Flows {
     }
   }
 
-  start(type, diff, muteLog) {
+  startFlows(type, diff, muteLog) {
+    const {
+      events, // service
+      settings, // service
+      log, // service
+      activeFlowConfig,
+      activeFlows,
+      activeNodesToFlow,
+      subflowInstanceNodeMap
+    } = this
+    let {
+      started
+    } = this
+
     //dumpActiveNodes();
     type = type || "full";
     started = true;
@@ -369,7 +478,17 @@ export class Flows {
     return when.resolve();
   }
 
-  stop(type, diff, muteLog) {
+  stopFlows(type, diff, muteLog) {
+    const {
+      log, // service
+      activeFlows,
+      activeNodesToFlow
+    } = this
+    let {
+      _started,
+      subflowInstanceNodeMap
+    } = this
+
     type = type || "full";
     if (!muteLog) {
       if (diff) {
@@ -378,7 +497,7 @@ export class Flows {
         log.info(log._("nodes.flows.stopping-flows"));
       }
     }
-    started = false;
+    _started = false;
     var promises = [];
     var stopList;
     if (type === 'nodes') {
@@ -421,12 +540,25 @@ export class Flows {
             log.info(log._("nodes.flows.stopped-flows"));
           }
         }
+
+        // set instance var
+        this.subflowInstanceNodeMap = subflowInstanceNodeMap
+
         resolve();
       });
     });
   }
 
   checkTypeInUse(id) {
+    const {
+      log
+    } = this
+    const {
+      getFlows,
+    } = this.rebind([
+        'getFlows',
+      ])
+
     var nodeInfo = typeRegistry.getNodeInfo(id);
     if (!nodeInfo) {
       throw new Error(log._("nodes.index.unrecognised-id", {
@@ -445,9 +577,9 @@ export class Flows {
         }
       });
       if (nodesInUse.length > 0) {
-        var msg = nodesInUse.join(", ");
-        var err = new Error(log._("nodes.index.type-in-use", {
-          msg: msg
+        const msg = nodesInUse.join(", ");
+        const err: any = new Error(log._("nodes.index.type-in-use", {
+          msg
         }));
         err.code = "type_in_use";
         throw err;
@@ -456,6 +588,10 @@ export class Flows {
   }
 
   updateMissingTypes() {
+    const {
+      activeFlowConfig
+    } = this
+
     var subflowInstanceRE = /^subflow:(.+)$/;
     activeFlowConfig.missingTypes = [];
 
@@ -475,6 +611,18 @@ export class Flows {
   }
 
   addFlow(flow) {
+    const {
+      activeConfig,
+      activeFlowConfig,
+      log, // service
+      redUtil // service
+    } = this
+    const {
+      setFlows,
+    } = this.rebind([
+        'setFlows',
+      ])
+
     var i, node;
     if (!flow.hasOwnProperty('nodes')) {
       throw new Error('missing nodes property');
@@ -525,6 +673,10 @@ export class Flows {
   }
 
   getFlow(id) {
+    const {
+      activeFlowConfig
+    } = this
+
     var flow;
     if (id === 'global') {
       flow = activeFlowConfig;
@@ -534,7 +686,7 @@ export class Flows {
     if (!flow) {
       return null;
     }
-    var result = {
+    var result: any = {
       id: id
     };
     if (flow.label) {
@@ -589,10 +741,22 @@ export class Flows {
   }
 
   updateFlow(id, newFlow) {
+    const {
+      log, // service
+      activeFlowConfig,
+      activeConfig
+    } = this
+
+    const {
+      setFlows,
+    } = this.rebind([
+        'setFlows',
+      ])
+
     var label = id;
     if (id !== 'global') {
       if (!activeFlowConfig.flows[id]) {
-        var e = new Error();
+        const e: any = new Error();
         e.code = 404;
         throw e;
       }
@@ -644,13 +808,26 @@ export class Flows {
   }
 
   removeFlow(id) {
+    const {
+      log, // service
+      activeFlowConfig,
+      activeConfig
+    } = this
+
+    const {
+      setFlows,
+    } = this.rebind([
+        'setFlows',
+      ])
+
+
     if (id === 'global') {
       // TODO: nls + error code
       throw new Error('not allowed to remove global');
     }
     var flow = activeFlowConfig.flows[id];
     if (!flow) {
-      var e = new Error();
+      const e: any = new Error();
       e.code = 404;
       throw e;
     }

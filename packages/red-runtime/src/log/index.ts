@@ -53,6 +53,10 @@ interface LogSettings {
 }
 
 export class LogHandler {
+  logLevel: number
+  metricsOn: boolean
+  auditOn: boolean
+  handler: Function
 
   // TODO: use LogSettings type
   constructor(settings?: any) {
