@@ -7,9 +7,7 @@ import {
 } from '../../_infra'
 
 // import functions that contain and run test suites for delegates
-import {
-  testFlowManager
-} from './_delegate-tests'
+import * as sharedTests from './shared-tests'
 
 function create() {
   return new Nodes()
@@ -200,29 +198,6 @@ test('Nodes: removeSubflow - by subflow node removes it', () => {
   nodes.addSubflow(subflow)
   nodes.removeSubflow(id)
   let found = nodes.getSubflow(id)
-  expect(found).toBeFalsy()
-})
-
-// TEST all FlowManager delegations
-testFlowManager(nodes)
-
-
-test.only('Nodes: subflowContains - no match', () => {
-  let sfid = 'x'
-  let nodeid = 'a'
-  let subflowConfig = fakeNode({
-    z: sfid,
-    id: sfid,
-    type: 'subflow:config'
-  })
-  let subflow = fakeNode({
-    id: sfid,
-    type: 'config'
-  })
-  nodes.addNode(subflowConfig)
-  nodes.addSubflow(subflow)
-
-  let found = nodes.subflowContains(sfid, nodeid)
   expect(found).toBeFalsy()
 })
 

@@ -17,6 +17,23 @@ import {
   INode
 } from '../../src/interfaces'
 
+export function prepareTests(factories, buildContext) {
+  return Object.keys(factories).map(label => {
+    // essentially the beforeEach test setup using test factory
+    const createTest = factories[label]
+    const context = buildContext()
+
+    const matches = /:- (.+)/.exec(label)
+    if (matches) {
+      context.$label = matches[1]
+    }
+    return {
+      $label: label,
+      $fun: createTest(context)
+    }
+  })
+}
+
 export function fakeNode(override = {}, def = true) {
   let base: INode = {
     id: 'x',
