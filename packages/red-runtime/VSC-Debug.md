@@ -1,10 +1,10 @@
-# Debug Jest Test in Visaul Studio  
+# Debug Jest Test in Visual Studio  
 
 **This file will describe how to debug jest tests in visual studio code editor.**
 
 We should have launch.json file in root directory  named *.vscode*.
 
-*launch.json* have different configration sections we need add below configration for jest test
+*launch.json* have different configuration sections we need add below configuration for jest test
 
 ## Add new section in launch.json
 
@@ -50,11 +50,11 @@ We should have launch.json file in root directory  named *.vscode*.
 
 ### Next Step
 
-Once we have done configuration file click on debug menu on left siderbar as below image and we have our test in dropdown as display below image **Jest Test** for ready to run 
+Once we have done configuration file click on debug menu on left sidebar as below image and we have our test in dropdown as display below image **Jest Test** for ready to run 
 
 ![Debug and Run Test menu](./images/VSDebug.png)
 
-Run the test and we got below message fro started debuggng
+Run the test and we got below message fro started debugging
 
 ```bash
 Debugging with inspector protocol because Node.js v8.9.4 was detected.
