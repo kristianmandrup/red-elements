@@ -29,10 +29,10 @@ var credentials = require("../credentials");
 
 // TODO: register as services and inject instead!
 import {
-  Util as FlowUtil
-} from './util'
+  FlowUtils
+} from './flow-utils'
 import {
-  Log
+  Logger
 } from '../../log'
 import {
   Events,
@@ -57,9 +57,9 @@ export class Flows extends Context {
 
   // TODO: Fix - temporary until proper service injection
   events: IEvents = new Events()
-  log: any = new Log()
+  log: any = new Logger()
   redUtil: any = new RedUtil()
-  flowUtil: any = new FlowUtil()
+  flowUtil: any = new FlowUtils()
 
   /**
    * TODO:
