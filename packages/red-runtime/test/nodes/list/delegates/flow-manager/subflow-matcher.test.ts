@@ -75,21 +75,51 @@ test.only('_matchNodeIsSubflow(match) - matches', () => {
 
 
 test.only('_checkSubflowContains(node) - no match', () => {
+
+  //define matcher
   const matcher = createMatcher('abc', 'abc')
-  const node = fakeNode({
-    // ... ??? set props to NOT match
+
+  // Create node/fakenode for unmatch node parameter
+  let sfid = 'x'
+  let nodeid = 'a'
+
+  let node = fakeNode({
+    z: sfid,
+    id: nodeid,
+    type: 'unknown:hello'
   })
+
+  // const node = fakeNode({
+  //   type: 'unknown:hello'
+  // })
+
   const match = matcher._checkSubflowContains(node)
-  expect(match).toBeTruthy()
+  // dont know what exactly here toBeFalsy or toBeTruthy
+  expect(match).toBeFalsy()
+
 })
 
 test.only('_checkSubflowContains(node) - matches', () => {
-  const matcher = createMatcher('abc', 'abc')
-  const node = fakeNode({
-    // ... ??? set props to match
-  })
-  const match = matcher._checkSubflowContains(node)
-  expect(match).toBeTruthy()
+
+  //define matcher
+  const matcher = createMatcher('x', 'a')
+  // const node = fakeNode({
+  //   type: 'subflow:hello'
+  // })
+
+  // Create node/fakenode for match node parameter with same sfid and nodeid 
+  let sfid = 'x'
+  let nodeid = 'a'  
+  let node = fakeNode({
+    z: sfid,
+    id: sfid,
+    type: 'subflow:config'
+  })   
+
+  const match = matcher._checkSubflowContains(node)  
+  // dont know what exactly here toBeFalsy or toBeTruthy
+  expect(match).toBeFalsy()
+
 })
 
 test.skip('contains - no match', () => {
