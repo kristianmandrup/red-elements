@@ -1,13 +1,11 @@
-import {
-  RED
-} from '../'
+import RED from '../../src/red'
+import { expectObj, expectObjs } from '../../../red-runtime/test/_infra/helpers';
 
 test('RED: history', () => {
-  expect(typeof RED.history).toBe('object')
+  expectObj(RED.history)
 })
 test('RED: text', () => {
-  expect(typeof RED.text.bidi).toBe('object')
-  expect(typeof RED.text.format).toBe('object')
+  expectObjs(RED.text.bidi, RED.text.format)
 })
 test('RED: i18n', () => {
   expect(typeof RED.i18n).toBe('object')

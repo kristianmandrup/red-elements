@@ -1,22 +1,23 @@
 /**
  * Copyright JS Foundation and other contributors, http://js.foundation
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
 import {
   Context,
-  EditableList
-} from '../../context'
+  EditableList,
+  Menu
+} from '../../common'
 
 // import from red-runtime
 import {
@@ -36,7 +37,7 @@ import {
 import {
   Library,
   NodeDiff,
-  Editor,
+  NodeEditor,
   UserSettings,
   Tray,
   Workspaces,
@@ -46,7 +47,9 @@ import {
   SidebarTabConfig,
   SidebarTabInfo,
   Palette,
-  PaletteEditor
+  PaletteEditor,
+  User,
+  Canvas
 } from '../..'
 
 import * as ace from 'brace'
@@ -73,8 +76,8 @@ export class Main extends Context {
 
     $(() => {
 
-      if ((window.location.hostname !== "localhost") && (window.location.hostname !== "127.0.0.1")) {
-        document.title = document.title + " : " + window.location.hostname;
+      if ((window.location.hostname !== 'localhost') && (window.location.hostname !== '127.0.0.1')) {
+        document.title = document.title + ' : ' + window.location.hostname;
       }
 
       // Fix: using normal require: https://github.com/thlorenz/brace/tree/master/ext
@@ -91,7 +94,7 @@ export class Main extends Context {
     const { RED, loadNodes } = this
     $.ajax({
       headers: {
-        "Accept": "application/json"
+        'Accept': 'application/json'
       },
       cache: false,
       url: 'nodes',
@@ -109,16 +112,16 @@ export class Main extends Context {
     const RED = this.RED;
     $.ajax({
       headers: {
-        "Accept": "text/html"
+        'Accept': 'text/html'
       },
       cache: false,
       url: 'nodes',
       success: (data) => {
-        let body = <IBody>$("body").append(data);
+        let body = <IBody>$('body').append(data);
         body.i18n();
-        $("#palette > .palette-spinner").hide();
-        $(".palette-scroll").removeClass("hide");
-        $("#palette-search").removeClass("hide");
+        $('#palette > .palette-spinner').hide();
+        $('.palette-scroll').removeClass('hide');
+        $('#palette-search').removeClass('hide');
         this.loadFlows();
         this.loaded.nodes = {
           time: new Date()
@@ -135,7 +138,7 @@ export class Main extends Context {
 
     $.ajax({
       headers: {
-        "Accept": "application/json",
+        'Accept': 'application/json',
       },
       cache: false,
       url: 'flows',
@@ -154,14 +157,14 @@ export class Main extends Context {
         }
 
         var persistentNotifications = {};
-        RED.comms.subscribe("notification/#", function (topic, msg) {
-          var parts = topic.split("/");
+        RED.comms.subscribe('notification/#', function (topic, msg) {
+          var parts = topic.split('/');
           var notificationId = parts[1];
-          if (notificationId === "runtime-deploy") {
+          if (notificationId === 'runtime-deploy') {
             // handled in ui/deploy.js
             return;
           }
-          if (notificationId === "node") {
+          if (notificationId === 'node') {
             // handled below
             return;
           }
@@ -179,12 +182,12 @@ export class Main extends Context {
             delete persistentNotifications[notificationId];
           }
         });
-        RED.comms.subscribe("status/#", function (topic, msg) {
-          var parts = topic.split("/");
+        RED.comms.subscribe('status/#', function (topic, msg) {
+          var parts = topic.split('/');
           var node = RED.nodes.node(parts[1]);
           if (node) {
-            if (msg.hasOwnProperty("text")) {
-              if (msg.text[0] !== ".") {
+            if (msg.hasOwnProperty('text')) {
+              if (msg.text[0] !== '.') {
                 msg.text = node._(msg.text.toString(), {
                   defaultValue: msg.text.toString()
                 });
@@ -195,11 +198,11 @@ export class Main extends Context {
             RED.view.redraw();
           }
         });
-        RED.comms.subscribe("notification/node/#", function (topic, msg) {
+        RED.comms.subscribe('notification/node/#', function (topic, msg) {
           var i, m;
           var typeList;
           var info;
-          if (topic == "notification/node/added") {
+          if (topic == 'notification/node/added') {
             var addedTypes = [];
             msg.forEach(function (m) {
               var id = m.id;
@@ -207,59 +210,59 @@ export class Main extends Context {
               addedTypes = addedTypes.concat(m.types);
               RED.i18n.loadCatalog(id, function () {
                 $.get('nodes/' + id, function (data) {
-                  $("body").append(data);
+                  $('body').append(data);
                 });
               });
             });
             if (addedTypes.length) {
-              typeList = "<ul><li>" + addedTypes.join("</li><li>") + "</li></ul>";
-              RED.notify(RED._("palette.event.nodeAdded", {
+              typeList = '<ul><li>' + addedTypes.join('</li><li>') + '</li></ul>';
+              RED.notify(RED._('palette.event.nodeAdded', {
                 count: addedTypes.length
-              }) + typeList, "success");
+              }) + typeList, 'success');
             }
-          } else if (topic == "notification/node/removed") {
+          } else if (topic == 'notification/node/removed') {
             for (i = 0; i < msg.length; i++) {
               m = msg[i];
               info = RED.nodes.removeNodeSet(m.id);
               if (info.added) {
-                typeList = "<ul><li>" + m.types.join("</li><li>") + "</li></ul>";
-                RED.notify(RED._("palette.event.nodeRemoved", {
+                typeList = '<ul><li>' + m.types.join('</li><li>') + '</li></ul>';
+                RED.notify(RED._('palette.event.nodeRemoved', {
                   count: m.types.length
-                }) + typeList, "success");
+                }) + typeList, 'success');
               }
             }
-          } else if (topic == "notification/node/enabled") {
+          } else if (topic == 'notification/node/enabled') {
             if (msg.types) {
               info = RED.nodes.getNodeSet(msg.id);
               if (info.added) {
                 RED.nodes.enableNodeSet(msg.id);
-                typeList = "<ul><li>" + msg.types.join("</li><li>") + "</li></ul>";
-                RED.notify(RED._("palette.event.nodeEnabled", {
+                typeList = '<ul><li>' + msg.types.join('</li><li>') + '</li></ul>';
+                RED.notify(RED._('palette.event.nodeEnabled', {
                   count: msg.types.length
-                }) + typeList, "success");
+                }) + typeList, 'success');
               } else {
                 $.get('nodes/' + msg.id, function (data) {
-                  $("body").append(data);
-                  typeList = "<ul><li>" + msg.types.join("</li><li>") + "</li></ul>";
-                  RED.notify(RED._("palette.event.nodeAdded", {
+                  $('body').append(data);
+                  typeList = '<ul><li>' + msg.types.join('</li><li>') + '</li></ul>';
+                  RED.notify(RED._('palette.event.nodeAdded', {
                     count: msg.types.length
-                  }) + typeList, "success");
+                  }) + typeList, 'success');
                 });
               }
             }
-          } else if (topic == "notification/node/disabled") {
+          } else if (topic == 'notification/node/disabled') {
             if (msg.types) {
               RED.nodes.disableNodeSet(msg.id);
-              typeList = "<ul><li>" + msg.types.join("</li><li>") + "</li></ul>";
-              RED.notify(RED._("palette.event.nodeDisabled", {
+              typeList = '<ul><li>' + msg.types.join('</li><li>') + '</li></ul>';
+              RED.notify(RED._('palette.event.nodeDisabled', {
                 count: msg.types.length
-              }) + typeList, "success");
+              }) + typeList, 'success');
             }
-          } else if (topic == "node/upgraded") {
-            RED.notify(RED._("palette.event.nodeUpgraded", {
+          } else if (topic == 'node/upgraded') {
+            RED.notify(RED._('palette.event.nodeUpgraded', {
               module: msg.module,
               version: msg.version
-            }), "success");
+            }), 'success');
             RED.nodes.registry.setModulePendingUpdated(msg.module, msg.version);
           }
           // Refresh flow library to ensure any examples are updated
@@ -291,25 +294,25 @@ export class Main extends Context {
 
     var menuOptions = [];
     menuOptions.push({
-      id: "menu-item-view-menu",
-      label: RED._("menu.label.view.view"),
+      id: 'menu-item-view-menu',
+      label: RED._('menu.label.view.view'),
       options: [
-        // {id:"menu-item-view-show-grid",setting:"view-show-grid",label:RED._("menu.label.view.showGrid"),toggle:true,onselect:"core:toggle-show-grid"},
-        // {id:"menu-item-view-snap-grid",setting:"view-snap-grid",label:RED._("menu.label.view.snapGrid"),toggle:true,onselect:"core:toggle-snap-grid"},
-        // {id:"menu-item-status",setting:"node-show-status",label:RED._("menu.label.displayStatus"),toggle:true,onselect:"core:toggle-status", selected: true},
+        // {id:'menu-item-view-show-grid',setting:'view-show-grid',label:RED._('menu.label.view.showGrid'),toggle:true,onselect:'core:toggle-show-grid'},
+        // {id:'menu-item-view-snap-grid',setting:'view-snap-grid',label:RED._('menu.label.view.snapGrid'),toggle:true,onselect:'core:toggle-snap-grid'},
+        // {id:'menu-item-status',setting:'node-show-status',label:RED._('menu.label.displayStatus'),toggle:true,onselect:'core:toggle-status', selected: true},
         //null,
-        // {id:"menu-item-bidi",label:RED._("menu.label.view.textDir"),options:[
-        //     {id:"menu-item-bidi-default",toggle:"text-direction",label:RED._("menu.label.view.defaultDir"),selected: true, onselect:function(s) { if(s){RED.text.bidi.setTextDirection("")}}},
-        //     {id:"menu-item-bidi-ltr",toggle:"text-direction",label:RED._("menu.label.view.ltr"), onselect:function(s) { if(s){RED.text.bidi.setTextDirection("ltr")}}},
-        //     {id:"menu-item-bidi-rtl",toggle:"text-direction",label:RED._("menu.label.view.rtl"), onselect:function(s) { if(s){RED.text.bidi.setTextDirection("rtl")}}},
-        //     {id:"menu-item-bidi-auto",toggle:"text-direction",label:RED._("menu.label.view.auto"), onselect:function(s) { if(s){RED.text.bidi.setTextDirection("auto")}}}
+        // {id:'menu-item-bidi',label:RED._('menu.label.view.textDir'),options:[
+        //     {id:'menu-item-bidi-default',toggle:'text-direction',label:RED._('menu.label.view.defaultDir'),selected: true, onselect:function(s) { if(s){RED.text.bidi.setTextDirection('')}}},
+        //     {id:'menu-item-bidi-ltr',toggle:'text-direction',label:RED._('menu.label.view.ltr'), onselect:function(s) { if(s){RED.text.bidi.setTextDirection('ltr')}}},
+        //     {id:'menu-item-bidi-rtl',toggle:'text-direction',label:RED._('menu.label.view.rtl'), onselect:function(s) { if(s){RED.text.bidi.setTextDirection('rtl')}}},
+        //     {id:'menu-item-bidi-auto',toggle:'text-direction',label:RED._('menu.label.view.auto'), onselect:function(s) { if(s){RED.text.bidi.setTextDirection('auto')}}}
         // ]},
         // null,
         {
-          id: "menu-item-sidebar",
-          label: RED._("menu.label.sidebar.show"),
+          id: 'menu-item-sidebar',
+          label: RED._('menu.label.sidebar.show'),
           toggle: true,
-          onselect: "core:toggle-sidebar",
+          onselect: 'core:toggle-sidebar',
           selected: true
         },
         null
@@ -317,138 +320,135 @@ export class Main extends Context {
     });
     menuOptions.push(null);
     menuOptions.push({
-      id: "menu-item-import",
-      label: RED._("menu.label.import"),
+      id: 'menu-item-import',
+      label: RED._('menu.label.import'),
       options: [{
-        id: "menu-item-import-clipboard",
-        label: RED._("menu.label.clipboard"),
-        onselect: "core:show-import-dialog"
+        id: 'menu-item-import-clipboard',
+        label: RED._('menu.label.clipboard'),
+        onselect: 'core:show-import-dialog'
       },
       {
-        id: "menu-item-import-library",
-        label: RED._("menu.label.library"),
+        id: 'menu-item-import-library',
+        label: RED._('menu.label.library'),
         options: []
       }
       ]
     });
     menuOptions.push({
-      id: "menu-item-export",
-      label: RED._("menu.label.export"),
+      id: 'menu-item-export',
+      label: RED._('menu.label.export'),
       disabled: true,
       options: [{
-        id: "menu-item-export-clipboard",
-        label: RED._("menu.label.clipboard"),
+        id: 'menu-item-export-clipboard',
+        label: RED._('menu.label.clipboard'),
         disabled: true,
-        onselect: "core:show-export-dialog"
+        onselect: 'core:show-export-dialog'
       },
       {
-        id: "menu-item-export-library",
-        label: RED._("menu.label.library"),
+        id: 'menu-item-export-library',
+        label: RED._('menu.label.library'),
         disabled: true,
-        onselect: "core:library-export"
+        onselect: 'core:library-export'
       }
       ]
     });
     menuOptions.push(null);
     menuOptions.push({
-      id: "menu-item-search",
-      label: RED._("menu.label.search"),
-      onselect: "core:search"
+      id: 'menu-item-search',
+      label: RED._('menu.label.search'),
+      onselect: 'core:search'
     });
     menuOptions.push(null);
     menuOptions.push({
-      id: "menu-item-config-nodes",
-      label: RED._("menu.label.displayConfig"),
-      onselect: "core:show-config-tab"
+      id: 'menu-item-config-nodes',
+      label: RED._('menu.label.displayConfig'),
+      onselect: 'core:show-config-tab'
     });
     menuOptions.push({
-      id: "menu-item-workspace",
-      label: RED._("menu.label.flows"),
+      id: 'menu-item-workspace',
+      label: RED._('menu.label.flows'),
       options: [{
-        id: "menu-item-workspace-add",
-        label: RED._("menu.label.add"),
-        onselect: "core:add-flow"
+        id: 'menu-item-workspace-add',
+        label: RED._('menu.label.add'),
+        onselect: 'core:add-flow'
       },
       {
-        id: "menu-item-workspace-edit",
-        label: RED._("menu.label.rename"),
-        onselect: "core:edit-flow"
+        id: 'menu-item-workspace-edit',
+        label: RED._('menu.label.rename'),
+        onselect: 'core:edit-flow'
       },
       {
-        id: "menu-item-workspace-delete",
-        label: RED._("menu.label.delete"),
-        onselect: "core:remove-flow"
+        id: 'menu-item-workspace-delete',
+        label: RED._('menu.label.delete'),
+        onselect: 'core:remove-flow'
       }
       ]
     });
     menuOptions.push({
-      id: "menu-item-subflow",
-      label: RED._("menu.label.subflows"),
+      id: 'menu-item-subflow',
+      label: RED._('menu.label.subflows'),
       options: [{
-        id: "menu-item-subflow-create",
-        label: RED._("menu.label.createSubflow"),
-        onselect: "core:create-subflow"
+        id: 'menu-item-subflow-create',
+        label: RED._('menu.label.createSubflow'),
+        onselect: 'core:create-subflow'
       },
       {
-        id: "menu-item-subflow-convert",
-        label: RED._("menu.label.selectionToSubflow"),
+        id: 'menu-item-subflow-convert',
+        label: RED._('menu.label.selectionToSubflow'),
         disabled: true,
-        onselect: "core:convert-to-subflow"
+        onselect: 'core:convert-to-subflow'
       },
       ]
     });
     menuOptions.push(null);
     if (RED.settings.theme('palette.editable') !== false) {
       menuOptions.push({
-        id: "menu-item-edit-palette",
-        label: RED._("menu.label.editPalette"),
-        onselect: "core:manage-palette"
+        id: 'menu-item-edit-palette',
+        label: RED._('menu.label.editPalette'),
+        onselect: 'core:manage-palette'
       });
       menuOptions.push(null);
     }
 
     menuOptions.push({
-      id: "menu-item-user-settings",
-      label: RED._("menu.label.settings"),
-      onselect: "core:show-user-settings"
+      id: 'menu-item-user-settings',
+      label: RED._('menu.label.settings'),
+      onselect: 'core:show-user-settings'
     });
     menuOptions.push(null);
 
     menuOptions.push({
-      id: "menu-item-keyboard-shortcuts",
-      label: RED._("menu.label.keyboardShortcuts"),
-      onselect: "core:show-help"
+      id: 'menu-item-keyboard-shortcuts',
+      label: RED._('menu.label.keyboardShortcuts'),
+      onselect: 'core:show-help'
     });
     menuOptions.push({
-      id: "menu-item-help",
-      label: RED.settings.theme("menu.menu-item-help.label", RED._("menu.label.help")),
-      href: RED.settings.theme("menu.menu-item-help.url", "http://nodered.org/docs")
+      id: 'menu-item-help',
+      label: RED.settings.theme('menu.menu-item-help.label', RED._('menu.label.help')),
+      href: RED.settings.theme('menu.menu-item-help.url', 'http://nodered.org/docs')
     });
     menuOptions.push({
-      id: "menu-item-node-red-version",
-      label: "v" + RED.settings.version,
-      onselect: "core:show-about"
+      id: 'menu-item-node-red-version',
+      label: 'v' + RED.settings.version,
+      onselect: 'core:show-about'
     });
 
-    // TODO: All UI editor wiring should be done in ui/main loadEditor() method
+    RED.actions = new Actions()
+    RED.clipboard = new Clipboard()
 
-    RED.actions = new Actions(RED)
-    RED.clipboard = new Clipboard(RED)
-
-    // RED.settings.theme("deployButton",null
-    var deployCtx = RED.settings.theme('deployButton', null)
+    const deployCtx = RED.settings.theme('deployButton', null)
     RED.deploy = new Deploy(deployCtx)
     RED.diff = new NodeDiff()
-    RED.editor = new Editor()
-    RED.keyboard = new Keyboard(RED)
+    RED.editor = new NodeEditor()
+    RED.keyboard = new Keyboard()
     RED.library = new Library()
-    RED.notifications = new Notifications(RED)
+    RED.notifications = new Notifications()
     RED.search = new Search()
     RED.subflow = new Subflow()
     RED.tray = new Tray()
     RED.typeSearch = new TypeSearch()
     RED.userSettings = new UserSettings()
-    RED.utils = new Utils(RED)
+    RED.utils = new Utils()
     RED.workspaces = new Workspaces()
     RED.sidebar = new Sidebar()
 
@@ -464,37 +464,42 @@ export class Main extends Context {
     }
     RED.nodes = new Nodes()
 
-    // RED.view.init();
-    // RED.userSettings.init();
-    // RED.user.init();
-    // RED.library.init();
-    // RED.keyboard.init();
-    // RED.palette.init();
-    // if (RED.settings.theme('palette.editable') !== false) {
-    //     RED.palette.editor.init();
-    // }
+    RED.view = new Canvas()
+    RED.user = new User()
 
-    // RED.sidebar.init();
+    RED.library = new Library()
+    RED.keyboard = new Keyboard()
+    RED.palette = new Palette()
+    if (RED.settings.theme('palette.editable') !== false) {
+      RED.palette.editor = new PaletteEditor();
+    }
+
+    RED.sidebar = new Sidebar();
+
+    // ================================================
+    // TODO: Extract from original node-red project!!!
+    // ================================================
     // RED.subflow.init();
-    // RED.workspaces.init();
-    // RED.clipboard.init();
-    // RED.search.init();
-    // RED.editor.init();
-    // RED.diff.init();
 
-    // RED.menu.init({
-    //     id: "btn-sidemenu",
-    //     options: menuOptions
-    // });
+    RED.workspaces = new Workspaces()
+    RED.clipboard = new Clipboard()
+    RED.search = new Search()
+    RED.editor = new NodeEditor()
+    RED.diff = new NodeDiff()
 
-    // RED.deploy.init(RED.settings.theme("deployButton", null));
+    RED.menu = new Menu({
+      id: 'btn-sidemenu',
+      options: menuOptions
+    });
 
-    RED.actions.add("core:show-about", showAbout);
-    // RED.nodes.init();
+    RED.deploy = new Deploy(RED.settings.theme('deployButton', null));
+
+    RED.actions.add('core:show-about', showAbout);
+    RED.nodes = new Nodes()
     RED.comms.connect();
 
-    $("#main-container").show();
-    $(".header-toolbar").show();
+    $('#main-container').show();
+    $('.header-toolbar').show();
 
     this.loadNodeList();
 
