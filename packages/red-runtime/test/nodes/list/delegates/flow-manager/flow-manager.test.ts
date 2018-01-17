@@ -7,6 +7,10 @@ import {
 } from '../../../../../src/nodes/list/flow-manager'
 
 import {
+  testFlowManager
+} from '../../_delegate-tests'
+
+import {
   fakeNode
 } from '../../../../_infra'
 
@@ -25,42 +29,7 @@ const { log } = console
 
 const FAKE_RED = {}
 
-test.only('FlowManager: subflowContains - matches', () => {
-  let sfid = 'x'
-  let nodeid = 'a'
-  let subflowConfig = fakeNode({
-    z: sfid,
-    id: sfid,
-    type: 'subflow:config'
-  })
-  let subflow = fakeNode({
-    id: sfid,
-    type: 'config'
-  })
+// Reuse delegate tests for Delegate class
+// avoids test code duplication!!!
+testFlowManager($nodes, flowManager)
 
-  $nodes.addNode(subflowConfig)
-  $nodes.addSubflow(subflow)
-
-  let found = flowManager.subflowContains(sfid, nodeid)
-  expect(found).toBeTruthy()
-})
-
-test.only('FlowManager: subflowContains - no match', () => {
-  let sfid = 'x'
-  let nodeid = 'a'
-  let subflowConfig = fakeNode({
-    z: sfid,
-    id: sfid,
-    type: 'subflow:config'
-  })
-  let subflow = fakeNode({
-    id: sfid,
-    type: 'config'
-  })
-
-  $nodes.addNode(subflowConfig)
-  $nodes.addSubflow(subflow)
-
-  let found = flowManager.subflowContains(sfid, nodeid)
-  expect(found).toBeFalsy()
-})
