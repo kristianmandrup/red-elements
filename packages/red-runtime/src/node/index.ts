@@ -31,6 +31,7 @@ export interface INode {
   z?: string, // used for subflow ID compare, so must be a string
   dirty?: boolean,
   i?: number
+  context?()
 }
 
 /**

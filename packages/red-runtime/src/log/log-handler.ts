@@ -14,6 +14,15 @@ import {
 interface LogSettings {
 }
 
+import {
+  ILogMessage
+} from './interfaces'
+
+export interface ILogHandler {
+  shouldReportMessage(msglevel: number)
+  consoleLogger(msg: ILogMessage)
+}
+
 export class LogHandler extends Context {
   logLevel: number
   metricsOn: boolean
@@ -60,7 +69,7 @@ export class LogHandler extends Context {
   }
 
 
-  shouldReportMessage(msglevel) {
+  shouldReportMessage(msglevel: number) {
     const {
       METRIC,
       AUDIT
@@ -70,7 +79,7 @@ export class LogHandler extends Context {
       msglevel <= this.logLevel;
   }
 
-  consoleLogger(msg) {
+  consoleLogger(msg: ILogMessage) {
     const {
       verbose
     } = this

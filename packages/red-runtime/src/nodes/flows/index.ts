@@ -21,17 +21,43 @@ import {
 import clone from 'clone'
 import when from 'when'
 
-var Flow = require('../flow');
+import {
+  NodesContext
+} from '../context'
 
-var typeRegistry = require("../registry");
-var context = require("../context")
-var credentials = require("../credentials");
+import {
+  IFlow,
+  Flow
+} from '../flow'
+
+import {
+  ISettings,
+  Settings
+} from '../../settings'
+
+import {
+  INodeCredentials,
+  NodeCredentials
+} from '../credentials'
+
+import {
+  INodesRegistry,
+  NodesRegistry
+} from '../registry'
 
 // TODO: register as services and inject instead!
 import {
+  IFlowUtils,
   FlowUtils
 } from './flow-utils'
+
+export {
+  IFlowUtils,
+  FlowUtils
+}
+
 import {
+  ILogger,
   Logger
 } from '../../log'
 import {
@@ -39,14 +65,14 @@ import {
   IEvents
 } from '../../events'
 import {
+  IUtil as IRedUtil,
   Util as RedUtil
 } from '../../util'
 
-var deprecated = require("../registry/deprecated");
+// var deprecated = require("../registry/deprecated");
 
 export class Flows extends Context {
   storage = null
-  settings = null
   activeConfig = null
   activeFlowConfig = null
   activeFlows = {}
@@ -56,10 +82,12 @@ export class Flows extends Context {
   protected _started = false
 
   // TODO: Fix - temporary until proper service injection
+  settings: ISettings = new Settings()
   events: IEvents = new Events()
-  log: any = new Logger()
-  redUtil: any = new RedUtil()
-  flowUtil: any = new FlowUtils()
+  log: ILogger = new Logger()
+  redUtil: IRedUtils = new RedUtils()
+  flowUtil: IFlowUtils = new FlowUtils()
+  typeRegistry: INodesRegistry = new NodesRegistry()
 
   /**
    * TODO:

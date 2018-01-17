@@ -25,13 +25,36 @@ import {
   Context
 } from '../context'
 
+import {
+  INode
+} from '../interfaces'
+
+interface IHttpMessage {
+  res: any
+  req: any
+}
+
+export interface IUtil {
+  generateId(): string
+  ensureString(o: any): string
+  ensureBuffer(o: any): Buffer
+  compareObjects(obj1, obj2)
+  normalisePropertyExpression(str)
+
+  cloneMessage(msg: IHttpMessage): string
+  getMessageProperty(msg: IHttpMessage, expr)
+  setMessageProperty(msg: IHttpMessage, prop, value, createMissing)
+
+  evaluateNodeProperty(value: string, type: string, node: INode, msg: IHttpMessage)
+}
+
 // make into injectable service
 export class Util extends Context {
-  generateId() {
+  generateId(): string {
     return (1 + Math.random() * 4294967295).toString(16);
   }
 
-  ensureString(o) {
+  ensureString(o: any): string {
     if (Buffer.isBuffer(o)) {
       return o.toString();
     } else if (typeof o === "object") {
@@ -42,7 +65,7 @@ export class Util extends Context {
     return "" + o;
   }
 
-  ensureBuffer(o) {
+  ensureBuffer(o: any): Buffer {
     if (Buffer.isBuffer(o)) {
       return o;
     } else if (typeof o === "object") {
@@ -53,7 +76,7 @@ export class Util extends Context {
     return new Buffer(o);
   }
 
-  cloneMessage(msg) {
+  cloneMessage(msg: IHttpMessage): string {
     // Temporary fix for #97
     // TODO: remove this http-node-specific fix somehow
     var req = msg.req;
@@ -248,7 +271,7 @@ export class Util extends Context {
     return parts;
   }
 
-  getMessageProperty(msg, expr) {
+  getMessageProperty(msg: IHttpMessage, expr) {
     const {
       normalisePropertyExpression
     } = this.rebind([
@@ -268,7 +291,7 @@ export class Util extends Context {
     return result;
   }
 
-  setMessageProperty(msg, prop, value, createMissing) {
+  setMessageProperty(msg: IHttpMessage, prop, value, createMissing) {
     const {
       normalisePropertyExpression
     } = this.rebind([
@@ -284,7 +307,7 @@ export class Util extends Context {
     var msgPropParts = normalisePropertyExpression(prop);
     var depth = 0;
     var length = msgPropParts.length;
-    var obj = msg;
+    var obj: any = msg;
     var key;
     for (var i = 0; i < length - 1; i++) {
       key = msgPropParts[i];
@@ -331,7 +354,7 @@ export class Util extends Context {
     }
   }
 
-  evaluateNodeProperty(value, type, node, msg) {
+  evaluateNodeProperty(value: string, type: string, node: INode, msg: IHttpMessage) {
     const {
       getMessageProperty
     } = this.rebind([
