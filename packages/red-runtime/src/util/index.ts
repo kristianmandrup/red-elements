@@ -14,11 +14,19 @@
  * limitations under the License.
  **/
 
-var clone = require("clone");
-var jsonata = require("jsonata");
+import {
+  clone
+} from 'clone'
+import {
+  jsonata
+} from 'jsonata'
+
+import {
+  Context
+} from '../context'
 
 // make into injectable service
-class Util {
+class Util extends Context {
   generateId() {
     return (1 + Math.random() * 4294967295).toString(16);
   }
@@ -65,6 +73,12 @@ class Util {
   }
 
   compareObjects(obj1, obj2) {
+    const {
+      compareObjects
+    } = this.rebind([
+        'compareObjects'
+      ])
+
     var i;
     if (obj1 === obj2) {
       return true;
@@ -235,6 +249,12 @@ class Util {
   }
 
   getMessageProperty(msg, expr) {
+    const {
+      normalisePropertyExpression
+    } = this.rebind([
+        'normalisePropertyExpression'
+      ])
+
     var result = null;
     if (expr.indexOf('msg.') === 0) {
       expr = expr.substring(4);
@@ -249,6 +269,12 @@ class Util {
   }
 
   setMessageProperty(msg, prop, value, createMissing) {
+    const {
+      normalisePropertyExpression
+    } = this.rebind([
+        'normalisePropertyExpression'
+      ])
+
     if (typeof createMissing === 'undefined') {
       createMissing = (typeof value !== 'undefined');
     }
@@ -306,6 +332,12 @@ class Util {
   }
 
   evaluateNodeProperty(value, type, node, msg) {
+    const {
+      getMessageProperty
+    } = this.rebind([
+        'getMessageProperty'
+      ])
+
     if (type === 'str') {
       return "" + value;
     } else if (type === 'num') {
