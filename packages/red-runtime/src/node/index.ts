@@ -31,6 +31,11 @@ export interface INode {
   z?: string, // used for subflow ID compare, so must be a string
   dirty?: boolean,
   i?: number
+  module?: any
+  types?: any
+  enabled?: boolean
+  local?: boolean
+  err?: Error
   context?()
 }
 
@@ -52,6 +57,7 @@ export class Node extends Context implements INode {
   public dirty = false;
 
   public type: string
+  public module?: any
 
   constructor() {
     super()
