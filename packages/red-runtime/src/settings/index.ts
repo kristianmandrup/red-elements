@@ -23,6 +23,7 @@ import {
 } from './localstorage'
 
 export interface ISettings {
+  userDir: string
   hasLocalStorage(): boolean
   get(key: string): string
   set(key: string, value: any)
@@ -53,7 +54,8 @@ export interface ISettings {
 
 const { log } = console
 export class Settings extends Context implements ISettings {
-  public loadedSettings: any = {}
+  userDir: string
+  loadedSettings: any = {}
 
   protected localStorage: ILocalStorage
 

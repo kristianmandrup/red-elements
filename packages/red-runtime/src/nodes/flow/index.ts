@@ -43,8 +43,11 @@ import {
 } from '../../log/constants'
 
 export interface IFlow {
+  id: string
+  label: string
   nodes: any[] // INode[] ??
   subflows: any[] // ISubflow[] or IFlow[]
+  configs: any[]
 
   start(diff)
   stop(stopList)
@@ -76,7 +79,7 @@ export class Flow extends Context {
     super()
   }
 
-  static create($global: IFlow, conf: object) {
+  static create($global: IFlow, conf?: object) {
     return conf ? new Flow(conf) : $global
   }
 

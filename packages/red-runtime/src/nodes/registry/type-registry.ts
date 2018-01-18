@@ -63,7 +63,11 @@ export interface IRegistry {
   getAllNodeConfigs(lang)
 
   getNodeConfig(id: string, lang: string)
+
+
+  get(type: string) // alias: getNodeConstructor (TODO: confirm with node-red!)
   getNodeConstructor(type: string)
+
   clear()
   getTypeId(type: string)
   enableNodeSet(typeOrId: string)
@@ -88,6 +92,11 @@ export class Registry extends Context implements IRegistry {
 
   constructor() {
     super()
+  }
+
+  // alias
+  get(type: string) {
+    return this.getNodeConstructor(type)
   }
 
   /**

@@ -18,8 +18,15 @@ import {
   Context
 } from '../../context'
 
+import {
+  deprecated
+} from '../registry/deprecated'
+
+import {
+  INode
+} from '../../node'
+
 import clone from 'clone'
-import when from 'when'
 
 import {
   INodesContext,
@@ -45,6 +52,11 @@ import {
   INodesRegistry,
   NodesRegistry
 } from '../registry'
+
+import {
+  IRegistry,
+  Registry
+} from '../registry/type-registry'
 
 import {
   IUtil as IRedUtils,
@@ -79,7 +91,18 @@ import {
 // var deprecated = require("../registry/deprecated");
 
 export interface IFlows {
+  started: boolean
+  load(): any
+  setFlows(_config: any, type: string, muteLog: boolean): void
+  loadFlows(): any // TODO: returns IFlow
+  getNode(id: string): INode
+  eachNode(cb: Function)
+  getFlows(): IFlow[]
 
+  startFlows(type: string, diff: any, muteLog: boolean): Promise<any>
+  stopFlows(type: string, diff: any, muteLog: boolean): Promise<any>
+  addFlow(flow: IFlow): Promise<any>
+  checkTypeInUse(id: string): void
 }
 
 export class Flows extends Context {
@@ -100,7 +123,7 @@ export class Flows extends Context {
   log: ILogger = new Logger()
   redUtil: IRedUtils = new RedUtils()
   flowUtil: IFlowUtils = new FlowUtils()
-  typeRegistry: INodesRegistry = new NodesRegistry()
+  typeRegistry: IRegistry = new Registry()
 
   /**
    * TODO:
@@ -175,7 +198,7 @@ export class Flows extends Context {
    * Load the current flow configuration from storage
    * @return a promise for the loading of the config
    */
-  load() {
+  load(): any {
     return this.setFlows(null, "load", false);
   }
 
@@ -190,7 +213,7 @@ export class Flows extends Context {
    * type - full/nodes/flows/load (default full)
    * muteLog - don't emit the standard log messages (used for individual flow api)
    */
-  setFlows(_config, type, muteLog) {
+  setFlows(_config: any, type: string, muteLog: boolean): void {
     const {
       started,
       storage,
@@ -267,8 +290,12 @@ export class Flows extends Context {
       });
   }
 
-  loadFlows() {
+  /**
+   * TODO: fix returns IFlow or sth
+   */
+  loadFlows(): any {
     const {
+      credentials, // service
       storage,
       log // service
     } = this
@@ -286,7 +313,7 @@ export class Flows extends Context {
     });
   }
 
-  getNode(id) {
+  getNode(id: string): INode {
     const {
       activeNodesToFlow,
       activeFlows
@@ -307,7 +334,7 @@ export class Flows extends Context {
     return null;
   }
 
-  eachNode(cb) {
+  eachNode(cb: Function) {
     const {
       activeFlowConfig
     } = this
@@ -319,12 +346,12 @@ export class Flows extends Context {
     }
   }
 
-  getFlows() {
+  getFlows(): IFlow[] {
     return this.activeConfig;
   }
 
 
-  delegateError(node, logMessage, msg) {
+  delegateError(node: INode, logMessage: string, msg: any): void {
     const {
       activeNodesToFlow,
       activeFlows,
@@ -386,7 +413,7 @@ export class Flows extends Context {
     }
   }
 
-  handleStatus(node, statusMessage) {
+  handleStatus(node: INode, statusMessage: string): void {
     const {
       events, // service
       activeFlowConfig,
@@ -413,7 +440,7 @@ export class Flows extends Context {
     }
   }
 
-  startFlows(type, diff, muteLog) {
+  async startFlows(type: string, diff: any, muteLog: boolean): Promise<any> {
     const {
       events, // service
       settings, // service
@@ -458,7 +485,7 @@ export class Flows extends Context {
         type: "warning",
         text: "notification.warnings.missing-types"
       });
-      return when.resolve();
+      return Promise.resolve();
     }
     if (!muteLog) {
       if (diff) {
@@ -518,10 +545,10 @@ export class Flows extends Context {
         log.info(log._("nodes.flows.started-flows"));
       }
     }
-    return when.resolve();
+    return Promise.resolve();
   }
 
-  stopFlows(type, diff, muteLog) {
+  async stopFlows(type: string, diff: any, muteLog: boolean): Promise<any> {
     const {
       log, // service
       activeFlows,
@@ -557,8 +584,8 @@ export class Flows extends Context {
       }
     }
 
-    return when.promise(function (resolve, reject) {
-      when.settle(promises).then(function () {
+    return new Promise((resolve, reject) => {
+      Promise.all(promises).then(function () {
         for (id in activeNodesToFlow) {
           if (activeNodesToFlow.hasOwnProperty(id)) {
             if (!activeFlows[activeNodesToFlow[id]]) {
@@ -592,9 +619,10 @@ export class Flows extends Context {
     });
   }
 
-  checkTypeInUse(id) {
+  checkTypeInUse(id: string): void {
     const {
-      log
+      log,
+      typeRegistry
     } = this
     const {
       getFlows,
@@ -632,7 +660,8 @@ export class Flows extends Context {
 
   updateMissingTypes() {
     const {
-      activeFlowConfig
+      activeFlowConfig,
+      typeRegistry
     } = this
 
     var subflowInstanceRE = /^subflow:(.+)$/;
@@ -653,7 +682,7 @@ export class Flows extends Context {
     }
   }
 
-  addFlow(flow) {
+  async addFlow(flow: IFlow): Promise<any> {
     const {
       activeConfig,
       activeFlowConfig,
@@ -682,10 +711,10 @@ export class Flows extends Context {
       node = flow.nodes[i];
       if (activeFlowConfig.allNodes[node.id]) {
         // TODO nls
-        return when.reject(new Error('duplicate id'));
+        return Promise.reject(new Error('duplicate id'));
       }
       if (node.type === 'tab' || node.type === 'subflow') {
-        return when.reject(new Error('invalid node type: ' + node.type));
+        return Promise.reject(new Error('invalid node type: ' + node.type));
       }
       node.z = flow.id;
       nodes.push(node);
@@ -695,10 +724,10 @@ export class Flows extends Context {
         node = flow.configs[i];
         if (activeFlowConfig.allNodes[node.id]) {
           // TODO nls
-          return when.reject(new Error('duplicate id'));
+          return Promise.reject(new Error('duplicate id'));
         }
         if (node.type === 'tab' || node.type === 'subflow') {
-          return when.reject(new Error('invalid node type: ' + node.type));
+          return Promise.reject(new Error('invalid node type: ' + node.type));
         }
         node.z = flow.id;
         nodes.push(node);
