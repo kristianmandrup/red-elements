@@ -159,6 +159,77 @@ test('Nodes: removeWorkspace - removes it', () => {
   expect(found).toBeFalsy()
 })
 
+describe.only('subflowContains', () => {
+  const $testMap = {
+    'no match': {
+      sfid: 'x',
+      nodeid: 'a',
+      subflowType: 'unknown:config',
+      type: 'config'
+    },
+    'matches': {
+      sfid: 'y',
+      nodeid: 'a',
+      subflowType: 'subflow:config',
+      type: 'config'
+    }
+  }
+
+  function testSubflowContains(context, name?) {
+    let {
+      $testMap,
+      fakeNode,
+      nodes,
+      flowManager
+    } = context
+
+    flowManager = flowManager || nodes.flowManager
+    const $map = $testMap[context.$label || name]
+
+    // TEST GOES HERE
+
+    // Use $map
+    let sfid = $map.sfid
+    let nodeid = $map.nodeid
+    let subflowConfig = fakeNode({
+      z: sfid,
+      id: sfid,
+      type: $map.subflowType
+    })
+    let subflow = fakeNode({
+      id: sfid,
+      type: $map.type
+    })
+
+    nodes.addNode(subflowConfig)
+    nodes.addSubflow(subflow)
+
+    return flowManager.subflowContains(sfid, nodeid)
+  }
+
+  let context
+  beforeEach(() => {
+    nodes = create()
+
+    context = {
+      $testMap,
+      fakeNode,
+      nodes,
+    }
+  })
+
+  test('matches', () => {
+    const found = testSubflowContains(context, 'matches')
+    expect(found).toBeTruthy()
+  })
+
+  test('no match', () => {
+    const found = testSubflowContains(context, 'no match')
+    expect(found).toBeFalsy()
+  })
+})
+
+
 test('Nodes: addSubflow - adds it', () => {
   const id = 'a'
   let subflow = fakeNode({

@@ -43,7 +43,8 @@ describe.only('Nodes:FlowManager', () => {
       flowManager: nodes.flowManager
     }
   }
-  // TODO: We should be able to leverage this pattern as well to further reduce code pattern duplication
+
+  // prepare all the tests using the shared tests and context
   prepareTests(sharedTests.flowManager, buildContext).map(t => {
     test(t.$label, t.$fun)
   })
