@@ -18,26 +18,38 @@ import * as path from 'path'
 import * as fs from 'fs'
 
 import * as semver from 'semver'
+import { Context } from '../../context/index';
 
-var localfilesystem = require('./localfilesystem');
-var registry = require('./registry');
+import {
+  Settings
+} from '../../settings'
 
-var settings;
-var runtime;
+import {
+  LocalFilesystem
+} from './local-filesystem'
+
+import {
+  NodesRegistry
+} from './nodes-registry'
 
 /**
  * Loader to load Nodes
  */
-export class Loader {
+export class Loader extends Context {
 
-  // TODO: FIX - use service injection for Settings, don't rely on runtime
-  protected runtime: any
-  protected settings: any // ISettings
+  // TODO: FIX - use service injection for Settings,
+  protected runtime: any // don't rely on runtime
+  protected settings: any = new Settings() // ISettings - inject as service
+  protected registry: any = new NodesRegistry() // INodesRegistry - inject as service
+  protected localfilesystem: any = new LocalFilesystem()
+  protected events: any // TODO: - inject as service
+  protected util: any // TODO: - inject as service
+  protected version: any // TODO: - inject as service?
+  protected nodes: any
 
-  constructor(_runtime) {
-    runtime = _runtime;
-    settings = runtime.settings;
-    localfilesystem.init(runtime);
+  constructor() {
+    super()
+    this.runtime = this
   }
 
   /**
@@ -50,11 +62,21 @@ export class Loader {
    * @param disableNodePathScan
    */
   load(defaultNodesDir, disableNodePathScan) {
+    const {
+      localfilesystem
+    } = this
+    const {
+      loadNodeFiles,
+      log
+    } = this.rebind([
+        'log',
+        'loadNodeFiles'
+      ])
     // To skip node scan, the following line will use the stored node list.
     // We should expose that as an option at some point, although the
     // performance gains are minimal.
     //return loadNodeFiles(registry.getModuleList());
-    runtime.log.info(runtime.log._('server.loading'));
+    log.info(log._('server.loading'));
 
     var nodeFiles = localfilesystem.getNodeFiles(defaultNodesDir, disableNodePathScan);
     return loadNodeFiles(nodeFiles);
@@ -64,7 +86,18 @@ export class Loader {
    * Adds a module
    * @param module
    */
-  addModule(module) {
+  async addModule(module): Promise<any> {
+    const {
+      localfilesystem
+    } = this
+    const {
+      loadNodeFiles,
+      log
+    } = this.rebind([
+        'log',
+        'loadNodeFiles'
+      ])
+
     if (!settings.available()) {
       throw new Error('Settings unavailable');
     }
@@ -73,13 +106,13 @@ export class Loader {
       // TODO: nls
       const e: any = new Error('module_already_loaded');
       e.code = 'module_already_loaded';
-      return when.reject(e);
+      return Promise.reject(e);
     }
     try {
       var moduleFiles = localfilesystem.getModuleFiles(module);
       return loadNodeFiles(moduleFiles);
     } catch (err) {
-      return when.reject(err);
+      return Promise.reject(err);
     }
   }
 
@@ -92,6 +125,12 @@ export class Loader {
    *
    */
   async loadNodeSet(node) {
+    const {
+      createNodeApi
+    } = this.rebind([
+        'createNodeApi'
+      ])
+
     var nodeDir = path.dirname(node.file);
     var nodeFn = path.basename(node.file);
     if (!node.enabled) {
@@ -146,6 +185,14 @@ export class Loader {
    * @param lang
    */
   getNodeHelp(node, lang) {
+    const {
+      loadNodeHelp,
+      getNodeHelp
+    } = this.rebind([
+        'loadNodeHelp',
+        'getNodeHelp'
+      ])
+
     if (!node.help[lang]) {
       var help = loadNodeHelp(node, lang);
       if (help == null) {
@@ -156,10 +203,10 @@ export class Loader {
       }
       if (help) {
         node.help[lang] = help;
-      } else if (lang === runtime.i18n.defaultLang) {
+      } else if (lang === i18n.defaultLang) {
         return null;
       } else {
-        node.help[lang] = getNodeHelp(node, runtime.i18n.defaultLang);
+        node.help[lang] = getNodeHelp(node, i18n.defaultLang);
       }
     }
     return node.help[lang];
@@ -172,6 +219,18 @@ export class Loader {
    * @param nodeFiles
    */
   protected async loadNodeFiles(nodeFiles) {
+    const {
+      runtime
+    } = this
+
+    const {
+      loadNodeSetList,
+      loadNodeConfig
+    } = this.rebind([
+        'loadNodeSetList',
+        'loadNodeConfig'
+      ])
+
     var promises = [];
     for (var module in nodeFiles) {
       /* istanbul ignore else */
@@ -253,20 +312,34 @@ export class Loader {
    * @param node Creates the Node API
    */
   protected createNodeApi(node) {
-    var red = {
+    const {
+      nodes,
+      events,
+      util,
+      version,
+      runtime
+    } = this
+    const {
+      copyObjectProperties
+    } = this.rebind([
+        'copyObjectProperties'
+      ])
+
+    const red: any = {
       nodes: {},
       log: {},
       settings: {},
-      events: runtime.events,
-      util: runtime.util,
-      version: runtime.version,
+      events,
+      util,
+      version,
     }
-    copyObjectProperties(runtime.nodes, red.nodes, ['createNode', 'getNode', 'eachNode', 'addCredentials', 'getCredentials', 'deleteCredentials']);
+    copyObjectProperties(nodes, red.nodes, ['createNode', 'getNode', 'eachNode', 'addCredentials', 'getCredentials', 'deleteCredentials']);
+
     red.nodes.registerType = function (type, constructor, opts) {
-      runtime.nodes.registerType(node.id, type, constructor, opts);
+      nodes.registerType(node.id, type, constructor, opts);
     }
-    copyObjectProperties(runtime.log, red.log, null, ['init']);
-    copyObjectProperties(runtime.settings, red.settings, null, ['init', 'load', 'reset']);
+    copyObjectProperties(log, red.log, null, ['init']);
+    copyObjectProperties(settings, red.settings, null, ['init', 'load', 'reset']);
     if (runtime.adminApi) {
       red.comms = runtime.adminApi.comms;
       red.library = runtime.adminApi.library;
@@ -303,6 +376,10 @@ export class Loader {
    * @param fileInfo
    */
   async loadNodeConfig(fileInfo) {
+    const {
+      runtime
+    } = this
+
     return when.promise(function (resolve) {
       var file = fileInfo.file;
       var module = fileInfo.module;
@@ -319,7 +396,7 @@ export class Loader {
         isEnabled = info.enabled;
       }
 
-      var node = {
+      const node: any = {
         id: id,
         module: module,
         name: name,
@@ -416,6 +493,12 @@ export class Loader {
    * @param nodes
    */
   protected loadNodeSetList(nodes) {
+    const {
+      loadNodeSet
+    } = this.rebind([
+        'loadNodeSet'
+      ])
+
     var promises = [];
     nodes.forEach(function (node) {
       if (!node.err) {
