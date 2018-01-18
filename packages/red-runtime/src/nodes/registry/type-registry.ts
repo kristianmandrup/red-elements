@@ -16,7 +16,6 @@
 
 //var UglifyJS = require("uglify-js");
 var util = require("util");
-var when = require("when");
 var events = require("../../events");
 
 var settings;
