@@ -32,6 +32,10 @@ import {
   NodesRegistry
 } from './nodes-registry'
 
+export interface ILoader {
+
+}
+
 /**
  * Loader to load Nodes
  */

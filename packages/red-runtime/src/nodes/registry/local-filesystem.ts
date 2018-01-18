@@ -29,7 +29,7 @@ export interface ILocalFilesystem {
 }
 
 
-class LocalFilesystem extends Context {
+export class LocalFilesystem extends Context {
   protected events: any
   protected log: any
   protected i18n: any

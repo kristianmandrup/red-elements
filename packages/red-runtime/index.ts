@@ -8,6 +8,7 @@ export {
   Events,
   I18n,
   Settings,
-  Validators
+  NodesContext,
+  NodesRegistry
 } from './src'
 

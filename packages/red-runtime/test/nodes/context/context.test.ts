@@ -3,6 +3,10 @@ import {
 } from '../../..'
 
 import {
+  expectObj
+} from '../../_infra'
+
+import {
   fakeNode
 } from '../../_infra'
 
@@ -10,9 +14,9 @@ function create() {
   return new NodesContext()
 }
 
-let nodes
+let nodesCtx
 beforeEach(() => {
-  nodes = create()
+  nodesCtx = create()
 })
 
 const { log } = console
@@ -20,5 +24,5 @@ const { log } = console
 const FAKE_RED = {}
 
 test('NodesContext: create', () => {
-  expectObj(NodesContext)
+  expectObj(nodesCtx)
 })

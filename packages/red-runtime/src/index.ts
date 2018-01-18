@@ -12,13 +12,25 @@ export {
 
 export {
   Nodes,
-  NodesRegistry,
   INodes,
+
+  NodesRegistry,
   INodesRegistry,
+
   NodesContext,
   INodesContext,
+
   INodeCredentials,
-  NodeCredentials
+  NodeCredentials,
+
+  Flow,
+  IFlow,
+
+  Flows,
+  IFlows,
+
+  FlowUtils,
+  IFlowUtils,
 
 } from './nodes'
 

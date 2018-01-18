@@ -42,5 +42,14 @@ export {
 
 export {
   NodesRegistry,
-  INodesRegistry
+  INodesRegistry,
+
+  IInstaller,
+  Installer,
+
+  ILoader,
+  Loader
+
+  ILocalFilesystem,
+  LocalFilesystem,
 } from './registry'
