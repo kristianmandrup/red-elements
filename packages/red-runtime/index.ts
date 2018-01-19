@@ -5,8 +5,8 @@ export {
   IHistory,
   History,
 
-  IUndoEvent,
-  UndoEvent,
+  IUndo,
+  Undo,
 
   INode,
   Node,

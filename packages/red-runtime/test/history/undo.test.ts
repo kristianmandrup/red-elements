@@ -1,10 +1,10 @@
 import {
   History,
-  UndoEvent
+  Undo
 } from '../..'
 
 function create() {
-  return new UndoEvent()
+  return new Undo()
 }
 
 let undo

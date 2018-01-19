@@ -48,11 +48,11 @@ export interface IEvent {
  * - remove event from event history
  */
 
-export interface IUndoEvent {
-  undoEvent(ev: IEvent): void
+export interface IUndo {
+  undoEvent(ev: IEvent): IUndo
 }
 
-export class UndoEvent extends Context implements IUndoEvent {
+export class Undo extends Context implements IUndo {
   public nodes: any
 
   constructor() {
@@ -64,22 +64,12 @@ export class UndoEvent extends Context implements IUndoEvent {
   /**
    * Undo an event
    * @param ev { Event } the event to undo and remove from history
+   * @returns IUndo - the Undo class for chaining
    */
-  undoEvent(ev: IEvent): void {
-    const {
-      ctx,
-      nodes
-    } = this
-
-    var i;
-    var len;
-    var node;
-    var subflow;
-    var modifiedTabs = {};
-
+  protected _undoEvent(ev: IEvent): IUndo {
     this._validateEvent(ev, 'ev', 'undoEvent')
 
-    if (!ev) return
+    if (!ev) return this
 
     switch (ev.t) {
       case 'multi': return this._multi(ev)
@@ -92,6 +82,20 @@ export class UndoEvent extends Context implements IUndoEvent {
       case 'reorder': return this._reorder(ev)
       default: return this._default(ev)
     }
+  }
+
+  /**
+   * Undo effects of an event and refresh UI to reflect state change
+   * @param ev
+   * @returns IUndo - the Undo class for chaining
+   */
+  undoEvent(ev: IEvent): IUndo {
+    this._undoEvent(ev)
+    const {
+      ctx,
+      nodes
+    } = this
+    let modifiedTabs = {};
 
     Object.keys(modifiedTabs).forEach(function (id) {
       var subflow = nodes.subflow(id);
@@ -100,14 +104,35 @@ export class UndoEvent extends Context implements IUndoEvent {
       }
     });
 
+    // mark nodes as dirty as event
     nodes.dirty(ev.dirty);
+
+    // refresh UI to reflect state change
+    this._refreshUI()
+
+    return this
+  }
+
+  // protected
+
+  /**
+   * Refresh UI to reflect state change
+   *
+   * @returns IUndo - the Undo class for chaining
+   */
+  _refreshUI() {
+    const {
+      ctx,
+    } = this
+
     ctx.view.ctxraw(true);
     ctx.palette.refresh();
     ctx.workspaces.refresh();
     ctx.sidebar.config.refresh();
+
+    return this
   }
 
-  // protected
 
   /**
    * Multiple events
@@ -119,6 +144,7 @@ export class UndoEvent extends Context implements IUndoEvent {
       // WATHC OUT!!! recursive
       this.undoEvent(ev.events[i]);
     }
+    return this
   }
 
   /**
@@ -138,6 +164,7 @@ export class UndoEvent extends Context implements IUndoEvent {
       }
     })
     nodes.version(ev.rev);
+    return this
   }
 
   /**
@@ -201,6 +228,7 @@ export class UndoEvent extends Context implements IUndoEvent {
         nodes.addLink(ev.removedLinks[i]);
       }
     }
+    return this
   }
 
   /**
@@ -299,6 +327,7 @@ export class UndoEvent extends Context implements IUndoEvent {
         }
       }
     }
+    return this
   }
 
   /**
@@ -328,6 +357,7 @@ export class UndoEvent extends Context implements IUndoEvent {
         nodes.addLink(ev.removedLinks[i]);
       }
     }
+    return this
   }
 
   /**
@@ -407,6 +437,7 @@ export class UndoEvent extends Context implements IUndoEvent {
     }
     ev.node.dirty = true;
     ev.node.changed = ev.changed;
+    return this
   }
 
   /**
@@ -444,6 +475,7 @@ export class UndoEvent extends Context implements IUndoEvent {
         nodes.addLink(ev.removedLinks[i]);
       }
     }
+    return this
   }
 
   /**
@@ -458,6 +490,7 @@ export class UndoEvent extends Context implements IUndoEvent {
     if (ev.order) {
       ctx.workspaces.order(ev.order);
     }
+    return this
   }
 
   /**
@@ -469,5 +502,6 @@ export class UndoEvent extends Context implements IUndoEvent {
       type: ev.t,
       event: ev
     })
+    return this
   }
 }

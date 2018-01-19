@@ -1,8 +1,9 @@
 export {
-  History,
-  UndoEvent,
   IHistory,
-  IUndoEvent
+  History,
+
+  Undo,
+  IUndo
 } from './history'
 
 export {

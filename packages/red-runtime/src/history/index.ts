@@ -14,9 +14,12 @@
  * limitations under the License.
  **/
 
+import Stack from 'tiny-stack'
+
 import {
-  UndoEvent,
-  IUndoEvent,
+  IEvent,
+  Undo,
+  IUndo,
 } from './undo'
 
 import {
@@ -24,69 +27,76 @@ import {
 } from '../context'
 
 export {
-  UndoEvent,
-  IUndoEvent
+  Undo,
+  IUndo
 }
 
 export interface IHistory {
-  undoEvent(ev)
-
   // TODO: this function is a placeholder
   // until there is a 'save' event that can be listened to
   markAllDirty()
 
   list()
   depth()
-  push(ev)
+  push(ev: IEvent)
   pop()
   peek()
   undo()
 }
 
 export class History extends Context implements IHistory {
-  public undo_history = [];
-  public undoevnt: any = new UndoEvent()
+  protected _stack = new Stack()
+  protected _undo: IUndo = new Undo()
 
   constructor() {
     super()
   }
 
-  undoEvent(ev) {
-    this.undoevnt.undoEvent(ev)
-  }
-
   //TODO: this function is a placeholder until there is a 'save' event that can be listened to
   markAllDirty() {
-    for (var i = 0; i < this.undo_history.length; i++) {
-      this.undo_history[i].dirty = true;
-    }
+    this._stack.map(ev => ev.dirty = true)
+    return this
   }
 
   list() {
-    return this.undo_history
+    return this._stack
   }
 
   depth() {
-    return this.undo_history.length;
+    return this._stack.length;
   }
 
-  push(ev) {
-    this.undo_history.push(ev);
+  /**
+   *
+   * @param ev
+   */
+  push(ev: IEvent) {
+    this._stack.push(ev);
+    return this
   }
 
-  undo()
-  {
-    //TODO
+  /**
+   * Pop top event from stack
+   * Execute event
+   * Return self for more chaining
+   */
+  undo() {
+    const ev: IEvent = this._stack.pop();
+    this._undo.undoEvent(ev)
+    return this
   }
 
+  /**
+   * Pop top event from stack
+   */
   pop() {
-    return this.undo_history.splice(-1,1);
-    //this.undoEvent(ev);
+    return this._stack.pop();
   }
 
-
+  /**
+   * Peek at top event from stack
+   */
   peek() {
-    let last = this.undo_history.length - 1
-    return this.undo_history[last];
+    return this._stack.peek()
   }
 }
