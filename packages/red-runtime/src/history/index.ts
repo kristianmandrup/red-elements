@@ -14,7 +14,7 @@
  * limitations under the License.
  **/
 
-import Stack from 'tiny-stack'
+import * as Stack from 'tiny-stack'
 
 import {
   IEvent,
@@ -32,12 +32,13 @@ export {
 }
 
 export interface IHistory {
+  list: any[]
+  depth: number
+
   // TODO: this function is a placeholder
   // until there is a 'save' event that can be listened to
   markAllDirty()
 
-  list()
-  depth()
   push(ev: IEvent)
   pop()
   peek()
@@ -45,6 +46,7 @@ export interface IHistory {
 }
 
 export class History extends Context implements IHistory {
+  // SEE: https://github.com/avoidwork/tiny-stack/blob/master/src/constructor.js
   protected _stack = new Stack()
   protected _undo: IUndo = new Undo()
 
@@ -54,16 +56,16 @@ export class History extends Context implements IHistory {
 
   //TODO: this function is a placeholder until there is a 'save' event that can be listened to
   markAllDirty() {
-    this._stack.map(ev => ev.dirty = true)
+    this.list.map(ev => ev.dirty = true)
     return this
   }
 
-  list() {
-    return this._stack
+  get list(): any[] {
+    return this._stack.data || []
   }
 
-  depth() {
-    return this._stack.length;
+  get depth(): number {
+    return this._stack.length()
   }
 
   /**

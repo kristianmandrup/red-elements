@@ -11,6 +11,15 @@ beforeEach(() => {
   history = create()
 })
 
+// IMPORTANT:
+// SEE: https://github.com/avoidwork/tiny-stack/blob/master/src/constructor.js
+
+// Starts with initial [null] value
+// We need to handle this correctly or use Stack implementation from this blog article:
+
+// Implement a Stack in JavaScript – InitJS
+// https://initjs.org/data-structure-stack-in-javascript-714f45dbf889
+
 test('history: create', () => {
   expect(history.history).toEqual([])
 })
@@ -62,7 +71,7 @@ test('history: list', () => {
   }
   history.push(evA)
   history.push(evB)
-  let list = history.list()
+  let list = history.list
   expect(list[0]).toBe(evA)
   expect(list[1]).toBe(evB)
 })
@@ -76,7 +85,7 @@ test('history: depth', () => {
   }
   history.push(evA)
   history.push(evB)
-  let depth = history.depth()
+  let depth = history.depth
   expect(depth).toBe(2)
 })
 
