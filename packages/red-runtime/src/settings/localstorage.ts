@@ -4,12 +4,17 @@ export interface ILocalStorage {
   get: (key: string) => string
 }
 
+/**
+ * Service: injectable
+ *
+ * Storage that stores values in localstorage
+ */
 export class LocalStorage implements ILocalStorage {
   constructor(public options = {}) {
   }
 
   /**
-   * Determine if localstorage available in browser
+   * Determine if localstorage is available in browser
    * @returns { boolean } whether localstorage is available in browser
    */
   hasLocalStorage(): boolean {
@@ -37,7 +42,7 @@ export class LocalStorage implements ILocalStorage {
    * If the key is not set in the localStorage it returns <i>undefined</i>
    * Else return the JSON parsed value
    * @param key
-   * @returns {*}
+   * @returns { string } value stored
    */
   get(key: string): string {
     if (!this.hasLocalStorage()) {

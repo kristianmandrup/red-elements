@@ -31,12 +31,12 @@ export interface ISettings {
   /**
    * Initialize user settings by preparing access token and ajax call
    */
-  init()
+  init(): Promise<any>
 
   /**
    * load user settings via Ajax call to server API: /settings
    */
-  load()
+  load(): Promise<any>
 
   /**
    * Set properties of user settings with data loaded
@@ -52,26 +52,52 @@ export interface ISettings {
   theme(property: string, defaultValue: any)
 }
 
+import {
+  SettingsApi,
+  IBaseApi
+} from '../api'
+
 const { log } = console
 export class Settings extends Context implements ISettings {
   userDir: string
   loadedSettings: any = {}
 
-  protected localStorage: ILocalStorage
+  protected tokenMatchExpr = /[?&]access_token=(.*?)(?:$|&)/
+
+  protected localStorage: ILocalStorage = new LocalStorage() // service?
+  protected settingsApi: IBaseApi
 
   constructor() {
     super()
-    this.localStorage = new LocalStorage()
+    this.settingsApi = new SettingsApi({
+      setupApi: this._setupApi.bind(this)
+    })
   }
 
+  /**
+   * Whether we have a localstorage available
+   * @returns { boolean } whether localstorage is available in browser
+   */
   hasLocalStorage(): boolean {
     return this.localStorage.hasLocalStorage()
   }
+
+  /**
+   * If the key is not set in the localStorage it returns <i>undefined</i>
+   * Else return the JSON parsed value
+   * @param key
+   * @returns { string } value stored
+   */
 
   get(key: string): string {
     return this.localStorage.get(key)
   }
 
+  /**
+   * Set entry of localstorage
+   * @param key { string } key (index) to set for
+   * @param value { string } value to set
+   */
   set(key: string, value: any) {
     this.localStorage.set(key, value)
   }
@@ -79,9 +105,9 @@ export class Settings extends Context implements ISettings {
   /**
    * Initialize user settings by preparing access token and ajax call
    */
-  async init() {
-    const { ctx } = this
-    var accessTokenMatch = /[?&]access_token=(.*?)(?:$|&)/.exec(window.location.search);
+  async init(): Promise<any> {
+    const { ctx, tokenMatchExpr } = this
+    var accessTokenMatch = tokenMatchExpr.exec(window.location.search);
     if (accessTokenMatch) {
       var accessToken = accessTokenMatch[1];
       ctx.settings.set('auth-tokens', {
@@ -89,7 +115,8 @@ export class Settings extends Context implements ISettings {
       });
       window.location.search = '';
     }
-    this._setup()
+    // Note: now handled by SettingsAPI
+    // this._setupApi()
     return await this.load();
   }
 
@@ -125,7 +152,7 @@ export class Settings extends Context implements ISettings {
   /**
    * load user settings via Ajax call to server API: /settings
    */
-  async load() {
+  async load(): Promise<any> {
     const {
       _onLoadSuccess,
       _onLoadError
@@ -134,28 +161,10 @@ export class Settings extends Context implements ISettings {
         '_onLoadError'
       ])
 
-    return new Promise((resolve, reject) => {
-      $.ajax({
-        headers: {
-          'Accept': 'application/json'
-        },
-        dataType: 'json',
-        cache: false,
-        url: 'settings',
-        success: (data) => {
-          _onLoadSuccess(data)
-          resolve(data)
-        },
-        error: (jqXHR, textStatus, errorThrown) => {
-          try {
-            _onLoadError({
-              jqXHR, textStatus, errorThrown
-            })
-          } finally {
-            reject(errorThrown)
-          }
-        }
-      });
+    return await this.settingsApi.load({
+      url: 'settings',
+      onSuccess: _onLoadSuccess,
+      onError: _onLoadError
     })
   };
 
@@ -185,9 +194,10 @@ export class Settings extends Context implements ISettings {
   }
 
   /**
+   * TODO: move to SettingsAPI
    * Setup Ajax call with Authorization using JWT Bearer token
    */
-  protected _setup() {
+  protected _setupApi() {
     const { ctx } = this
     $.ajaxSetup({
       beforeSend: function (jqXHR, settings) {
@@ -204,6 +214,7 @@ export class Settings extends Context implements ISettings {
   }
 
   /**
+   * TODO: move to SettingsAPI
    * Handle load error on Ajax API call to /settings
    * @param error { object } the error
    */
@@ -227,6 +238,7 @@ export class Settings extends Context implements ISettings {
   }
 
   /**
+   * TODO: move to SettingsAPI
    * Handle load success on Ajax API call to /settings
    * @param data { object } the user settings data
    */
