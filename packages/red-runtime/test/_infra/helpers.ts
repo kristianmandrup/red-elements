@@ -2,6 +2,18 @@ export function expectIs(value) {
   expect(value).toBe(value)
 }
 
+export function expectError(value) {
+  if (value && value.error) {
+    return expect(value.error).toBeDefined()
+  }
+
+  expect(value instanceof Error).toBeTruthy()
+}
+
+export function expectNotError(value) {
+  expect(value instanceof Error).not.toBeTruthy()
+}
+
 export function expectEqual(value) {
   expect(value).toEqual(value)
 }

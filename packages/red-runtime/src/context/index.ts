@@ -33,7 +33,7 @@ export class Context {
 
   protected validator: IValidator
   protected ctx: IRED;
-  public logging: boolean = false
+  public logging: boolean = true
   public logLv: number = 0
 
   constructor() {
@@ -52,9 +52,9 @@ export class Context {
     }
   }
 
-  logInfo(msg: string, data?: any, methods?: string[]) {
+  logInfo(msg: string, data?: any) {
     if (this.logging && this.logLv < 2) {
-      console.log(`INFO: ${msg}`, data)
+      data ? console.log(`INFO: ${msg}`, data) : console.log(`INFO: ${msg}`)
     }
   }
 

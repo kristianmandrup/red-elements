@@ -14,10 +14,16 @@ export interface IBaseAdapter {
   $get(config: IAjaxConfig): Promise<any>
 }
 
-export class BaseAdapter {
+import {
+  Context
+} from '../../context'
+
+export class BaseAdapter extends Context {
   protected $api: IBaseApi
 
   constructor(config: any = {}) {
+    super()
+
     const { $api } = config
     this.$api = $api
     this.beforeSend()

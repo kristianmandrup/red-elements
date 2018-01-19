@@ -3,7 +3,7 @@ import {
 } from './base-api'
 
 export class NodesApi extends BaseApi {
-  path = 'nodes'
+  basePath = 'nodes'
 
   constructor(config: any) {
     super(config)

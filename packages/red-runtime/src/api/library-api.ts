@@ -3,7 +3,7 @@ import {
 } from './base-api'
 
 export class LibraryApi extends BaseApi {
-  path = 'library'
+  basePath = 'library'
 
   constructor(config: any) {
     super(config)

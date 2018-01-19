@@ -3,7 +3,7 @@ import {
 } from './base-api'
 
 export class FlowsApi extends BaseApi {
-  path = 'flows'
+  basePath = 'flows'
 
   constructor(config: any) {
     super(config)

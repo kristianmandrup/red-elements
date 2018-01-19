@@ -21,12 +21,16 @@ export interface IBaseApi {
 export class BaseApi extends Context {
   adapter: IBaseAdapter
   config: any
-  path: string
+  basePath: string
   $context: any // reference to the class which is using the Api
 
   protected HttpsExp = /^\s*(https?:|\/|\.)/
 
   protected setup = false
+
+  protected host = 'localhost'
+  protected port = 3000
+  protected protocol = 'http'
 
   // inject API adapter service
   constructor(config: any = {}) {
@@ -39,43 +43,82 @@ export class BaseApi extends Context {
     })
   }
 
+  /**
+   * Override to customize setup of API
+   */
   _setupApi() { }
 
+  /**
+   * Logic to execute before sending request
+   * @param config
+   */
   beforeSend(config?: any) {
-
   }
 
+  /**
+   * Get error code of response, such as 200 or 401
+   * @param error
+   */
   errorCode(error) {
     return this.adapter.errorCode(error)
   }
 
-  setHeader(name, value) {
+  /**
+   * Set Request header
+   * @param name
+   * @param value
+   */
+  setHeader(name: string, value: string) {
     this.adapter.setHeader(name, value)
   }
 
-  setupApi(): void {
+  /**
+   * Setup API
+   */
+  setupApi(): IBaseApi {
     if (!this.setup) {
       this._setupApi()
     }
     this.setup = true
+    return this
   }
 
+  get hostAndPort() {
+    const {
+      port, host
+    } = this
+    return port ? `${host}:${port}` : host
+  }
 
+  createUrl(config) {
+    const {
+      protocol,
+      hostAndPort
+    } = this
+    return `${protocol}://${hostAndPort}/${config.url}`
+  }
+
+  /**
+   * Load data from API via adapter
+   * @param config
+   */
   async load(config: IAjaxConfig) {
     const {
-      _onLoadError,
-      _onLoadSuccess
+      _onApiError,
+      _onApiSuccess
     } = this.rebind([
-        '_onLoadError',
-        '_onLoadSuccess'
+        '_onApiError',
+        '_onApiSuccess'
       ])
 
     const apiConfig = {
-      _onLoadError,
-      _onLoadSuccess
+      onError: _onApiError,
+      onSuccess: _onApiSuccess,
+      url: this.createUrl(this.basePath)
     }
 
-    const loadConfig = Object.assign(config, apiConfig)
-    this.adapter.$get(loadConfig)
+    // have props in the passed in config override the defaults in apiConfig
+    const loadConfig = Object.assign(apiConfig, config)
+    return await this.adapter.$get(loadConfig)
   }
 }

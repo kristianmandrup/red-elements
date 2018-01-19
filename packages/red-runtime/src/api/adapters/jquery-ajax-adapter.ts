@@ -33,47 +33,73 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
    * Setup Ajax call with Authorization using JWT Bearer token
    */
   beforeSend(config?: any) {
+    // See: https://api.jquery.com/jquery.ajaxsetup/
     $.ajaxSetup({
       beforeSend: (jqXHR, settings) => {
-        this.$api.beforeSend({
+        const sendConfig = {
           jqXHR, settings
+        }
+        this.logInfo('beforeSend handler', {
+          sendConfig
         })
+
+        this.prepareAdapter(sendConfig)
+        this.$api.beforeSend(sendConfig)
       }
     });
   }
 
-
   protected _createSetHeader(api) {
-    return function setHeader(name, value) {
+    return (name, value) => {
       api.setRequestHeader(name, value)
     }
   }
 
   async $get(config: IAjaxConfig): Promise<any> {
-    this._validate(config)
+    // this._validate(config)
+
+    const $self = this
 
     return new Promise((resolve, reject) => {
-      $.ajax({
+
+      // TODO: Try to make it work with the simplest Ajax config and go from there...
+      const ajaxConfig = {
         headers: {
           'Accept': 'application/json'
         },
         dataType: 'json',
         cache: false,
-        url: config.url,
-        success: (data) => {
+        url: 'http://localhost:3000/settings', // config.url,
+        success: function (data) {
+          $self.logInfo('success', {
+            data,
+            config
+          })
           config.onSuccess(data)
           resolve(data)
         },
-        error: (jqXHR, textStatus, errorThrown) => {
+        error: function (jqXHR, textStatus, errorThrown) {
+          const $error = {
+            jqXHR, textStatus, errorThrown
+          }
+
+          $self.logInfo('error', $error)
+
           try {
-            config.onError({
-              jqXHR, textStatus, errorThrown
-            })
+            config.onError($error)
           } finally {
-            reject(errorThrown)
+            reject($error)
           }
         }
-      });
+      }
+
+      this.logInfo('do AJAX', {
+        config,
+        ajaxConfig
+      })
+
+      // TODO: Some kind of Syntax Error results from ajaxConfig being used :()
+      $.ajax(ajaxConfig)
     })
   }
 }

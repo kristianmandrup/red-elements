@@ -3,7 +3,7 @@ import {
 } from './base-api'
 
 export class I18nCatalogApi extends BaseApi {
-  path = 'catalog'
+  basePath = 'catalog'
 
   constructor(config: any) {
     super(config)
