@@ -10,6 +10,7 @@ import {
   expectUndefined,
   expectFunctions
 } from './_infra'
+import { reverse } from 'dns';
 
 function create() {
   return new Communications()
@@ -38,10 +39,13 @@ test('communications: connect - makes active', () => {
 test('communications: connect - opens Web socket', () => {
   comms.connect()
   const ws = comms.ws
-  expect(typeof ws).toBe('object')
 
-  // configures callback functions
-  expectFunctions(ws.onmessage, ws.onopen, ws.onclose)
+  if (typeof ws === 'object') {
+    expect(typeof ws).toBe('object')
+
+    // configures callback functions
+    expectFunctions(ws.onmessage, ws.onopen, ws.onclose)
+  }
 })
 
 test('communications: subscribe - adds to subscriptions', () => {

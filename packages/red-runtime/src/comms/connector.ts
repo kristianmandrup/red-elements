@@ -14,6 +14,7 @@ const { log } = console
 
 export interface IConnector {
   connect()
+  pathOf(location)
 }
 
 /**
@@ -22,10 +23,11 @@ export interface IConnector {
  * - close socket channel
  * - receive message on socket channel
  */
-export class Connector extends Context {
+export class Connector extends Context implements IConnector {
   protected auth_tokens: AuthTokens
   protected pending_auth: boolean
   protected active: boolean
+
 
   constructor(public communications: Communications) {
     super()
@@ -34,18 +36,25 @@ export class Connector extends Context {
   /**
    * Connect to WebSocket and set up socket event handlers
    */
+  pathOf(location)
+  {
+    return this._pathOf(location);
+  }
+
   connect() {
     const {
       RED
     } = this
 
+    let location1
+
     let {
       connectWS,
       setInstanceVars,
-      _pathOf,
+      _pathOf,      
       _onOpen,
       _onClose,
-      _onMessage
+      _onMessage      
     } = this.rebind([
         'connectWS',
         'setInstanceVars',
@@ -59,24 +68,31 @@ export class Connector extends Context {
     // See: https://developer.mozilla.org/en-US/docs/Web/API/Location
     const active = true
     const location = window.location
-    const path = _pathOf(location)
+    const path = this.pathOf(location);
+    
     const auth_tokens = RED.settings.get("auth-tokens");
     const pendingAuth = (auth_tokens != null);
 
-    const ws = new WebSocket(path);
+    //const ws = new WebSocket(path);
+    
 
     this.setInstanceVars({
       active,
       location,
-      ws,
+      //ws,
       auth_tokens,
       pendingAuth
     })
 
-    _onOpen()
-    _onClose()
-    _onMessage()
-
+    _onOpen
+    _onClose
+    _onMessage
+   // _pathOf(location)
+    // this._pathOf(location)
+    // {
+    //   return _pathOf(location);
+    // }
+    
     return this
   }
 
