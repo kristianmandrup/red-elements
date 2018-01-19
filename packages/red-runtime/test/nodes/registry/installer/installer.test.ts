@@ -1,17 +1,17 @@
 import {
-  Registry
+  Installer
 } from '../../../..'
 import { expectObj } from '../../../_infra/helpers';
 
 function create() {
-  return new Registry()
+  return new Installer()
 }
 
-let registry
+let installer
 beforeEach(() => {
-  registry = create()
+  installer = create()
 })
 
-test('Registry: create', () => {
-  expectObj(registry)
+test('Installer: create', () => {
+  expectObj(installer)
 })

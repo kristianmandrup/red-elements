@@ -48,8 +48,11 @@ export {
   Installer,
 
   ILoader,
-  Loader
+  Loader,
 
   ILocalFilesystem,
   LocalFilesystem,
+
+  IRegistry,
+  Registry,
 } from './registry'

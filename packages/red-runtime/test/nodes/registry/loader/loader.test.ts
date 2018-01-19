@@ -1,17 +1,17 @@
 import {
-  Registry
+  Loader
 } from '../../../..'
 import { expectObj } from '../../../_infra/helpers';
 
 function create() {
-  return new Registry()
+  return new Loader()
 }
 
-let registry
+let loader
 beforeEach(() => {
-  registry = create()
+  loader = create()
 })
 
-test('Registry: create', () => {
-  expectObj(registry)
+test('Loader: create', () => {
+  expectObj(loader)
 })

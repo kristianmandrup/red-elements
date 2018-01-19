@@ -14,14 +14,27 @@ export {
   Nodes,
   INodes,
 
-  NodesRegistry,
-  INodesRegistry,
-
   NodesContext,
   INodesContext,
 
   INodeCredentials,
   NodeCredentials,
+
+  // registry
+  NodesRegistry,
+  INodesRegistry,
+
+  IInstaller,
+  Installer,
+
+  ILoader,
+  Loader,
+
+  ILocalFilesystem,
+  LocalFilesystem,
+
+  IRegistry,
+  Registry,
 
   Flow,
   IFlow,

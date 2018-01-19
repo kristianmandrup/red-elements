@@ -134,7 +134,7 @@ export class Flows extends Context {
    *
    * @param runtime - NOT NEEDED, use service injection!
    */
-  constructor(runtime) {
+  constructor(runtime?: any) {
     super()
     let {
       started,
