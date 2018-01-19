@@ -50,7 +50,7 @@
     "jest-cli": "^21.2.1",
     "jest-jquery-matchers": "^1.4.2",
     "jest-localstorage-mock": "^2.1.0",
-    "nock": "^9.1.5",
+    "nock": "^9.1.6",
     "promise": "^8.0.1",
     "puppeteer": "^0.13.0",
     "ts-jest": "^21.2.4",
