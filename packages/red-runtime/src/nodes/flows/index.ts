@@ -92,9 +92,9 @@ import {
 
 export interface IFlows {
   started: boolean
-  load(): any
-  setFlows(_config: any, type: string, muteLog: boolean): void
-  loadFlows(): any // TODO: returns IFlow
+  load(): Promise<any>
+  setFlows(_config: any, type: string, muteLog: boolean): Promise<any>
+  loadFlows(): Promise<any> // TODO: returns IFlow??
   getNode(id: string): INode
   eachNode(cb: Function)
   getFlows(): IFlow[]
@@ -198,7 +198,7 @@ export class Flows extends Context {
    * Load the current flow configuration from storage
    * @return a promise for the loading of the config
    */
-  load(): any {
+  async load(): Promise<any> {
     return this.setFlows(null, "load", false);
   }
 
@@ -213,7 +213,7 @@ export class Flows extends Context {
    * type - full/nodes/flows/load (default full)
    * muteLog - don't emit the standard log messages (used for individual flow api)
    */
-  setFlows(_config: any, type: string, muteLog: boolean): void {
+  async setFlows(_config: any, type: string, muteLog: boolean): Promise<any> {
     const {
       started,
       storage,

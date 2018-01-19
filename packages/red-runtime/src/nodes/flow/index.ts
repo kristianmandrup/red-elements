@@ -20,9 +20,9 @@ import {
 
 import clone from 'clone'
 import {
-  INodesRegistry,
-  NodesRegistry
-} from '../registry/index';
+  IRegistry,
+  Registry
+} from '../registry/type-registry';
 
 import {
   IFlowUtils,
@@ -69,7 +69,7 @@ export class Flow extends Context {
   public nodes: any[] // INode[] ??
   public subflows: any[] // ISubflow[] or IFlow[]
 
-  typeRegistry: INodesRegistry = new NodesRegistry()
+  typeRegistry: IRegistry = new Registry()
   logger: ILogger = new Logger()
   keys: any = logKeys
   redUtil: IRedUtils = new RedUtils()

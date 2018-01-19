@@ -23,8 +23,9 @@ import clone from 'clone'
 
 // use as injectable service
 import {
-  NodesRegistry
-} from '../registry'
+  IRegistry,
+  Registry
+} from '../registry/type-registry'
 
 import {
   Util as RedUtil
@@ -57,7 +58,7 @@ export class FlowUtils extends Context implements IFlowUtils {
 
   // TODO: Fix - inject services instead
   redUtil: any = new RedUtil()
-  typeRegistry: any = new NodesRegistry()
+  typeRegistry: IRegistry = new Registry()
 
   // TODO: add injectable services via decorators
   constructor() {
