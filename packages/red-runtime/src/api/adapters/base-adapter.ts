@@ -11,8 +11,6 @@ export interface IBaseAdapter {
   prepareAdapter(config?: any)
   beforeSend(config?: any)
   setHeader(name, value)
-
-  _validate(config: IAjaxConfig)
   $get(config: IAjaxConfig): Promise<any>
 }
 
@@ -33,7 +31,7 @@ export class BaseAdapter {
   }
 
   // TODO
-  _validate(config: IAjaxConfig) {
+  protected _validate(config: IAjaxConfig) {
     return true
   }
 
