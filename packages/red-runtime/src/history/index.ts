@@ -40,18 +40,19 @@ export interface IHistory {
   push(ev)
   pop()
   peek()
+  undo()
 }
 
 export class History extends Context implements IHistory {
   public undo_history = [];
-  public undo: any = new UndoEvent()
+  public undoevnt: any = new UndoEvent()
 
   constructor() {
     super()
   }
 
   undoEvent(ev) {
-    this.undo.undoEvent(ev)
+    this.undoevnt.undoEvent(ev)
   }
 
   //TODO: this function is a placeholder until there is a 'save' event that can be listened to
@@ -73,10 +74,16 @@ export class History extends Context implements IHistory {
     this.undo_history.push(ev);
   }
 
-  pop() {
-    var ev = this.undo_history.pop();
-    this.undoEvent(ev);
+  undo()
+  {
+    //TODO
   }
+
+  pop() {
+    return this.undo_history.splice(-1,1);
+    //this.undoEvent(ev);
+  }
+
 
   peek() {
     let last = this.undo_history.length - 1

@@ -33,7 +33,7 @@ test('history: push', () => {
   expect(latest).toBe(ev)
 })
 
-test('history: pop', () => {
+test('history: pop', () => {  
   let evA = {
     id: 'a'
   }
@@ -41,15 +41,15 @@ test('history: pop', () => {
     id: 'b'
   }
   history.push(evA)
-  history.pop()
+  history.pop()  
 
-  let latest = history.peek()
-  expect(latest).toBeFalsy()
+  //let latest = history.peek()
+  //expect(history.peek()).toBeEmpty();
 
   history.push(evA)
   history.push(evB)
   history.pop()
-  latest = history.peek()
+  let latest = history.peek()
   expect(latest).toBe(evA)
 })
 
