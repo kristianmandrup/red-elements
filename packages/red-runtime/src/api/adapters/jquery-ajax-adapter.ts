@@ -25,7 +25,7 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
 
   prepareAdapter(config: any = {}) {
     const { jqXHR, settings } = config
-    this.setHeader = this.createSetHeader(jqXHR).bind(this)
+    this.setHeader = this._createSetHeader(jqXHR).bind(this)
   }
 
   /**
@@ -43,7 +43,7 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
   }
 
 
-  createSetHeader(api) {
+  protected _createSetHeader(api) {
     return function setHeader(name, value) {
       api.setRequestHeader(name, value)
     }

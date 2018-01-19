@@ -7,9 +7,11 @@ export interface IAjaxConfig {
 }
 
 export interface IBaseAdapter {
-  beforeSend()
   errorCode(error)
+  prepareAdapter(config?: any)
+  beforeSend(config?: any)
   setHeader(name, value)
+
   _validate(config: IAjaxConfig)
   $get(config: IAjaxConfig): Promise<any>
 }

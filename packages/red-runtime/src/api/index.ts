@@ -1,4 +1,11 @@
 export {
+  JQueryAjaxAdapter,
+  IBaseAdapter,
+  BaseAdapter,
+  IAjaxConfig
+} from './adapters'
+
+export {
   IBaseApi
 } from './base-api'
 
@@ -29,6 +36,4 @@ export {
 export {
   SessionApi,
 } from './session-api'
-
-
 
