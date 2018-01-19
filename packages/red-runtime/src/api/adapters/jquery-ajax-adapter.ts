@@ -1,11 +1,54 @@
 import {
   IAjaxConfig,
-  BaseAdapter
+  BaseAdapter,
+  IBaseAdapter
 } from './base-adapter'
 
 import * as $ from 'jquery'
 
-export class JQueryAjaxAdapter extends BaseAdapter {
+export interface IJQueryAjaxAdapter extends IBaseAdapter {
+}
+
+export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter {
+  setHeader(name, value) {
+    throw new Error('call prepareAdapter to create setHeader method')
+  }
+
+  errorCode(error) {
+    const {
+      jqXHR,
+      textStatus
+    } = error
+
+    return jqXHR.status
+  }
+
+  prepareAdapter(config: any = {}) {
+    const { jqXHR, settings } = config
+    this.setHeader = this.createSetHeader(jqXHR).bind(this)
+  }
+
+  /**
+   * TODO: move to SettingsAPI
+   * Setup Ajax call with Authorization using JWT Bearer token
+   */
+  beforeSend(config?: any) {
+    $.ajaxSetup({
+      beforeSend: (jqXHR, settings) => {
+        this.$api.beforeSend({
+          jqXHR, settings
+        })
+      }
+    });
+  }
+
+
+  createSetHeader(api) {
+    return function setHeader(name, value) {
+      api.setRequestHeader(name, value)
+    }
+  }
+
   async $get(config: IAjaxConfig): Promise<any> {
     this._validate(config)
 

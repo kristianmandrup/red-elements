@@ -70,7 +70,7 @@ export class Settings extends Context implements ISettings {
   constructor() {
     super()
     this.settingsApi = new SettingsApi({
-      setupApi: this._setupApi.bind(this)
+      $context: this
     })
   }
 
@@ -191,69 +191,5 @@ export class Settings extends Context implements ISettings {
     } catch (err) {
       return defaultValue;
     }
-  }
-
-  /**
-   * TODO: move to SettingsAPI
-   * Setup Ajax call with Authorization using JWT Bearer token
-   */
-  protected _setupApi() {
-    const { ctx } = this
-    $.ajaxSetup({
-      beforeSend: function (jqXHR, settings) {
-        // Only attach auth header for requests to relative paths
-        if (!/^\s*(https?:|\/|\.)/.test(settings.url)) {
-          var auth_tokens = ctx.settings.get('auth-tokens');
-          if (auth_tokens) {
-            jqXHR.setRequestHeader('Authorization', 'Bearer ' + auth_tokens.access_token);
-          }
-          jqXHR.setRequestHeader('Node-RED-API-Version', 'v2');
-        }
-      }
-    });
-  }
-
-  /**
-   * TODO: move to SettingsAPI
-   * Handle load error on Ajax API call to /settings
-   * @param error { object } the error
-   */
-  protected _onLoadError(error) {
-    const {
-      jqXHR,
-      textStatus
-    } = error
-
-    if (jqXHR.status === 401) {
-      if (/[?&]access_token=(.*?)(?:$|&)/.test(window.location.search)) {
-        window.location.search = '';
-      }
-      // ctx.user.login(this.load);
-    } else {
-      this.handleError('Unexpected error:', {
-        status: jqXHR.status,
-        textStatus
-      });
-    }
-  }
-
-  /**
-   * TODO: move to SettingsAPI
-   * Handle load success on Ajax API call to /settings
-   * @param data { object } the user settings data
-   */
-  protected _onLoadSuccess(data) {
-    const {
-      ctx,
-      setProperties
-    } = this.rebind([
-        'setProperties'
-      ])
-
-    setProperties(data);
-    if (!ctx.settings.user || ctx.settings.user.anonymous) {
-      ctx.settings.remove('auth-tokens');
-    }
-    log('Node-RED: ' + data.version);
   }
 }
