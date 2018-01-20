@@ -13,7 +13,6 @@ const ctxSettings = {
   }
 }
 
-
 class Settings {
   name: string = 'settings'
   settings = ctxSettings // needed for beforeSend of API

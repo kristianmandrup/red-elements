@@ -25,6 +25,11 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
 
   prepareAdapter(config: any = {}) {
     const { jqXHR, settings } = config
+    if (!jqXHR) {
+      this.handleError('prepareAdapter: config missing jqXHR', {
+        config
+      })
+    }
     this.setHeader = this._createSetHeader(jqXHR).bind(this)
   }
 
@@ -46,7 +51,8 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
         this.prepareAdapter(sendConfig)
         this.$api.beforeSend(sendConfig)
       }
-    });
+    })
+    return this
   }
 
   protected _createSetHeader(api) {
