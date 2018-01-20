@@ -2,8 +2,8 @@ import { IBaseApi } from "../base-api";
 
 export interface IAjaxConfig {
   url: string
-  onSuccess(data: any)
-  onError(error: any)
+  onSuccess(data: any, $api: IBaseApi)
+  onError(error: any, $api: IBaseApi)
 }
 
 export interface IBaseAdapter {

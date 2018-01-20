@@ -62,6 +62,7 @@ export class Settings extends Context implements ISettings {
   userDir: string
   loadedSettings: any = {}
 
+  protected AccessTokenExp = /[?&]access_token=(.*?)(?:$|&)/
   protected tokenMatchExpr = /[?&]access_token=(.*?)(?:$|&)/
 
   protected localStorage: ILocalStorage = new LocalStorage() // service?
@@ -153,20 +154,59 @@ export class Settings extends Context implements ISettings {
    * load user settings via Ajax call to server API: /settings
    */
   async load(): Promise<any> {
+    return await this.settingsApi.load()
+  }
+
+  /**
+   *
+   * Handle load success on Ajax API call to /settings
+   * @param data { object } the user settings data
+   */
+  protected _onApiSuccess(data, api: IBaseApi) {
+    this.logInfo('_onApiSuccess', {
+      data
+    })
+
     const {
-      _onLoadSuccess,
-      _onLoadError
+      ctx,
+      setProperties,
+      log
     } = this.rebind([
-        '_onLoadSuccess',
-        '_onLoadError'
+        'setProperties',
+        'log'
       ])
 
-    return await this.settingsApi.load({
-      url: 'settings',
-      onSuccess: _onLoadSuccess,
-      onError: _onLoadError
+    setProperties(data);
+    if (!ctx.settings.user || ctx.settings.user.anonymous) {
+      ctx.settings.remove('auth-tokens');
+    }
+    log('Node-RED: ' + data.version);
+  }
+
+  /**
+   * Handle load error on Ajax API call to /settings
+   * @param error { object } the error
+   */
+  protected _onApiError(error, api: IBaseApi) {
+    const {
+      AccessTokenExp
+    } = this
+
+    this.logInfo('_onApiError', {
+      error
     })
-  };
+
+    if (api.errorCode(error) === 401) {
+      if (AccessTokenExp.test(window.location.search)) {
+        window.location.search = '';
+      }
+      // ctx.user.login(this.load);
+    } else {
+      this.handleError('Unexpected error:', {
+        error
+      });
+    }
+  }
 
   /**
    * Get theme from settings.editorTheme

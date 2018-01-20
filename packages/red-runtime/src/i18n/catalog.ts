@@ -4,6 +4,11 @@ import {
 
 const { log } = console
 
+import {
+  Context
+} from '../context'
+import { I18nCatalogApi } from '../api/i18n-catalog-api';
+
 export interface ICatalog {
   loadCatalog: (namespace: string) => void
   loadNodeCatalogs: () => void
@@ -12,8 +17,17 @@ export interface ICatalog {
 /**
  * Catalog loader for i18n translation resource bundles
  */
-export class Catalog implements ICatalog {
+export class Catalog extends Context implements ICatalog {
+  protected i18nCatalogApi
+
   constructor(public i18n: I18n) {
+    super()
+  }
+
+  prepareLoad() {
+    this.i18nCatalogApi = new I18nCatalogApi({
+      $context: this
+    })
   }
 
   /**
@@ -28,6 +42,8 @@ export class Catalog implements ICatalog {
       detectLanguage,
     } = this.i18n
 
+    this.prepareLoad()
+
     var languageList = [detectLanguage()]
 
     const promises = languageList.map(async (lang) => {
@@ -38,41 +54,36 @@ export class Catalog implements ICatalog {
   }
 
 
+  /**
+   * Load language from API and add as 18n resource bundle
+   * @param namespace
+   * @param lang
+   */
   async loadLanguage(namespace: string, lang: string) {
+    const {
+      i18nCatalogApi
+    } = this
     const {
       i18n
     } = this.i18n
 
-    return new Promise((resolve, reject) => {
-      const url = 'locales/' + namespace + '?lng=' + lang
-      log('request language localisations', {
-        lang,
+    this.prepareLoad()
+
+    const url = 'locales/' + namespace + '?lng=' + lang
+    log('request language localisations', {
+      lang,
+      url
+    })
+    try {
+      const data = await i18nCatalogApi.load({
         url
       })
-
-      // TODO: Use i18n-catalog API as service
-      $.ajax({
-        headers: {
-          'Accept': 'application/json'
-        },
-        cache: false,
-        url,
-        success: (data) => {
-          log('success', {
-            data
-          })
-          i18n.addResourceBundle(lang, namespace, data);
-          resolve(data)
-        },
-        error: (jqXHR: any, textStatus: string, errMsg: string) => {
-          log({
-            textStatus,
-            errMsg
-          })
-          reject(errMsg)
-        }
+      i18n.addResourceBundle(lang, namespace, data);
+    } catch (err) {
+      this.handleError('loadLanguage', {
+        err
       })
-    })
+    }
   }
 
   /**
@@ -88,6 +99,8 @@ export class Catalog implements ICatalog {
       i18n
     } = this.i18n
 
+    this.prepareLoad()
+
     var languageList = [detectLanguage()]
     const promises = languageList.map(async (lang) => {
       return this.loadNodeLang(lang)
@@ -95,35 +108,33 @@ export class Catalog implements ICatalog {
     return Promise.all(promises)
   }
 
+  /**
+   * Load a single node language
+   * @param lang
+   */
   async loadNodeLang(lang) {
+    const {
+      i18nCatalogApi
+    } = this
     const {
       i18n
     } = this.i18n
 
-    // TODO: Use i18n-catalog API as service
-    return new Promise((resolve, reject) => {
-      $.ajax({
-        headers: {
-          'Accept': 'application/json'
-        },
-        cache: false,
-        url: 'locales/nodes?lng=' + lang,
-        success: function (data) {
-          var namespaces = Object.keys(data);
-          namespaces.forEach(function (ns) {
-            i18n.addResourceBundle(lang, ns, data[ns]);
-          });
-          resolve()
-        },
-        error: (jqXHR: any, textStatus: string, errMsg: string) => {
-          log({
-            textStatus,
-            errMsg
-          })
-          reject(errMsg)
-        }
+    const url = 'locales/nodes?lng=' + lang
+    try {
+      const data = await i18nCatalogApi.load({
+        url
       })
-    })
+      var namespaces = Object.keys(data);
+      namespaces.forEach(function (ns) {
+        i18n.addResourceBundle(lang, ns, data[ns]);
+      });
+
+    } catch (err) {
+      this.handleError('loadLanguage', {
+        err
+      })
+    }
   }
 }
 

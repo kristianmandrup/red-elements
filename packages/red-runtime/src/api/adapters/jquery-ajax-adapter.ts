@@ -65,6 +65,9 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
     // this._validate(config)
 
     const $self = this
+    const {
+      $api
+    } = this
 
     return new Promise((resolve, reject) => {
 
@@ -81,7 +84,7 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
             data,
             config
           })
-          config.onSuccess(data)
+          config.onSuccess(data, $api)
           resolve(data)
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -92,7 +95,7 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
           $self.logInfo('error', $error)
 
           try {
-            config.onError($error)
+            config.onError($error, $api)
           } finally {
             reject($error)
           }

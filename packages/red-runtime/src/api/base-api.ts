@@ -12,10 +12,14 @@ import {
   Context
 } from '../context'
 
+class ApiError extends Error {
+}
+
 export interface IBaseApi {
+  errorCode(error: any)
   beforeSend(config?: any)
   setupApi(): void
-  load(config: IAjaxConfig): Promise<any>
+  load(config?: object): Promise<any>
 }
 
 export class BaseApi extends Context {
@@ -28,9 +32,9 @@ export class BaseApi extends Context {
 
   protected setup = false
 
-  protected host = 'localhost'
-  protected port = 3000
-  protected protocol = 'http'
+  protected host = process.env.RED_HOST || 'localhost'
+  protected port = process.env.RED_PORT || 3000
+  protected protocol = process.env.RED_PROTOCOL || 'http'
 
   // inject API adapter service
   constructor(config: any = {}) {
@@ -59,7 +63,7 @@ export class BaseApi extends Context {
    * Get error code of response, such as 200 or 401
    * @param error
    */
-  errorCode(error) {
+  errorCode(error: any) {
     return this.adapter.errorCode(error)
   }
 
@@ -83,6 +87,9 @@ export class BaseApi extends Context {
     return this
   }
 
+  /**
+   * Create host and port
+   */
   get hostAndPort() {
     const {
       port, host
@@ -90,7 +97,19 @@ export class BaseApi extends Context {
     return port ? `${host}:${port}` : host
   }
 
+  /**
+   * Create URL
+   * @param config
+   */
   createUrl(config) {
+    return config.url.test(/^http/) ? config.url : this.buildUrl(config)
+  }
+
+  /**
+   * Create URL
+   * @param config
+   */
+  buildUrl(config) {
     const {
       protocol,
       hostAndPort
@@ -102,7 +121,8 @@ export class BaseApi extends Context {
    * Load data from API via adapter
    * @param config
    */
-  async load(config: IAjaxConfig) {
+  async load(config?: object) {
+    config = config || {}
     const {
       _onApiError,
       _onApiSuccess
@@ -121,4 +141,23 @@ export class BaseApi extends Context {
     const loadConfig = Object.assign(apiConfig, config)
     return await this.adapter.$get(loadConfig)
   }
+
+  /**
+   * Default handler for Api call success
+   * @param data
+   * @param api
+   */
+  protected _onApiSuccess(data, api) {
+    return data
+  }
+
+  /**
+   * Default handler for Api call error
+   * @param error
+   * @param api
+   */
+  protected _onApiError(error, api) {
+    throw new ApiError(error)
+  }
+
 }

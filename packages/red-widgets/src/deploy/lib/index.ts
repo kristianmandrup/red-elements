@@ -620,4 +620,11 @@ export class Deploy extends Context {
       this.logWarning('deploy-button disabled: not able to deploy via UI')
     }
   }
+
+  protected get customHeaders() {
+    return {
+      'Node-RED-Deployment-Type': deploymentType
+    }
+  }
+
 }
