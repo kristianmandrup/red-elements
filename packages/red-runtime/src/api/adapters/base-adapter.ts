@@ -7,10 +7,6 @@ export interface IAjaxConfig {
 }
 
 export interface IBaseAdapter {
-  errorCode(error)
-  prepareAdapter(config?: any)
-  beforeSend(config?: any)
-  setHeader(name, value)
   $get(config: IAjaxConfig): Promise<any>
 }
 
@@ -30,15 +26,6 @@ export class BaseAdapter extends Context {
   }
 
   protected beforeSend() {
-  }
-
-  errorCode(error) {
-    return error.code
-  }
-
-  // TODO
-  protected _validate(config: IAjaxConfig) {
-    return true
   }
 
   async $get(config: IAjaxConfig): Promise<any> {

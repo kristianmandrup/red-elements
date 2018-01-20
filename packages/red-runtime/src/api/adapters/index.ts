@@ -1,6 +1,6 @@
 export {
   JQueryAjaxAdapter
-} from './jquery-ajax-adapter'
+} from './jquery'
 
 export {
   IBaseAdapter,

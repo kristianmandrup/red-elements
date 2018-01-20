@@ -117,6 +117,9 @@ export class BaseApi extends Context {
     return `${protocol}://${hostAndPort}/${config.url}`
   }
 
+  async post(data: any, config?: object) {
+  }
+
   /**
    * Load data from API via adapter
    * @param config
