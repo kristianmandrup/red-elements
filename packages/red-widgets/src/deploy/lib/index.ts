@@ -18,6 +18,7 @@ import {
   Context,
   $
 } from '../../context'
+import { DeployApi } from '@tecla5/red-runtime';
 
 const { log } = console
 interface IDialog extends JQuery<HTMLElement> {
@@ -53,6 +54,8 @@ export class Deploy extends Context {
     unusedConfig: false,
     invalid: false
   }
+
+  protected deployApi
 
   constructor(options: any = {}) {
     super()
@@ -394,7 +397,7 @@ export class Deploy extends Context {
     return this
   }
 
-  save(skipValidation, force) {
+  async save(skipValidation, force) {
     let {
       ctx,
       deployInflight,
@@ -535,96 +538,156 @@ export class Deploy extends Context {
       $("#editor-shade").show();
       $("#palette-shade").show();
       $("#sidebar-shade").show();
-      $.ajax({
-        url: "flows",
-        type: "POST",
-        data: JSON.stringify(data),
-        contentType: "application/json; charset=utf-8",
-        headers: {
-          "Node-RED-Deployment-Type": deploymentType
-        }
-      }).done(function (data, textStatus, xhr) {
-        ctx.nodes.dirty(false);
-        ctx.nodes.version(data.rev);
-        ctx.nodes.originalFlow(nns);
-        if (hasUnusedConfig) {
-          ctx.notify(
-            '<p>' + ctx._("deploy.successfulDeploy") + '</p>' +
-            '<p>' + ctx._("deploy.unusedConfigNodes") + ' <a href="#" onclick="ctx.sidebar.config.show(true); return false;">' + ctx._("deploy.unusedConfigNodesLink") + '</a></p>', "success", false, 6000);
-        } else {
-          ctx.notify(ctx._("deploy.successfulDeploy"), "success");
-        }
-        ctx.nodes.eachNode(function (node) {
-          if (node.changed) {
-            node.dirty = true;
-            node.changed = false;
-          }
-          if (node.moved) {
-            node.dirty = true;
-            node.moved = false;
-          }
-          if (node.credentials) {
-            delete node.credentials;
-          }
-        });
-        ctx.nodes.eachConfig(function (confNode) {
-          confNode.changed = false;
-          if (confNode.credentials) {
-            delete confNode.credentials;
-          }
-        });
-        ctx.nodes.eachWorkspace(function (ws) {
-          ws.changed = false;
-        })
-        // Once deployed, cannot undo back to a clean state
-        ctx.history.markAllDirty();
-        ctx.view.redraw();
-        ctx.events.emit("deploy");
-      }).fail(function (xhr, textStatus, err) {
-        log('Ajax fail', {
-          err
-        })
-        ctx.nodes.dirty(true);
-        $("#btn-deploy").removeClass("disabled");
-        if (xhr.status === 401) {
-          ctx.notify(ctx._("deploy.deployFailed", {
-            message: ctx._("user.notAuthorized")
-          }), "error");
-        } else if (xhr.status === 409) {
-          resolveConflict(nns, true);
-        } else if (xhr.responseText) {
-          ctx.notify(ctx._("deploy.deployFailed", {
-            message: xhr.responseText
-          }), "error");
-        } else {
-          ctx.notify(ctx._("deploy.deployFailed", {
-            message: ctx._("deploy.errors.noResponse")
-          }), "error");
-        }
-      }).always(function () {
-        log('Ajax always: cleanup')
 
-        deployInflight = false;
-        deployer.deployInflight = deployInflight
-        var delta = Math.max(0, 300 - (Date.now() - startTime));
-        setTimeout(function () {
-          $(".deploy-button-content").css('opacity', 1);
-          $(".deploy-button-spinner").hide();
-          $("#header-shade").hide();
-          $("#editor-shade").hide();
-          $("#palette-shade").hide();
-          $("#sidebar-shade").hide();
-        }, delta);
-      });
+      this.deployApi = new DeployApi({
+        $context: this
+      })
+
+      const {
+        deployApi,
+        headers,
+        onSuccess,
+        onError,
+        onFinally
+      } = this
+
+      deployApi.configure({
+        headers
+      })
+
+      try {
+        const result = await deployApi.post(data)
+        this.onSuccess(result, {
+          nns,
+          hasUnusedConfig
+        })
+      } catch (error) {
+        onError(error, {
+          nns
+        })
+      } finally {
+        onFinally({
+          deployer,
+          startTime
+        })
+      }
     } else {
       this.logWarning('deploy-button disabled: not able to deploy via UI')
     }
   }
 
-  protected get customHeaders() {
+  protected get headers() {
     return {
-      'Node-RED-Deployment-Type': deploymentType
+      'Node-RED-Deployment-Type': this.deploymentType
     }
   }
 
+  onFinally(options: any = {}) {
+    const {
+      deployer,
+      startTime
+    } = options
+    let {
+      deployInflight
+    } = this
+
+    this.logInfo('Ajax always: cleanup')
+
+    deployInflight = false;
+    deployer.deployInflight = deployInflight
+    var delta = Math.max(0, 300 - (Date.now() - startTime));
+    setTimeout(function () {
+      $(".deploy-button-content").css('opacity', 1);
+      $(".deploy-button-spinner").hide();
+      $("#header-shade").hide();
+      $("#editor-shade").hide();
+      $("#palette-shade").hide();
+      $("#sidebar-shade").hide();
+    }, delta);
+
+  }
+
+  onError(error, options: any = {}) {
+    const {
+      ctx
+    } = this
+    const {
+      nns
+    } = options
+
+    const {
+      resolveConflict
+    } = this.rebind([
+        'resolveConflict'
+      ])
+
+    const { xhr, textStatus, err } = error
+    log('Ajax fail', {
+      err
+    })
+    ctx.nodes.dirty(true);
+    $("#btn-deploy").removeClass("disabled");
+    if (xhr.status === 401) {
+      ctx.notify(ctx._("deploy.deployFailed", {
+        message: ctx._("user.notAuthorized")
+      }), "error");
+    } else if (xhr.status === 409) {
+      resolveConflict(nns, true);
+    } else if (xhr.responseText) {
+      ctx.notify(ctx._("deploy.deployFailed", {
+        message: xhr.responseText
+      }), "error");
+    } else {
+      ctx.notify(ctx._("deploy.deployFailed", {
+        message: ctx._("deploy.errors.noResponse")
+      }), "error");
+    }
+  }
+
+  onSuccess(data, options: any = {}) {
+    const {
+      ctx
+    } = this
+    const {
+      nns,
+      hasUnusedConfig
+    } = options
+
+    ctx.nodes.dirty(false);
+    ctx.nodes.version(data.rev);
+    ctx.nodes.originalFlow(nns);
+    if (hasUnusedConfig) {
+      ctx.notify(
+        '<p>' + ctx._("deploy.successfulDeploy") + '</p>' +
+        '<p>' + ctx._("deploy.unusedConfigNodes") + ' <a href="#" onclick="ctx.sidebar.config.show(true); return false;">' + ctx._("deploy.unusedConfigNodesLink") + '</a></p>', "success", false, 6000);
+    } else {
+      ctx.notify(ctx._("deploy.successfulDeploy"), "success");
+    }
+    ctx.nodes.eachNode(function (node) {
+      if (node.changed) {
+        node.dirty = true;
+        node.changed = false;
+      }
+      if (node.moved) {
+        node.dirty = true;
+        node.moved = false;
+      }
+      if (node.credentials) {
+        delete node.credentials;
+      }
+    });
+    ctx.nodes.eachConfig(function (confNode) {
+      confNode.changed = false;
+      if (confNode.credentials) {
+        delete confNode.credentials;
+      }
+    });
+    ctx.nodes.eachWorkspace(function (ws) {
+      ws.changed = false;
+    })
+    // Once deployed, cannot undo back to a clean state
+    ctx.history.markAllDirty();
+    ctx.view.redraw();
+    ctx.events.emit("deploy");
+  }
 }

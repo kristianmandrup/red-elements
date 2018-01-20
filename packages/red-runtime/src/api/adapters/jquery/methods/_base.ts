@@ -1,13 +1,19 @@
-import { IBaseAdapter } from "../../base-adapter";
+import { IBaseAdapter } from "../../base";
 import { Context } from "../../../../context/index";
 import { IAjaxConfig } from "../../../base-api";
 
 export abstract class ApiMethod extends Context {
   protected config: any
   protected $api: any
+  protected headers
 
   constructor(public adapter: IBaseAdapter) {
     super()
+  }
+
+  configure(config?: any) {
+    this.config = config
+    return this
   }
 
   errorCode(error) {
@@ -88,6 +94,8 @@ export abstract class ApiMethod extends Context {
       config.onSuccess(data, $api)
     } catch (error) {
       config.onError(error, $api)
+    } finally {
+      config.onFinally($api)
     }
   }
 

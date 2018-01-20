@@ -20,11 +20,12 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
   protected apiGet
   protected apiPost
 
-  constructor(public api: IBaseApi) {
+  constructor(public config: any) {
     super()
+    const { $api } = config
 
-    this.apiGet = new ApiGet(this)
-    this.apiPost = new ApiPost(this)
+    this.apiGet = new ApiGet($api)
+    this.apiPost = new ApiPost($api)
   }
 
   configure(config: any) {
@@ -34,6 +35,7 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
   }
 
   async post(data) {
+    this.apiPost.setData(data)
     await this.apiPost.send()
   }
 

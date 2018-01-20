@@ -6,4 +6,4 @@ export {
   IBaseAdapter,
   BaseAdapter,
   IAjaxConfig
-} from './base-adapter'
+} from './base'

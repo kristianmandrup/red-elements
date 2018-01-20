@@ -22,7 +22,7 @@ export interface IBaseApi {
   load(config?: object): Promise<any>
 }
 
-export class BaseApi extends Context {
+export class BaseApi extends Context implements IBaseApi {
   adapter: IBaseAdapter
   config: any
   basePath: string
@@ -40,11 +40,19 @@ export class BaseApi extends Context {
   constructor(config: any = {}) {
     super()
 
-    this.config = config
-    this.$context = config.$context
+    this.configure(config)
+
     this.adapter = new JQueryAjaxAdapter({
       $api: this
     })
+  }
+
+  configure(config?: any) {
+    if (!config) return this
+    this.config = config
+    this.$context = config.$context
+    this.adapter.configure(config)
+    return this
   }
 
   /**

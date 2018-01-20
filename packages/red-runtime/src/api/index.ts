@@ -9,11 +9,9 @@ export {
   IBaseApi
 } from './base-api'
 
-// export {
-//   DeployApi,
-// } from './deploy-api'
-
-export const DeployApi = {}
+export {
+  DeployApi,
+} from './deploy-api'
 
 export {
   FlowsApi,

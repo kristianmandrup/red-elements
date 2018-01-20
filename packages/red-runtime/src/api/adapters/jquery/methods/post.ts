@@ -1,19 +1,19 @@
 import {
   ApiMethod
 } from './_base'
-import { IBaseAdapter } from '../../base-adapter';
+import { IBaseAdapter } from '../../base';
 import { IAjaxConfig } from '../../../base-api';
 
-export class ApiPost extends ApiMethod {
+
+export class ApiPost extends ApiMethod implements IApiPost {
   protected data: any
 
   constructor(public adapter: IBaseAdapter) {
     super(adapter)
   }
 
-  configure(data: any, config?: any) {
+  setData(data) {
     this.data = data
-    this.config = config
     return this
   }
 

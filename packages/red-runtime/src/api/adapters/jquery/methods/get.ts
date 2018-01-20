@@ -2,7 +2,7 @@ import {
   ApiMethod
 } from './_base'
 
-import { IBaseAdapter } from '../../base-adapter';
+import { IBaseAdapter } from '../../base';
 import { IAjaxConfig } from '../../../base-api';
 
 export class ApiGet extends ApiMethod {
