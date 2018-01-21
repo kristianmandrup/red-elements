@@ -5,6 +5,7 @@ import {
 
 import { log } from 'util';
 import { FlowsApi } from '@tecla5/red-runtime/src/api/flows-api';
+import { FlowsLoader } from './flows-loader';
 
 interface IDiffWidget extends JQuery<HTMLElement> {
   i18n: Function
@@ -16,7 +17,7 @@ export class Diff extends Context {
   public diffList: any
   public value: any
 
-  protected flowsApi: FlowsApi
+  protected flowsLoader: FlowsLoader
 
   constructor() {
     super()
@@ -1097,44 +1098,7 @@ export class Diff extends Context {
   }
 
   async loadFlows() {
-    const {
-      flowsApi,
-      onLoadSuccess,
-      onLoadError
-    } = this
-
-    this.flowsApi = new FlowsApi()
-
-    try {
-      const result = await flowsApi.load()
-      onLoadSuccess(result)
-    } catch (error) {
-      onLoadError(error)
-    }
-  }
-
-  onLoadError(error) {
-    this.handleError('loadFlows', {
-      error
-    })
-  }
-
-  onLoadSuccess(nodes) {
-    const {
-      RED,
-      generateDiff,
-      resolveDiffs
-    } = this.rebind([
-        'generateDiff',
-        'resolveDiffs'
-      ])
-    var localFlow = RED.nodes.createCompleteNodeSet();
-    var originalFlow = RED.nodes.originalFlow();
-    var remoteFlow = nodes.flows;
-    var localDiff = generateDiff(originalFlow, localFlow);
-    var remoteDiff = generateDiff(originalFlow, remoteFlow);
-    remoteDiff.rev = nodes.rev;
-    resolveDiffs(localDiff, remoteDiff)
+    return await this.flowsLoader.loadFlows()
   }
 
 
@@ -1145,12 +1109,9 @@ export class Diff extends Context {
   //     showDiff(diff);
   // }
 
-  showRemoteDiff(diff) {
-    if (diff === undefined) {
-      this.getRemoteDiff(this.showRemoteDiff);
-    } else {
-      this.showDiff(diff);
-    }
+  async showRemoteDiff(diff) {
+    diff = diff || await this.getRemoteDiff();
+    this.showDiff(diff)
   }
 
   parseNodes(nodeList) {
@@ -1294,324 +1255,19 @@ export class Diff extends Context {
     return diff;
   }
 
+  /**
+   * TODO: use DiffDisplayer
+   * Display nodes difference
+   * @param diff {} Nodes differnce
+   */
   showDiff(diff) {
-    const {
-      RED,
-    } = this
-    let {
-      diffList,
-      currentDiff
-    } = this
 
-    if (this.diffVisible) {
-      return;
-    }
-
-    var { localDiff, remoteDiff, conflicts } = diff
-    currentDiff = diff;
-
-    var trayOptions = {
-      title: "Review Changes", //TODO: nls
-      width: Infinity,
-      buttons: [{
-        text: this.RED._("common.label.cancel"),
-        click: () => {
-          this.RED.tray.close();
-        }
-      },
-      {
-        id: "node-diff-view-diff-merge",
-        text: this.RED._("deploy.confirm.button.merge"),
-        class: "primary disabled",
-        click: () => {
-          if (!$("#node-diff-view-diff-merge").hasClass('disabled')) {
-            this.refreshConflictHeader();
-            this.mergeDiff(this.currentDiff);
-            this.RED.tray.close();
-          }
-        }
-      }
-      ],
-      resize: (dimensions) => {
-        // trayWidth = dimensions.width;
-      },
-      open: (tray) => {
-        var trayBody = tray.find('.editor-tray-body');
-        var diffPanel = this.buildDiffPanel(trayBody);
-        if (this.currentDiff.remoteDiff) {
-          $("#node-diff-view-diff-merge").show();
-          if (Object.keys(conflicts).length === 0) {
-            $("#node-diff-view-diff-merge").removeClass('disabled');
-          } else {
-            $("#node-diff-view-diff-merge").addClass('disabled');
-          }
-        } else {
-          $("#node-diff-view-diff-merge").hide();
-        }
-        this.refreshConflictHeader();
-
-        $("#node-dialog-view-diff-headers").empty();
-        var currentConfig = this.currentDiff.localDiff.currentConfig;
-        var newConfig = this.currentDiff.localDiff.newConfig;
-        conflicts = this.currentDiff.conflicts || {};
-
-        var el = {
-          diff: localDiff,
-          def: {
-            category: 'config',
-            color: '#f0f0f0'
-          },
-          tab: {
-            n: {},
-            nodes: currentConfig.globals
-          },
-          newTab: {
-            n: {},
-            nodes: newConfig.globals
-          },
-          remoteTab: {},
-          remoteDiff: null
-        };
-
-        if (remoteDiff !== undefined) {
-          diffPanel.addClass('node-diff-three-way');
-
-          var diffWidget = <IDiffWidget>$('<div data-i18n="diff.local"></div><div data-i18n="diff.remote"></div>').appendTo("#node-dialog-view-diff-headers");
-          diffWidget.i18n()
-
-          el.remoteTab = {
-            n: {},
-            nodes: remoteDiff.newConfig.globals
-          };
-          el.remoteDiff = remoteDiff;
-        } else {
-          diffPanel.removeClass('node-diff-three-way');
-        }
-
-        diffList.editableList('addItem', el);
-
-        var seenTabs = {};
-
-        currentConfig.tabOrder.forEach((tabId) => {
-          var tab = currentConfig.tabs[tabId];
-          var el = {
-            diff: localDiff,
-            def: this.RED.nodes.getType('tab'),
-            tab: tab,
-            newTab: null,
-            remoteTab: null,
-            remoteDiff: null
-          };
-          if (newConfig.tabs.hasOwnProperty(tabId)) {
-            el.newTab = newConfig.tabs[tabId];
-          }
-          if (remoteDiff !== undefined) {
-            el.remoteTab = remoteDiff.newConfig.tabs[tabId];
-            el.remoteDiff = remoteDiff;
-          }
-          seenTabs[tabId] = true;
-          diffList.editableList('addItem', el)
-        });
-        newConfig.tabOrder.forEach((tabId) => {
-          if (!seenTabs[tabId]) {
-            seenTabs[tabId] = true;
-            var tab = newConfig.tabs[tabId];
-            var el = {
-              diff: localDiff,
-              def: RED.nodes.getType('tab'),
-              tab: tab,
-              newTab: tab,
-              remoteDiff: null
-            };
-            if (remoteDiff !== undefined) {
-              el.remoteDiff = remoteDiff;
-            }
-            diffList.editableList('addItem', el)
-          }
-        });
-        if (remoteDiff !== undefined) {
-          remoteDiff.newConfig.tabOrder.forEach((tabId) => {
-            if (!seenTabs[tabId]) {
-              var tab = remoteDiff.newConfig.tabs[tabId];
-              // TODO how to recognise this is a remotely added flow
-              var el = {
-                diff: localDiff,
-                remoteDiff: remoteDiff,
-                def: RED.nodes.getType('tab'),
-                tab: tab,
-                remoteTab: tab
-              };
-              diffList.editableList('addItem', el)
-            }
-          });
-        }
-        var subflowId;
-        for (subflowId in currentConfig.subflows) {
-          if (currentConfig.subflows.hasOwnProperty(subflowId)) {
-            seenTabs[subflowId] = true;
-            el = {
-              newTab: null,
-              remoteTab: null,
-              remoteDiff: null,
-              diff: localDiff,
-              def: {
-                // defaults: {},
-                // icon: "subflow.png",
-                category: "subflows",
-                color: "#da9"
-              },
-              tab: currentConfig.subflows[subflowId]
-            }
-
-            // TODO: possibly force invalid properties on el if needed here
-            // el.def['defaults'] = {}
-            // el.def['icon'] = "subflow.png"
-
-            if (newConfig.subflows.hasOwnProperty(subflowId)) {
-              el.newTab = newConfig.subflows[subflowId];
-            }
-            if (remoteDiff !== undefined) {
-              el.remoteTab = remoteDiff.newConfig.subflows[subflowId];
-              el.remoteDiff = remoteDiff;
-            }
-            diffList.editableList('addItem', el)
-          }
-        }
-        for (subflowId in newConfig.subflows) {
-          if (newConfig.subflows.hasOwnProperty(subflowId) && !seenTabs[subflowId]) {
-            seenTabs[subflowId] = true;
-            el = {
-              remoteTab: null,
-              remoteDiff: null,
-              diff: localDiff,
-              def: {
-                // defaults: {},
-                // icon: "subflow.png",
-                category: "subflows",
-                color: "#da9"
-              },
-              tab: newConfig.subflows[subflowId],
-              newTab: newConfig.subflows[subflowId]
-            }
-            // TODO: possibly force invalid props on def if needed here (see previous example)
-
-            if (remoteDiff !== undefined) {
-              el.remoteDiff = remoteDiff;
-            }
-            diffList.editableList('addItem', el)
-          }
-        }
-        if (remoteDiff !== undefined) {
-          for (subflowId in remoteDiff.newConfig.subflows) {
-            if (remoteDiff.newConfig.subflows.hasOwnProperty(subflowId) && !seenTabs[subflowId]) {
-              el = {
-                newTab: null,
-                diff: localDiff,
-                remoteDiff: remoteDiff,
-                def: {
-                  // defaults: {},
-                  // icon: "subflow.png",
-                  category: "subflows",
-                  color: "#da9"
-                },
-                tab: remoteDiff.newConfig.subflows[subflowId],
-                remoteTab: remoteDiff.newConfig.subflows[subflowId]
-              }
-              diffList.editableList('addItem', el)
-            }
-          }
-        }
-        $("#sidebar-shade").show();
-      },
-      close: () => {
-        this.diffVisible = false;
-        $("#sidebar-shade").hide();
-
-      },
-      show: () => {
-
-      }
-    }
-    this.RED.tray.show(trayOptions);
   }
 
-  mergeDiff(diff) {
-    var currentConfig = diff.localDiff.currentConfig;
-    var localDiff = diff.localDiff;
-    var remoteDiff = diff.remoteDiff;
-    var conflicts = diff.conflicts;
-    var resolutions = diff.resolutions;
-    var id;
-
-    for (id in conflicts) {
-      if (conflicts.hasOwnProperty(id)) {
-        if (!resolutions.hasOwnProperty(id)) {
-          console.log(diff);
-          throw new Error(`No resolution for conflict on node: ${id}`);
-        }
-      }
-    }
-
-    var newConfig = [];
-    var node;
-    var nodeChangedStates = {};
-    var localChangedStates = {};
-    for (id in localDiff.newConfig.all) {
-      if (localDiff.newConfig.all.hasOwnProperty(id)) {
-        node = this.RED.nodes.node(id);
-        if (resolutions[id] === 'local') {
-          if (node) {
-            nodeChangedStates[id] = node.changed;
-          }
-          newConfig.push(localDiff.newConfig.all[id]);
-        } else if (resolutions[id] === 'remote') {
-          if (!remoteDiff.deleted[id] && remoteDiff.newConfig.all.hasOwnProperty(id)) {
-            if (node) {
-              nodeChangedStates[id] = node.changed;
-            }
-            localChangedStates[id] = true;
-            newConfig.push(remoteDiff.newConfig.all[id]);
-          }
-        } else {
-          console.log("Unresolved", id)
-        }
-      }
-    }
-    for (id in remoteDiff.added) {
-      if (remoteDiff.added.hasOwnProperty(id)) {
-        node = this.RED.nodes.node(id);
-        if (node) {
-          nodeChangedStates[id] = node.changed;
-        }
-        if (!localDiff.added.hasOwnProperty(id)) {
-          localChangedStates[id] = true;
-          newConfig.push(remoteDiff.newConfig.all[id]);
-        }
-      }
-    }
-    var historyEvent = {
-      t: "replace",
-      config: this.RED.nodes.createCompleteNodeSet(),
-      changed: nodeChangedStates,
-      dirty: this.RED.nodes.dirty(),
-      rev: this.RED.nodes.version()
-    }
-
-    this.RED.history.push(historyEvent);
-
-    this.RED.nodes.clear();
-    var imported = this.RED.nodes.import(newConfig);
-    imported[0].forEach((n) => {
-      if (nodeChangedStates[n.id] || localChangedStates[n.id]) {
-        n.changed = true;
-      }
-    })
-
-    this.RED.nodes.version(remoteDiff.rev);
-
-    this.RED.view.redraw(true);
-    this.RED.palette.refresh();
-    this.RED.workspaces.refresh();
-    this.RED.sidebar.config.refresh();
+  /**
+   * TODO: use DiffMerger
+   * @params diff {} Nodes differnce
+   */
+  mergeDiff(diff: any) {
   }
 }
