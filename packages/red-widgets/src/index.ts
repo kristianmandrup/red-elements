@@ -103,7 +103,7 @@ import {
 import {
   settings,
   UserSettings
-} from './settings'
+} from './user-settings'
 
 import {
   RadialMenu
