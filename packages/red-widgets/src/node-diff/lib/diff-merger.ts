@@ -1,4 +1,8 @@
+import { Diff } from './'
+
 export class DiffMerger {
+  constructor(public diff: Diff) {
+  }
 
   /**
    * @params diff {} Nodes differnce

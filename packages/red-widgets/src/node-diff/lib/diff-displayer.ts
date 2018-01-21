@@ -1,4 +1,8 @@
-import { Diff } from "./index";
+interface IDiffWidget extends JQuery<HTMLElement> {
+  i18n: Function
+}
+
+import { Diff } from './index'
 
 export class DiffDisplayer {
   constructor(public diff: Diff) {
@@ -7,19 +11,36 @@ export class DiffDisplayer {
 
   showDiff(diff) {
     const {
-    RED,
-  } = this.diff
+      RED,
+      rebind
+    } = this.diff
+
+    const {
+      refreshConflictHeader,
+      mergeDiff,
+      buildDiffPanel
+    } = rebind([
+        'refreshConflictHeader',
+        'mergeDiff',
+        'buildDiffPanel'
+      ])
 
     let {
+      diffVisible,
       diffList,
       currentDiff
     } = this.diff
 
-    if (this.diffVisible) {
+    if (diffVisible) {
       return;
     }
 
-    var { localDiff, remoteDiff, conflicts } = diff
+    let {
+      localDiff,
+      remoteDiff,
+      conflicts
+    } = diff
+
     currentDiff = diff;
 
     var trayOptions = {
@@ -37,8 +58,8 @@ export class DiffDisplayer {
         class: "primary disabled",
         click: () => {
           if (!$("#node-diff-view-diff-merge").hasClass('disabled')) {
-            this.refreshConflictHeader();
-            this.mergeDiff(this.currentDiff);
+            refreshConflictHeader();
+            mergeDiff(currentDiff);
             RED.tray.close();
           }
         }
@@ -49,8 +70,8 @@ export class DiffDisplayer {
       },
       open: (tray) => {
         var trayBody = tray.find('.editor-tray-body');
-        var diffPanel = this.buildDiffPanel(trayBody);
-        if (this.currentDiff.remoteDiff) {
+        var diffPanel = buildDiffPanel(trayBody);
+        if (currentDiff.remoteDiff) {
           $("#node-diff-view-diff-merge").show();
           if (Object.keys(conflicts).length === 0) {
             $("#node-diff-view-diff-merge").removeClass('disabled');
@@ -60,14 +81,14 @@ export class DiffDisplayer {
         } else {
           $("#node-diff-view-diff-merge").hide();
         }
-        this.refreshConflictHeader();
+        refreshConflictHeader();
 
         $("#node-dialog-view-diff-headers").empty();
-        var currentConfig = this.currentDiff.localDiff.currentConfig;
-        var newConfig = this.currentDiff.localDiff.newConfig;
-        conflicts = this.currentDiff.conflicts || {};
+        var currentConfig = currentDiff.localDiff.currentConfig;
+        var newConfig = currentDiff.localDiff.newConfig;
+        conflicts = currentDiff.conflicts || {};
 
-        var el = {
+        let el = {
           diff: localDiff,
           def: {
             category: 'config',
@@ -88,7 +109,7 @@ export class DiffDisplayer {
         if (remoteDiff !== undefined) {
           diffPanel.addClass('node-diff-three-way');
 
-          var diffWidget = <IDiffWidget>$('<div data-i18n="diff.local"></div><div data-i18n="diff.remote"></div>').appendTo("#node-dialog-view-diff-headers");
+          const diffWidget = <IDiffWidget>$('<div data-i18n="diff.local"></div><div data-i18n="diff.remote"></div>').appendTo("#node-dialog-view-diff-headers");
           diffWidget.i18n()
 
           el.remoteTab = {
@@ -102,11 +123,11 @@ export class DiffDisplayer {
 
         diffList.editableList('addItem', el);
 
-        var seenTabs = {};
+        const seenTabs = {};
 
         currentConfig.tabOrder.forEach((tabId) => {
           var tab = currentConfig.tabs[tabId];
-          var el = {
+          let el = {
             diff: localDiff,
             def: RED.nodes.getType('tab'),
             tab: tab,
@@ -236,7 +257,7 @@ export class DiffDisplayer {
         $("#sidebar-shade").show();
       },
       close: () => {
-        this.diffVisible = false;
+        diffVisible = false;
         $("#sidebar-shade").hide();
 
       },
