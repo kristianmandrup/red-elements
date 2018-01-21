@@ -2,8 +2,8 @@ import {
   BaseApi
 } from './base-api'
 
-export class SessionApi extends BaseApi {
-  basePath = 'auth'
+export class RedApi extends BaseApi {
+  basePath = 'red'
 
   constructor(config?: any) {
     super(config)

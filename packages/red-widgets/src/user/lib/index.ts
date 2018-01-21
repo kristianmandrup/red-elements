@@ -20,6 +20,7 @@ import {
 
 global.jQuery = $
 import 'jquery-ui-dist/jquery-ui'
+import { SessionApi } from '../../../../red-runtime/src/api/session-api';
 
 // Uses: jQuery UI Dialog
 // https://jqueryui.com/dialog/
@@ -33,6 +34,10 @@ interface IButton extends JQuery<HTMLElement> {
 
 export class User extends Context {
   public loggedIn: boolean = false
+
+  // TODO: service injection
+  protected sessionApi: SessionApi
+
   constructor() {
     super()
     const { ctx } = this
@@ -59,7 +64,7 @@ export class User extends Context {
     }
   }
 
-  onLoginSuccess({ resolve, reject, data, opts }) {
+  onLoginSuccess({ data, opts }) {
     const {
       ctx
     } = this
@@ -115,28 +120,10 @@ export class User extends Context {
           var field = data.prompts[i];
           body[field.id] = $("#node-dialog-login-" + field.id).val();
         }
-        $.ajax({
-          url: "auth/token",
-          type: "POST",
-          data: body
-        }).done((data, textStatus, xhr) => {
-          ctx.settings.set("auth-tokens", data);
-          const loginDialog = <IDialogElem>$("#node-dialog-login")
-          loginDialog.dialog('destroy').remove();
-          if (opts.updateMenu) {
-            updateUserMenu();
-          }
-          user.loggedIn = true
-          resolve({ loggedIn: user.loggedIn });
-        }).fail((jqXHR, textStatus, errorThrown) => {
-          ctx.settings.remove("auth-tokens");
-          $("#node-dialog-login-failed").show();
-          user.loggedIn = false
-          resolve({ loggedIn: user.loggedIn });
-        }).always(() => {
-          buttonElem.button("option", "disabled", false);
-          $(".login-spinner").hide();
-        });
+
+        opts.buttonElem = buttonElem
+        this.postAuthToken(body, opts)
+
         event.preventDefault();
       });
 
@@ -180,6 +167,64 @@ export class User extends Context {
     }
   }
 
+  async postAuthToken(data, opts) {
+    const {
+      sessionApi,
+      onTokenPostSuccess,
+      onTokenPostError,
+      onTokenFinally
+    } = this
+
+    this.sessionApi = new SessionApi().configure({
+      url: 'auth/token'
+    })
+
+    try {
+      const result = await this.sessionApi.delete()
+      onTokenPostSuccess(result, opts)
+    } catch (error) {
+      onTokenPostError(error)
+    } finally {
+      onTokenFinally(opts)
+    }
+  }
+
+  onTokenPostSuccess(data, opts: any) {
+    const {
+      ctx
+    } = this
+    const {
+      updateUserMenu
+    } = this.rebind([
+        'updateUserMenu'
+      ])
+
+    ctx.settings.set("auth-tokens", data);
+    const loginDialog = <IDialogElem>$("#node-dialog-login")
+    loginDialog.dialog('destroy').remove();
+    if (opts.updateMenu) {
+      updateUserMenu();
+    }
+    this.loggedIn = true
+    return { loggedIn: this.loggedIn }
+  }
+
+  onTokenPostError(error) {
+    const {
+      ctx
+    } = this
+    ctx.settings.remove("auth-tokens");
+    $("#node-dialog-login-failed").show();
+    this.loggedIn = false
+    return { loggedIn: this.loggedIn }
+  }
+
+  onTokenFinally(opts: any = {}) {
+    const { buttonElem } = opts
+
+    buttonElem.button("option", "disabled", false);
+    $(".login-spinner").hide();
+  }
 
   async login(opts) {
     const {
@@ -211,41 +256,62 @@ export class User extends Context {
     });
 
     $("#node-dialog-login-fields").empty();
-    const user = this
 
-    return new Promise((reject, resolve) => {
-      $.ajax({
-        dataType: "json",
-        url: "auth/login",
-        success: (data) => {
-          var i = 0;
-          this.onLoginSuccess({ resolve, reject, data, opts })
+    await this.serverUserLogin({
+      dialog
+    })
+  }
 
-          if (opts.cancelable) {
-            const cancelButton = <IButton>$("#node-dialog-login-cancel")
+  async serverUserLogin(opts) {
+    const {
+      onUserLoginSuccess,
+      onUserLoginError
+    } = this
+    this.sessionApi = new SessionApi().configure({
+      url: 'auth/login'
+    })
+    try {
+      const result = await this.sessionApi.post({})
+      onUserLoginSuccess(result, opts)
+    } catch (error) {
+      onUserLoginError(error)
+    }
+  }
 
-            cancelButton.button().click(function (event) {
-              const loginDialog = <IDialogElem>$("#node-dialog-login")
-              loginDialog.dialog('destroy').remove();
-            });
-          }
+  onUserLoginSuccess(data, opts) {
+    const {
+      dialog
+    } = opts
+    var i = 0;
+    this.onLoginSuccess({ data, opts })
 
-          var loginImageSrc = data.image || "red/images/node-red-256.png";
+    if (opts.cancelable) {
+      const cancelButton = <IButton>$("#node-dialog-login-cancel")
 
-          // TODO: fix
-          const loadUrl = 'unknown'
-          const loadData = {}
-          $("#node-dialog-login-image").load(loadUrl, loadData, () => {
-            dialog.dialog("open");
-          }).attr("src", loginImageSrc);
-        },
-        error: (jqXHR: any, textStatus: string, errorThrown: string) => {
-          user.handleError(`login: ${textStatus}`, {
-            jqXHR
-          })
-          throw new Error(errorThrown)
-        }
+      cancelButton.button().click(function (event) {
+        const loginDialog = <IDialogElem>$("#node-dialog-login")
+        loginDialog.dialog('destroy').remove();
       });
+    }
+
+    var loginImageSrc = data.image || "red/images/node-red-256.png";
+
+    // TODO: fix
+    const loadUrl = 'unknown'
+    const loadData = {}
+    $("#node-dialog-login-image").load(loadUrl, loadData, () => {
+      dialog.dialog("open");
+    }).attr("src", loginImageSrc);
+  }
+
+  onUserLoginError(error) {
+    const {
+      jqXHR,
+      textStatus,
+      errorThrown
+    } = error
+    this.handleError(`login: ${textStatus}`, {
+      jqXHR
     })
   }
 
@@ -255,33 +321,53 @@ export class User extends Context {
     } = this
     var tokens = ctx.settings.get("auth-tokens");
     var token = tokens ? tokens.access_token : "";
-    const user = this
-    return new Promise((reject, resolve) => {
-      $.ajax({
-        url: "auth/revoke",
-        type: "POST",
-        data: {
-          token: token
-        }
-      }).done((data, textStatus, xhr) => {
-        ctx.settings.remove("auth-tokens");
-        if (data && data.redirect) {
-          document.location.href = data.redirect;
-        } else {
-          document.location.reload(true);
-        }
-        user.loggedIn = false
-        resolve({ loggedOut: !user.loggedIn })
-      }).fail((jqXHR, textStatus, errorThrown) => {
-        if (jqXHR.status === 401) {
-          document.location.reload(true);
-        } else {
-          console.log(textStatus);
-        }
-        user.loggedIn = true
-        reject({ loggedOut: !user.loggedIn })
-      })
+    const data = {
+      token
+    }
+    await this.serverUserLogout(data)
+  }
+
+  async serverUserLogout(data) {
+    const {
+      onUserLogoutSuccess,
+      onUserLogoutError
+    } = this
+    this.sessionApi = new SessionApi().configure({
+      url: 'auth/revoke'
     })
+    try {
+      const result = await this.sessionApi.post(data)
+      onUserLogoutSuccess(result)
+    } catch (error) {
+      onUserLogoutError(error)
+    }
+  }
+
+  onUserLogoutSuccess(data) {
+    const {
+      ctx
+    } = this
+    ctx.settings.remove("auth-tokens");
+    if (data && data.redirect) {
+      document.location.href = data.redirect;
+    } else {
+      document.location.reload(true);
+    }
+    this.loggedIn = false
+    return { loggedOut: !this.loggedIn }
+  }
+
+  onUserLogoutError(error) {
+    const {
+    jqXHR, textStatus, errorThrown
+  } = error
+    if (jqXHR.status === 401) {
+      document.location.reload(true);
+    } else {
+      console.log(textStatus);
+    }
+    this.loggedIn = true
+    return { loggedOut: !this.loggedIn }
   }
 
   updateUserMenu() {

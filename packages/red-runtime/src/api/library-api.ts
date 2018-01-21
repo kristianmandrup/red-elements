@@ -5,7 +5,7 @@ import {
 export class LibraryApi extends BaseApi {
   basePath = 'libraries'
 
-  constructor(config: any) {
+  constructor(config?: any) {
     super(config)
   }
 }

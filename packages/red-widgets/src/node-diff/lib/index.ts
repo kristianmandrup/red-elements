@@ -4,6 +4,7 @@ import {
 } from '../../common'
 
 import { log } from 'util';
+import { FlowsApi } from '@tecla5/red-runtime/src/api/flows-api';
 
 interface IDiffWidget extends JQuery<HTMLElement> {
   i18n: Function
@@ -14,6 +15,8 @@ export class Diff extends Context {
   public diffVisible: Boolean = false;
   public diffList: any
   public value: any
+
+  protected flowsApi: FlowsApi
 
   constructor() {
     super()
@@ -1089,7 +1092,34 @@ export class Diff extends Context {
     }
   }
 
-  getRemoteDiff(callback) {
+  async getRemoteDiff() {
+    return await this.loadFlows()
+  }
+
+  async loadFlows() {
+    const {
+      flowsApi,
+      onLoadSuccess,
+      onLoadError
+    } = this
+
+    this.flowsApi = new FlowsApi()
+
+    try {
+      const result = await flowsApi.load()
+      onLoadSuccess(result)
+    } catch (error) {
+      onLoadError(error)
+    }
+  }
+
+  onLoadError(error) {
+    this.handleError('loadFlows', {
+      error
+    })
+  }
+
+  onLoadSuccess(nodes) {
     const {
       RED,
       generateDiff,
@@ -1098,31 +1128,23 @@ export class Diff extends Context {
         'generateDiff',
         'resolveDiffs'
       ])
-
-    $.ajax({
-      headers: {
-        "Accept": "application/json",
-      },
-      cache: false,
-      url: 'flows',
-      success: (nodes) => {
-        var localFlow = RED.nodes.createCompleteNodeSet();
-        var originalFlow = RED.nodes.originalFlow();
-        var remoteFlow = nodes.flows;
-        var localDiff = generateDiff(originalFlow, localFlow);
-        var remoteDiff = generateDiff(originalFlow, remoteFlow);
-        remoteDiff.rev = nodes.rev;
-        callback(resolveDiffs(localDiff, remoteDiff))
-      }
-    });
-
+    var localFlow = RED.nodes.createCompleteNodeSet();
+    var originalFlow = RED.nodes.originalFlow();
+    var remoteFlow = nodes.flows;
+    var localDiff = generateDiff(originalFlow, localFlow);
+    var remoteDiff = generateDiff(originalFlow, remoteFlow);
+    remoteDiff.rev = nodes.rev;
+    resolveDiffs(localDiff, remoteDiff)
   }
+
+
   //  showLocalDiff() {
   //     var nns = RED.nodes.createCompleteNodeSet();
   //     var originalFlow = RED.nodes.originalFlow();
   //     var diff = generateDiff(originalFlow,nns);
   //     showDiff(diff);
   // }
+
   showRemoteDiff(diff) {
     if (diff === undefined) {
       this.getRemoteDiff(this.showRemoteDiff);

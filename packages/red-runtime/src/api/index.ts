@@ -10,6 +10,10 @@ export {
 } from './base-api'
 
 export {
+  RedApi,
+} from './red-api'
+
+export {
   DeployApi,
 } from './deploy-api'
 

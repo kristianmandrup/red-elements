@@ -3,6 +3,8 @@ import {
   $
 } from '../../context'
 
+import { LibraryApi } from '@tecla5/red-runtime/src/api/library-api'
+
 var ace = require('brace');
 require('brace/mode/javascript');
 require('brace/theme/monokai');
@@ -12,6 +14,7 @@ const { log } = console
 export class LibraryUI extends Context {
   libraryEditor: any;
   selectedLibraryItem: any;
+  protected libraryApi: LibraryApi
 
   constructor(public options) {
     super();
@@ -27,7 +30,7 @@ export class LibraryUI extends Context {
       '</ul></div>'
     );
     let {
-        buildFileList,
+      buildFileList,
       saveToLibrary
       } = this.rebind([
         'buildFileList',
@@ -260,7 +263,7 @@ export class LibraryUI extends Context {
     return ul;
   }
 
-  saveToLibrary(overwrite, options) {
+  async saveToLibrary(overwrite, options) {
     var name = $("#node-input-name").val().toString().replace(/(^\s*)|(\s*$)/g, "");
     var ctx = options.ctx;
     if (name === "") {
@@ -313,25 +316,52 @@ export class LibraryUI extends Context {
     }
 
     data.text = options.editor.getValue();
-    $.ajax({
-      url: "library/" + options.url + '/' + fullpath,
-      type: "POST",
-      data: JSON.stringify(data),
-      contentType: "application/json; charset=utf-8"
-    }).done(function (data, textStatus, xhr) {
-      ctx.notify(ctx._("library.savedType", {
-        type: options.type
-      }), "success");
-    }).fail(function (xhr, textStatus, err) {
-      if (xhr.status === 401) {
-        ctx.notify(ctx._("library.saveFailed", {
-          message: ctx._("user.notAuthorized")
-        }), "error");
-      } else {
-        ctx.notify(ctx._("library.saveFailed", {
-          message: xhr.responseText
-        }), "error");
-      }
-    });
+
+    const url = 'library/' + options.url + '/' + fullpath
+
+    const {
+      libraryApi,
+      onPostSuccess,
+      onPostError
+    } = this
+
+    this.libraryApi = new LibraryApi().configure({
+      url
+    })
+
+    try {
+      const result = await libraryApi.post(data)
+      onPostSuccess(result, options)
+    } catch (error) {
+      onPostError(error)
+    }
+  }
+
+  onPostSuccess(data, options: any = {}) {
+    const {
+      ctx
+    } = this
+    ctx.notify(ctx._("library.savedType", {
+      type: options.type
+    }), "success");
+  }
+
+  onPostError(error) {
+    const {
+      ctx
+    } = this
+    const {
+      jqXHR
+    } = error
+
+    if (jqXHR.status === 401) {
+      ctx.notify(ctx._("library.saveFailed", {
+        message: ctx._("user.notAuthorized")
+      }), "error");
+    } else {
+      ctx.notify(ctx._("library.saveFailed", {
+        message: jqXHR.responseText
+      }), "error");
+    }
   }
 }

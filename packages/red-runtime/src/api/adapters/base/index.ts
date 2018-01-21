@@ -8,11 +8,15 @@ export interface IAjaxConfig {
 }
 
 export interface IApiMethod {
-  send(): IApiMethod
+  send(config: IAjaxConfig): Promise<any>
 }
 
 export interface IApiPost extends IApiMethod {
-  setData(data: any): IApiPost
+  setData(data: any): IApiMethod
+}
+
+export interface IApiPut extends IApiMethod {
+  setData(data: any): IApiMethod
 }
 
 export interface IApiGet extends IApiMethod {
@@ -24,6 +28,7 @@ export interface IBaseAdapter {
   validate?(config: any): boolean
   $get?(config: IAjaxConfig): Promise<any>
   $post?(data: any, config: IAjaxConfig): Promise<any>
+  $put?(data: any, config: IAjaxConfig): Promise<any>
 }
 
 import {
@@ -53,6 +58,10 @@ export class BaseAdapter extends Context {
   }
 
   async $post(config: IAjaxConfig): Promise<any> {
+    throw new Error('BaseAdapter subclass may implement $post')
+  }
+
+  async $put(config: IAjaxConfig): Promise<any> {
     throw new Error('BaseAdapter subclass may implement $post')
   }
 }

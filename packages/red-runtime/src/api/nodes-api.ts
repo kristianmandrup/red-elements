@@ -5,7 +5,7 @@ import {
 export class NodesApi extends BaseApi {
   basePath = 'nodes'
 
-  constructor(config: any) {
+  constructor(config?: any) {
     super(config)
   }
 }

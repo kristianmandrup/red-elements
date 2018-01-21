@@ -3,13 +3,13 @@ import {
 } from './base-api'
 
 export interface IApiCallerContext {
-  $context: any
+  $context?: any
 }
 
 export class SettingsApi extends BaseApi {
   basePath = 'settings'
 
-  constructor(config: IApiCallerContext) {
+  constructor(config?: IApiCallerContext) {
     super(config)
   }
 

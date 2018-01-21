@@ -5,7 +5,7 @@ import {
 export class I18nCatalogApi extends BaseApi {
   basePath = 'catalog'
 
-  constructor(config: any) {
+  constructor(config?: any) {
     super(config)
   }
 }

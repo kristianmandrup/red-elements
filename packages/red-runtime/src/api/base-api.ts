@@ -19,7 +19,13 @@ export interface IBaseApi {
   errorCode(error: any)
   beforeSend(config?: any)
   setupApi(): void
-  load(config?: object): Promise<any>
+
+  load(config?: object): Promise<any> // alias for get
+  get(config?: object): Promise<any>
+  delete(config?: object): Promise<any>
+
+  post(data: any, config?: object): Promise<any>
+  put(data: any, config?: object): Promise<any>
 }
 
 export class BaseApi extends Context implements IBaseApi {
@@ -37,7 +43,7 @@ export class BaseApi extends Context implements IBaseApi {
   protected protocol = process.env.RED_PROTOCOL || 'http'
 
   // inject API adapter service
-  constructor(config: any = {}) {
+  constructor(config?: any) {
     super()
 
     this.configure(config)
@@ -125,14 +131,25 @@ export class BaseApi extends Context implements IBaseApi {
     return `${protocol}://${hostAndPort}/${config.url}`
   }
 
-  async post(data: any, config?: object) {
+  async put(data: any, config?: IAjaxConfig) {
+    return await this.adapter.$put(data, config)
   }
 
+  async post(data: any, config?: IAjaxConfig) {
+    return await this.adapter.$post(data, config)
+  }
+
+  async delete(config?: IAjaxConfig | object) {
+  }
+
+  async get(config?: IAjaxConfig | object) {
+    return await this.load(config)
+  }
   /**
    * Load data from API via adapter
    * @param config
    */
-  async load(config?: object) {
+  async load(config?: IAjaxConfig | object) {
     config = config || {}
     const {
       _onApiError,

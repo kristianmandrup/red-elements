@@ -18,7 +18,9 @@ import {
   Context,
   $
 } from '../../context'
-import { DeployApi } from '@tecla5/red-runtime';
+import {
+  FlowsApi
+} from '@tecla5/red-runtime';
 
 const { log } = console
 interface IDialog extends JQuery<HTMLElement> {
@@ -55,7 +57,7 @@ export class Deploy extends Context {
     invalid: false
   }
 
-  protected deployApi
+  protected flowsApi
 
   constructor(options: any = {}) {
     super()
@@ -539,24 +541,22 @@ export class Deploy extends Context {
       $("#palette-shade").show();
       $("#sidebar-shade").show();
 
-      this.deployApi = new DeployApi({
-        $context: this
-      })
+      this.flowsApi = new FlowsApi()
 
       const {
-        deployApi,
+        flowsApi,
         headers,
         onSuccess,
         onError,
         onFinally
       } = this
 
-      deployApi.configure({
+      flowsApi.configure({
         headers
       })
 
       try {
-        const result = await deployApi.post(data)
+        const result = await flowsApi.post(data)
         this.onSuccess(result, {
           nns,
           hasUnusedConfig

@@ -14,6 +14,7 @@
  * limitations under the License.
  **/
 import { Context, $, EditableList, Searchbox } from '../../common'
+import { NodesApi } from '@tecla5/red-runtime/src/api/nodes-api';
 
 interface ISearchTerm extends JQuery<HTMLElement> {
 }
@@ -53,6 +54,8 @@ export class PaletteEditor extends Context {
   public catalogueLoadErrors: Boolean = false;
 
   public activeSort: any = this.sortModulesAZ;
+
+  protected nodesApi: NodesApi
 
   constructor() {
     super()
@@ -197,49 +200,47 @@ export class PaletteEditor extends Context {
     return 0;
   }
 
-  delayCallback(start, callback) {
-    var delta = Date.now() - start;
-    if (delta < 300) {
-      delta = 300;
-    } else {
-      delta = 0;
-    }
-    setTimeout(function () {
-      callback();
-    }, delta);
-  }
-
   changeNodeState(id, state, shade, callback) {
-    const {
-      delayCallback
-    } = this.rebind([
-        'delayCallback'
-      ])
-
-
     shade.show();
     var start = Date.now();
-    $.ajax({
-      url: "nodes/" + id,
-      type: "PUT",
-      data: JSON.stringify({
-        enabled: state
-      }),
-      contentType: "application/json; charset=utf-8"
-    }).done(function (data, textStatus, xhr) {
-      delayCallback(start, function () {
-        shade.hide();
-        callback();
-      });
-    }).fail(function (xhr, textStatus, err) {
-      delayCallback(start, function () {
-        shade.hide();
-        callback(xhr);
-      });
-    })
+
+    this.updateNode(state, id)
   }
 
-  installNodeModule(id, callback: Function, version?, shade?) {
+  updateNode(state, id) {
+    const {
+      nodesApi,
+      onNodeUpdateError,
+      onNodeUpdateSuccess
+    } = this
+    const url = 'nodes/' + id
+    const data = {
+      enabled: state
+    }
+    try {
+      const result = this.nodesApi.put(data)
+      onNodeUpdateSuccess(result)
+    } catch (error) {
+      onNodeUpdateError(error)
+    }
+
+  }
+
+  onNodeUpdateSuccess(data, options: any = {}) {
+    const {
+      shade
+    } = options
+    shade.hide();
+  }
+
+  onNodeUpdateError(error, options: any = {}) {
+    const {
+      shade
+    } = options
+    shade.hide();
+  }
+
+  async installNodeModule(id, callback: Function, version?, shade?) {
     var requestBody = {
       module: id,
       version: null
@@ -251,30 +252,76 @@ export class PaletteEditor extends Context {
       requestBody.version = version;
     }
     shade.show();
-    $.ajax({
-      url: "nodes",
-      type: "POST",
-      data: JSON.stringify(requestBody),
-      contentType: "application/json; charset=utf-8"
-    }).done(function (data, textStatus, xhr) {
-      shade.hide();
-      callback();
-    }).fail(function (xhr, textStatus, err) {
-      shade.hide();
-      callback(xhr);
-    });
+
+    await this.postNode(requestBody)
   }
 
-  removeNodeModule(id, callback) {
-    $.ajax({
-      url: "nodes/" + id,
-      type: "DELETE"
-    }).done(function (data, textStatus, xhr) {
-      callback();
-    }).fail(function (xhr, textStatus, err) {
-      callback(xhr);
-    })
+  async postNode(data, options: any = {}) {
+    const {
+      nodesApi,
+      onNodePostSuccess,
+      onNodePostError
+    } = this
+
+    this.nodesApi = new NodesApi()
+    try {
+      const result = await this.nodesApi.post(data)
+      onNodePostSuccess(result, options)
+    } catch (error) {
+      onNodePostError(error)
+    }
   }
+
+  onNodePostSuccess(data, options: any = {}) {
+    const {
+    shade
+  } = options
+    shade.hide();
+  }
+
+  onNodePostError(error, options: any = {}) {
+    const {
+    shade
+  } = options
+
+    shade.hide();
+  }
+
+
+  async removeNodeModule(id: string) {
+    this.deleteNode(id)
+  }
+
+  async deleteNode(id: string) {
+    const url = 'nodes/' + id
+
+    this.nodesApi = new NodesApi().configure({
+      url
+    })
+
+    const {
+      nodesApi,
+      onNodeDeleteSuccess,
+      onNodeDeleteError
+    } = this
+
+    this.nodesApi = new NodesApi()
+    try {
+      const result = await this.nodesApi.delete()
+      onNodeDeleteSuccess(result)
+    } catch (error) {
+      onNodeDeleteError(error)
+    }
+  }
+
+  onNodeDeleteSuccess(result) {
+
+  }
+
+  onNodeDeleteError(error) {
+
+  }
+
 
   refreshNodeModuleList() {
     const {

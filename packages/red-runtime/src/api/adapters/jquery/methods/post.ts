@@ -1,7 +1,7 @@
 import {
   ApiMethod
 } from './_base'
-import { IBaseAdapter } from '../../base';
+import { IBaseAdapter, IApiMethod, IApiPost } from '../../base';
 import { IAjaxConfig } from '../../../base-api';
 
 
@@ -24,6 +24,7 @@ export class ApiPost extends ApiMethod implements IApiPost {
     } = this
 
     return {
+      method: 'POST',
       data: JSON.stringify(data),
       contentType: 'application/json; charset=utf-8',
       headers: {

@@ -19,12 +19,15 @@ import {
 } from '../../context'
 
 import { LibraryUI } from './library-ui'
+import { LibraryApi } from '@tecla5/red-runtime/src/api/library-api';
 const { log } = console
 
 export class Library extends Context {
   exportToLibraryDialog: any;
   flowName: any;
   ui: any;
+
+  protected libraryApi: LibraryApi
 
   constructor() {
     super()
@@ -89,25 +92,7 @@ export class Library extends Context {
             //TODO: move this to ctx.library
             var flowName: any = $("#node-input-library-filename").val();
             if (!/^\s*$/.test(flowName)) {
-              $.ajax({
-                url: 'library/flows/' + flowName,
-                type: "POST",
-                data: $("#node-input-library-filename").attr('nodes'),
-                contentType: "application/json; charset=utf-8"
-              }).done(() => {
-                ctx.library.loadFlowLibrary();
-                ctx.notify(ctx._("library.savedNodes"), "success");
-              }).fail((xhr, textStatus, err) => {
-                if (xhr.status === 401) {
-                  ctx.notify(ctx._("library.saveFailed", {
-                    message: ctx._("user.notAuthorized")
-                  }), "error");
-                } else {
-                  ctx.notify(ctx._("library.saveFailed", {
-                    message: xhr.responseText
-                  }), "error");
-                }
-              });
+              this.postLibraryFlow(flowName)
             }
             (<any>$(this)).dialog("close");
           }
@@ -127,6 +112,62 @@ export class Library extends Context {
       '</div>'
     ));
   }
+
+  async postLibraryFlow(flowName) {
+    const {
+      ctx
+    } = this
+
+    const url = 'library/flows/' + flowName
+    const data = $("#node-input-library-filename").attr('nodes')
+
+    const {
+      libraryApi,
+      onPostSuccess,
+      onPostError
+    } = this
+
+    this.libraryApi = new LibraryApi().configure({
+      url
+    })
+
+    try {
+      const result = await libraryApi.post(data)
+      onPostSuccess(result)
+    } catch (error) {
+      onPostError(error)
+    }
+  }
+
+  onPostSuccess(data) {
+    const {
+      ctx
+    } = this
+
+    ctx.library.loadFlowLibrary();
+    ctx.notify(ctx._("library.savedNodes"), "success");
+  }
+
+  onPostError(error) {
+    const {
+      ctx
+    } = this
+
+    const {
+      xhr, textStatus, err
+    } = error
+
+    if (xhr.status === 401) {
+      ctx.notify(ctx._("library.saveFailed", {
+        message: ctx._("user.notAuthorized")
+      }), "error");
+    } else {
+      ctx.notify(ctx._("library.saveFailed", {
+        message: xhr.responseText
+      }), "error");
+    }
+  }
+
 
   /**
    * Takes a done cb function to be called when done loading

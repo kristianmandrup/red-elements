@@ -2,7 +2,7 @@ import {
   IAjaxConfig,
   BaseAdapter,
   IBaseAdapter
-} from '../base-adapter'
+} from '../base'
 
 import * as $ from 'jquery'
 
@@ -11,7 +11,8 @@ export interface IJQueryAjaxAdapter extends IBaseAdapter {
 
 import {
   ApiPost,
-  ApiGet
+  ApiPut,
+  ApiGet,
 } from './methods'
 
 import { IBaseApi } from '../../base-api';
@@ -32,6 +33,11 @@ export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter
     this.apiGet.configure(config)
     this.apiPost.configure(config)
     return this
+  }
+
+  async put(data) {
+    this.apiPut.setData(data)
+    await this.apiPut.send()
   }
 
   async post(data) {

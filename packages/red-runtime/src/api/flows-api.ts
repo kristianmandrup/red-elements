@@ -5,7 +5,7 @@ import {
 export class FlowsApi extends BaseApi {
   basePath = 'flows'
 
-  constructor(config: any) {
+  constructor(config?: any) {
     super(config)
   }
 }
