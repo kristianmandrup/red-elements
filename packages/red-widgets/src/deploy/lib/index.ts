@@ -18,13 +18,25 @@ import {
   Context,
   $
 } from '../../context'
-import {
-  FlowsApi
-} from '@tecla5/red-runtime';
 
 const { log } = console
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
+}
+
+import * as path from 'path'
+import { DeployConfiguration } from './configuration';
+import {
+  FlowsSaver
+} from './flows-saver'
+import { Deployer } from './deployer';
+
+const iconsPath = 'red/images/'
+
+const icons = {
+  deployFull: 'deploy-full-o.png',
+  deployNodes: 'deploy-nodes-o.png',
+  deployFlows: 'deploy-flows-o.png'
 }
 
 export class Deploy extends Context {
@@ -37,14 +49,14 @@ export class Deploy extends Context {
    */
   public type = 'default'
   public deploymentTypes = {
-    "full": {
-      img: "red/images/deploy-full-o.png"
+    full: {
+      img: path.join(iconsPath, icons.deployFull)
     },
-    "nodes": {
-      img: "red/images/deploy-nodes-o.png"
+    nodes: {
+      img: path.join(iconsPath, icons.deployNodes)
     },
-    "flows": {
-      img: "red/images/deploy-flows-o.png"
+    flows: {
+      img: path.join(iconsPath, icons.deployFlows)
     }
   }
   public deploymentType = 'full'
@@ -57,270 +69,19 @@ export class Deploy extends Context {
     invalid: false
   }
 
-  protected flowsApi
+  // injected services
+  protected configuration: DeployConfiguration = new DeployConfiguration(this)
+  protected flowsSaver = new FlowsSaver(this)
+  protected deployer = new Deployer(this)
 
   constructor(options: any = {}) {
     super()
+    this.configure(options)
+  }
 
-    let {
-      ctx,
-      type,
-      currentDiff,
-      ignoreDeployWarnings,
-      deployInflight
-    } = this
-
-    const {
-      changeDeploymentType,
-      save,
-      resolveConflict
-    } = this.rebind([
-        'changeDeploymentType',
-        'save',
-        'resolveConflict'
-      ])
-
-    options = options || {};
-    type = options.type || type
-    this.type = type
-
-    if (type == 'default') {
-      $('<li><span class="deploy-button-group button-group">' +
-        '<a id="btn-deploy" class="deploy-button disabled" href="#">' +
-        '<span class="deploy-button-content">' +
-        '<img id="btn-deploy-icon" src="red/images/deploy-full-o.png"> ' +
-        '<span>' + ctx._("deploy.deploy") + '</span>' +
-        '</span>' +
-        '<span class="deploy-button-spinner hide">' +
-        '<img src="red/images/spin.svg"/>' +
-        '</span>' +
-        '</a>' +
-        '<a id="btn-deploy-options" data-toggle="dropdown" class="deploy-button" href="#"><i class="fa fa-caret-down"></i></a>' +
-        '</span></li>').prependTo(".header-toolbar");
-
-      ctx.menu.init({
-        id: "btn-deploy-options",
-        options: [{
-          id: "deploymenu-item-full",
-          toggle: "deploy-type",
-          icon: "red/images/deploy-full.png",
-          label: ctx._("deploy.full"),
-          sublabel: ctx._("deploy.fullDesc"),
-          selected: true,
-          onselect: function (s) {
-            if (s) {
-              changeDeploymentType("full")
-            }
-          }
-        },
-        {
-          id: "deploymenu-item-flow",
-          toggle: "deploy-type",
-          icon: "red/images/deploy-flows.png",
-          label: ctx._("deploy.modifiedFlows"),
-          sublabel: ctx._("deploy.modifiedFlowsDesc"),
-          onselect: function (s) {
-            if (s) {
-              changeDeploymentType("flows")
-            }
-          }
-        },
-        {
-          id: "deploymenu-item-node",
-          toggle: "deploy-type",
-          icon: "red/images/deploy-nodes.png",
-          label: ctx._("deploy.modifiedNodes"),
-          sublabel: ctx._("deploy.modifiedNodesDesc"),
-          onselect: function (s) {
-            if (s) {
-              changeDeploymentType("nodes")
-            }
-          }
-        }
-        ]
-      });
-    } else if (type == "simple") {
-      var label = options.label || ctx._("deploy.deploy");
-      var icon = 'red/images/deploy-full-o.png';
-      if (options.hasOwnProperty('icon')) {
-        icon = options.icon;
-      }
-
-      $('<li><span class="deploy-button-group button-group">' +
-        '<a id="btn-deploy" class="deploy-button disabled" href="#">' +
-        '<span class="deploy-button-content">' +
-        (icon ? '<img id="btn-deploy-icon" src="' + icon + '"> ' : '') +
-        '<span>' + label + '</span>' +
-        '</span>' +
-        '<span class="deploy-button-spinner hide">' +
-        '<img src="red/images/spin.svg"/>' +
-        '</span>' +
-        '</a>' +
-        '</span></li>').prependTo(".header-toolbar");
-    }
-
-    $('#btn-deploy').click(function (event) {
-      event.preventDefault();
-      save();
-    });
-
-    ctx.actions.add("core:deploy-flows", save);
-
-    const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
-    confirmDeployDialog.dialog({
-      title: ctx._('deploy.confirm.button.confirm'),
-      modal: true,
-      autoOpen: false,
-      width: 550,
-      height: "auto",
-      buttons: [{
-        text: ctx._("common.label.cancel"),
-        click: function () {
-          confirmDeployDialog.dialog("close");
-        }
-      },
-      {
-        id: "node-dialog-confirm-deploy-review",
-        text: ctx._("deploy.confirm.button.review"),
-        class: "primary disabled",
-        click: function () {
-          if (!$("#node-dialog-confirm-deploy-review").hasClass('disabled')) {
-            ctx.diff.showRemoteDiff();
-            confirmDeployDialog.dialog("close");
-          }
-        }
-      },
-      {
-        id: "node-dialog-confirm-deploy-merge",
-        text: ctx._("deploy.confirm.button.merge"),
-        class: "primary disabled",
-        click: function () {
-          ctx.diff.mergeDiff(currentDiff);
-          confirmDeployDialog.dialog("close");
-        }
-      },
-      {
-        id: "node-dialog-confirm-deploy-deploy",
-        text: ctx._("deploy.confirm.button.confirm"),
-        class: "primary",
-        click: function () {
-          const deployType = <string>$("#node-dialog-confirm-deploy-type").val()
-          var ignoreChecked = $("#node-dialog-confirm-deploy-hide").prop("checked");
-          if (ignoreChecked) {
-            ignoreDeployWarnings[deployType] = true;
-          }
-          save(true, /conflict/.test(deployType));
-          confirmDeployDialog.dialog("close");
-        }
-      },
-      {
-        id: "node-dialog-confirm-deploy-overwrite",
-        text: ctx._("deploy.confirm.button.overwrite"),
-        class: "primary",
-        click: function () {
-          const deployType = <string>$("#node-dialog-confirm-deploy-type").val()
-          save(true, /conflict/.test(deployType));
-          confirmDeployDialog.dialog("close");
-        }
-      }
-      ],
-      create: function () {
-        log('confirmDeployDialog: create')
-
-        $("#node-dialog-confirm-deploy").parent().find("div.ui-dialog-buttonpane")
-          .prepend('<div style="height:0; vertical-align: middle; display:inline-block; margin-top: 13px; float:left;">' +
-          '<input style="vertical-align:top;" type="checkbox" id="node-dialog-confirm-deploy-hide"> ' +
-          '<label style="display:inline;" for="node-dialog-confirm-deploy-hide" data-i18n="deploy.confirm.doNotWarn"></label>' +
-          '<input type="hidden" id="node-dialog-confirm-deploy-type">' +
-          '</div>');
-      },
-      open: function () {
-        log('confirmDeployDialog: open')
-
-        const deployType = <string>$("#node-dialog-confirm-deploy-type").val();
-        if (/conflict/.test(deployType)) {
-          const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
-          confirmDeployDialog.dialog('option', 'title', ctx._('deploy.confirm.button.review'));
-          $("#node-dialog-confirm-deploy-deploy").hide();
-          $("#node-dialog-confirm-deploy-review").addClass('disabled').show();
-          $("#node-dialog-confirm-deploy-merge").addClass('disabled').show();
-          $("#node-dialog-confirm-deploy-overwrite").toggle(deployType === "deploy-conflict");
-          currentDiff = null;
-          $("#node-dialog-confirm-deploy-conflict-checking").show();
-          $("#node-dialog-confirm-deploy-conflict-auto-merge").hide();
-          $("#node-dialog-confirm-deploy-conflict-manual-merge").hide();
-
-          var now = Date.now();
-          ctx.diff.getRemoteDiff(function (diff) {
-            var ellapsed = Math.max(1000 - (Date.now() - now), 0);
-            currentDiff = diff;
-            setTimeout(function () {
-              $("#node-dialog-confirm-deploy-conflict-checking").hide();
-              var d = Object.keys(diff.conflicts);
-              if (d.length === 0) {
-                $("#node-dialog-confirm-deploy-conflict-auto-merge").show();
-                $("#node-dialog-confirm-deploy-merge").removeClass('disabled')
-              } else {
-                $("#node-dialog-confirm-deploy-conflict-manual-merge").show();
-              }
-              $("#node-dialog-confirm-deploy-review").removeClass('disabled')
-            }, ellapsed);
-          })
-
-
-          $("#node-dialog-confirm-deploy-hide").parent().hide();
-        } else {
-          const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
-          confirmDeployDialog.dialog('option', 'title', ctx._('deploy.confirm.button.confirm'));
-
-          $("#node-dialog-confirm-deploy-deploy").show();
-          $("#node-dialog-confirm-deploy-overwrite").hide();
-          $("#node-dialog-confirm-deploy-review").hide();
-          $("#node-dialog-confirm-deploy-merge").hide();
-          $("#node-dialog-confirm-deploy-hide").parent().show();
-        }
-      }
-    });
-
-    ctx.events.on('nodes:change', function (state) {
-      if (state.dirty) {
-        window.onbeforeunload = function () {
-          return ctx._("deploy.confirm.undeployedChanges");
-        }
-        $("#btn-deploy").removeClass("disabled");
-      } else {
-        window.onbeforeunload = null;
-        $("#btn-deploy").addClass("disabled");
-      }
-    });
-
-    var activeNotifyMessage;
-    ctx.comms.subscribe("notification/runtime-deploy", function (topic, msg) {
-      if (!activeNotifyMessage) {
-        var currentRev = ctx.nodes.version();
-        if (currentRev === null || deployInflight || currentRev === msg.revision) {
-          return;
-        }
-        var message = $('<div>' + ctx._('deploy.confirm.backgroundUpdate') +
-          '<br><br><div class="ui-dialog-buttonset">' +
-          '<button>' + ctx._('deploy.confirm.button.ignore') + '</button>' +
-          '<button class="primary">' + ctx._('deploy.confirm.button.review') + '</button>' +
-          '</div></div>');
-        $(message.find('button')[0]).click(function (evt) {
-          evt.preventDefault();
-          activeNotifyMessage.close();
-          activeNotifyMessage = null;
-        })
-        $(message.find('button')[1]).click(function (evt) {
-          evt.preventDefault();
-          activeNotifyMessage.close();
-          var nns = ctx.nodes.createCompleteNodeSet();
-          resolveConflict(nns, false);
-          activeNotifyMessage = null;
-        })
-        activeNotifyMessage = ctx.notify(message, null, true);
-      }
-    });
+  configure(options) {
+    this.configuration.configure(options)
+    return this
   }
 
   changeDeploymentType(type) {
@@ -340,6 +101,15 @@ export class Deploy extends Context {
       })
     }
     $("#btn-deploy-icon").attr("src", $deploymentType.img);
+  }
+
+  async saveFlows(skipValidation, force) {
+    return await this.flowsSaver.saveFlows(skipValidation, force)
+  }
+
+
+  async deployNodes(nodes) {
+    return await this.deployer.deployNodes(nodes)
   }
 
   getNodeInfo(node) {
@@ -365,28 +135,11 @@ export class Deploy extends Context {
     };
   }
 
-  sortNodeInfo(A, B) {
-    if (A.tab < B.tab) {
-      return -1;
-    }
-    if (A.tab > B.tab) {
-      return 1;
-    }
-    if (A.type < B.type) {
-      return -1;
-    }
-    if (A.type > B.type) {
-      return 1;
-    }
-    if (A.name < B.name) {
-      return -1;
-    }
-    if (A.name > B.name) {
-      return 1;
-    }
-    return 0;
-  }
-
+  /**
+   * Resolve deploy conflict
+   * @param currentNodes
+   * @param activeDeploy
+   */
   // TODO: handle error if any element required is not found on page
   resolveConflict(currentNodes, activeDeploy) {
     $("#node-dialog-confirm-deploy-config").hide();
@@ -397,297 +150,5 @@ export class Deploy extends Context {
     const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
     confirmDeployDialog.dialog("open");
     return this
-  }
-
-  async save(skipValidation, force) {
-    let {
-      ctx,
-      deployInflight,
-      lastDeployAttemptTime,
-      deploymentType,
-      ignoreDeployWarnings,
-    } = this
-
-    const {
-      getNodeInfo,
-      sortNodeInfo,
-      resolveConflict
-    } = this.rebind([
-        'getNodeInfo',
-        'sortNodeInfo',
-        'resolveConflict'
-      ])
-
-    if (!$("#btn-deploy").hasClass("disabled")) {
-      log({
-        skipValidation,
-        force
-      })
-
-      this.lastDeployAttemptTime = new Date()
-      log({
-        lastDeployAttemptTime: this.lastDeployAttemptTime
-      })
-
-      if (!skipValidation) {
-        log('deploy validation')
-        var hasUnknown = false;
-        var hasInvalid = false;
-        var hasUnusedConfig = false;
-
-        var unknownNodes = [];
-        var invalidNodes = [];
-
-        ctx.nodes.eachNode(function (node) {
-          hasInvalid = hasInvalid || !node.valid;
-          if (!node.valid) {
-            invalidNodes.push(getNodeInfo(node));
-          }
-          if (node.type === "unknown") {
-            if (unknownNodes.indexOf(node.name) == -1) {
-              unknownNodes.push(node.name);
-            }
-          }
-        });
-        log('iterated nodes')
-
-        hasUnknown = unknownNodes.length > 0;
-
-        var unusedConfigNodes = [];
-        ctx.nodes.eachConfig(function (node) {
-          if (!node.users || node.users.length === 0 && (node._def.hasUsers !== false)) {
-            unusedConfigNodes.push(getNodeInfo(node));
-            hasUnusedConfig = true;
-          }
-        });
-        log('iterated configs')
-
-        $("#node-dialog-confirm-deploy-config").hide();
-        $("#node-dialog-confirm-deploy-unknown").hide();
-        $("#node-dialog-confirm-deploy-unused").hide();
-        $("#node-dialog-confirm-deploy-conflict").hide();
-
-        var showWarning = false;
-
-        if (hasUnknown && !ignoreDeployWarnings.unknown) {
-          log('show unknown', {
-            hasUnknown,
-            ignoreDeployWarnings
-          })
-
-          showWarning = true;
-          $("#node-dialog-confirm-deploy-type").val("unknown");
-          $("#node-dialog-confirm-deploy-unknown").show();
-          $("#node-dialog-confirm-deploy-unknown-list")
-            .html("<li>" + unknownNodes.join("</li><li>") + "</li>");
-        } else if (hasInvalid && !ignoreDeployWarnings.invalid) {
-          log('show invalid')
-          showWarning = true;
-          $("#node-dialog-confirm-deploy-type").val("invalid");
-          $("#node-dialog-confirm-deploy-config").show();
-          invalidNodes.sort(sortNodeInfo);
-          $("#node-dialog-confirm-deploy-invalid-list")
-            .html("<li>" + invalidNodes.map(function (A) {
-              return (A.tab ? "[" + A.tab + "] " : "") + A.label + " (" + A.type + ")"
-            }).join("</li><li>") + "</li>");
-
-        } else if (hasUnusedConfig && !ignoreDeployWarnings.unusedConfig) {
-          log('show unused config')
-          // showWarning = true;
-          // $( "#node-dialog-confirm-deploy-type" ).val("unusedConfig");
-          // $( "#node-dialog-confirm-deploy-unused" ).show();
-          //
-          // unusedConfigNodes.sort(sortNodeInfo);
-          // $( "#node-dialog-confirm-deploy-unused-list" )
-          //     .html("<li>"+unusedConfigNodes.map(function(A) { return (A.tab?"["+A.tab+"] ":"")+A.label+" ("+A.type+")"}).join("</li><li>")+"</li>");
-        }
-
-        if (showWarning) {
-          log('show warning')
-
-          $("#node-dialog-confirm-deploy-hide").prop("checked", false);
-          const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
-          confirmDeployDialog.dialog("open");
-          return;
-        }
-
-        log('deploy validation DONE')
-      }
-
-      var nns = ctx.nodes.createCompleteNodeSet();
-
-      var startTime = Date.now();
-      $(".deploy-button-content").css('opacity', 0);
-      $(".deploy-button-spinner").show();
-      $("#btn-deploy").addClass("disabled");
-
-      var data = {
-        flows: nns,
-        rev: null
-      };
-
-      if (!force) {
-        log('not forced: use current version as revision number')
-        data.rev = ctx.nodes.version();
-      }
-
-      const deployer = this
-
-      deployInflight = true;
-      this.deployInflight = deployInflight
-
-      $("#header-shade").show();
-      $("#editor-shade").show();
-      $("#palette-shade").show();
-      $("#sidebar-shade").show();
-
-      this.flowsApi = new FlowsApi()
-
-      const {
-        flowsApi,
-        headers,
-        onSuccess,
-        onError,
-        onFinally
-      } = this
-
-      flowsApi.configure({
-        headers
-      })
-
-      try {
-        const result = await flowsApi.post(data)
-        this.onSuccess(result, {
-          nns,
-          hasUnusedConfig
-        })
-      } catch (error) {
-        onError(error, {
-          nns
-        })
-      } finally {
-        onFinally({
-          deployer,
-          startTime
-        })
-      }
-    } else {
-      this.logWarning('deploy-button disabled: not able to deploy via UI')
-    }
-  }
-
-  protected get headers() {
-    return {
-      'Node-RED-Deployment-Type': this.deploymentType
-    }
-  }
-
-  onFinally(options: any = {}) {
-    const {
-      deployer,
-      startTime
-    } = options
-    let {
-      deployInflight
-    } = this
-
-    this.logInfo('Ajax always: cleanup')
-
-    deployInflight = false;
-    deployer.deployInflight = deployInflight
-    var delta = Math.max(0, 300 - (Date.now() - startTime));
-    setTimeout(function () {
-      $(".deploy-button-content").css('opacity', 1);
-      $(".deploy-button-spinner").hide();
-      $("#header-shade").hide();
-      $("#editor-shade").hide();
-      $("#palette-shade").hide();
-      $("#sidebar-shade").hide();
-    }, delta);
-
-  }
-
-  onError(error, options: any = {}) {
-    const {
-      ctx
-    } = this
-    const {
-      nns
-    } = options
-
-    const {
-      resolveConflict
-    } = this.rebind([
-        'resolveConflict'
-      ])
-
-    const { xhr, textStatus, err } = error
-    log('Ajax fail', {
-      err
-    })
-    ctx.nodes.dirty(true);
-    $("#btn-deploy").removeClass("disabled");
-    if (xhr.status === 401) {
-      ctx.notify(ctx._("deploy.deployFailed", {
-        message: ctx._("user.notAuthorized")
-      }), "error");
-    } else if (xhr.status === 409) {
-      resolveConflict(nns, true);
-    } else if (xhr.responseText) {
-      ctx.notify(ctx._("deploy.deployFailed", {
-        message: xhr.responseText
-      }), "error");
-    } else {
-      ctx.notify(ctx._("deploy.deployFailed", {
-        message: ctx._("deploy.errors.noResponse")
-      }), "error");
-    }
-  }
-
-  onSuccess(data, options: any = {}) {
-    const {
-      ctx
-    } = this
-    const {
-      nns,
-      hasUnusedConfig
-    } = options
-
-    ctx.nodes.dirty(false);
-    ctx.nodes.version(data.rev);
-    ctx.nodes.originalFlow(nns);
-    if (hasUnusedConfig) {
-      ctx.notify(
-        '<p>' + ctx._("deploy.successfulDeploy") + '</p>' +
-        '<p>' + ctx._("deploy.unusedConfigNodes") + ' <a href="#" onclick="ctx.sidebar.config.show(true); return false;">' + ctx._("deploy.unusedConfigNodesLink") + '</a></p>', "success", false, 6000);
-    } else {
-      ctx.notify(ctx._("deploy.successfulDeploy"), "success");
-    }
-    ctx.nodes.eachNode(function (node) {
-      if (node.changed) {
-        node.dirty = true;
-        node.changed = false;
-      }
-      if (node.moved) {
-        node.dirty = true;
-        node.moved = false;
-      }
-      if (node.credentials) {
-        delete node.credentials;
-      }
-    });
-    ctx.nodes.eachConfig(function (confNode) {
-      confNode.changed = false;
-      if (confNode.credentials) {
-        delete confNode.credentials;
-      }
-    });
-    ctx.nodes.eachWorkspace(function (ws) {
-      ws.changed = false;
-    })
-    // Once deployed, cannot undo back to a clean state
-    ctx.history.markAllDirty();
-    ctx.view.redraw();
-    ctx.events.emit("deploy");
   }
 }
