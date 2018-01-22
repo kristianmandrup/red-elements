@@ -27,6 +27,7 @@ const { log } = console
 import { Context } from '../../../context'
 import { NodeEditorConfiguration } from './configuration';
 import { NodeValidator } from './validator';
+import { INode } from '../../../../../red-runtime/src/interfaces/index';
 
 interface ITabSelect extends JQuery<HTMLElement> {
   i18n: Function
@@ -41,7 +42,7 @@ export class NodeEditor extends Context {
   subflowEditor: any
 
   protected configuration: NodeEditorConfiguration = new NodeEditorConfiguration(this)
-  protected validator: NodeValidator = new NodeValidator(this)
+  protected nodeValidator: NodeValidator = new NodeValidator(this)
 
   constructor() {
     super()
@@ -58,15 +59,48 @@ export class NodeEditor extends Context {
     return 'credentials/' + dashedType + "/" + nodeID;
   }
 
+
+  /**
+   * Validate a node
+   * @param node - the node being validated
+   * @returns {boolean} whether the node is valid. Sets node.dirty if needed
+   */
+  validateNode(node) {
+    return this.nodeValidator.validateNode(node)
+  }
+
+  /**
+   * Validate a node's properties for the given set of property definitions
+   * @param node { INode} - the node being validated
+   * @param definition { object } - the node property definitions (either def.defaults or def.creds)
+   * @param properties { string[] }- the node property values to validate
+   * @returns {boolean} whether the node's properties are valid
+   */
+  validateNodeProperties(node: INode, definition: any, properties: string[]) {
+    return this.nodeValidator.validateNodeProperties(node, definition, properties)
+  }
+
+  /**
+   * Validate a individual node property
+   * @param node { INode} - the node being validated
+   * @param definition { object } - the node property definitions (either def.defaults or def.creds)
+   * @param property { string }- the property name being validated
+   * @param value { string } - the property value being validated
+   * @returns {boolean} whether the node proprty is valid
+   */
+  validateNodeProperty(node: INode, definition: any, property: string, value: string) {
+    return this.nodeValidator.validateNodeProperty(node, definition, property, value)
+  }
+
   /**
    * Called when the node's properties have changed.
    * Marks the node as dirty and needing a size check.
    * Removes any links to non-existant outputs.
-   * @param node - the node that has been updated
-   * @param outputMap - (optional) a map of old->new port numbers if wires should be moved
+   * @param node { INode} - the node that has been updated
+   * @param outputMap - { object} (optional) a map of old->new port numbers if wires should be moved
    * @returns {array} the links that were removed due to this update
    */
-  updateNodeProperties(node, outputMap) {
+  updateNodeProperties(node: INode, outputMap?: object) {
     const {
       ctx
     } = this

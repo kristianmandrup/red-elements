@@ -1,15 +1,27 @@
 import {
-  NodeDeleter
-} from './node-deleter'
+  Context
+} from '../../../../context'
 
-import {
-  NodeCreator
-} from './node-creater'
+import { NodeApi } from './api';
+import { PaletteEditor } from '../';
 
-import {
-  NodeUpdater
-} from './node-updater'
+export class PaletteEditorNodeManager extends Context {
+  protected api: NodeApi = new NodeApi(this)
 
-export class NodeManager {
+  constructor(public editor: PaletteEditor) {
+    super()
+  }
+
+  async createNode(data, options: any = {}) {
+    return await this.api.createNode(data, options)
+  }
+
+  async deleteNode(id: string) {
+    return await this.api.deleteNode(id)
+  }
+
+  async updateNode(state: any, id: string) {
+    return await this.api.updateNode(state, id)
+  }
 
 }

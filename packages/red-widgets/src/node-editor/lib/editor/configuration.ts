@@ -6,6 +6,9 @@ import { NodeEditor } from '../'
 
 import { Context, $ } from '../../../common'
 
+/**
+ * NodeEditor configuration
+ */
 export class NodeEditorConfiguration extends Context {
   constructor(public editor: NodeEditor) {
     super()

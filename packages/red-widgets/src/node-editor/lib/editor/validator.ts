@@ -1,6 +1,10 @@
 import { NodeEditor } from '../'
 import { Context, $ } from '../../../common'
+import { INode } from '../../../../../red-runtime/src/interfaces/index';
 
+/**
+ * Node Validator for NodeEditor
+ */
 export class NodeValidator extends Context {
   constructor(public editor: NodeEditor) {
     super()
@@ -13,7 +17,7 @@ export class NodeValidator extends Context {
    */
   validateNode(node) {
     const {
-      ctx,
+      RED,
     } = this
 
     let {
@@ -34,7 +38,7 @@ export class NodeValidator extends Context {
     var isValid;
     var hasChanged;
     if (node.type.indexOf("subflow:") === 0) {
-      subflow = ctx.nodes.subflow(node.type.substring(8));
+      subflow = RED.nodes.subflow(node.type.substring(8));
       isValid = subflow.valid;
       hasChanged = subflow.changed;
       if (isValid === undefined) {
@@ -49,7 +53,7 @@ export class NodeValidator extends Context {
         node.valid = node.valid && validateNodeProperties(node, node._def.credentials, node._def._creds);
       }
     } else if (node.type == "subflow") {
-      var subflowNodes = ctx.nodes.filterNodes({
+      var subflowNodes = RED.nodes.filterNodes({
         z: node.id
       });
       for (var i = 0; i < subflowNodes.length; i++) {
@@ -62,7 +66,7 @@ export class NodeValidator extends Context {
         node.valid = node.valid && isValid;
         node.changed = node.changed || hasChanged;
       }
-      var subflowInstances = ctx.nodes.filterNodes({
+      var subflowInstances = RED.nodes.filterNodes({
         type: "subflow:" + node.id
       });
       var modifiedTabs = {};
@@ -73,7 +77,7 @@ export class NodeValidator extends Context {
         modifiedTabs[subflowInstances[i].z] = true;
       }
       Object.keys(modifiedTabs).forEach(function (id) {
-        var subflow = ctx.nodes.subflow(id);
+        var subflow = RED.nodes.subflow(id);
         if (subflow) {
           validateNode(subflow);
         }
@@ -81,7 +85,7 @@ export class NodeValidator extends Context {
     }
     if (oldValue !== node.valid || oldChanged !== node.changed) {
       node.dirty = true;
-      subflow = ctx.nodes.subflow(node.z);
+      subflow = RED.nodes.subflow(node.z);
       if (subflow) {
         validateNode(subflow);
       }
@@ -90,11 +94,12 @@ export class NodeValidator extends Context {
   }
 
   /**
-   * Validate a node's properties for the given set of property definitions
-   * @param node - the node being validated
-   * @param definition - the node property definitions (either def.defaults or def.creds)
-   * @param properties - the node property values to validate
-   * @returns {boolean} whether the node's properties are valid
+   * Called when the node's properties have changed.
+   * Marks the node as dirty and needing a size check.
+   * Removes any links to non-existant outputs.
+   * @param node { INode} - the node that has been updated
+   * @param outputMap - { object} (optional) a map of old->new port numbers if wires should be moved
+   * @returns {array} the links that were removed due to this update
    */
   validateNodeProperties(node, definition, properties) {
     let {
@@ -117,13 +122,13 @@ export class NodeValidator extends Context {
    * Validate a individual node property
    * @param node - the node being validated
    * @param definition - the node property definitions (either def.defaults or def.creds)
-   * @param property - the property name being validated
-   * @param value - the property value being validated
+   * @param property { string }- the property name being validated
+   * @param value { string } - the property value being validated
    * @returns {boolean} whether the node proprty is valid
    */
-  validateNodeProperty(node, definition, property, value) {
+  validateNodeProperty(node: INode, definition: any, property: string, value: string) {
     const {
-      ctx
+      RED
     } = this
 
     var valid = true;
@@ -146,23 +151,29 @@ export class NodeValidator extends Context {
         });
       }
     }
-    if (valid && definition[property].type && ctx.nodes.getType(definition[property].type) && !("validate" in definition[property])) {
+    if (valid && definition[property].type && RED.nodes.getType(definition[property].type) && !("validate" in definition[property])) {
       if (!value || value == "_ADD_") {
         valid = definition[property].hasOwnProperty("required") && !definition[property].required;
       } else {
-        var configNode = ctx.nodes.node(value);
+        var configNode = RED.nodes.node(value);
         valid = (configNode !== null && (configNode.valid == null || configNode.valid));
       }
     }
     return valid;
   }
 
-  validateNodeEditor(node, prefix) {
+  /**
+   * validate all nodes in Node Editor
+   * @param node { INode } the node to validate
+   * @param prefix { string } the prefix
+   */
+  validateNodeEditor(node: INode, prefix: string) {
     let {
       validateNodeEditorProperty
     } = this.rebind([
         'validateNodeEditorProperty'
       ])
+
     this._validateStr(prefix, 'prefix', 'validateNodeEditor')
 
     for (var prop in node._def.defaults) {
@@ -180,7 +191,14 @@ export class NodeValidator extends Context {
     return this
   }
 
-  validateNodeEditorProperty(node, defaults, property, prefix) {
+  /**
+   * validate a single Node Editor Property
+   * @param node
+   * @param defaults
+   * @param property
+   * @param prefix
+   */
+  validateNodeEditorProperty(node: INode, defaults: object, property: string, prefix: string) {
     let {
       validateNodeProperty
     } = this
@@ -191,7 +209,7 @@ export class NodeValidator extends Context {
 
     var input = $("#" + prefix + "-" + property);
     if (input.length > 0) {
-      var value = input.val();
+      var value = String(input.val())
       if (defaults[property].hasOwnProperty("format") && defaults[property].format !== "" && input[0].nodeName === "DIV") {
         value = input.text();
       }

@@ -1,0 +1,3 @@
+export {
+  NodeModuleManager
+} from './manager'

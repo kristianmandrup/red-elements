@@ -1,43 +1,20 @@
-export class NodeModuleManager {
+import { Context } from '../../../../context'
+import { PaletteEditor } from '../'
+import { NodeModuleManager } from './manager';
 
-  async installNodeModule(id, callback: Function, version?, shade?) {
-    var requestBody = {
-      module: id,
-      version: null
-    };
-    if (callback === undefined) {
-      callback = shade;
-      shade = version;
-    } else {
-      requestBody.version = version;
-    }
-    shade.show();
-
-    await this.postNode(requestBody)
+export class NodeModuleRefresher extends Context {
+  constructor(public manager: NodeModuleManager) {
+    super()
   }
 
-
-  async removeNodeModule(id: string) {
-    this.deleteNode(id)
-  }
-
-  refreshNodeModuleList() {
-    const {
-    nodeEntries
-  } = this
-
-    for (var id in nodeEntries) {
-      if (nodeEntries.hasOwnProperty(id)) {
-        this._refreshNodeModule(id);
-      }
-    }
+  get editor() {
+    return this.manager.editor
   }
 
   refreshNodeModule(module) {
     const {
     eventTimers
-  } = this
-
+  } = this.editor
     if (!eventTimers.hasOwnProperty(module)) {
       eventTimers[module] = setTimeout(() => {
         delete eventTimers[module];
@@ -48,13 +25,13 @@ export class NodeModuleManager {
 
   _refreshNodeModule(module) {
     const {
-      nodeEntries,
+    nodeEntries,
       nodeList,
       typesInUse,
       getContrastingBorder,
       loadedIndex,
       semVerCompare,
-    } = this
+  } = this.editor
 
     if (!nodeEntries.hasOwnProperty(module)) {
       nodeEntries[module] = {
@@ -171,6 +148,5 @@ export class NodeModuleManager {
         nodeEntry.updateButton.hide();
       }
     }
-
   }
 }

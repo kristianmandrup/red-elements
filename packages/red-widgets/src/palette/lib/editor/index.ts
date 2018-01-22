@@ -16,6 +16,7 @@
 import { Context, $, EditableList, Searchbox } from '../../../common'
 import { NodesApi } from '@tecla5/red-runtime/src/api/nodes-api';
 import { PaletteEditorConfiguration } from './configuration';
+import { PaletteEditorNodeManager } from './node-manager/node-manager';
 
 interface ISearchTerm extends JQuery<HTMLElement> {
 }
@@ -56,8 +57,9 @@ export class PaletteEditor extends Context {
 
   public activeSort: any = this.sortModulesAZ;
 
-  protected nodesApi: NodesApi
   protected configuration: PaletteEditorConfiguration = new PaletteEditorConfiguration(this)
+
+  nodeManager: PaletteEditorNodeManager = new PaletteEditorNodeManager(this)
 
   constructor() {
     super()
@@ -95,11 +97,11 @@ export class PaletteEditor extends Context {
   /**
    * change Node State
    */
-  changeNodeState(id, state, shade, callback) {
+  async changeNodeState(id, state, shade, callback) {
     shade.show();
     var start = Date.now();
 
-    this.updateNode(state, id)
+    await this.nodeManager.updateNode(state, id)
   }
 
   /**
@@ -225,6 +227,9 @@ export class PaletteEditor extends Context {
     }
   }
 
+  /**
+   * refresh filtered Items
+   */
   refreshFilteredItems() {
     const {
       packageList,
@@ -266,10 +271,20 @@ export class PaletteEditor extends Context {
     return this
   }
 
+  /**
+   * sort modules A-Z
+   * @param A
+   * @param B
+   */
   sortModulesAZ(A, B) {
     return A.info.id.localeCompare(B.info.id);
   }
 
+  /**
+   * sort modules recent
+   * @param A
+   * @param B
+   */
   sortModulesRecent(A, B) {
     return -1 * (A.info.timestamp - B.info.timestamp);
   }

@@ -1,8 +1,17 @@
-export class InstallTab {
+import { Context } from '../../../common'
+import { PaletteEditor } from './';
 
+export class InstallTab extends Context {
+  constructor(public editor: PaletteEditor) {
+    super()
+  }
+
+  /**
+   * init install tab
+   */
   initInstallTab() {
     let {
-    searchInput,
+      searchInput,
       loadedList,
       loadedIndex,
       packageList,
@@ -10,7 +19,7 @@ export class InstallTab {
       catalogueLoadErrors,
       catalogueLoadStart,
       catalogueCount,
-  } = this
+    } = this.editor
 
     const {
     handleCatalogResponse,
@@ -18,7 +27,7 @@ export class InstallTab {
   } = this.rebind([
         'handleCatalogResponse',
         'refreshNodeModuleList'
-      ])
+      ], this.editor)
 
     if (loadedList.length === 0) {
       loadedList = [];
