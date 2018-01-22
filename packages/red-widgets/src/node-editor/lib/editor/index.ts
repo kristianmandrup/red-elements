@@ -15,296 +15,47 @@
  **/
 import {
   Tray
-} from '../../tray'
+} from '../../../tray'
 
 import marked from 'marked'
 
 // TODO: alternatively, load from red-runtime/vendor/jsonata
-import { jsonata } from './formatter'
+import { jsonata } from './jsonata/formatter'
 import * as ace from 'brace'
 
 const { log } = console
-
-// TODO See how this is configure in original node-red editor code!!
-// https://github.com/node-red/node-red/blob/master/editor/js/ui/editor.js
-
-// See jsonata code: https://github.com/jsonata-js/jsonata/blob/master/jsonata.js
-// 1.3 version: https://github.com/jsonata-js/jsonata/blob/20e04942ec78fc0b8ada1d6caf22ad3936466d7d/jsonata.js
-
-// please see Issue raised here: https://github.com/node-red/node-red/issues/1534
-
-// apparently jsonata is configured in formatter.js of vendor/jsonata
-// https://github.com/node-red/node-red/tree/master/editor/vendor/jsonata
-
-
-// jsonata.functions =
-//   {
-//     '$append': { args: ['array', 'array'] },
-//     '$average': { args: ['value'] },
-//     '$boolean': { args: ['value'] },
-//     '$contains': { args: ['str', 'pattern'] },
-//     '$count': { args: ['array'] },
-//     '$exists': { args: ['value'] },
-//     '$join': { args: ['array', 'separator'] },
-//     '$keys': { args: ['object'] },
-//     '$length': { args: ['string'] },
-//     '$lookup': { args: ['object', 'key'] },
-//     '$lowercase': { args: ['string'] },
-//     '$match': { args: ['str', 'pattern', 'limit'] },
-//     '$map': { args: [] },
-//     '$max': { args: ['array'] },
-//     '$min': { args: ['array'] },
-//     '$not': { args: ['value'] },
-//     '$number': { args: ['value'] },
-//     '$reduce': { args: [] },
-//     '$replace': { args: ['str', 'pattern', 'replacement', 'limit'] },
-//     '$split': { args: ['string', 'separator', 'limit'] },
-//     '$spread': { args: ['object'] },
-//     '$string': { args: ['value'] },
-//     '$substring': { args: ['string', 'start', 'length'] },
-//     '$substringAfter': { args: ['string', 'chars'] },
-//     '$substringBefore': { args: ['string', 'chars'] },
-//     '$sum': { args: ['array'] },
-//     '$trim': { args: ['str'] },
-//     '$uppercase': { args: ['string'] }
-//   }
-import { Context } from '../../context'
+import { Context } from '../../../context'
+import { NodeEditorConfiguration } from './configuration';
+import { NodeValidator } from './validator';
 
 interface ITabSelect extends JQuery<HTMLElement> {
   i18n: Function
 }
 
-export class Editor extends Context {
-  public editStack: Array<any>
-  public expressionTestCache: Object
-  public editTrayWidthCache: Object
-  public editing_node: any
-  public editing_config_node: any
+export class NodeEditor extends Context {
+  public editStack: any[] = []
+  public expressionTestCache = {}
+  public editTrayWidthCache = {}
+  public editing_node: any = null
+  public editing_config_node: any = null
+  subflowEditor: any
+
+  protected configuration: NodeEditorConfiguration = new NodeEditorConfiguration(this)
+  protected validator: NodeValidator = new NodeValidator(this)
 
   constructor() {
     super()
-    const { ctx } = this
+    this.configure()
+  }
 
-    this.editStack = [];
-    this.editing_node = null;
-    this.editing_config_node = null;
-    // subflowEditor;
-    this.expressionTestCache = {};
-
-    this.editTrayWidthCache = {};
-
-    // fix: use class
-    ctx.tray = new Tray();
-
-    if (typeof ctx.actions !== 'object') {
-      throw new Error('ctx.actions must be an Actions object')
-    }
-
-    ctx.actions.add("core:confirm-edit-tray", () => {
-      $("#node-dialog-ok").click();
-      $("#node-config-dialog-ok").click();
-    });
-    ctx.actions.add("core:cancel-edit-tray", () => {
-      $("#node-dialog-cancel").click();
-      $("#node-config-dialog-cancel").click();
-    });
+  configure() {
+    this.configuration.configure()
+    return this
   }
 
   getCredentialsURL(nodeType, nodeID) {
     const dashedType = nodeType.replace(/\s+/g, '-');
     return 'credentials/' + dashedType + "/" + nodeID;
-  }
-
-  /**
-   * Validate a node
-   * @param node - the node being validated
-   * @returns {boolean} whether the node is valid. Sets node.dirty if needed
-   */
-  validateNode(node) {
-    const {
-      ctx,
-    } = this
-
-    let {
-      validateNode,
-      validateNodeProperties
-    } = this.rebind([
-        'validateNode',
-        'validateNodeProperties'
-      ])
-
-    this._validateNode(node, 'node', 'validateNode')
-
-    var oldValue = node.valid;
-    var oldChanged = node.changed;
-    node.valid = true;
-
-    var subflow;
-    var isValid;
-    var hasChanged;
-    if (node.type.indexOf("subflow:") === 0) {
-      subflow = ctx.nodes.subflow(node.type.substring(8));
-      isValid = subflow.valid;
-      hasChanged = subflow.changed;
-      if (isValid === undefined) {
-        isValid = validateNode(subflow);
-        hasChanged = subflow.changed;
-      }
-      node.valid = isValid;
-      node.changed = node.changed || hasChanged;
-    } else if (node._def) {
-      node.valid = validateNodeProperties(node, node._def.defaults, node);
-      if (node._def._creds) {
-        node.valid = node.valid && validateNodeProperties(node, node._def.credentials, node._def._creds);
-      }
-    } else if (node.type == "subflow") {
-      var subflowNodes = ctx.nodes.filterNodes({
-        z: node.id
-      });
-      for (var i = 0; i < subflowNodes.length; i++) {
-        isValid = subflowNodes[i].valid;
-        hasChanged = subflowNodes[i].changed;
-        if (isValid === undefined) {
-          isValid = validateNode(subflowNodes[i]);
-          hasChanged = subflowNodes[i].changed;
-        }
-        node.valid = node.valid && isValid;
-        node.changed = node.changed || hasChanged;
-      }
-      var subflowInstances = ctx.nodes.filterNodes({
-        type: "subflow:" + node.id
-      });
-      var modifiedTabs = {};
-      for (i = 0; i < subflowInstances.length; i++) {
-        subflowInstances[i].valid = node.valid;
-        subflowInstances[i].changed = subflowInstances[i].changed || node.changed;
-        subflowInstances[i].dirty = true;
-        modifiedTabs[subflowInstances[i].z] = true;
-      }
-      Object.keys(modifiedTabs).forEach(function (id) {
-        var subflow = ctx.nodes.subflow(id);
-        if (subflow) {
-          validateNode(subflow);
-        }
-      });
-    }
-    if (oldValue !== node.valid || oldChanged !== node.changed) {
-      node.dirty = true;
-      subflow = ctx.nodes.subflow(node.z);
-      if (subflow) {
-        validateNode(subflow);
-      }
-    }
-    return node.valid;
-  }
-
-  /**
-   * Validate a node's properties for the given set of property definitions
-   * @param node - the node being validated
-   * @param definition - the node property definitions (either def.defaults or def.creds)
-   * @param properties - the node property values to validate
-   * @returns {boolean} whether the node's properties are valid
-   */
-  validateNodeProperties(node, definition, properties) {
-    let {
-      validateNodeProperty
-    } = this
-    validateNodeProperty = validateNodeProperty.bind(this)
-
-    var isValid = true;
-    for (var prop in definition) {
-      if (definition.hasOwnProperty(prop)) {
-        if (!validateNodeProperty(node, definition, prop, properties[prop])) {
-          isValid = false;
-        }
-      }
-    }
-    return isValid;
-  }
-
-  /**
-   * Validate a individual node property
-   * @param node - the node being validated
-   * @param definition - the node property definitions (either def.defaults or def.creds)
-   * @param property - the property name being validated
-   * @param value - the property value being validated
-   * @returns {boolean} whether the node proprty is valid
-   */
-  validateNodeProperty(node, definition, property, value) {
-    const {
-      ctx
-    } = this
-
-    var valid = true;
-    if (/^\$\([a-zA-Z_][a-zA-Z0-9_]*\)$/.test(value)) {
-      return true;
-    }
-    if ("required" in definition[property] && definition[property].required) {
-      valid = value !== "";
-    }
-    if (valid && "validate" in definition[property]) {
-      try {
-        valid = definition[property].validate.call(node, value);
-      } catch (err) {
-        log("Validation error:", node.type, node.id, "property: " + property, "value:", value, err);
-      }
-    }
-    if (valid && definition[property].type && ctx.nodes.getType(definition[property].type) && !("validate" in definition[property])) {
-      if (!value || value == "_ADD_") {
-        valid = definition[property].hasOwnProperty("required") && !definition[property].required;
-      } else {
-        var configNode = ctx.nodes.node(value);
-        valid = (configNode !== null && (configNode.valid == null || configNode.valid));
-      }
-    }
-    return valid;
-  }
-
-  validateNodeEditor(node, prefix) {
-    let {
-      validateNodeEditorProperty
-    } = this.rebind([
-        'validateNodeEditorProperty'
-      ])
-    this._validateStr(prefix, 'prefix', 'validateNodeEditor')
-
-    for (var prop in node._def.defaults) {
-      if (node._def.defaults.hasOwnProperty(prop)) {
-        validateNodeEditorProperty(node, node._def.defaults, prop, prefix);
-      }
-    }
-    if (node._def.credentials) {
-      for (prop in node._def.credentials) {
-        if (node._def.credentials.hasOwnProperty(prop)) {
-          validateNodeEditorProperty(node, node._def.credentials, prop, prefix);
-        }
-      }
-    }
-    return this
-  }
-
-  validateNodeEditorProperty(node, defaults, property, prefix) {
-    let {
-      validateNodeProperty
-    } = this
-    validateNodeProperty = validateNodeProperty.bind(this)
-
-    this._validateStr(prefix, 'prefix', 'validateNodeEditorProperty')
-    this._validateStr(property, 'property', 'validateNodeEditorProperty')
-
-    var input = $("#" + prefix + "-" + property);
-    if (input.length > 0) {
-      var value = input.val();
-      if (defaults[property].hasOwnProperty("format") && defaults[property].format !== "" && input[0].nodeName === "DIV") {
-        value = input.text();
-      }
-      if (!validateNodeProperty(node, defaults, property, value)) {
-        input.addClass("input-error");
-      } else {
-        input.removeClass("input-error");
-      }
-    }
-    return this
   }
 
   /**

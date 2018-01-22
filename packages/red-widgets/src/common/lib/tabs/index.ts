@@ -37,7 +37,7 @@ export class Tabs extends Context {
   tabOrder: string[] = []
   activeTabId: string
 
-  constructor(options) {
+  constructor(options?) {
     super()
 
     this.options = options || {}

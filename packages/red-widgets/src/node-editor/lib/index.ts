@@ -1,3 +1,3 @@
 export {
-  Editor as NodeEditor
+  NodeEditor
 } from './editor'
