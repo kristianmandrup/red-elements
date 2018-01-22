@@ -4,7 +4,8 @@ import {
 import { factories } from '../playbox/shared-tests';
 import { transform } from 'typescript';
 
- import { log } from 'util';
+ //import { log } from 'util';
+ const {log} = console
 
 function create() {
   return new History()
@@ -102,7 +103,6 @@ test('history: markAllDirty', () => {
   history.push(evA)
   history.push(evB) 
 
-  
   history.markAllDirty()
 
   let list = history.list
@@ -114,18 +114,17 @@ test('history: markAllDirty', () => {
 
 test('history: undo', () => {
   let ev = {
-    id: 'a',
-    events: [
-      {dirty:false }
-    ]
+    id: 'a'
   }
+  log(ev)
 
   history.push(ev)
-
   let latest = history.peek()
-
+  
   expect(latest).toBe(ev)
   history.undo()
+
+//  log(history.undo())
 
   latest = history.peek()
   expect(latest).toBeFalsy()
