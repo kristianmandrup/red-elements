@@ -51,13 +51,6 @@ export class CanvasConfiguration extends Context {
     let {
       space_width,
       space_height,
-
-      canvasMouseMove,
-      canvasMouseDown,
-
-      handleD3MouseDownEvent,
-      handleOuterTouchMoveEvent,
-      touchStartTime,
       lasso,
       startTouchCenter,
       scaleFactor,
@@ -78,12 +71,24 @@ export class CanvasConfiguration extends Context {
       handleOuterTouchStartEvent,
       handleOuterTouchEndEvent,
       canvasMouseUp,
-      updateGrid
+      updateGrid,
+      canvasMouseMove,
+      canvasMouseDown,
+
+      handleD3MouseDownEvent,
+      handleOuterTouchMoveEvent,
+      touchStartTime,
     } = rebind([
         'handleOuterTouchStartEvent',
         'handleOuterTouchEndEvent',
         'canvasMouseUp',
-        'updateGrid'
+        'updateGrid',
+        'canvasMouseMove',
+        'canvasMouseDown',
+
+        'handleD3MouseDownEvent',
+        'handleOuterTouchMoveEvent',
+        'touchStartTime',
       ], canvas)
 
 
@@ -121,12 +126,12 @@ export class CanvasConfiguration extends Context {
 
     canvas.vis = vis
 
-    const touchMoveHandler = handleOuterTouchMoveEvent(touchStartTime, startTouchCenter, lasso, canvasMouseMove, oldScaleFactor, scaleFactor, startTouchDistance)
-    const outertTouchHandler = handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp)
-    const touchStartHandler = handleOuterTouchStartEvent(touchStartTime, startTouchCenter, scaleFactor, startTouchDistance, touchLongPressTimeout)
+    const touchMoveHandler = handleOuterTouchMoveEvent //(touchStartTime, startTouchCenter, lasso, canvasMouseMove, oldScaleFactor, scaleFactor, startTouchDistance)
+    const outerTouchHandler = handleOuterTouchEndEvent // (touchStartTime, lasso, canvasMouseUp)
+    const touchStartHandler = handleOuterTouchStartEvent// (touchStartTime, startTouchCenter, scaleFactor, startTouchDistance, touchLongPressTimeout)
 
     vis
-      .on('touchend', outertTouchHandler)
+      .on('touchend', outerTouchHandler)
       .on('touchcancel', canvasMouseUp) // vis is this
       .on('touchstart', touchStartHandler)
       .on('touchmove', touchMoveHandler); // vis is this

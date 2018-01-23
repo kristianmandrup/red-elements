@@ -1,12 +1,18 @@
 # Delegate classes
 
-Most of the widget classes in their original form contain way too much logic and complexity, breaking the Single Responsibility principle.
+Most of the classes in their original form contain way too much logic and complexity, breaking the Single Responsibility principle.
 
-The Widget classes end up being 1-3000 lines long, with some functions over 500 lines, almost impossible to understand, maintain etc.
+The red-node classes are often around 1-3000 lines long, with some functions over 500 lines, almost impossible to understand, maintain etc.
 
 In order to break away from this BAD anti-pattern, we use delegate classes to take over responsibility of key domain areas of the original widget.
 
-A good example of this is the `Clipboard` widget:
+Delgate classes can further be used like Services that are injected using dependency injected (f.ex via decorators), as is popular in [Angular dependency injection](https://angular.io/guide/dependency-injection) and in other modern frameworks.
+
+We plan to use dependency injection of services (and delegate classes) using [inversifyjs](http://inversify.io/) as we currently done with RED.
+
+The `RED` global object will in time be replaced with dependency injection of individual services and delegate classes. Having a huge application "service" object that we pass around everywhere is another HUGE ANTI PATTERN we want to avoid!
+
+A good example of using delegate classes is the `Clipboard` widget:
 
 ```js
 export class Clipboard extends Context {

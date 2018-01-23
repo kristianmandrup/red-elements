@@ -173,7 +173,7 @@ export class Canvas extends Context {
    * @param canvasMouseUp
    */
   handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp) {
-    this.touchEventHandler.handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp)
+    return this.touchEventHandler.handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp)
   }
 
   /**
@@ -189,7 +189,7 @@ export class Canvas extends Context {
     scaleFactor,
     startTouchDistance,
     touchLongPressTimeout) {
-    this.touchEventHandler.handleOuterTouchStartEvent(touchStartTime,
+    return this.touchEventHandler.handleOuterTouchStartEvent(touchStartTime,
       startTouchCenter,
       scaleFactor,
       startTouchDistance,

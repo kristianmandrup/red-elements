@@ -12,9 +12,22 @@ export class CanvasZoomer extends Context {
    * zoom In
    */
   zoomIn() {
-    if (this.scaleFactor < 2) {
-      this.scaleFactor += 0.1;
-      this.redraw();
+    const {
+      canvas,
+      rebind
+    } = this
+    let {
+      scaleFactor
+    } = canvas
+    const {
+      redraw
+    } = rebind([
+        'redraw'
+      ], canvas)
+
+    if (scaleFactor < 2) {
+      scaleFactor += 0.1;
+      redraw();
     }
   }
 
@@ -22,9 +35,22 @@ export class CanvasZoomer extends Context {
    * zoom Out
    */
   zoomOut() {
-    if (this.scaleFactor > 0.3) {
-      this.scaleFactor -= 0.1;
-      this.redraw();
+    const {
+      canvas,
+      rebind
+    } = this
+    let {
+      scaleFactor
+    } = canvas
+    const {
+      redraw
+    } = rebind([
+        'redraw'
+      ], canvas)
+
+    if (scaleFactor > 0.3) {
+      scaleFactor -= 0.1;
+      redraw();
     }
   }
 
@@ -32,7 +58,20 @@ export class CanvasZoomer extends Context {
    * zoom Zero
    */
   zoomZero() {
-    this.scaleFactor = 1;
-    this.redraw();
+    const {
+      canvas,
+      rebind
+    } = this
+    let {
+      scaleFactor
+    } = canvas
+    const {
+      redraw
+    } = rebind([
+        'redraw'
+      ], canvas)
+
+    scaleFactor = 1;
+    redraw();
   }
 }

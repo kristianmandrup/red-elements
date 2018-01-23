@@ -15,6 +15,32 @@ export class CanvasNodeImporter extends Context {
    *  - attached to mouse for placing - 'IMPORT_DRAGGING'
    */
   importNodes(newNodesStr, addNewFlow?, touchImport?) {
+    const {
+      RED,
+      canvas,
+      rebind
+    } = this
+    const {
+      activeSubflow,
+      node_width,
+      node_height
+    } = canvas
+    let {
+      mouse_position,
+      mouse_mode,
+      spliceActive,
+      moving_set,
+    } = canvas
+    const {
+      clearSelection,
+      updateActiveNodes,
+      redraw,
+    } = rebind([
+        'clearSelection',
+        'updateActiveNodes',
+        'redraw',
+      ])
+
     try {
       var activeSubflowChanged;
       if (activeSubflow) {

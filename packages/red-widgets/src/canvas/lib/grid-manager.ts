@@ -13,10 +13,23 @@ export class CanvasGridManager extends Context {
    * @param v
    */
   gridSize(v) {
+    const {
+      canvas,
+      rebind
+    } = this
+    let {
+      gridsize
+    } = canvas
+    const {
+      updateGrid
+    } = rebind([
+        'updateGrid'
+      ])
+
     if (v === undefined) {
-      return gridSize;
+      return gridsize;
     } else {
-      gridSize = v;
+      gridsize = v;
       updateGrid();
     }
   }
@@ -27,8 +40,11 @@ export class CanvasGridManager extends Context {
    */
   toggleShowGrid(state) {
     const {
-      grid
+      canvas,
     } = this
+    const {
+      grid
+    } = canvas
 
     if (state) {
       grid.style('visibility', 'visible');
@@ -44,8 +60,17 @@ export class CanvasGridManager extends Context {
    */
   toggleSnapGrid(state) {
     const {
-      redraw
+      canvas,
+      rebind
     } = this
+    let {
+      snapGrid
+    } = canvas
+    const {
+      redraw
+    } = rebind([
+        'redraw'
+      ])
 
     snapGrid = state;
     redraw();
@@ -57,12 +82,16 @@ export class CanvasGridManager extends Context {
    */
   updateGrid() {
     const {
+      canvas
+    } = this
+    const {
       space_width,
-      grid
+      grid,
+      gridsize
     } = canvas
 
     var gridTicks = [];
-    for (var i = 0; i < space_width; i += +gridSize) {
+    for (var i = 0; i < space_width; i += +gridsize) {
       gridTicks.push(i);
     }
     grid.selectAll('line.horizontal').remove();

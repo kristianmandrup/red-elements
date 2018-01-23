@@ -16,6 +16,9 @@ export class CanvasDrawer extends Context {
    * @param id
    */
   reveal(id) {
+    const {
+      RED
+    } = this
     if (RED.nodes.workspace(id) || RED.nodes.subflow(id)) {
       RED.workspaces.show(id);
     } else {
@@ -65,10 +68,14 @@ export class CanvasDrawer extends Context {
    * @param updateActive
    */
   redraw(updateActive?: boolean) {
-    const { canvas } = this
+    const {
+      canvas,
+      rebind,
+      handleError,
+      RED
+    } = this
     const {
       updateActiveNodes,
-      updateSelection,
       vis,
       outer,
       mouse_mode,
@@ -79,22 +86,60 @@ export class CanvasDrawer extends Context {
       activeNodes,
       activeLinks,
       activeFlowLinks,
-  } = canvas
+      PORT_TYPE_INPUT,
+      PORT_TYPE_OUTPUT,
+      node_height,
+      node_width,
+      lasso,
+      lineCurveScale,
+      moving_set
+    } = canvas
 
     let {
       startTouchCenter,
-      startTouchDistance
+      startTouchDistance,
+      status_colours,
+      mousedown_link,
+      selected_link,
     } = canvas
 
     const {
       nodeMouseUp,
       nodeMouseDown,
-      touchLongPressTimeout
+      touchLongPressTimeout,
+      showTouchMenu,
+      portMouseDown,
+      portMouseUp,
+      portMouseOver,
+      portMouseOut,
+      calculateTextWidth,
+      isButtonEnabled,
+      focusView,
+      nodeButtonClicked,
+      showStatus,
+      clearSelection,
+      updateSelection,
+      redraw
     } = rebind([
         'nodeMouseUp',
         'nodeMouseDown',
-        'touchLongPressTimeout'
+        'touchLongPressTimeout',
+        'showTouchMenu',
+        'portMouseDown',
+        'portMouseUp',
+        'portMouseOver',
+        'portMouseOut',
+        'calculateTextWidth',
+        'isButtonEnabled',
+        'focusView',
+        'nodeButtonClicked',
+        'showStatus',
+        'clearSelection',
+        'updateSelection',
+        'redraw'
       ], canvas)
+
+    let icon
 
     let {
       touchStartTime
@@ -255,8 +300,6 @@ export class CanvasDrawer extends Context {
 
         inGroup.append('svg:text').attr('class', 'port_label').attr('x', 18).attr('y', 20).style('font-size', '10px').text('input');
 
-
-
         subflowOutputs.each(function (d: any, i) {
           if (d.dirty) {
             var output = d3.select(this);
@@ -291,12 +334,12 @@ export class CanvasDrawer extends Context {
         vis.selectAll('.subflowinput').remove();
       }
 
-      var node = vis.selectAll('.nodegroup').data(activeNodes, function (d) {
+      const node = vis.selectAll('.nodegroup').data(activeNodes, function (d) {
         return d.id
       });
       node.exit().remove();
 
-      var nodeEnter = node.enter().insert('svg:g')
+      const nodeEnter = node.enter().insert('svg:g')
         .attr('class', 'node nodegroup')
         .classed('node_subflow', function (d) {
           return activeSubflow != null;
@@ -391,7 +434,7 @@ export class CanvasDrawer extends Context {
             .on('touchstart', nodeButtonClicked)
         }
 
-        var mainRect = node.append('rect')
+        const mainRect = node.append('rect')
           .attr('class', 'node')
           .classed('node_unknown', function (d: any) {
             return d.type == 'unknown';
@@ -438,12 +481,12 @@ export class CanvasDrawer extends Context {
         //node.append('rect').attr('class', 'node-gradient-bottom').attr('rx', 6).attr('ry', 6).attr('height',30).attr('stroke','none').attr('fill','url(#gradient-bottom)').style('pointer-events','none');
 
         if (d._def.icon) {
-          var icon_url = RED.utils.getNodeIcon(d._def, d);
-          var icon_group = node.append('g')
+          let icon_url = RED.utils.getNodeIcon(d._def, d);
+          let icon_group = node.append('g')
             .attr('class', 'node_icon_group')
             .attr('x', 0).attr('y', 0);
 
-          var icon_shade = icon_group.append('rect')
+          let icon_shade = icon_group.append('rect')
             .attr('x', 0).attr('y', 0)
             .attr('class', 'node_icon_shade')
             .attr('width', '30')
@@ -454,14 +497,14 @@ export class CanvasDrawer extends Context {
               return Math.min(50, d.h - 4);
             });
 
-          var icon = icon_group.append('image')
+          icon = icon_group.append('image')
             .attr('xlink:href', icon_url)
             .attr('class', 'node_icon')
             .attr('x', 0)
             .attr('width', '30')
             .attr('height', '30');
 
-          var icon_shade_border = icon_group.append('path')
+          let icon_shade_border = icon_group.append('path')
             .attr('d', function (d: any) {
               return 'M 30 1 l 0 ' + (d.h - 2)
             })
@@ -579,12 +622,12 @@ export class CanvasDrawer extends Context {
             //thisNode.selectAll('.node_icon_shade_right').attr('x',function(d){return d.w-30;});
             //thisNode.selectAll('.node_icon_shade_border_right').attr('d',function(d){return 'M '+(d.w-30)+' 1 l 0 '+(d.h-2)});
 
-            var inputPorts = thisNode.selectAll('.port_input');
+            const inputPorts = thisNode.selectAll('.port_input');
             if (d.inputs === 0 && !inputPorts.empty()) {
               inputPorts.remove();
               //nodeLabel.attr('x',30);
             } else if (d.inputs === 1 && inputPorts.empty()) {
-              var inputGroup = thisNode.append('g').attr('class', 'port_input');
+              const inputGroup = thisNode.append('g').attr('class', 'port_input');
               inputGroup.append('rect').attr('class', 'port').attr('rx', 3).attr('ry', 3).attr('width', 10).attr('height', 10)
                 .on('mousedown', (d) => {
                   portMouseDown(d, PORT_TYPE_INPUT, 0);
@@ -606,15 +649,15 @@ export class CanvasDrawer extends Context {
                 });
             }
 
-            var numOutputs = d.outputs;
-            var y = (d.h / 2) - ((numOutputs - 1) / 2) * 13;
+            let numOutputs = d.outputs;
+            let y = (d.h / 2) - ((numOutputs - 1) / 2) * 13;
             d.ports = d.ports || d3.range(numOutputs);
             d._ports = thisNode.selectAll('.port_output').data(d.ports);
-            var output_group = d._ports.enter().append('g').attr('class', 'port_output');
+            const output_group = d._ports.enter().append('g').attr('class', 'port_output');
 
             output_group.append('rect').attr('class', 'port').attr('rx', 3).attr('ry', 3).attr('width', 10).attr('height', 10)
               .on('mousedown', (function () {
-                var node = d;
+                const node = d;
                 return function (d, i) {
                   portMouseDown(node, PORT_TYPE_OUTPUT, i);
                 }

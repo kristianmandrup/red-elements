@@ -17,7 +17,7 @@ export class CanvasButtonManager extends Context {
    * @param d
    */
   isButtonEnabled(d): boolean {
-    var buttonEnabled = true;
+    let buttonEnabled = true;
     if (d._def.button.hasOwnProperty('enabled')) {
       if (typeof d._def.button.enabled === 'function') {
         buttonEnabled = d._def.button.enabled.call(d);

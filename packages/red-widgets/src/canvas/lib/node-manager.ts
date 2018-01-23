@@ -17,6 +17,16 @@ export class CanvasNodeManager extends Context {
    * @param node
    */
   getNodeElementPosition(node) {
+    const {
+      rebind,
+      canvas
+    } = this
+    const {
+      getNodeElementPosition
+    } = rebind([
+        'getNodeElementPosition'
+      ], canvas)
+
     var d3Node = d3.select(node);
     if (d3Node.attr('class') === 'innerCanvas') {
       return [0, 0];
@@ -24,10 +34,11 @@ export class CanvasNodeManager extends Context {
     var result = [];
     var localPos = [0, 0];
     if (node.nodeName.toLowerCase() === 'g') {
-      var transform = d3Node.attr('transform');
+      // SEE: https://github.com/trinary/d3-transform#usage
+      const transform = d3Node.attr('transform');
       if (transform) {
-        // Fix: use d3-geo package, geoTransform
-        localPos = d3.geoTransform(transform).translate;
+        // use d3-transform package
+        localPos = d3.transform()[transform].translate();
       }
     } else {
       // TODO: FIX
@@ -43,6 +54,15 @@ export class CanvasNodeManager extends Context {
    * update Active Nodes
    */
   updateActiveNodes() {
+    const {
+      RED,
+      canvas
+    } = this
+    let {
+      activeNodes,
+      activeLinks
+    } = canvas
+
     var activeWorkspace = RED.workspaces.active();
 
     activeNodes = RED.nodes.filterNodes({
@@ -66,6 +86,16 @@ export class CanvasNodeManager extends Context {
    * @param y
    */
   addNode(type: any, x: any, y: any) {
+    const {
+      RED,
+      canvas
+    } = this
+    const {
+      activeSubflow,
+      node_width,
+      node_height
+    } = canvas
+
     var m = /^subflow:(.+)$/.exec(type);
 
     if (activeSubflow && m) {

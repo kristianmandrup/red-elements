@@ -12,72 +12,114 @@ export class CanvasSelectionManager extends Context {
    * select All
    */
   selectAll() {
-    this.RED.nodes.eachNode(function (n) {
-      if (n.z == this.RED.workspaces.active()) {
+    const {
+      RED,
+      canvas,
+      rebind
+    } = this
+    const {
+      moving_set,
+      activeSubflow
+    } = canvas
+    let {
+      selected_link
+    } = canvas
+    const {
+      updateSelection,
+      redraw,
+    } = rebind([
+        'updateSelection',
+        'redraw',
+      ])
+
+    RED.nodes.eachNode(function (n) {
+      if (n.z == RED.workspaces.active()) {
         if (!n.selected) {
           n.selected = true;
           n.dirty = true;
-          this.moving_set.push({
+          moving_set.push({
             n: n
           });
         }
       }
     });
-    if (this.activeSubflow) {
-      this.activeSubflow.in.forEach(function (n) {
+    if (activeSubflow) {
+      activeSubflow.in.forEach(function (n) {
         if (!n.selected) {
           n.selected = true;
           n.dirty = true;
-          this.moving_set.push({
+          moving_set.push({
             n: n
           });
         }
       });
-      this.activeSubflow.out.forEach(function (n) {
+      activeSubflow.out.forEach(function (n) {
         if (!n.selected) {
           n.selected = true;
           n.dirty = true;
-          this.moving_set.push({
+          moving_set.push({
             n: n
           });
         }
       });
     }
 
-    this.selected_link = null;
-    this.updateSelection();
-    this.redraw();
+    selected_link = null;
+    updateSelection();
+    redraw();
   }
 
   /**
    * clear Selection
    */
   clearSelection() {
-    for (var i = 0; i < this.moving_set.length; i++) {
-      var n = this.moving_set[i];
+    const {
+      canvas
+    } = this
+    let {
+      moving_set,
+      selected_link
+    } = canvas
+
+    for (var i = 0; i < moving_set.length; i++) {
+      var n = moving_set[i];
       n.n.dirty = true;
       n.n.selected = false;
     }
-    this.moving_set = [];
-    this.selected_link = null;
+    moving_set = [];
+    selected_link = null;
   }
 
   /**
    * update Selection
    */
   updateSelection() {
+    const {
+      canvas,
+      RED
+    } = this
+    const {
+      moving_set,
+      selected_link
+    } = canvas
+    let {
+      activeLinks,
+      activeFlowLinks,
+      lastSelection
+    } = canvas
+
     var selection: any = {};
 
-    if (this.moving_set.length > 0) {
-      selection.nodes = this.moving_set.map(function (n) {
+    if (moving_set.length > 0) {
+      selection.nodes = moving_set.map(function (n) {
         return n.n;
       });
     }
-    if (this.selected_link != null) {
-      selection.link = this.selected_link;
+    if (selected_link != null) {
+      selection.link = selected_link;
     }
-    var activeWorkspace = this.RED.workspaces.active();
-    this.activeLinks = this.RED.nodes.filterLinks({
+    var activeWorkspace = RED.workspaces.active();
+    activeLinks = RED.nodes.filterLinks({
       source: {
         z: activeWorkspace
       },
@@ -85,21 +127,21 @@ export class CanvasSelectionManager extends Context {
         z: activeWorkspace
       }
     });
-    var tabOrder = this.RED.nodes.getWorkspaceOrder();
-    var currentLinks = this.activeLinks;
+    var tabOrder = RED.nodes.getWorkspaceOrder();
+    var currentLinks = activeLinks;
     var addedLinkLinks = {};
-    this.activeFlowLinks = [];
-    for (var i = 0; i < this.moving_set.length; i++) {
-      if (this.moving_set[i].n.type === 'link out' || this.moving_set[i].n.type === 'link in') {
-        var linkNode = this.moving_set[i].n;
+    activeFlowLinks = [];
+    for (var i = 0; i < moving_set.length; i++) {
+      if (moving_set[i].n.type === 'link out' || moving_set[i].n.type === 'link in') {
+        var linkNode = moving_set[i].n;
         var offFlowLinks = {};
         linkNode.links.forEach(function (id) {
-          var target = this.RED.nodes.node(id);
+          var target = RED.nodes.node(id);
           if (target) {
             if (linkNode.type === 'link out') {
               if (target.z === linkNode.z) {
                 if (!addedLinkLinks[linkNode.id + ':' + target.id]) {
-                  this.activeLinks.push({
+                  activeLinks.push({
                     source: linkNode,
                     sourcePort: 0,
                     target: target,
@@ -114,7 +156,7 @@ export class CanvasSelectionManager extends Context {
             } else {
               if (target.z === linkNode.z) {
                 if (!addedLinkLinks[target.id + ':' + linkNode.id]) {
-                  this.activeLinks.push({
+                  activeLinks.push({
                     source: target,
                     sourcePort: 0,
                     target: linkNode,
@@ -134,7 +176,7 @@ export class CanvasSelectionManager extends Context {
         //     return tabOrder.indexOf(A) - tabOrder.indexOf(B);
         // });
         if (offFlows.length > 0) {
-          this.activeFlowLinks.push({
+          activeFlowLinks.push({
             refresh: Math.floor(Math.random() * 10000),
             node: linkNode,
             links: offFlowLinks //offFlows.map(function(i) { return {id:i,links:offFlowLinks[i]};})
@@ -153,9 +195,9 @@ export class CanvasSelectionManager extends Context {
       }
       return value;
     });
-    if (selectionJSON !== this.lastSelection) {
-      this.lastSelection = selectionJSON;
-      this.RED.events.emit('view:selection-changed', selection);
+    if (selectionJSON !== lastSelection) {
+      lastSelection = selectionJSON;
+      RED.events.emit('view:selection-changed', selection);
     }
   }
 
@@ -165,17 +207,35 @@ export class CanvasSelectionManager extends Context {
    * @param dy
    */
   moveSelection(dx, dy) {
-    if (this.moving_set.length > 0) {
-      if (!this.endMoveSet) {
-        $(document).one('keyup', this.endKeyboardMove);
-        this.endMoveSet = true;
+    const {
+      canvas,
+      rebind
+    } = this
+    const {
+      moving_set,
+
+      endKeyboardMove
+    } = canvas
+    let {
+      endMoveSet,
+    } = canvas
+    const {
+      redraw
+    } = rebind([
+        'redraw'
+      ])
+
+    if (moving_set.length > 0) {
+      if (!endMoveSet) {
+        $(document).one('keyup', endKeyboardMove);
+        endMoveSet = true;
       }
       var minX = 0;
       var minY = 0;
       var node;
 
-      for (var i = 0; i < this.moving_set.length; i++) {
-        node = this.moving_set[i];
+      for (var i = 0; i < moving_set.length; i++) {
+        node = moving_set[i];
         node.n.moved = true;
         node.n.dirty = true;
         if (node.ox == null && node.oy == null) {
@@ -190,14 +250,14 @@ export class CanvasSelectionManager extends Context {
       }
 
       if (minX !== 0 || minY !== 0) {
-        for (var n = 0; n < this.moving_set.length; n++) {
-          node = this.moving_set[n];
+        for (var n = 0; n < moving_set.length; n++) {
+          node = moving_set[n];
           node.n.x -= minX;
           node.n.y -= minY;
         }
       }
 
-      this.redraw();
+      redraw();
     }
   }
 
@@ -206,12 +266,21 @@ export class CanvasSelectionManager extends Context {
    * edit Selection
    */
   editSelection() {
-    if (this.moving_set.length > 0) {
-      var node = this.moving_set[0].n;
+    const {
+      RED,
+      canvas
+    } = this
+    const {
+      moving_set,
+      activeSubflow
+    } = canvas
+
+    if (moving_set.length > 0) {
+      var node = moving_set[0].n;
       if (node.type === 'subflow') {
-        this.RED.editor.editSubflow(this.activeSubflow);
+        RED.editor.editSubflow(activeSubflow);
       } else {
-        this.RED.editor.edit(node);
+        RED.editor.edit(node);
       }
     }
   }
@@ -220,7 +289,29 @@ export class CanvasSelectionManager extends Context {
    * delete Selection
    */
   deleteSelection() {
-    if (this.moving_set.length > 0 || this.selected_link != null) {
+    const {
+      RED,
+      canvas,
+      rebind
+    } = this
+    const {
+      activeSubflow,
+    } = canvas
+    let {
+      moving_set,
+      selected_link
+    } = canvas
+    const {
+      updateActiveNodes,
+      updateSelection,
+      redraw
+    } = rebind([
+        'redraw',
+        'updateActiveNodes',
+        'updateSelection',
+      ])
+
+    if (moving_set.length > 0 || selected_link != null) {
       var result;
       var removedNodes = [];
       var removedLinks = [];
@@ -228,17 +319,17 @@ export class CanvasSelectionManager extends Context {
       var removedSubflowInputs = [];
       var subflowInstances = [];
 
-      var startDirty = this.RED.nodes.dirty();
+      var startDirty = RED.nodes.dirty();
       var startChanged = false;
-      if (this.moving_set.length > 0) {
-        for (var i = 0; i < this.moving_set.length; i++) {
-          var node = this.moving_set[i].n;
+      if (moving_set.length > 0) {
+        for (var i = 0; i < moving_set.length; i++) {
+          var node = moving_set[i].n;
           node.selected = false;
           if (node.type != 'subflow') {
             if (node.x < 0) {
               node.x = 25
             }
-            var removedEntities = this.RED.nodes.remove(node.id);
+            var removedEntities = RED.nodes.remove(node.id);
             removedNodes.push(node);
             removedNodes = removedNodes.concat(removedEntities.nodes);
             removedLinks = removedLinks.concat(removedEntities.links);
@@ -252,31 +343,31 @@ export class CanvasSelectionManager extends Context {
           }
         }
         if (removedSubflowOutputs.length > 0) {
-          result = this.RED.subflow.removeOutput(removedSubflowOutputs);
+          result = RED.subflow.removeOutput(removedSubflowOutputs);
           if (result) {
             removedLinks = removedLinks.concat(result.links);
           }
         }
         // Assume 0/1 inputs
         if (removedSubflowInputs.length == 1) {
-          result = this.RED.subflow.removeInput();
+          result = RED.subflow.removeInput();
           if (result) {
             removedLinks = removedLinks.concat(result.links);
           }
         }
-        var instances = this.RED.subflow.refresh(true);
+        var instances = RED.subflow.refresh(true);
         if (instances) {
           subflowInstances = instances.instances;
         }
-        this.moving_set = [];
+        moving_set = [];
         if (removedNodes.length > 0 || removedSubflowOutputs.length > 0 || removedSubflowInputs.length > 0) {
-          this.RED.nodes.dirty(true);
+          RED.nodes.dirty(true);
         }
       }
-      if (this.selected_link) {
-        this.RED.nodes.removeLink(this.selected_link);
-        removedLinks.push(this.selected_link);
-        this.RED.nodes.dirty(true);
+      if (selected_link) {
+        RED.nodes.removeLink(selected_link);
+        removedLinks.push(selected_link);
+        RED.nodes.dirty(true);
       }
       var historyEvent = {
         t: 'delete',
@@ -289,12 +380,12 @@ export class CanvasSelectionManager extends Context {
         },
         dirty: startDirty
       };
-      this.RED.history.push(historyEvent);
+      RED.history.push(historyEvent);
 
-      this.selected_link = null;
-      this.updateActiveNodes();
-      this.updateSelection();
-      this.redraw();
+      selected_link = null;
+      updateActiveNodes();
+      updateSelection();
+      redraw();
     }
   }
 
@@ -302,29 +393,42 @@ export class CanvasSelectionManager extends Context {
    * copy Selection
    */
   copySelection() {
-    if (this.moving_set.length > 0) {
+    const {
+      RED,
+      canvas
+    } = this
+    const {
+      activeSubflow,
+      selected_link
+    } = canvas
+    let {
+      moving_set,
+      clipboard
+    } = canvas
+
+    if (moving_set.length > 0) {
       var nns = [];
-      for (var n = 0; n < this.moving_set.length; n++) {
-        var node = this.moving_set[n].n;
+      for (var n = 0; n < moving_set.length; n++) {
+        var node = moving_set[n].n;
         // The only time a node.type == subflow can be selected is the
         // input/output 'proxy' nodes. They cannot be copied.
         if (node.type != 'subflow') {
           for (var d in node._def.defaults) {
             if (node._def.defaults.hasOwnProperty(d)) {
               if (node._def.defaults[d].type) {
-                var configNode = this.RED.nodes.node(node[d]);
+                var configNode = RED.nodes.node(node[d]);
                 if (configNode && configNode._def.exclusive) {
-                  nns.push(this.RED.nodes.convertNode(configNode));
+                  nns.push(RED.nodes.convertNode(configNode));
                 }
               }
             }
           }
-          nns.push(this.RED.nodes.convertNode(node));
+          nns.push(RED.nodes.convertNode(node));
           //TODO: if the node has an exclusive config node, it should also be copied, to ensure it remains exclusive...
         }
       }
-      this.clipboard = JSON.stringify(nns);
-      this.RED.notify(this.RED._('clipboard.nodeCopied', {
+      clipboard = JSON.stringify(nns);
+      RED.notify(RED._('clipboard.nodeCopied', {
         count: nns.length
       }), null);
     }
@@ -336,19 +440,31 @@ export class CanvasSelectionManager extends Context {
    */
   select(selection) {
     const {
+      RED,
+      canvas,
+      rebind
+    } = this
+    const {
       clearSelection,
       updateSelection,
       redraw
-    } = this
+    } = rebind([
+        'clearSelection',
+        'updateSelection',
+        'redraw'
+      ], canvas)
+    let {
+        moving_set
+      } = canvas
 
     if (typeof selection !== 'undefined') {
       clearSelection();
       if (typeof selection == 'string') {
-        var selectedNode = this.RED.nodes.node(selection);
+        var selectedNode = RED.nodes.node(selection);
         if (selectedNode) {
           selectedNode.selected = true;
           selectedNode.dirty = true;
-          this.moving_set = [{
+          moving_set = [{
             n: selectedNode
           }];
         }
@@ -363,14 +479,22 @@ export class CanvasSelectionManager extends Context {
    * make a selection
    */
   selection() {
+    const {
+      canvas,
+    } = this
+    const {
+      moving_set,
+      selected_link
+    } = canvas
+
     var selection: any = {};
-    if (this.moving_set.length > 0) {
-      selection.nodes = this.moving_set.map(function (n) {
+    if (moving_set.length > 0) {
+      selection.nodes = moving_set.map(function (n) {
         return n.n;
       });
     }
-    if (this.selected_link != null) {
-      selection.link = this.selected_link;
+    if (selected_link != null) {
+      selection.link = selected_link;
     }
     return selection;
   }

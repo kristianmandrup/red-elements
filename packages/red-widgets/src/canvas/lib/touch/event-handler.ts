@@ -127,6 +127,16 @@ export class CanvasTouchEventHandler extends Context {
     }
   }
 
+  /**
+   * handle Outer Touch Move Event
+   * @param touchStartTime
+   * @param startTouchCenter
+   * @param lasso
+   * @param canvasMouseMove
+   * @param oldScaleFactor
+   * @param scaleFactor
+   * @param startTouchDistance
+   */
   handleOuterTouchMoveEvent(touchStartTime: any,
     startTouchCenter: any,
     lasso: any,
