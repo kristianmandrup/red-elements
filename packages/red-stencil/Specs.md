@@ -26,7 +26,7 @@ See [red-editor](https://github.com/tecla5/red-editor/blob/master/package.json#L
   "bootstrap": "^3.3.7",
   "bootstrap-select": "^1.12.4",
   "ace-builds": "^1.2.8",
-  "marked": "^0.3.6",
+  "marked": "^0.3.12",
 
   // internal package deps
   "@tecla5/red-ui-header": "^0.0.0",
