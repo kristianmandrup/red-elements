@@ -1,5 +1,5 @@
 import {
-  View as Canvas
+  Canvas
 } from './lib'
 
 export const canvas = {

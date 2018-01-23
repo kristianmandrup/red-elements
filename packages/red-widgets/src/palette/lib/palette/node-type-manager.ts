@@ -1,302 +1,30 @@
-/**
- * Copyright JS Foundation and other contributors, http://js.foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
+import { Context, $ } from '../../../common'
+import { Palette } from './';
 
-var exclusion = ['config', 'unknown', 'deprecated'];
-var coreCategories = ['subflows', 'input', 'output', 'function', 'social', 'mobile', 'storage', 'analysis', 'advanced'];
-
-import {
-  default as marked
-} from 'marked'
-
-import * as d3 from 'd3'
-
-interface IChartSVG extends HTMLElement {
-  getIntersectionList: Function
-  createSVGRect: Function
-}
-
-export {
-  PaletteEditor
-} from './editor'
-
-import {
-  Context,
-  $,
-  Searchbox,
-  EditableList
-} from '../../common'
-
-export class Palette extends Context {
-  public categoryContainers: Object
-  constructor() {
+export class PaletteNodeTypeManager extends Context {
+  constructor(public palette: Palette) {
     super()
-    this.categoryContainers = {};
-    const RED = this.RED
-
-    // make jquery Widget factories available for jQuery elements
-    new Searchbox()
-    new EditableList()
-
-    const {
-      addNodeType,
-      removeNodeType,
-      showNodeType,
-      hideNodeType,
-      filterChange,
-      categoryContainers
-    } = this.rebind([
-        'addNodeType',
-        'removeNodeType',
-        'showNodeType',
-        'hideNodeType',
-        'filterChange',
-        'categoryContainers'
-      ])
-
-    RED.events.on('registry:node-type-added', function (nodeType) {
-      var def = RED.nodes.getType(nodeType);
-      addNodeType(nodeType, def);
-      if (def.onpaletteadd && typeof def.onpaletteadd === "function") {
-        def.onpaletteadd.call(def);
-      }
-    });
-    RED.events.on('registry:node-type-removed', function (nodeType) {
-      removeNodeType(nodeType);
-    });
-
-    RED.events.on('registry:node-set-enabled', function (nodeSet) {
-      for (var j = 0; j < nodeSet.types.length; j++) {
-        showNodeType(nodeSet.types[j]);
-        var def = RED.nodes.getType(nodeSet.types[j]);
-        if (def.onpaletteadd && typeof def.onpaletteadd === "function") {
-          def.onpaletteadd.call(def);
-        }
-      }
-    });
-    RED.events.on('registry:node-set-disabled', function (nodeSet) {
-      for (var j = 0; j < nodeSet.types.length; j++) {
-        hideNodeType(nodeSet.types[j]);
-        var def = RED.nodes.getType(nodeSet.types[j]);
-        if (def.onpaletteremove && typeof def.onpaletteremove === "function") {
-          def.onpaletteremove.call(def);
-        }
-      }
-    });
-    RED.events.on('registry:node-set-removed', function (nodeSet) {
-      if (nodeSet.added) {
-        for (var j = 0; j < nodeSet.types.length; j++) {
-          removeNodeType(nodeSet.types[j]);
-          var def = RED.nodes.getType(nodeSet.types[j]);
-          if (def.onpaletteremove && typeof def.onpaletteremove === "function") {
-            def.onpaletteremove.call(def);
-          }
-        }
-      }
-    });
-
-
-    $("#palette > .palette-spinner").show();
-
-    // create searchBox widget
-    const widget = $("#palette-search input")
-    widget['searchBox']({
-      delay: 100,
-      change: function () {
-        filterChange($(this).val());
-      }
-    })
-
-    var categoryList = coreCategories;
-    if (RED.settings.paletteCategories) {
-      categoryList = RED.settings.paletteCategories;
-    } else if (RED.settings.theme('palette.categories')) {
-      categoryList = RED.settings.theme('palette.categories');
-    }
-    if (!Array.isArray(categoryList)) {
-      categoryList = coreCategories
-    }
-    categoryList.forEach((category) => {
-      this.createCategoryContainer(category, RED._("palette.label." + category, {
-        defaultValue: category
-      }));
-    });
-
-    $("#palette-collapse-all").on("click", function (e) {
-      e.preventDefault();
-      for (var cat in categoryContainers) {
-        if (categoryContainers.hasOwnProperty(cat)) {
-          categoryContainers[cat].close();
-        }
-      }
-    });
-    $("#palette-expand-all").on("click", function (e) {
-      e.preventDefault();
-      for (var cat in categoryContainers) {
-        if (categoryContainers.hasOwnProperty(cat)) {
-          categoryContainers[cat].open();
-        }
-      }
-    });
   }
 
-
-  createCategoryContainer(category, label) {
-    const {
-      categoryContainers
-    } = this
-    let labelOrCat = label || category
-    if (!labelOrCat) {
-      this.handleError('createCategoryContainer: Must take a category and an optional label', {
-        label,
-        category
-      })
-    }
-
-    // replace underscores with spaces
-    label = labelOrCat.replace(/_/g, " ");
-
-    const container = $('#palette-container')
-    if (!container) {
-      this.handleError('Page must have a #palette-container element to attach palette to')
-    }
-
-    // append palette to #palette-container
-    var catDiv = $('<div id="palette-container-' + category + '" class="palette-category palette-close hide">' +
-      '<div id="palette-header-' + category + '" class="palette-header"><i class="expanded fa fa-angle-down"></i><span>' + label + '</span></div>' +
-      '<div class="palette-content" id="palette-base-category-' + category + '">' +
-      '<div id="palette-' + category + '-input"></div>' +
-      '<div id="palette-' + category + '-output"></div>' +
-      '<div id="palette-' + category + '-function"></div>' +
-      '</div>' +
-      '</div>').appendTo(container);
-
-    categoryContainers[category] = {
-      container: catDiv,
-      close: () => {
-        catDiv.removeClass("palette-open");
-        catDiv.addClass("palette-closed");
-        $("#palette-base-category-" + category).slideUp();
-        $("#palette-header-" + category + " i").removeClass("expanded");
-      },
-      open: () => {
-        catDiv.addClass("palette-open");
-        catDiv.removeClass("palette-closed");
-        $("#palette-base-category-" + category).slideDown();
-        $("#palette-header-" + category + " i").addClass("expanded");
-      },
-      toggle: () => {
-        if (catDiv.hasClass("palette-open")) {
-          categoryContainers[category].close();
-        } else {
-          categoryContainers[category].open();
-        }
-      }
-    };
-
-    $("#palette-header-" + category).on('click', function (e) {
-      categoryContainers[category].toggle();
-    })
-    return this
-  }
-
-  setLabel(type, el, label, info) {
-    const {
-      RED
-    } = this
-
-    var nodeWidth = 82;
-    var nodeHeight = 25;
-    var lineHeight = 20;
-    var portHeight = 10;
-
-    var words = label.split(/[ -]/);
-
-    var displayLines = [];
-
-    var currentLine = words[0];
-    var currentLineWidth = RED.view.calculateTextWidth(currentLine, "palette_label", 0);
-
-    for (var i = 1; i < words.length; i++) {
-      var newWidth = RED.view.calculateTextWidth(currentLine + " " + words[i], "palette_label", 0);
-      if (newWidth < nodeWidth) {
-        currentLine += " " + words[i];
-        currentLineWidth = newWidth;
-      } else {
-        displayLines.push(currentLine);
-        currentLine = words[i];
-        currentLineWidth = RED.view.calculateTextWidth(currentLine, "palette_label", 0);
-      }
-    }
-    displayLines.push(currentLine);
-
-    var lines = displayLines.join("<br/>");
-    var multiLineNodeHeight = 8 + (lineHeight * displayLines.length);
-    el.css({
-      height: multiLineNodeHeight + "px"
-    });
-
-    var labelElement = el.find(".palette_label");
-    labelElement.html(lines).attr('dir', RED.text.bidi.resolveBaseTextDir(lines));
-
-    el.find(".palette_port").css({
-      top: (multiLineNodeHeight / 2 - 5) + "px"
-    });
-
-    var popOverContent;
-    try {
-      var l = "<p><b>" + RED.text.bidi.enforceTextDirectionWithUCC(label) + "</b></p>";
-      if (label != type) {
-        l = "<p><b>" + RED.text.bidi.enforceTextDirectionWithUCC(label) + "</b><br/><i>" + type + "</i></p>";
-      }
-      popOverContent = $(l + (info ? info : $("script[data-help-name='" + type + "']").html() || "<p>" + RED._("palette.noInfo") + "</p>").trim())
-        .filter(function (n) {
-          return (this.nodeType == 1 && this.nodeName == "P") || (this.nodeType == 3 && this.textContent.trim().length > 0)
-        }).slice(0, 2);
-    } catch (err) {
-      // Malformed HTML may cause errors. TODO: need to understand what can break
-      // NON-NLS: internal debug
-      console.log("Error generating pop-over label for ", type);
-      console.log(err.toString());
-      popOverContent = "<p><b>" + label + "</b></p><p>" + RED._("palette.noInfo") + "</p>";
-    }
-
-    // const popover = el.data('popover')
-    // if (!popover) {
-    //   this.handleError('setLabel: element el missing a data-popover property')
-    // }
-
-    el.data('popover', popOverContent)
-    // popover.setContent(popOverContent);
-    return this
-  }
-
-  marked(content) {
-    return marked(content)
-  }
-
+  /**
+   * escape Node Type
+   * @param nt
+   */
   escapeNodeType(nt) {
     return nt.replace(" ", "_").replace(".", "_").replace(":", "_");
   }
 
+  /**
+   * add Node Type
+   * @param nt
+   * @param def
+   */
   addNodeType(nt, def) {
     const {
       RED,
       categoryContainers,
       marked
-    } = this
+    } = this.palette
 
     let {
       escapeNodeType,
@@ -608,34 +336,74 @@ export class Palette extends Context {
     return this
   }
 
-  filterChange(val) {
+  setLabel(type, el, label, info) {
     const {
-      categoryContainers
+      RED
     } = this
 
-    var re = new RegExp(val.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
-    $("#palette-container .palette_node").each(function (i, el) {
-      var currentLabel = $(el).find(".palette_label").text();
-      if (val === "" || re.test(el.id) || re.test(currentLabel)) {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
-    });
+    var nodeWidth = 82;
+    var nodeHeight = 25;
+    var lineHeight = 20;
+    var portHeight = 10;
 
-    for (var category in categoryContainers) {
-      if (categoryContainers.hasOwnProperty(category)) {
-        if (categoryContainers[category].container
-          .find(".palette_node")
-          .filter(function () {
-            return $(this).css('display') !== 'none'
-          }).length === 0) {
-          categoryContainers[category].close();
-        } else {
-          categoryContainers[category].open();
-        }
+    var words = label.split(/[ -]/);
+
+    var displayLines = [];
+
+    var currentLine = words[0];
+    var currentLineWidth = RED.view.calculateTextWidth(currentLine, "palette_label", 0);
+
+    for (var i = 1; i < words.length; i++) {
+      var newWidth = RED.view.calculateTextWidth(currentLine + " " + words[i], "palette_label", 0);
+      if (newWidth < nodeWidth) {
+        currentLine += " " + words[i];
+        currentLineWidth = newWidth;
+      } else {
+        displayLines.push(currentLine);
+        currentLine = words[i];
+        currentLineWidth = RED.view.calculateTextWidth(currentLine, "palette_label", 0);
       }
     }
+    displayLines.push(currentLine);
+
+    var lines = displayLines.join("<br/>");
+    var multiLineNodeHeight = 8 + (lineHeight * displayLines.length);
+    el.css({
+      height: multiLineNodeHeight + "px"
+    });
+
+    var labelElement = el.find(".palette_label");
+    labelElement.html(lines).attr('dir', RED.text.bidi.resolveBaseTextDir(lines));
+
+    el.find(".palette_port").css({
+      top: (multiLineNodeHeight / 2 - 5) + "px"
+    });
+
+    var popOverContent;
+    try {
+      var l = "<p><b>" + RED.text.bidi.enforceTextDirectionWithUCC(label) + "</b></p>";
+      if (label != type) {
+        l = "<p><b>" + RED.text.bidi.enforceTextDirectionWithUCC(label) + "</b><br/><i>" + type + "</i></p>";
+      }
+      popOverContent = $(l + (info ? info : $("script[data-help-name='" + type + "']").html() || "<p>" + RED._("palette.noInfo") + "</p>").trim())
+        .filter(function (n) {
+          return (this.nodeType == 1 && this.nodeName == "P") || (this.nodeType == 3 && this.textContent.trim().length > 0)
+        }).slice(0, 2);
+    } catch (err) {
+      // Malformed HTML may cause errors. TODO: need to understand what can break
+      // NON-NLS: internal debug
+      console.log("Error generating pop-over label for ", type);
+      console.log(err.toString());
+      popOverContent = "<p><b>" + label + "</b></p><p>" + RED._("palette.noInfo") + "</p>";
+    }
+
+    // const popover = el.data('popover')
+    // if (!popover) {
+    //   this.handleError('setLabel: element el missing a data-popover property')
+    // }
+
+    el.data('popover', popOverContent)
+    // popover.setContent(popOverContent);
     return this
   }
 }

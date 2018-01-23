@@ -1,23 +1,14 @@
 import {
   Sidebar,
+  SidebarTab,
+  SidebarTabInfo,
+  TabInfoTips
 }
   from './sidebar'
-import {
-  SidebarTabConfig
-}
-  from './tab-config'
-import {
-  SidebarTabInfo
-}
-  from './tab-info'
-import {
-  Tips
-}
-  from './tips'
 
 export const lib = {
   Sidebar,
-  SidebarTabConfig,
+  SidebarTab,
   SidebarTabInfo,
   Tips
 }
@@ -26,7 +17,7 @@ export default lib
 
 export {
   Sidebar,
-  SidebarTabConfig,
+  SidebarTab,
   SidebarTabInfo,
   Tips
 }

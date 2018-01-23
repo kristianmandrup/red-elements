@@ -1,10 +1,10 @@
 import {
   Context
-} from '../../common'
+} from '../../../../common'
 
 const { log } = console
 
-export class Tips extends Context {
+export class TabInfoTips extends Context {
   public enabled: Boolean = true
   public startDelay: number = 1000
   public cycleDelay: number = 15000
@@ -99,7 +99,7 @@ export class Tips extends Context {
     return this
   }
 
-  startTips() {
+  start() {
     // log('startTips')
     let {
       RED,
@@ -145,7 +145,7 @@ export class Tips extends Context {
     return this
   }
 
-  stopTips() {
+  stop() {
     let {
       startTimeout,
       refreshTimeout
@@ -165,7 +165,7 @@ export class Tips extends Context {
     return this
   }
 
-  nextTip() {
+  next() {
     let {
       startTimeout,
       refreshTimeout,

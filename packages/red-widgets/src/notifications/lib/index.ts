@@ -101,4 +101,18 @@ export class Notifications extends Context {
     this.c = this.c + 1;
     return n;
   }
+
+  /**
+   * TODO
+   */
+  update() {
+
+  }
+
+  /**
+   * TODO
+   */
+  close() {
+
+  }
 }

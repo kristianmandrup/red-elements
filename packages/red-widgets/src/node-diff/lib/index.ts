@@ -6,7 +6,7 @@ import {
 import { log } from 'util';
 import { FlowsApi } from '@tecla5/red-runtime/src/api/flows-api';
 import { FlowsLoader } from './flows-loader';
-import { DiffPanelBuilder } from './builder';
+import { DiffPanel } from './diff-panel';
 import { DiffResolver } from './diff-resolver';
 import { DiffGenerator } from './diff-generator';
 import { DiffMerger } from './diff-merger';
@@ -20,7 +20,7 @@ export class Diff extends Context {
   public value: any
 
   protected flowsLoader: FlowsLoader = new FlowsLoader(this)
-  protected diffPanelBuilder: DiffPanelBuilder = new DiffPanelBuilder(this)
+  protected diffPanel: DiffPanel = new DiffPanel(this)
   protected diffResolver: DiffResolver = new DiffResolver(this)
   protected diffGenerator: DiffGenerator = new DiffGenerator(this)
   protected diffMerger: DiffMerger = new DiffMerger(this)
@@ -54,7 +54,7 @@ export class Diff extends Context {
 
   // use builder.diffPanel
   buildDiffPanel(container) {
-    this.diffPanelBuilder.buildDiffPanel(container)
+    this.diffPanel.buildDiffPanel(container)
   }
 
   async getRemoteDiff() {
