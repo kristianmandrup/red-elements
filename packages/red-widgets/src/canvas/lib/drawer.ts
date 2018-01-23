@@ -62,6 +62,7 @@ export class CanvasDrawer extends Context {
    * @param updateActive
    */
   redraw(updateActive?: boolean) {
+    const { canvas } = this
     const {
       updateActiveNodes,
       updateSelection,
@@ -74,8 +75,29 @@ export class CanvasDrawer extends Context {
       activeSubflow,
       activeNodes,
       activeLinks,
-      activeFlowLinks
-  } = this.canvas
+      activeFlowLinks,
+  } = canvas
+
+    let {
+      startTouchCenter,
+      startTouchDistance
+    } = canvas
+
+    const {
+      nodeMouseUp,
+      nodeMouseDown,
+      touchLongPressTimeout
+    } = this.rebind([
+        'nodeMouseUp',
+        'nodeMouseDown',
+        'touchLongPressTimeout'
+      ], canvas)
+
+    let {
+      touchStartTime
+    } = this.rebind([
+        'touchStartTime',
+      ], this.canvas)
 
     if (updateActive) {
       updateActiveNodes();
@@ -121,24 +143,24 @@ export class CanvasDrawer extends Context {
         });
         outGroup.append('rect').attr('class', 'subflowport').attr('rx', 8).attr('ry', 8).attr('width', 40).attr('height', 40)
           // TODO: This is exactly the same set of handlers used for regular nodes - DRY
-          .on('mouseup', this.nodeMouseUp)
-          .on('mousedown', this.nodeMouseDown)
+          .on('mouseup', nodeMouseUp)
+          .on('mousedown', nodeMouseDown)
           .on('touchstart', (d) => {
             // TODO: fixed?
-            const svgElem = this.vis
+            const svgElem = vis
             var obj = d3.select(svgElem);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
-            this.startTouchCenter = [touch0.pageX, touch0.pageY];
-            this.startTouchDistance = 0;
-            this.touchStartTime = setTimeout(function () {
+            startTouchCenter = [touch0.pageX, touch0.pageY];
+            startTouchDistance = 0;
+            touchStartTime = setTimeout(function () {
               this.showTouchMenu(obj, pos);
-            }, this.touchLongPressTimeout);
-            this.nodeMouseDown.call(this, d)
+            }, touchLongPressTimeout);
+            nodeMouseDown.call(this, d)
           })
           .on('touchend', (d) => {
-            clearTimeout(this.touchStartTime);
-            this.touchStartTime = null;
+            clearTimeout(touchStartTime);
+            touchStartTime = null;
             if (this.RED.touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
