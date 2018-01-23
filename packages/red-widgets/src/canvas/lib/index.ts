@@ -30,20 +30,15 @@ import * as $ from 'jquery';
 
 const PORT_TYPE_INPUT = 1;
 const PORT_TYPE_OUTPUT = 0;
-export class View extends Context {
-  space_width: any
-  space_height: any
+export class Canvas extends Context {
   lasso: any
-  scaleFactor: any
   oldScaleFactor: any
   scrollTop: any;
   scrollLeft: any;
   outer: any;
-  clipboard: any;
   vis: any;
   dragGroup: any;
   grid: any;
-  snapGrid: any
   gridsize: number = 20;
   moving_set: any[] = [];
   workspaceScrollPositions: any = {};
@@ -61,67 +56,43 @@ export class View extends Context {
   mousedown_link = null;
   mousedown_node = null;
   node_height = 30;
-  selected_link = null;
-  mouse_position = null;
-  mousedown_port_type = null;
-  mousedown_port_index = 0;
-  lineCurveScale: any;
-  clickElapsed = 0;
-  mouse_offset = [0, 0];
-  mouseup_node: any = null;
-  showStatus: any = false;
-  lastClickNode: any = null;
-  dblClickPrimed: any = null;
-  clickTime = 0;
-  activeSpliceLink: any;
-  spliceActive = false;
-  spliceTimer: any;
-  outer_background: any;
-  touchLongPressTimeout = 1000;
-  startTouchDistance = 0;
-  startTouchCenter = [];
-  moveTouchCenter = [];
-  touchStartTime: any = 0;
+  selected_link = null
+  mouse_position = null
+  mousedown_port_type = null
+  mousedown_port_index = 0
+  clickElapsed = 0
+  mouse_offset = [0, 0]
+  mouseup_node: any = null
+  showStatus: any = false
+  lastClickNode: any = null
+  dblClickPrimed: any = null
+  clickTime = 0
+  activeSpliceLink: any
+  spliceActive = false
+  spliceTimer: any
+  outer_background: any
+  touchLongPressTimeout = 1000
+  startTouchDistance = 0
+  startTouchCenter = []
+  moveTouchCenter = []
+  touchStartTime: any = 0
+  space_width = 5000
+  space_height = 5000
+  lineCurveScale = 0.75
+  scaleFactor = 1
+  snapGrid = false
+  clipboard = ''
+  status_colours = {
+    'red': '#c00',
+    'green': '#5a8',
+    'yellow': '#F9DF31',
+    'blue': '#53A3F3',
+    'grey': '#d3d3d3'
+  }
+
   constructor() {
     super()
-
-    // TODO: properties (ie. instance vars)
-    var space_width = 5000,
-      space_height = 5000,
-      lineCurveScale = 0.75,
-      scaleFactor = 1;
-
-    var snapGrid = false;
-
-    let instVars = {
-      snapGrid,
-      space_width,
-      space_height,
-      scaleFactor,
-    }
-    Object.keys(instVars).map(key => {
-      this[key] = instVars[key]
-    })
-
-    let {
-      canvasMouseMove,
-      canvasMouseDown,
-      canvasMouseUp
-    } = this.rebind([
-        'canvasMouseMove',
-        'canvasMouseDown',
-        'canvasMouseUp'
-      ])
-
-    this.clipboard = '';
-
-    var status_colours = {
-      'red': '#c00',
-      'green': '#5a8',
-      'yellow': '#F9DF31',
-      'blue': '#53A3F3',
-      'grey': '#d3d3d3'
-    }
+    this.configure()
   }
 
   clearTimeout(timer) {
