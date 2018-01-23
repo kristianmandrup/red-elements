@@ -3,6 +3,9 @@ import {
 } from '../../context'
 import { Canvas } from '../../';
 
+import {
+  d3
+} from './d3'
 export class CanvasDrawer extends Context {
   constructor(protected canvas: Canvas) {
     super()
@@ -13,14 +16,14 @@ export class CanvasDrawer extends Context {
    * @param id
    */
   reveal(id) {
-    if (this.RED.nodes.workspace(id) || this.RED.nodes.subflow(id)) {
-      this.RED.workspaces.show(id);
+    if (RED.nodes.workspace(id) || RED.nodes.subflow(id)) {
+      RED.workspaces.show(id);
     } else {
-      var node = this.RED.nodes.node(id);
+      var node = RED.nodes.node(id);
       if (node._def.category !== 'config' && node.z) {
         node.highlighted = true;
         node.dirty = true;
-        this.RED.workspaces.show(node.z);
+        RED.workspaces.show(node.z);
 
         var screenSize = [$('#chart').width(), $('#chart').height()];
         var scrollPos = [$('#chart').scrollLeft(), $('#chart').scrollTop()];
@@ -47,12 +50,12 @@ export class CanvasDrawer extends Context {
               node.highlighted = false;
               delete node._flashing;
             }
-            this.RED.view.redraw();
+            RED.view.redraw();
           }
           flashFunc();
         }
       } else if (node._def.category === 'config') {
-        this.RED.sidebar.config.show(id);
+        RED.sidebar.config.show(id);
       }
     }
   }
@@ -87,7 +90,7 @@ export class CanvasDrawer extends Context {
       nodeMouseUp,
       nodeMouseDown,
       touchLongPressTimeout
-    } = this.rebind([
+    } = rebind([
         'nodeMouseUp',
         'nodeMouseDown',
         'touchLongPressTimeout'
@@ -95,9 +98,9 @@ export class CanvasDrawer extends Context {
 
     let {
       touchStartTime
-    } = this.rebind([
+    } = rebind([
         'touchStartTime',
-      ], this.canvas)
+      ], canvas)
 
     if (updateActive) {
       updateActiveNodes();
@@ -105,7 +108,7 @@ export class CanvasDrawer extends Context {
     }
 
     if (!vis) {
-      this.handleError('redraw: vis not yet defined', {
+      handleError('redraw: vis not yet defined', {
         vis,
         view: this
       })
@@ -114,7 +117,7 @@ export class CanvasDrawer extends Context {
     vis.attr('transform', 'scale(' + scaleFactor + ')');
 
     if (!outer) {
-      this.handleError('redraw: outer not yet defined', {
+      handleError('redraw: outer not yet defined', {
         outer,
         view: this
       })
@@ -125,7 +128,7 @@ export class CanvasDrawer extends Context {
       .attr('height', space_height * scaleFactor);
 
     // Don't bother redrawing nodes if we're drawing links
-    if (mouse_mode != this.RED.state.JOINING) {
+    if (mouse_mode != RED.state.JOINING) {
 
       var dirtyNodes = {};
 
@@ -154,38 +157,38 @@ export class CanvasDrawer extends Context {
             startTouchCenter = [touch0.pageX, touch0.pageY];
             startTouchDistance = 0;
             touchStartTime = setTimeout(function () {
-              this.showTouchMenu(obj, pos);
+              showTouchMenu(obj, pos);
             }, touchLongPressTimeout);
             nodeMouseDown.call(this, d)
           })
           .on('touchend', (d) => {
             clearTimeout(touchStartTime);
             touchStartTime = null;
-            if (this.RED.touch.radialMenu.active()) {
+            if (RED.touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
             }
-            this.nodeMouseUp.call(this, d);
+            nodeMouseUp.call(this, d);
           });
 
         outGroup.append('g').attr('transform', 'translate(-5,15)').append('rect').attr('class', 'port').attr('rx', 3).attr('ry', 3).attr('width', 10).attr('height', 10)
           .on('mousedown', function (d, i) {
-            this.portMouseDown(d, PORT_TYPE_INPUT, 0);
+            portMouseDown(d, PORT_TYPE_INPUT, 0);
           })
           .on('touchstart', function (d, i) {
-            this.portMouseDown(d, PORT_TYPE_INPUT, 0);
+            portMouseDown(d, PORT_TYPE_INPUT, 0);
           })
           .on('mouseup', function (d, i) {
-            this.portMouseUp(d, PORT_TYPE_INPUT, 0);
+            portMouseUp(d, PORT_TYPE_INPUT, 0);
           })
           .on('touchend', function (d, i) {
-            this.portMouseUp(d, PORT_TYPE_INPUT, 0);
+            portMouseUp(d, PORT_TYPE_INPUT, 0);
           })
           .on('mouseover', function (d) {
-            this.portMouseOver(d3.select(this), d, PORT_TYPE_INPUT, 0);
+            portMouseOver(d3.select(this), d, PORT_TYPE_INPUT, 0);
           })
           .on('mouseout', function (d) {
-            this.portMouseOut(d3.select(this), d, PORT_TYPE_INPUT, 0);
+            portMouseOut(d3.select(this), d, PORT_TYPE_INPUT, 0);
           });
 
         outGroup.append('svg:text').attr('class', 'port_label').attr('x', 20).attr('y', 8).style('font-size', '10px').text('output');
@@ -206,47 +209,47 @@ export class CanvasDrawer extends Context {
         });
         inGroup.append('rect').attr('class', 'subflowport').attr('rx', 8).attr('ry', 8).attr('width', 40).attr('height', 40)
           // TODO: This is exactly the same set of handlers used for regular nodes - DRY
-          .on('mouseup', this.nodeMouseUp)
-          .on('mousedown', this.nodeMouseDown)
+          .on('mouseup', nodeMouseUp)
+          .on('mousedown', nodeMouseDown)
           .on('touchstart', function (d) {
             var obj = d3.select(this);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
-            this.startTouchCenter = [touch0.pageX, touch0.pageY];
-            this.startTouchDistance = 0;
-            this.touchStartTime = setTimeout(function () {
-              this.showTouchMenu(obj, pos);
-            }, this.touchLongPressTimeout);
-            this.nodeMouseDown.call(this, d)
+            startTouchCenter = [touch0.pageX, touch0.pageY];
+            startTouchDistance = 0;
+            touchStartTime = setTimeout(function () {
+              showTouchMenu(obj, pos);
+            }, touchLongPressTimeout);
+            nodeMouseDown.call(this, d)
           })
           .on('touchend', function (d) {
-            clearTimeout(this.touchStartTime);
-            this.touchStartTime = null;
-            if (this.RED.touch.radialMenu.active()) {
+            clearTimeout(touchStartTime);
+            touchStartTime = null;
+            if (RED.touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
             }
-            this.nodeMouseUp.call(this, d);
+            nodeMouseUp.call(this, d);
           });
 
         inGroup.append('g').attr('transform', 'translate(35,15)').append('rect').attr('class', 'port').attr('rx', 3).attr('ry', 3).attr('width', 10).attr('height', 10)
           .on('mousedown', function (d, i) {
-            this.portMouseDown(d, PORT_TYPE_OUTPUT, i);
+            portMouseDown(d, PORT_TYPE_OUTPUT, i);
           })
           .on('touchstart', function (d, i) {
-            this.portMouseDown(d, PORT_TYPE_OUTPUT, i);
+            portMouseDown(d, PORT_TYPE_OUTPUT, i);
           })
           .on('mouseup', function (d, i) {
-            this.portMouseUp(d, PORT_TYPE_OUTPUT, i);
+            portMouseUp(d, PORT_TYPE_OUTPUT, i);
           })
           .on('touchend', function (d, i) {
-            this.portMouseUp(d, PORT_TYPE_OUTPUT, i);
+            portMouseUp(d, PORT_TYPE_OUTPUT, i);
           })
           .on('mouseover', function (d) {
-            this.portMouseOver(d3.select(this), d, PORT_TYPE_OUTPUT, 0);
+            portMouseOver(d3.select(this), d, PORT_TYPE_OUTPUT, 0);
           })
           .on('mouseout', function (d) {
-            this.portMouseOut(d3.select(this), d, PORT_TYPE_OUTPUT, 0);
+            portMouseOut(d3.select(this), d, PORT_TYPE_OUTPUT, 0);
           });
 
 
@@ -306,13 +309,13 @@ export class CanvasDrawer extends Context {
         var node = d3.select(this);
         var isLink = d.type === 'link in' || d.type === 'link out';
         node.attr('id', d.id);
-        var l = this.RED.utils.getNodeLabel(d);
+        var l = RED.utils.getNodeLabel(d);
         if (isLink) {
-          d.w = this.node_height;
+          d.w = node_height;
         } else {
-          d.w = Math.max(this.node_width, 20 * (Math.ceil((this.calculateTextWidth(l, 'node_label', 50) + (d._def.inputs > 0 ? 7 : 0)) / 20)));
+          d.w = Math.max(node_width, 20 * (Math.ceil((calculateTextWidth(l, 'node_label', 50) + (d._def.inputs > 0 ? 7 : 0)) / 20)));
         }
-        d.h = Math.max(this.node_height, (d.outputs || 0) * 15);
+        d.h = Math.max(node_height, (d.outputs || 0) * 15);
 
         if (d._def.badge) {
           var badge = node.append('svg:g').attr('class', 'node_badge_group');
@@ -339,7 +342,7 @@ export class CanvasDrawer extends Context {
             .attr('rx', 5)
             .attr('ry', 5)
             .attr('width', 32)
-            .attr('height', this.node_height - 4)
+            .attr('height', node_height - 4)
             .attr('fill', '#eee'); //function(d) { return d._def.color;})
           nodeButtonGroup.append('rect')
             .attr('class', 'node_button_button')
@@ -350,33 +353,33 @@ export class CanvasDrawer extends Context {
             .attr('rx', 4)
             .attr('ry', 4)
             .attr('width', 16)
-            .attr('height', this.node_height - 12)
+            .attr('height', node_height - 12)
             .attr('fill', function (d: any) {
               return d._def.color;
             })
             .attr('cursor', 'pointer')
             .on('mousedown', (d) => {
-              if (!this.lasso && this.isButtonEnabled(d)) {
-                this.focusView();
+              if (!lasso && isButtonEnabled(d)) {
+                focusView();
                 d3.select(this).attr('fill-opacity', 0.2);
                 d3.event.preventDefault();
                 d3.event.stopPropagation();
               }
             })
             .on('mouseup', (d) => {
-              if (!this.lasso && this.isButtonEnabled(d)) {
+              if (!lasso && isButtonEnabled(d)) {
                 d3.select(this).attr('fill-opacity', 0.4);
                 d3.event.preventDefault();
                 d3.event.stopPropagation();
               }
             })
             .on('mouseover', (d) => {
-              if (!this.lasso && this.isButtonEnabled(d)) {
+              if (!lasso && isButtonEnabled(d)) {
                 d3.select(this).attr('fill-opacity', 0.4);
               }
             })
             .on('mouseout', (d: any) => {
-              if (!this.lasso && this.isButtonEnabled(d)) {
+              if (!lasso && isButtonEnabled(d)) {
                 var op = 1;
                 if (d._def.button.toggle) {
                   op = d[d._def.button.toggle] ? 1 : 0.2;
@@ -384,8 +387,8 @@ export class CanvasDrawer extends Context {
                 d3.select(this).attr('fill-opacity', op);
               }
             })
-            .on('click', this.nodeButtonClicked)
-            .on('touchstart', this.nodeButtonClicked)
+            .on('click', nodeButtonClicked)
+            .on('touchstart', nodeButtonClicked)
         }
 
         var mainRect = node.append('rect')
@@ -398,27 +401,27 @@ export class CanvasDrawer extends Context {
           .attr('fill', function (d: any) {
             return d._def.color;
           })
-          .on('mouseup', this.nodeMouseUp)
-          .on('mousedown', this.nodeMouseDown)
+          .on('mouseup', nodeMouseUp)
+          .on('mousedown', nodeMouseDown)
           .on('touchstart', (d: any) => {
             var obj = d3.select(this);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
-            this.startTouchCenter = [touch0.pageX, touch0.pageY];
-            this.startTouchDistance = 0;
-            this.touchStartTime = setTimeout(function () {
-              this.showTouchMenu(obj, pos);
-            }, this.touchLongPressTimeout);
-            this.nodeMouseDown.call(this, d)
+            startTouchCenter = [touch0.pageX, touch0.pageY];
+            startTouchDistance = 0;
+            touchStartTime = setTimeout(function () {
+              showTouchMenu(obj, pos);
+            }, touchLongPressTimeout);
+            nodeMouseDown.call(this, d)
           })
           .on('touchend', (d: any) => {
-            clearTimeout(this.touchStartTime);
-            this.touchStartTime = null;
-            if (this.RED.touch.radialMenu.active()) {
+            clearTimeout(touchStartTime);
+            touchStartTime = null;
+            if (RED.touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
             }
-            this.nodeMouseUp.call(this, d);
+            nodeMouseUp.call(this, d);
           })
           .on('mouseover', function (d) {
             if (mouse_mode === 0) {
@@ -435,7 +438,7 @@ export class CanvasDrawer extends Context {
         //node.append('rect').attr('class', 'node-gradient-bottom').attr('rx', 6).attr('ry', 6).attr('height',30).attr('stroke','none').attr('fill','url(#gradient-bottom)').style('pointer-events','none');
 
         if (d._def.icon) {
-          var icon_url = this.RED.utils.getNodeIcon(d._def, d);
+          var icon_url = RED.utils.getNodeIcon(d._def, d);
           var icon_group = node.append('g')
             .attr('class', 'node_icon_group')
             .attr('x', 0).attr('y', 0);
@@ -536,10 +539,10 @@ export class CanvasDrawer extends Context {
           dirtyNodes[d.id] = d;
           //if (d.x < -50) deleteSelection();  // Delete nodes if dragged back to palette
           if (!isLink && d.resize) {
-            var l = this.RED.utils.getNodeLabel(d);
+            var l = RED.utils.getNodeLabel(d);
             var ow = d.w;
-            d.w = Math.max(this.node_width, 20 * (Math.ceil((this.calculateTextWidth(l, 'node_label', 50) + (d._def.inputs > 0 ? 7 : 0)) / 20)));
-            d.h = Math.max(this.node_height, (d.outputs || 0) * 15);
+            d.w = Math.max(node_width, 20 * (Math.ceil((calculateTextWidth(l, 'node_label', 50) + (d._def.inputs > 0 ? 7 : 0)) / 20)));
+            d.h = Math.max(node_height, (d.outputs || 0) * 15);
             d.x += (d.w - ow) / 2;
             d.resize = false;
           }
@@ -549,7 +552,7 @@ export class CanvasDrawer extends Context {
             return 'translate(' + (d.x - d.w / 2) + ',' + (d.y - d.h / 2) + ')';
           });
 
-          if (mouse_mode != this.RED.state.MOVING_ACTIVE) {
+          if (mouse_mode != RED.state.MOVING_ACTIVE) {
             thisNode.selectAll('.node')
               .attr('width', function (d: any) {
                 return d.w
@@ -584,22 +587,22 @@ export class CanvasDrawer extends Context {
               var inputGroup = thisNode.append('g').attr('class', 'port_input');
               inputGroup.append('rect').attr('class', 'port').attr('rx', 3).attr('ry', 3).attr('width', 10).attr('height', 10)
                 .on('mousedown', (d) => {
-                  this.portMouseDown(d, PORT_TYPE_INPUT, 0);
+                  portMouseDown(d, PORT_TYPE_INPUT, 0);
                 })
                 .on('touchstart', (d) => {
-                  this.portMouseDown(d, PORT_TYPE_INPUT, 0);
+                  portMouseDown(d, PORT_TYPE_INPUT, 0);
                 })
                 .on('mouseup', (d) => {
-                  this.portMouseUp(d, PORT_TYPE_INPUT, 0);
+                  portMouseUp(d, PORT_TYPE_INPUT, 0);
                 })
                 .on('touchend', (d) => {
-                  this.portMouseUp(d, PORT_TYPE_INPUT, 0);
+                  portMouseUp(d, PORT_TYPE_INPUT, 0);
                 })
                 .on('mouseover', (d) => {
-                  this.portMouseOver(d3.select(this), d, PORT_TYPE_INPUT, 0);
+                  portMouseOver(d3.select(this), d, PORT_TYPE_INPUT, 0);
                 })
                 .on('mouseout', (d) => {
-                  this.portMouseOut(d3.select(this), d, PORT_TYPE_INPUT, 0);
+                  portMouseOut(d3.select(this), d, PORT_TYPE_INPUT, 0);
                 });
             }
 
@@ -613,37 +616,37 @@ export class CanvasDrawer extends Context {
               .on('mousedown', (function () {
                 var node = d;
                 return function (d, i) {
-                  this.portMouseDown(node, PORT_TYPE_OUTPUT, i);
+                  portMouseDown(node, PORT_TYPE_OUTPUT, i);
                 }
               })())
               .on('touchstart', (function () {
                 var node = d;
                 return function (d, i) {
-                  this.portMouseDown(node, PORT_TYPE_OUTPUT, i);
+                  portMouseDown(node, PORT_TYPE_OUTPUT, i);
                 }
               })())
               .on('mouseup', (function () {
                 var node = d;
                 return function (d, i) {
-                  this.portMouseUp(node, PORT_TYPE_OUTPUT, i);
+                  portMouseUp(node, PORT_TYPE_OUTPUT, i);
                 }
               })())
               .on('touchend', (function () {
                 var node = d;
                 return function (d, i) {
-                  this.portMouseUp(node, PORT_TYPE_OUTPUT, i);
+                  portMouseUp(node, PORT_TYPE_OUTPUT, i);
                 }
               })())
               .on('mouseover', (function () {
                 var node = d;
                 return function (d, i) {
-                  this.portMouseOver(d3.select(this), node, PORT_TYPE_OUTPUT, i);
+                  portMouseOver(d3.select(this), node, PORT_TYPE_OUTPUT, i);
                 }
               })())
               .on('mouseout', (function () {
                 var node = d;
                 return function (d, i) {
-                  this.portMouseOut(d3.select(this), node, PORT_TYPE_OUTPUT, i);
+                  portMouseOut(d3.select(this), node, PORT_TYPE_OUTPUT, i);
                 }
               })());
 
@@ -666,7 +669,7 @@ export class CanvasDrawer extends Context {
                 l = d._def.label;
                 try {
                   l = (typeof l === 'function' ? l.call(d) : l) || '';
-                  l = this.RED.text.bidi.enforceTextDirectionWithUCC(l);
+                  l = RED.text.bidi.enforceTextDirectionWithUCC(l);
                 } catch (err) {
                   console.log('Definition error: ' + d.type + '.label', err);
                   l = d.type;
@@ -694,17 +697,17 @@ export class CanvasDrawer extends Context {
               });
 
             if (d._def.icon) {
-              this.icon = thisNode.select('.node_icon');
-              var current_url = this.icon.attr('xlink:href');
-              var new_url = this.RED.utils.getNodeIcon(d._def, d);
+              icon = thisNode.select('.node_icon');
+              var current_url = icon.attr('xlink:href');
+              var new_url = RED.utils.getNodeIcon(d._def, d);
               if (new_url !== current_url) {
-                this.icon.attr('xlink:href', new_url);
+                icon.attr('xlink:href', new_url);
                 var img = new Image();
                 img.src = new_url;
                 img.onload = () => {
-                  this.icon.attr('width', Math.min(img.width, 30));
-                  this.icon.attr('height', Math.min(img.height, 30));
-                  this.icon.attr('x', 15 - Math.min(img.width, 30) / 2);
+                  icon.attr('width', Math.min(img.width, 30));
+                  icon.attr('height', Math.min(img.height, 30));
+                  icon.attr('x', 15 - Math.min(img.width, 30) / 2);
                 }
               }
             }
@@ -751,10 +754,10 @@ export class CanvasDrawer extends Context {
             });
 
             thisNode.selectAll('.node_button').attr('opacity', (d) => {
-              return (activeSubflow || !this.isButtonEnabled(d)) ? 0.4 : 1
+              return (activeSubflow || !isButtonEnabled(d)) ? 0.4 : 1
             });
             thisNode.selectAll('.node_button_button').attr('cursor', (d) => {
-              return (activeSubflow || !this.isButtonEnabled(d)) ? '' : 'pointer';
+              return (activeSubflow || !isButtonEnabled(d)) ? '' : 'pointer';
             });
             thisNode.selectAll('.node_right_button').attr('transform', function (d: any) {
               var x = d.w - 6;
@@ -794,11 +797,11 @@ export class CanvasDrawer extends Context {
             });
           }
 
-          if (!this.showStatus || !d.status) {
+          if (!showStatus || !d.status) {
             thisNode.selectAll('.node_status_group').style('display', 'none');
           } else {
             thisNode.selectAll('.node_status_group').style('display', 'inline').attr('transform', 'translate(3,' + (d.h + 3) + ')');
-            var fill = this.status_colours[d.status.fill]; // Only allow our colours for now
+            var fill = status_colours[d.status.fill]; // Only allow our colours for now
             if (d.status.shape == null && fill == null) {
               thisNode.selectAll('.node_status').style('display', 'none');
             } else {
@@ -839,35 +842,35 @@ export class CanvasDrawer extends Context {
 
       linkEnter.each((d, i) => {
         // TODO: Fixed?
-        const svgElem = this.vis
+        const svgElem = vis
         var l = d3.select(svgElem);
         d.added = true;
         l.append('svg:path').attr('class', 'link_background link_path')
           .on('mousedown', (d) => {
-            this.mousedown_link = d;
-            this.clearSelection();
-            this.selected_link = this.mousedown_link;
-            this.updateSelection();
-            this.redraw();
-            this.focusView();
+            mousedown_link = d;
+            clearSelection();
+            selected_link = mousedown_link;
+            updateSelection();
+            redraw();
+            focusView();
             d3.event.stopPropagation();
           })
           .on('touchstart', (d) => {
-            this.mousedown_link = d;
-            this.clearSelection();
-            this.selected_link = this.mousedown_link;
-            this.updateSelection();
-            this.redraw();
-            this.focusView();
+            mousedown_link = d;
+            clearSelection();
+            selected_link = mousedown_link;
+            updateSelection();
+            redraw();
+            focusView();
             d3.event.stopPropagation();
 
             var obj = d3.select(document.body);
             var touch0 = d3.event.touches.item(0);
             var pos = [touch0.pageX, touch0.pageY];
-            this.touchStartTime = setTimeout(() => {
-              this.touchStartTime = null;
-              this.showTouchMenu(obj, pos);
-            }, this.touchLongPressTimeout);
+            touchStartTime = setTimeout(() => {
+              touchStartTime = null;
+              showTouchMenu(obj, pos);
+            }, touchLongPressTimeout);
           })
         l.append('svg:path').attr('class', 'link_outline link_path');
         l.append('svg:path').attr('class', 'link_line link_path')
@@ -883,7 +886,7 @@ export class CanvasDrawer extends Context {
       var links = vis.selectAll('.link_path');
       links.each(function (d) {
         var link = d3.select(this);
-        if (d.added || d === this.selected_link || d.selected || dirtyNodes[d.source.id] || dirtyNodes[d.target.id]) {
+        if (d.added || d === selected_link || d.selected || dirtyNodes[d.source.id] || dirtyNodes[d.target.id]) {
           link.attr('d', function (d: any) {
             var numOutputs = d.source.outputs || 1;
             var sourcePort = d.sourcePort || 0;
@@ -892,16 +895,16 @@ export class CanvasDrawer extends Context {
             var dy = d.target.y - (d.source.y + y);
             var dx = (d.target.x - d.target.w / 2) - (d.source.x + d.source.w / 2);
             var delta = Math.sqrt(dy * dy + dx * dx);
-            var scale = this.lineCurveScale;
+            var scale = lineCurveScale;
             var scaleY = 0;
-            if (delta < this.node_width) {
-              scale = 0.75 - 0.75 * ((this.node_width - delta) / this.node_width);
+            if (delta < node_width) {
+              scale = 0.75 - 0.75 * ((node_width - delta) / node_width);
             }
 
             if (dx < 0) {
-              scale += 2 * (Math.min(5 * this.node_width, Math.abs(dx)) / (5 * this.node_width));
-              if (Math.abs(dy) < 3 * this.node_height) {
-                scaleY = ((dy > 0) ? 0.5 : -0.5) * (((3 * this.node_height) - Math.abs(dy)) / (3 * this.node_height)) * (Math.min(this.node_width, Math.abs(dx)) / (this.node_width));
+              scale += 2 * (Math.min(5 * node_width, Math.abs(dx)) / (5 * node_width));
+              if (Math.abs(dy) < 3 * node_height) {
+                scaleY = ((dy > 0) ? 0.5 : -0.5) * (((3 * node_height) - Math.abs(dy)) / (3 * node_height)) * (Math.min(node_width, Math.abs(dx)) / (node_width));
               }
             }
 
@@ -911,15 +914,15 @@ export class CanvasDrawer extends Context {
             d.y2 = d.target.y;
 
             return 'M ' + d.x1 + ' ' + d.y1 +
-              ' C ' + (d.x1 + scale * this.node_width) + ' ' + (d.y1 + scaleY * this.node_height) + ' ' +
-              (d.x2 - scale * this.node_width) + ' ' + (d.y2 - scaleY * this.node_height) + ' ' +
+              ' C ' + (d.x1 + scale * node_width) + ' ' + (d.y1 + scaleY * node_height) + ' ' +
+              (d.x2 - scale * node_width) + ' ' + (d.y2 - scaleY * node_height) + ' ' +
               d.x2 + ' ' + d.y2;
           });
         }
       })
 
       link.classed('link_selected', function (d) {
-        return d === this.selected_link || d.selected;
+        return d === selected_link || d.selected;
       });
       link.classed('link_unknown', function (d) {
         delete d.added;
@@ -947,12 +950,12 @@ export class CanvasDrawer extends Context {
           .attr('class', 'link_link').attr('d', 'M 0 0 h ' + stemLength);
         var links = d.links;
         var flows = Object.keys(links);
-        var tabOrder = this.RED.nodes.getWorkspaceOrder();
+        var tabOrder = RED.nodes.getWorkspaceOrder();
         flows.sort(function (A, B) {
           return tabOrder.indexOf(A) - tabOrder.indexOf(B);
         });
         var linkWidth = 10;
-        var h = this.node_height;
+        var h = node_height;
         var y = -(flows.length - 1) * h / 2;
         var linkGroups = g.selectAll('.link_group').data(flows);
         var enterLinkGroups = linkGroups.enter().append('g').attr('class', 'link_group')
@@ -969,16 +972,16 @@ export class CanvasDrawer extends Context {
           .on('mouseup', (f) => {
             d3.event.stopPropagation();
             var targets = d.links[f];
-            this.RED.workspaces.show(f);
+            RED.workspaces.show(f);
             targets.forEach(function (n) {
               n.selected = true;
               n.dirty = true;
-              this.moving_set.push({
+              moving_set.push({
                 n: n
               });
             });
-            this.updateSelection();
-            this.redraw();
+            updateSelection();
+            redraw();
           });
         enterLinkGroups.each((f) => {
           var linkG = d3.select(this);
@@ -1016,13 +1019,13 @@ export class CanvasDrawer extends Context {
             .attr('width', 8)
             .attr('height', 8);
           linkG.append('rect')
-            .attr('x', stemLength + branchLength * 1.5 - (s === -1 ? this.node_width : 0))
+            .attr('x', stemLength + branchLength * 1.5 - (s === -1 ? node_width : 0))
             .attr('y', y - 12)
-            .attr('width', this.node_width)
+            .attr('width', node_width)
             .attr('height', 24)
             .style('stroke', 'none')
             .style('fill', 'transparent')
-          var tab = this.RED.nodes.workspace(f);
+          var tab = RED.nodes.workspace(f);
           var label;
           if (tab) {
             label = tab.label || tab.id;

@@ -3,6 +3,10 @@ import {
 } from '../../context'
 import { Canvas } from '../../';
 
+import {
+  d3
+} from './d3'
+
 export class CanvasNodeManager extends Context {
   constructor(protected canvas: Canvas) {
     super()
@@ -31,7 +35,7 @@ export class CanvasNodeManager extends Context {
       const y: number = parseInt(d3Node.attr('y')) || 0
       localPos = [x, y];
     }
-    var parentPos = this.getNodeElementPosition(node.parentNode);
+    var parentPos = getNodeElementPosition(node.parentNode);
     return [localPos[0] + parentPos[0], localPos[1] + parentPos[1]]
   }
 
@@ -39,13 +43,13 @@ export class CanvasNodeManager extends Context {
    * update Active Nodes
    */
   updateActiveNodes() {
-    var activeWorkspace = this.RED.workspaces.active();
+    var activeWorkspace = RED.workspaces.active();
 
-    this.activeNodes = this.RED.nodes.filterNodes({
+    activeNodes = RED.nodes.filterNodes({
       z: activeWorkspace
     });
 
-    this.activeLinks = this.RED.nodes.filterLinks({
+    activeLinks = RED.nodes.filterLinks({
       source: {
         z: activeWorkspace
       },
@@ -64,29 +68,29 @@ export class CanvasNodeManager extends Context {
   addNode(type: any, x: any, y: any) {
     var m = /^subflow:(.+)$/.exec(type);
 
-    if (this.activeSubflow && m) {
+    if (activeSubflow && m) {
       var subflowId = m[1];
-      if (subflowId === this.activeSubflow.id) {
-        this.RED.notify(this.RED._('notification.error', {
-          message: this.RED._('notification.errors.cannotAddSubflowToItself')
+      if (subflowId === activeSubflow.id) {
+        RED.notify(RED._('notification.error', {
+          message: RED._('notification.errors.cannotAddSubflowToItself')
         }), 'error');
         return;
       }
-      if (this.RED.nodes.subflowContains(m[1], this.activeSubflow.id)) {
-        this.RED.notify(this.RED._('notification.error', {
-          message: this.RED._('notification.errors.cannotAddCircularReference')
+      if (RED.nodes.subflowContains(m[1], activeSubflow.id)) {
+        RED.notify(RED._('notification.error', {
+          message: RED._('notification.errors.cannotAddCircularReference')
         }), 'error');
         return;
       }
     }
 
     var nn: any = {
-      id: this.RED.nodes.id(),
-      z: this.RED.workspaces.active()
+      id: RED.nodes.id(),
+      z: RED.workspaces.active()
     };
 
     nn.type = type;
-    nn._def = this.RED.nodes.getType(nn.type);
+    nn._def = RED.nodes.getType(nn.type);
 
     if (!m) {
       nn.inputs = nn._def.inputs || 0;
@@ -108,7 +112,7 @@ export class CanvasNodeManager extends Context {
         }
       }
     } else {
-      var subflow = this.RED.nodes.subflow(m[1]);
+      var subflow = RED.nodes.subflow(m[1]);
       nn.inputs = subflow.in.length;
       nn.outputs = subflow.out.length;
     }
@@ -116,20 +120,20 @@ export class CanvasNodeManager extends Context {
     nn.changed = true;
     nn.moved = true;
 
-    nn.w = this.node_width;
-    nn.h = Math.max(this.node_height, (nn.outputs || 0) * 15);
+    nn.w = node_width;
+    nn.h = Math.max(node_height, (nn.outputs || 0) * 15);
 
     var historyEvent: any = {
       t: 'add',
       nodes: [nn.id],
-      dirty: this.RED.nodes.dirty()
+      dirty: RED.nodes.dirty()
     }
-    if (this.activeSubflow) {
-      var subflowRefresh = this.RED.subflow.refresh(true);
+    if (activeSubflow) {
+      var subflowRefresh = RED.subflow.refresh(true);
       if (subflowRefresh) {
         historyEvent.subflow = {
-          id: this.activeSubflow.id,
-          changed: this.activeSubflow.changed,
+          id: activeSubflow.id,
+          changed: activeSubflow.changed,
           instances: subflowRefresh.instances
         }
       }

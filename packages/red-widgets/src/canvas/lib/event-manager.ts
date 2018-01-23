@@ -20,7 +20,7 @@ export class CanvasEventManager extends Context {
       resetMouseVars,
       hideDragLines,
       redraw
-    } = this.rebind([
+    } = rebind([
         'resetMouseVars',
         'hideDragLines',
         'redraw'
@@ -52,10 +52,10 @@ export class CanvasEventManager extends Context {
       var scrollStartLeft = chart.scrollLeft();
       var scrollStartTop = chart.scrollTop();
 
-      this.activeSubflow = this.RED.nodes.subflow(event.workspace);
+      activeSubflow = RED.nodes.subflow(event.workspace);
 
-      this.RED.menu.setDisabled('menu-item-workspace-edit', this.activeSubflow);
-      this.RED.menu.setDisabled('menu-item-workspace-delete', this.RED.workspaces.count() == 1 || this.activeSubflow);
+      RED.menu.setDisabled('menu-item-workspace-edit', activeSubflow);
+      RED.menu.setDisabled('menu-item-workspace-delete', RED.workspaces.count() == 1 || activeSubflow);
 
       if (workspaceScrollPositions[event.workspace]) {
         chart.scrollLeft(workspaceScrollPositions[event.workspace].left);
@@ -66,17 +66,17 @@ export class CanvasEventManager extends Context {
       }
       var scrollDeltaLeft = chart.scrollLeft() - scrollStartLeft;
       var scrollDeltaTop = chart.scrollTop() - scrollStartTop;
-      if (this.mouse_position != null) {
-        this.mouse_position[0] += scrollDeltaLeft;
-        this.mouse_position[1] += scrollDeltaTop;
+      if (mouse_position != null) {
+        mouse_position[0] += scrollDeltaLeft;
+        mouse_position[1] += scrollDeltaTop;
       }
-      this.clearSelection();
-      this.RED.nodes.eachNode(function (n) {
+      clearSelection();
+      RED.nodes.eachNode(function (n) {
         n.dirty = true;
       });
-      this.updateSelection();
-      this.updateActiveNodes();
-      this.redraw();
+      updateSelection();
+      updateActiveNodes();
+      redraw();
     }
   }
 }

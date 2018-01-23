@@ -3,6 +3,10 @@ import {
 } from '../../context'
 import { Canvas } from '../../';
 
+import {
+  d3
+} from './d3'
+
 export class CanvasButtonManager extends Context {
   constructor(protected canvas: Canvas) {
     super()
@@ -32,7 +36,7 @@ export class CanvasButtonManager extends Context {
     const {
       activeSubflow,
       redraw
-    } = this
+    } = this.canvas
 
     if (!activeSubflow) {
       if (d._def.button.toggle) {

@@ -14,12 +14,13 @@ export class CanvasDragLineManager extends Context {
    */
   showDragLines(nodes) {
     const {
-    drag_lines
+    drag_lines,
+      dragGroup
   } = this.canvas
 
     for (var i = 0; i < nodes.length; i++) {
       var node = nodes[i];
-      node.el = this.dragGroup.append('svg:path').attr('class', 'drag_line');
+      node.el = dragGroup.append('svg:path').attr('class', 'drag_line');
       drag_lines.push(node);
     }
 

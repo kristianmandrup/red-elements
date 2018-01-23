@@ -3,6 +3,10 @@ import {
 } from '../../context'
 import { Canvas } from '../../';
 
+import {
+  d3
+} from './d3'
+
 export class CanvasConfiguration extends Context {
   disabled: boolean
 
@@ -11,20 +15,47 @@ export class CanvasConfiguration extends Context {
   }
 
   configure() {
-    this.configureD3()
-    this.configureHandlers()
-    this.configureActions()
-    this.configureEvents()
+    const {
+      rebind,
+      canvas
+    } = this
+
+    const {
+      configureD3,
+      configureHandlers,
+      configureActions,
+      configureEvents
+      } = rebind([
+        'configureD3',
+        'configureHandlers',
+        'configureActions',
+        'configureEvents'
+      ], canvas)
+
+    configureD3()
+    configureHandlers()
+    configureActions()
+    configureEvents()
     return this
   }
 
   configureD3() {
+    const {
+      RED,
+      canvas,
+      logInfo,
+      setInstanceVars,
+      rebind
+
+    } = this
     let {
       space_width,
       space_height,
-      handleD3MouseDownEvent,
+
       canvasMouseMove,
       canvasMouseDown,
+
+      handleD3MouseDownEvent,
       handleOuterTouchMoveEvent,
       touchStartTime,
       lasso,
@@ -33,7 +64,11 @@ export class CanvasConfiguration extends Context {
       startTouchDistance,
       touchLongPressTimeout,
       oldScaleFactor,
-    } = this.canvas
+      outer_background,
+      dragGroup,
+      grid,
+
+    } = canvas
 
     // handleOuterTouchStartEvent = handleOuterTouchStartEvent.bind(this)
     // handleOuterTouchEndEvent = handleOuterTouchEndEvent.bind(this)
@@ -42,20 +77,23 @@ export class CanvasConfiguration extends Context {
     const {
       handleOuterTouchStartEvent,
       handleOuterTouchEndEvent,
-      canvasMouseUp
-    } = this.rebind([
+      canvasMouseUp,
+      updateGrid
+    } = rebind([
         'handleOuterTouchStartEvent',
         'handleOuterTouchEndEvent',
-        'canvasMouseUp'
-      ])
+        'canvasMouseUp',
+        'updateGrid'
+      ], canvas)
 
 
-    log('create outer', {
+    logInfo('create outer', {
       space_width,
       space_height,
       handleD3MouseDownEvent
     })
-    var outer = d3.select('#chart')
+
+    const outer = d3.select('#chart')
       .append('svg:svg')
       .attr('width', space_width)
       .attr('height', space_height)
@@ -63,15 +101,16 @@ export class CanvasConfiguration extends Context {
       .style('cursor', 'crosshair')
       .on('mousedown', handleD3MouseDownEvent); // outer is this
 
-    this.outer = outer
+    canvas.outer = outer
 
-    log('create vis', {
+    logInfo('create vis', {
       outer,
       canvasMouseMove,
       canvasMouseDown,
       canvasMouseUp
     })
-    var vis = outer
+
+    const vis = outer
       .append('svg:g')
       .on('dblclick.zoom', null)
       .append('svg:g')
@@ -79,7 +118,8 @@ export class CanvasConfiguration extends Context {
       .on('mousemove', canvasMouseMove) // vis is this
       .on('mousedown', canvasMouseDown) // vis is this
       .on('mouseup', canvasMouseUp) // vis is this
-    this.vis = vis
+
+    canvas.vis = vis
 
     const touchMoveHandler = handleOuterTouchMoveEvent(touchStartTime, startTouchCenter, lasso, canvasMouseMove, oldScaleFactor, scaleFactor, startTouchDistance)
     const outertTouchHandler = handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp)
@@ -91,42 +131,68 @@ export class CanvasConfiguration extends Context {
       .on('touchstart', touchStartHandler)
       .on('touchmove', touchMoveHandler); // vis is this
 
-    log('create outer_background', {
+    logInfo('create outer_background', {
       vis,
     })
-    this.outer_background = vis.append('svg:rect')
+
+    outer_background = vis.append('svg:rect')
       .attr('width', space_width)
       .attr('height', space_height)
       .attr('fill', '#fff')
 
 
-    log({
+    logInfo('configureD3', {
       vis,
       outer
     })
-    this.grid = vis.append('g')
-    this.updateGrid()
-    this.dragGroup = vis.append('g')
+
+    grid = vis.append('g')
+    updateGrid()
+    dragGroup = vis.append('g')
+
+    setInstanceVars({
+      dragGroup,
+      grid,
+      outer_background
+    }, canvas)
+
     return this
   }
 
   configureEvents() {
-    // let {
-    //   handleWorkSpaceChangeEvent
-    // } = this
+    const {
+      RED,
+      rebind,
+      canvas
+    } = this
 
-    // TODO: use rebind?
-    // handleWorkSpaceChangeEvent = handleWorkSpaceChangeEvent.bind(this);
-    let {
+    const {
+      workspaceScrollPositions
+    } = canvas
+    const {
       handleWorkSpaceChangeEvent,
-    } = this.rebind([
+    } = rebind([
         'handleWorkSpaceChangeEvent'
-      ])
+      ], canvas)
 
-    this.RED.events.on('workspace:change', (evt) => handleWorkSpaceChangeEvent(evt, this.workspaceScrollPositions));
+    RED.events.on('workspace:change', (evt) => handleWorkSpaceChangeEvent(evt, workspaceScrollPositions));
   }
 
   configureHandlers() {
+    const {
+      RED,
+      canvas,
+      rebind
+    } = this
+    const {
+      snapGrid,
+      gridsize,
+      scrollTop,
+      scrollLeft,
+      scaleFactor,
+      moving_set
+    } = canvas
+
     const {
       zoomOut,
       zoomZero,
@@ -136,7 +202,16 @@ export class CanvasConfiguration extends Context {
       updateActiveNodes,
       updateSelection,
       redraw,
-    } = this
+    } = rebind([
+        'zoomOut',
+        'zoomZero',
+        'zoomIn',
+        'addNode',
+        'clearSelection',
+        'updateActiveNodes',
+        'updateSelection',
+        'redraw',
+      ], canvas)
 
     $('#btn-zoom-out').click(() => {
       zoomOut();
@@ -168,7 +243,7 @@ export class CanvasConfiguration extends Context {
         // TODO: Fix
         // d3.event = event;
         var selected_tool = ui.draggable[0].type;
-        var result = this.addNode(selected_tool, null, null);
+        var result = addNode(selected_tool, null, null);
         if (!result) {
           return;
         }
@@ -181,14 +256,14 @@ export class CanvasConfiguration extends Context {
         const svgElem = chart
         var mousePos: any = d3.touches(svgElem)[0] || d3.mouse(svgElem);
 
-        mousePos[1] += this.scrollTop + ((nn.h / 2) - helperOffset[1]);
-        mousePos[0] += this.scrollLeft + ((nn.w / 2) - helperOffset[0]);
-        mousePos[1] /= this.scaleFactor;
-        mousePos[0] /= this.scaleFactor;
+        mousePos[1] += scrollTop + ((nn.h / 2) - helperOffset[1]);
+        mousePos[0] += scrollLeft + ((nn.w / 2) - helperOffset[0]);
+        mousePos[1] /= scaleFactor;
+        mousePos[0] /= scaleFactor;
 
-        if (this.snapGrid) {
-          mousePos[0] = this.gridsize * (Math.ceil(mousePos[0] / this.gridsize));
-          mousePos[1] = this.gridsize * (Math.ceil(mousePos[1] / this.gridsize));
+        if (snapGrid) {
+          mousePos[0] = gridsize * (Math.ceil(mousePos[0] / gridsize));
+          mousePos[1] = gridsize * (Math.ceil(mousePos[1] / gridsize));
         }
         nn.x = mousePos[0];
         nn.y = mousePos[1];
@@ -196,7 +271,7 @@ export class CanvasConfiguration extends Context {
         var spliceLink = $(ui.helper).data('splice');
         if (spliceLink) {
           // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
-          this.RED.nodes.removeLink(spliceLink);
+          RED.nodes.removeLink(spliceLink);
           var link1 = {
             source: spliceLink.source,
             sourcePort: spliceLink.sourcePort,
@@ -207,28 +282,28 @@ export class CanvasConfiguration extends Context {
             sourcePort: 0,
             target: spliceLink.target
           };
-          this.RED.nodes.addLink(link1);
-          this.RED.nodes.addLink(link2);
+          RED.nodes.addLink(link1);
+          RED.nodes.addLink(link2);
           historyEvent.links = [link1, link2];
           historyEvent.removedLinks = [spliceLink];
         }
 
-        this.RED.history.push(historyEvent);
-        this.RED.nodes.add(nn);
-        this.RED.editor.validateNode(nn);
-        this.RED.nodes.dirty(true);
+        RED.history.push(historyEvent);
+        RED.nodes.add(nn);
+        RED.editor.validateNode(nn);
+        RED.nodes.dirty(true);
         // auto select dropped node - so info shows (if visible)
         clearSelection();
         nn.selected = true;
-        this.moving_set.push({
+        moving_set.push({
           n: nn
         });
         updateActiveNodes();
         updateSelection();
-        this.redraw();
+        redraw();
 
         if (nn._def.autoedit) {
-          this.RED.editor.edit(nn);
+          RED.editor.edit(nn);
         }
       }
     });
@@ -243,6 +318,12 @@ export class CanvasConfiguration extends Context {
 
   configureActions() {
     const {
+      RED,
+      canvas,
+      rebind
+    } = this
+
+    const {
       copySelection,
       deleteSelection,
       importNodes,
@@ -250,71 +331,83 @@ export class CanvasConfiguration extends Context {
       zoomIn,
       zoomOut,
       zoomZero,
+      moveSelection,
+      clipboard
+    } = canvas
+
+    const {
       toggleShowGrid,
       toggleSnapGrid,
-      moveSelection
-    } = this
+      toggleStatus,
+      editSelection
+    } = rebind([
+        'toggleSnapGrid',
+        'toggleShowGrid',
+        'toggleStatus',
+        'editSelection'
+      ], canvas)
 
-    this.RED.actions.add('core:copy-selection-to-internal-clipboard', copySelection);
-    this.RED.actions.add('core:cut-selection-to-internal-clipboard', () => {
+
+    RED.actions.add('core:copy-selection-to-internal-clipboard', copySelection);
+    RED.actions.add('core:cut-selection-to-internal-clipboard', () => {
       copySelection();
       deleteSelection();
     });
-    this.RED.actions.add('core:paste-from-internal-clipboard', () => {
-      this.importNodes(this.clipboard);
+    RED.actions.add('core:paste-from-internal-clipboard', () => {
+      importNodes(clipboard);
     });
-    this.RED.actions.add('core:delete-selection', deleteSelection);
-    this.RED.actions.add('core:edit-selected-node', this.editSelection);
-    this.RED.actions.add('core:undo', this.RED.history.pop);
-    this.RED.actions.add('core:select-all-nodes', selectAll);
-    this.RED.actions.add('core:zoom-in', zoomIn);
-    this.RED.actions.add('core:zoom-out', zoomOut);
-    this.RED.actions.add('core:zoom-reset', zoomZero);
+    RED.actions.add('core:delete-selection', deleteSelection);
+    RED.actions.add('core:edit-selected-node', editSelection);
+    RED.actions.add('core:undo', RED.history.pop);
+    RED.actions.add('core:select-all-nodes', selectAll);
+    RED.actions.add('core:zoom-in', zoomIn);
+    RED.actions.add('core:zoom-out', zoomOut);
+    RED.actions.add('core:zoom-reset', zoomZero);
 
-    this.RED.actions.add('core:toggle-show-grid', (state) => {
+    RED.actions.add('core:toggle-show-grid', (state) => {
       if (state === undefined) {
-        this.RED.userSettings.toggle('view-show-grid');
+        RED.userSettings.toggle('view-show-grid');
       } else {
         toggleShowGrid(state);
       }
     });
-    this.RED.actions.add('core:toggle-snap-grid', (state) => {
+    RED.actions.add('core:toggle-snap-grid', (state) => {
       if (state === undefined) {
-        this.RED.userSettings.toggle('view-snap-grid');
+        RED.userSettings.toggle('view-snap-grid');
       } else {
         toggleSnapGrid(state);
       }
     });
-    this.RED.actions.add('core:toggle-status', (state) => {
+    RED.actions.add('core:toggle-status', (state) => {
       if (state === undefined) {
-        this.RED.userSettings.toggle('view-node-status');
+        RED.userSettings.toggle('view-node-status');
       } else {
-        this.toggleStatus(state);
+        toggleStatus(state);
       }
     });
 
-    this.RED.actions.add('core:move-selection-up', () => {
+    RED.actions.add('core:move-selection-up', () => {
       moveSelection(0, -1);
     });
-    this.RED.actions.add('core:step-selection-up', () => {
+    RED.actions.add('core:step-selection-up', () => {
       moveSelection(0, -20);
     });
-    this.RED.actions.add('core:move-selection-right', () => {
+    RED.actions.add('core:move-selection-right', () => {
       moveSelection(1, 0);
     });
-    this.RED.actions.add('core:step-selection-right', () => {
+    RED.actions.add('core:step-selection-right', () => {
       moveSelection(20, 0);
     });
-    this.RED.actions.add('core:move-selection-down', () => {
+    RED.actions.add('core:move-selection-down', () => {
       moveSelection(0, 1);
     });
-    this.RED.actions.add('core:step-selection-down', () => {
+    RED.actions.add('core:step-selection-down', () => {
       moveSelection(0, 20);
     });
-    this.RED.actions.add('core:move-selection-left', () => {
+    RED.actions.add('core:move-selection-left', () => {
       moveSelection(-1, 0);
     });
-    this.RED.actions.add('core:step-selection-left', () => {
+    RED.actions.add('core:step-selection-left', () => {
       moveSelection(-20, 0);
     });
     return this
