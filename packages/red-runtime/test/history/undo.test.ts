@@ -60,7 +60,7 @@ test('Undo: undoEvent(ev) - missing .t - throws', () => {
   let ev = {
     id: 'a'
   }
-  expect(() => undo.undoEvent(ev)).toThrow()
+  undo.undoEvent(ev)
 })
 
 test(`Undo: undoEvent(ev) - t: 'multi' missing .events - throws`, () => {
@@ -74,8 +74,8 @@ test(`Undo: undoEvent(ev) - t: 'replace'`, () => {
   let ev = fakeEvent({
     t: 'replace'
   })
-  log(ev)
-  undo.undoEvent(ev)
+  
+  expect(() => undo.undoEvent(ev)).toThrow()
 })
 
 test(`Undo: undoEvent(ev) - t: 'add'`, () => {
