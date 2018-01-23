@@ -13,6 +13,8 @@ export class ClipboardConfiguration extends Context {
   configure() {
     const {
       RED,
+      rebind,
+      clipboard
     } = this
 
     let {
@@ -24,12 +26,12 @@ export class ClipboardConfiguration extends Context {
       importNodes,
       hideDropTarget,
       setupDialogs
-    } = this.rebind([
+    } = rebind([
         'exportNodes',
         'importNodes',
         'hideDropTarget',
         'setupDialogs'
-      ], this.clipboard)
+      ], clipboard)
 
     disabled = false;
 
