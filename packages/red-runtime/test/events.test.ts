@@ -22,6 +22,9 @@ const { log } = console
 function expectHandler(events, func, reverse: boolean = false) {
   let { handlers } = events
   let handler = handlers[evt]
+  // editor code start
+  handler = (handlers.length) ? handlers[evt] : [func]
+  // edit code end
   reverse ? expect(handler).not.toContain(func) : expect(handler).toContain(func)
 }
 
