@@ -3,6 +3,10 @@ import {
 } from '../../../context'
 import { Canvas } from '../../';
 
+import {
+  d3
+} from '../d3'
+
 export class CanvasTouchEventHandler extends Context {
   constructor(protected canvas: Canvas) {
     super()
@@ -15,17 +19,25 @@ export class CanvasTouchEventHandler extends Context {
    * @param canvasMouseUp
    */
   handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp) {
+    const {
+      RED,
+      handleError
+    } = this
+    const {
+      outer_background
+    } = this.canvas
+
     clearTimeout(touchStartTime);
     touchStartTime = null;
-    if (!this.RED.touch) {
-      this.handleError('handleOuterTouchEndEvent: this.RED missing touch object', this.RED);
+    if (!RED.touch) {
+      handleError('handleOuterTouchEndEvent: RED missing touch object', RED);
     }
 
-    if (this.RED.touch.radialMenu.active()) {
+    if (RED.touch.radialMenu.active()) {
       return;
     }
     if (lasso) {
-      this.outer_background.attr('fill', '#fff');
+      outer_background.attr('fill', '#fff');
     }
     canvasMouseUp.call(this);
   }
@@ -45,14 +57,22 @@ export class CanvasTouchEventHandler extends Context {
     touchLongPressTimeout) {
 
     const {
+      canvas,
+      logWarning
+    } = this
+    const {
       clearTimeout,
-      showTouchMenu
-    } = this.canvas
+      showTouchMenu,
+      vis
+    } = canvas
+    let {
+      moveTouchCenter
+    } = canvas
 
     var touch0;
 
     if (!d3.event) {
-      this.logWarning('handleOuterTouchStartEvent: d3 missing event object', {
+      logWarning('handleOuterTouchStartEvent: d3 missing event object', {
         // d3
         event: d3.event
       })
@@ -74,7 +94,7 @@ export class CanvasTouchEventHandler extends Context {
         (touch1['pageX'] + (b / 2) - offset.left + scrollPos[0]) / scaleFactor,
         (touch1['pageY'] + (a / 2) - offset.top + scrollPos[1]) / scaleFactor
       ];
-      this.moveTouchCenter = [
+      moveTouchCenter = [
         touch1['pageX'] + (b / 2),
         touch1['pageY'] + (a / 2)
       ]
@@ -87,7 +107,7 @@ export class CanvasTouchEventHandler extends Context {
       startTouchDistance = 0;
 
       // TODO: Fixed?
-      const svgElem = this.vis
+      const svgElem = vis
       var point = d3.touches(svgElem)[0];
       touchStartTime = setTimeout(() => {
         touchStartTime = null;
@@ -116,18 +136,31 @@ export class CanvasTouchEventHandler extends Context {
     startTouchDistance: any) {
 
     const {
-      clearTimeout
+      RED,
+      logWarning,
+      canvas
     } = this
+    const {
+      clearTimeout
+    } = canvas
+    const {
+      redraw
+    } = this.rebind([
+        'redraw'
+      ], canvas)
+    let {
+      moveTouchCenter
+    } = canvas
 
     if (!d3.event) {
-      this.logWarning('handleOuterTouchStartEvent: d3 missing event object', {
+      logWarning('handleOuterTouchStartEvent: d3 missing event object', {
         // d3
         event: d3.event
       })
       return this
     }
 
-    if (this.RED.touch.radialMenu.active()) {
+    if (RED.touch.radialMenu.active()) {
       d3.event.preventDefault();
       return;
     }
@@ -169,11 +202,11 @@ export class CanvasTouchEventHandler extends Context {
         ];
 
         startTouchDistance = moveTouchDistance;
-        this.moveTouchCenter = touchCenter;
+        moveTouchCenter = touchCenter;
 
         $('#chart').scrollLeft(scrollPos[0] + deltaTouchCenter[0]);
         $('#chart').scrollTop(scrollPos[1] + deltaTouchCenter[1]);
-        this.redraw();
+        redraw();
       }
     }
   }

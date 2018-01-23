@@ -14,10 +14,10 @@ export class CanvasGridManager extends Context {
    */
   gridSize(v) {
     if (v === undefined) {
-      return this.gridSize;
+      return gridSize;
     } else {
-      this.gridSize = v;
-      this.updateGrid();
+      gridSize = v;
+      updateGrid();
     }
   }
 
@@ -47,7 +47,7 @@ export class CanvasGridManager extends Context {
       redraw
     } = this
 
-    this.snapGrid = state;
+    snapGrid = state;
     redraw();
     return this
   }
@@ -59,10 +59,10 @@ export class CanvasGridManager extends Context {
     const {
       space_width,
       grid
-    } = this.canvas
+    } = canvas
 
     var gridTicks = [];
-    for (var i = 0; i < space_width; i += +this.gridSize) {
+    for (var i = 0; i < space_width; i += +gridSize) {
       gridTicks.push(i);
     }
     grid.selectAll('line.horizontal').remove();

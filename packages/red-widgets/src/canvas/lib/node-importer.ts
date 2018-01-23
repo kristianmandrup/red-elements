@@ -17,10 +17,10 @@ export class CanvasNodeImporter extends Context {
   importNodes(newNodesStr, addNewFlow?, touchImport?) {
     try {
       var activeSubflowChanged;
-      if (this.activeSubflow) {
-        activeSubflowChanged = this.activeSubflow.changed;
+      if (activeSubflow) {
+        activeSubflowChanged = activeSubflow.changed;
       }
-      var result = this.RED.nodes.import(newNodesStr, true, addNewFlow);
+      var result = RED.nodes.import(newNodesStr, true, addNewFlow);
       if (result) {
         var new_nodes = result[0];
         var new_links = result[1];
@@ -28,10 +28,10 @@ export class CanvasNodeImporter extends Context {
         var new_subflows = result[3];
         var new_default_workspace = result[4];
         if (addNewFlow && new_default_workspace) {
-          this.RED.workspaces.show(new_default_workspace.id);
+          RED.workspaces.show(new_default_workspace.id);
         }
         var new_ms = new_nodes.filter(function (n) {
-          return n.hasOwnProperty('x') && n.hasOwnProperty('y') && n.z == this.RED.workspaces.active()
+          return n.hasOwnProperty('x') && n.hasOwnProperty('y') && n.z == RED.workspaces.active()
         }).map(function (n) {
           return {
             n: n
@@ -47,8 +47,8 @@ export class CanvasNodeImporter extends Context {
           var dx = root_node.x;
           var dy = root_node.y;
 
-          if (this.mouse_position == null) {
-            this.mouse_position = [0, 0];
+          if (mouse_position == null) {
+            mouse_position = [0, 0];
           }
 
           var minX = 0;
@@ -61,12 +61,12 @@ export class CanvasNodeImporter extends Context {
             node.n.selected = true;
             node.n.changed = true;
             node.n.moved = true;
-            node.n.x -= dx - this.mouse_position[0];
-            node.n.y -= dy - this.mouse_position[1];
-            node.dx = node.n.x - this.mouse_position[0];
-            node.dy = node.n.y - this.mouse_position[1];
-            minX = Math.min(node.n.x - this.node_width / 2 - 5, minX);
-            minY = Math.min(node.n.y - this.node_height / 2 - 5, minY);
+            node.n.x -= dx - mouse_position[0];
+            node.n.y -= dy - mouse_position[1];
+            node.dx = node.n.x - mouse_position[0];
+            node.dy = node.n.y - mouse_position[1];
+            minX = Math.min(node.n.x - node_width / 2 - 5, minX);
+            minY = Math.min(node.n.y - node_height / 2 - 5, minY);
           }
           for (i = 0; i < new_ms.length; i++) {
             node = new_ms[i];
@@ -84,23 +84,23 @@ export class CanvasNodeImporter extends Context {
 
           }
           if (!touchImport) {
-            this.mouse_mode = this.RED.state.IMPORT_DRAGGING;
-            this.spliceActive = false;
+            mouse_mode = RED.state.IMPORT_DRAGGING;
+            spliceActive = false;
             if (new_ms.length === 1) {
               node = new_ms[0];
-              this.spliceActive = node.n.hasOwnProperty('_def') &&
+              spliceActive = node.n.hasOwnProperty('_def') &&
                 node.n._def.inputs > 0 &&
                 node.n._def.outputs > 0;
             }
           }
-          this.RED.keyboard.add('*', 'escape', function () {
-            this.RED.keyboard.remove('escape');
-            this.clearSelection();
-            this.RED.history.pop();
-            this.mouse_mode = 0;
+          RED.keyboard.add('*', 'escape', function () {
+            RED.keyboard.remove('escape');
+            clearSelection();
+            RED.history.pop();
+            mouse_mode = 0;
           });
-          this.clearSelection();
-          this.moving_set = new_ms;
+          clearSelection();
+          moving_set = new_ms;
         }
 
         var historyEvent: any = {
@@ -109,34 +109,34 @@ export class CanvasNodeImporter extends Context {
           links: new_links,
           workspaces: new_workspaces,
           subflows: new_subflows,
-          dirty: this.RED.nodes.dirty()
+          dirty: RED.nodes.dirty()
         };
         if (new_ms.length === 0) {
-          this.RED.nodes.dirty(true);
+          RED.nodes.dirty(true);
         }
-        if (this.activeSubflow) {
-          var subflowRefresh = this.RED.subflow.refresh(true);
+        if (activeSubflow) {
+          var subflowRefresh = RED.subflow.refresh(true);
           if (subflowRefresh) {
             historyEvent.subflow = {
-              id: this.activeSubflow.id,
+              id: activeSubflow.id,
               changed: activeSubflowChanged,
               instances: subflowRefresh.instances
             }
           }
         }
-        this.RED.history.push(historyEvent);
+        RED.history.push(historyEvent);
 
-        this.updateActiveNodes();
-        this.redraw();
+        updateActiveNodes();
+        redraw();
       }
     } catch (error) {
       // if (error.code != 'NODE_RED') {
       //   console.log(error.stack);
-      //   this.RED.notify(this.RED._('notification.error', {
+      //   RED.notify(RED._('notification.error', {
       //     message: error.toString()
       //   }), 'error');
       // } else {
-      //   this.RED.notify(this.RED._('notification.error', {
+      //   RED.notify(RED._('notification.error', {
       //     message: error.message
       //   }), 'error');
       // }

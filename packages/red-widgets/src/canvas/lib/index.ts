@@ -300,7 +300,7 @@ export class Canvas extends Context {
     oldScaleFactor,
     scaleFactor,
     startTouchDistance) {
-    this.touchEventHandler.handleOuterTouchMoveEvent(touchStartTime,
+    return this.touchEventHandler.handleOuterTouchMoveEvent(touchStartTime,
       startTouchCenter,
       lasso,
       canvasMouseMove,
@@ -419,6 +419,10 @@ export class Canvas extends Context {
    * @param portIndex
    */
   getPortLabel(node, portType, portIndex) {
+    const {
+      PORT_TYPE_INPUT
+    } = this
+
     var result;
     var nodePortLabels = (portType === PORT_TYPE_INPUT) ? node.inputLabels : node.outputLabels;
     if (nodePortLabels && nodePortLabels[portIndex]) {

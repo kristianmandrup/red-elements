@@ -41,7 +41,6 @@ export class CanvasMouse extends Context {
       updateActiveNodes,
       vis,
       lasso,
-      mouse_mode,
       drag_lines,
       mousedown_port_type,
       mousedown_port_index,
@@ -50,14 +49,25 @@ export class CanvasMouse extends Context {
       lineCurveScale,
       node_width,
       node_height,
+      moving_set,
+
+      space_width,
+      space_height,
+      gridsize,
+      snapGrid,
 
       PORT_TYPE_OUTPUT,
       PORT_TYPE_INPUT,
     } = this.canvas
 
     let {
+      clickElapsed,
+      spliceActive,
+      mouse_mode,
       mouse_position,
-      selected_link
+      selected_link,
+      spliceTimer,
+      activeSpliceLink,
     } = this.canvas
 
     var i;
@@ -209,11 +219,11 @@ export class CanvasMouse extends Context {
       var d = (mouse_offset[0] - mousePos[0]) * (mouse_offset[0] - mousePos[0]) + (mouse_offset[1] - mousePos[1]) * (mouse_offset[1] - mousePos[1]);
       if (d > 3) {
         mouse_mode = RED.state.MOVING_ACTIVE;
-        this.clickElapsed = 0;
-        this.spliceActive = false;
-        if (this.moving_set.length === 1) {
-          node = this.moving_set[0];
-          this.spliceActive = node.n.hasOwnProperty('_def') &&
+        clickElapsed = 0;
+        spliceActive = false;
+        if (moving_set.length === 1) {
+          node = moving_set[0];
+          spliceActive = node.n.hasOwnProperty('_def') &&
             node.n._def.inputs > 0 &&
             node.n._def.outputs > 0 &&
             RED.nodes.filterLinks({
@@ -228,10 +238,10 @@ export class CanvasMouse extends Context {
       mousePos = mouse_position;
       var minX = 0;
       var minY = 0;
-      var maxX = this.space_width;
-      var maxY = this.space_height;
-      for (var n = 0; n < this.moving_set.length; n++) {
-        node = this.moving_set[n];
+      var maxX = space_width;
+      var maxY = space_height;
+      for (var n = 0; n < moving_set.length; n++) {
+        node = moving_set[n];
         if (d3.event.shiftKey) {
           node.n.ox = node.n.x;
           node.n.oy = node.n.y;
@@ -245,27 +255,27 @@ export class CanvasMouse extends Context {
         maxY = Math.max(node.n.y + node.n.h / 2 + 5, maxY);
       }
       if (minX !== 0 || minY !== 0) {
-        for (i = 0; i < this.moving_set.length; i++) {
-          node = this.moving_set[i];
+        for (i = 0; i < moving_set.length; i++) {
+          node = moving_set[i];
           node.n.x -= minX;
           node.n.y -= minY;
         }
       }
-      if (maxX !== this.space_width || maxY !== this.space_height) {
-        for (i = 0; i < this.moving_set.length; i++) {
-          node = this.moving_set[i];
-          node.n.x -= (maxX - this.space_width);
-          node.n.y -= (maxY - this.space_height);
+      if (maxX !== space_width || maxY !== space_height) {
+        for (i = 0; i < moving_set.length; i++) {
+          node = moving_set[i];
+          node.n.x -= (maxX - space_width);
+          node.n.y -= (maxY - space_height);
         }
       }
-      if (this.snapGrid != d3.event.shiftKey && this.moving_set.length > 0) {
+      if (snapGrid != d3.event.shiftKey && moving_set.length > 0) {
         var gridOffset = [0, 0];
-        node = this.moving_set[0];
-        gridOffset[0] = node.n.x - (this.gridsize * Math.floor((node.n.x - node.n.w / 2) / this.gridsize) + node.n.w / 2);
-        gridOffset[1] = node.n.y - (this.gridsize * Math.floor(node.n.y / this.gridsize));
+        node = moving_set[0];
+        gridOffset[0] = node.n.x - (gridsize * Math.floor((node.n.x - node.n.w / 2) / gridsize) + node.n.w / 2);
+        gridOffset[1] = node.n.y - (gridsize * Math.floor(node.n.y / gridsize));
         if (gridOffset[0] !== 0 || gridOffset[1] !== 0) {
-          for (i = 0; i < this.moving_set.length; i++) {
-            node = this.moving_set[i];
+          for (i = 0; i < moving_set.length; i++) {
+            node = moving_set[i];
             node.n.x -= gridOffset[0];
             node.n.y -= gridOffset[1];
             if (node.n.x == node.n.ox && node.n.y == node.n.oy) {
@@ -274,11 +284,11 @@ export class CanvasMouse extends Context {
           }
         }
       }
-      if ((mouse_mode == RED.state.MOVING_ACTIVE || mouse_mode == RED.state.IMPORT_DRAGGING) && this.moving_set.length === 1) {
-        node = this.moving_set[0];
-        if (this.spliceActive) {
-          if (!this.spliceTimer) {
-            this.spliceTimer = setTimeout(function () {
+      if ((mouse_mode == RED.state.MOVING_ACTIVE || mouse_mode == RED.state.IMPORT_DRAGGING) && moving_set.length === 1) {
+        node = moving_set[0];
+        if (spliceActive) {
+          if (!spliceTimer) {
+            spliceTimer = setTimeout(function () {
               var nodes = [];
               var bestDistance = Infinity;
               var bestLink = null;
@@ -309,16 +319,16 @@ export class CanvasMouse extends Context {
                   }
                 }
               }
-              if (this.activeSpliceLink && this.activeSpliceLink !== bestLink) {
-                d3.select(this.activeSpliceLink.parentNode).classed('link_splice', false);
+              if (activeSpliceLink && activeSpliceLink !== bestLink) {
+                d3.select(activeSpliceLink.parentNode).classed('link_splice', false);
               }
               if (bestLink) {
                 d3.select(bestLink.parentNode).classed('link_splice', true)
               } else {
                 d3.select('.link_splice').classed('link_splice', false);
               }
-              this.activeSpliceLink = bestLink;
-              this.spliceTimer = null;
+              activeSpliceLink = bestLink;
+              spliceTimer = null;
             }, 100);
           }
         }
@@ -335,14 +345,46 @@ export class CanvasMouse extends Context {
    * canvas Mouse Up
    */
   canvasMouseUp() {
-    var i;
+    const {
+      RED,
+      canvas
+    } = this
+
+    const {
+      mouse_mode,
+      mousedown_node,
+      mousedown_link,
+      drag_lines,
+      moving_set,
+      activeSubflow,
+      activeSpliceLink
+    } = canvas
+    let {
+      lasso,
+    } = canvas
+    const {
+      hideDragLines,
+      clearSelection,
+      updateSelection,
+      updateActiveNodes,
+      resetMouseVars,
+      redraw
+    } = this.rebind([
+        'hideDragLines',
+        'clearSelection',
+        'updateSelection',
+        'updateActiveNodes',
+        'resetMouseVars',
+        'redraw'
+      ])
+
     var historyEvent;
     if (mouse_mode === RED.state.QUICK_JOINING) {
       return;
     }
     if (mousedown_node && mouse_mode == RED.state.JOINING) {
       var removedLinks = [];
-      for (i = 0; i < drag_lines.length; i++) {
+      for (let i = 0; i < drag_lines.length; i++) {
         if (drag_lines[i].link) {
           removedLinks.push(drag_lines[i].link)
         }
@@ -353,7 +395,7 @@ export class CanvasMouse extends Context {
         dirty: RED.nodes.dirty()
       };
       RED.history.push(historyEvent);
-      this.hideDragLines();
+      hideDragLines();
     }
     if (lasso) {
       var x = parseInt(lasso.attr('x'));
@@ -361,51 +403,51 @@ export class CanvasMouse extends Context {
       var x2 = x + parseInt(lasso.attr('width'));
       var y2 = y + parseInt(lasso.attr('height'));
       if (!d3.event.ctrlKey) {
-        this.clearSelection();
+        clearSelection();
       }
       RED.nodes.eachNode(function (n) {
         if (n.z == RED.workspaces.active() && !n.selected) {
           n.selected = (n.x > x && n.x < x2 && n.y > y && n.y < y2);
           if (n.selected) {
             n.dirty = true;
-            this.moving_set.push({
+            moving_set.push({
               n: n
             });
           }
         }
       });
-      if (this.activeSubflow) {
-        this.activeSubflow.in.forEach(function (n) {
+      if (activeSubflow) {
+        activeSubflow.in.forEach(function (n) {
           n.selected = (n.x > x && n.x < x2 && n.y > y && n.y < y2);
           if (n.selected) {
             n.dirty = true;
-            this.moving_set.push({
+            moving_set.push({
               n: n
             });
           }
         });
-        this.activeSubflow.out.forEach(function (n) {
+        activeSubflow.out.forEach(function (n) {
           n.selected = (n.x > x && n.x < x2 && n.y > y && n.y < y2);
           if (n.selected) {
             n.dirty = true;
-            this.moving_set.push({
+            moving_set.push({
               n: n
             });
           }
         });
       }
-      this.updateSelection();
+      updateSelection();
       lasso.remove();
       lasso = null;
-    } else if (mouse_mode == RED.state.DEFAULT && this.mousedown_link == null && !d3.event.ctrlKey && !d3.event.metaKey) {
-      this.clearSelection();
-      this.updateSelection();
+    } else if (mouse_mode == RED.state.DEFAULT && mousedown_link == null && !d3.event.ctrlKey && !d3.event.metaKey) {
+      clearSelection();
+      updateSelection();
     }
     if (mouse_mode == RED.state.MOVING_ACTIVE) {
-      if (this.moving_set.length > 0) {
+      if (moving_set.length > 0) {
         var ns = [];
-        for (var j = 0; j < this.moving_set.length; j++) {
-          var n = this.moving_set[j];
+        for (var j = 0; j < moving_set.length; j++) {
+          var n = moving_set[j];
           if (n.ox !== n.n.x || n.oy !== n.n.y) {
             ns.push({
               n: n.n,
@@ -423,17 +465,17 @@ export class CanvasMouse extends Context {
             nodes: ns,
             dirty: RED.nodes.dirty()
           };
-          if (this.activeSpliceLink) {
+          if (activeSpliceLink) {
             // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
-            var spliceLink: any = d3.select(this.activeSpliceLink).data()[0];
+            var spliceLink: any = d3.select(activeSpliceLink).data()[0];
             RED.nodes.removeLink(spliceLink);
             var link1 = {
               source: spliceLink.source,
               sourcePort: spliceLink.sourcePort,
-              target: this.moving_set[0].n
+              target: moving_set[0].n
             };
             var link2 = {
-              source: this.moving_set[0].n,
+              source: moving_set[0].n,
               sourcePort: 0,
               target: spliceLink.target
             };
@@ -441,7 +483,7 @@ export class CanvasMouse extends Context {
             RED.nodes.addLink(link2);
             historyEvent.links = [link1, link2];
             historyEvent.removedLinks = [spliceLink];
-            this.updateActiveNodes();
+            updateActiveNodes();
           }
           RED.nodes.dirty(true);
           RED.history.push(historyEvent);
@@ -449,35 +491,60 @@ export class CanvasMouse extends Context {
       }
     }
     if (mouse_mode == RED.state.MOVING || mouse_mode == RED.state.MOVING_ACTIVE) {
-      for (i = 0; i < this.moving_set.length; i++) {
-        delete this.moving_set[i].ox;
-        delete this.moving_set[i].oy;
+      for (let i = 0; i < moving_set.length; i++) {
+        delete moving_set[i].ox;
+        delete moving_set[i].oy;
       }
     }
     if (mouse_mode == RED.state.IMPORT_DRAGGING) {
       RED.keyboard.remove('escape');
-      this.updateActiveNodes();
+      updateActiveNodes();
       RED.nodes.dirty(true);
     }
-    this.resetMouseVars();
-    this.redraw();
+    resetMouseVars();
+    redraw();
   }
 
   canvasMouseDown() {
     const {
+      RED,
+      canvas
+    } = this
+    const {
       mousedown_node,
       mousedown_link,
-    } = this
+      vis,
+      drag_lines,
+      node_width,
+      node_height,
+      PORT_TYPE_OUTPUT,
+      PORT_TYPE_INPUT,
+      moving_set,
+      touchStartTime,
+    } = canvas
+    const {
+      updateSelection,
+      disableQuickJoinEventHandler,
+      updateActiveNodes,
+      redraw,
+    } = this.rebind([
+        'updateSelection',
+        'disableQuickJoinEventHandler',
+        'updateActiveNodes',
+        'redraw',
+      ])
 
     let {
-      lasso
-    } = this
+      lasso,
+      selected_link,
+      mouse_mode
+    } = canvas
 
-    var point;
+    let point;
 
     if (!mousedown_node && !mousedown_link) {
       selected_link = null;
-      this.updateSelection();
+      updateSelection();
     }
     if (mouse_mode === 0) {
       if (lasso) {
@@ -496,14 +563,14 @@ export class CanvasMouse extends Context {
     if (mouse_mode === 0 || mouse_mode === RED.state.QUICK_JOINING) {
       if (d3.event.metaKey || d3.event.ctrlKey) {
         // TODO: Fixed?
-        const svgElem = this.vis
+        const svgElem = vis
         point = d3.mouse(svgElem);
         d3.event.stopPropagation();
         var mainPos = $('#main-container').position();
 
         if (mouse_mode !== RED.state.QUICK_JOINING) {
           mouse_mode = RED.state.QUICK_JOINING;
-          $(window).on('keyup', this.disableQuickJoinEventHandler);
+          $(window).on('keyup', disableQuickJoinEventHandler);
         }
 
         RED.typeSearch.show({
@@ -588,7 +655,7 @@ export class CanvasMouse extends Context {
             // auto select dropped node - so info shows (if visible)
             this.clearSelection();
             nn.selected = true;
-            this.moving_set.push({
+            moving_set.push({
               n: nn
             });
             this.updateActiveNodes();
@@ -597,17 +664,17 @@ export class CanvasMouse extends Context {
           }
         });
 
-        this.updateActiveNodes();
-        this.updateSelection();
-        this.redraw();
+        updateActiveNodes();
+        updateSelection();
+        redraw();
       }
     }
     if (mouse_mode === 0 && !(d3.event.metaKey || d3.event.ctrlKey)) {
-      if (!this.touchStartTime) {
+      if (!touchStartTime) {
         // TODO: Fixed?
-        const svgElem = this.vis
+        const svgElem = vis
         point = d3.mouse(svgElem);
-        lasso = this.vis.append('rect')
+        lasso = vis.append('rect')
           .attr('ox', point[0])
           .attr('oy', point[1])
           .attr('rx', 1)
@@ -627,21 +694,52 @@ export class CanvasMouse extends Context {
    */
   resetMouseVars() {
     const {
-      clearTimeout
-    } = this.canvas
+      canvas,
+      setInstanceVars
+    } = this
 
+    const {
+      PORT_TYPE_OUTPUT
+    } = canvas
+
+    let {
+      spliceTimer,
+      mousedown_node,
+      mouseup_node,
+      mousedown_link,
+      mouse_mode,
+      mousedown_port_type,
+      activeSpliceLink,
+      spliceActive
+    } = canvas
+    const {
+      clearTimeout
+    } = this.rebind([
+        'clearTimeout'
+      ], canvas)
 
     mousedown_node = null;
-    this.mouseup_node = null;
-    this.mousedown_link = null;
+    mouseup_node = null;
+    mousedown_link = null;
     mouse_mode = 0;
     mousedown_port_type = PORT_TYPE_OUTPUT;
-    this.activeSpliceLink = null;
-    this.spliceActive = false;
+    activeSpliceLink = null;
+    spliceActive = false;
     d3.select('.link_splice').classed('link_splice', false);
-    if (this.spliceTimer) {
-      clearTimeout(this.spliceTimer);
-      this.spliceTimer = null;
+    if (spliceTimer) {
+      clearTimeout(spliceTimer);
+      spliceTimer = null;
     }
+
+    setInstanceVars({
+      mousedown_node,
+      mouseup_node,
+      mousedown_link,
+      mouse_mode,
+      mousedown_port_type,
+      activeSpliceLink,
+      spliceActive,
+      spliceTimer
+    })
   }
 }

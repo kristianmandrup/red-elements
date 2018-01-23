@@ -24,7 +24,7 @@ export class CanvasKeyboard extends Context {
     } = this.rebind([
         'redraw',
         'setInstanceVars'
-      ])
+      ], canvas)
 
     let {
       endMoveSet,
