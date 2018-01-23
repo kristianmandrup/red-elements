@@ -9,6 +9,7 @@ import {
   ISubflow,
   IWorkspace
 } from '../interfaces'
+import { log } from 'util';
 
 type EventType =
   'multi' |
@@ -70,7 +71,7 @@ export class Undo extends Context implements IUndo {
     this._validateEvent(ev, 'ev', 'undoEvent')
 
     if (!ev) return this
-
+    
     switch (ev.t) {
       case 'multi': return this._multi(ev)
       case 'replace': return this._replace(ev)
@@ -133,7 +134,6 @@ export class Undo extends Context implements IUndo {
     return this
   }
 
-
   /**
    * Multiple events
    * @param ev
@@ -159,7 +159,7 @@ export class Undo extends Context implements IUndo {
     nodes.clear();
     var imported = nodes.import(ev.config);
     imported[0].forEach(function (n) {
-      if (ev.changed[n.id]) {
+      if (ev.changes[n.id]) {
         n.changed = true;
       }
     })

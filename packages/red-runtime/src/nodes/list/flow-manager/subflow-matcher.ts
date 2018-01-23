@@ -75,11 +75,13 @@ export class SubflowMatcher extends Context {
    * Test if node .z matches subflow id - .z is the subflow (dimension) of the node
    * @param node { INode } node to test
    */
-  _matchingNodeZ(node) {
+  _matchingNodeZ(node : INode) {
     const { sfid, nodeid, nodeList } = this
-    if (node.z !== sfid) {
+    
+    if (String(node.z) !== sfid) {
       return false
     }
+    console.log('End');
     const match = this._isSubflowNode(node)
     this.logInfo('match', {
       type: node.type,

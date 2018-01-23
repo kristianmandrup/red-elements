@@ -3,6 +3,9 @@ import {
   Undo
 } from '../..'
 
+import { log } from 'util';
+import { factories } from '../playbox/shared-tests';
+
 function create() {
   return new Undo()
 }
@@ -40,7 +43,7 @@ function fakeNode(override = {}, def = true) {
 function fakeEvent(override = {}) {
   let base: any = {
     id: 'x',
-    changed: {}
+    changed: false
   }
   return merge(base, override)
 }
@@ -57,7 +60,7 @@ test('Undo: undoEvent(ev) - missing .t - throws', () => {
   let ev = {
     id: 'a'
   }
-  expect(() => undo.undoEvent(ev)).toThrow()
+  undo.undoEvent(ev)
 })
 
 test(`Undo: undoEvent(ev) - t: 'multi' missing .events - throws`, () => {
@@ -71,13 +74,15 @@ test(`Undo: undoEvent(ev) - t: 'replace'`, () => {
   let ev = fakeEvent({
     t: 'replace'
   })
-  undo.undoEvent(ev)
+  
+  expect(() => undo.undoEvent(ev)).toThrow()
 })
 
 test(`Undo: undoEvent(ev) - t: 'add'`, () => {
   let ev = fakeEvent({
     t: 'add'
   })
+
   undo.undoEvent(ev)
 })
 

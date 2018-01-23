@@ -25,6 +25,7 @@ import {
 import {
   Context
 } from '../context'
+import { isNull } from 'util';
 
 export {
   Undo,
@@ -55,13 +56,14 @@ export class History extends Context implements IHistory {
   }
 
   //TODO: this function is a placeholder until there is a 'save' event that can be listened to
-  markAllDirty() {
-    this.list.map(ev => ev.dirty = true)
+  markAllDirty() 
+  {
+    this.list.slice(0,0).map(ev => ev.dirty = true)
     return this
   }
 
   get list(): any[] {
-    return this._stack.data || []
+    return this._stack.data || [] 
   }
 
   get depth(): number {
@@ -101,4 +103,6 @@ export class History extends Context implements IHistory {
   peek() {
     return this._stack.peek()
   }
+
+  
 }
