@@ -17,11 +17,16 @@ export interface INodeManager {
   addNode(n: INode): INodes
   getNode(id: string): INode
   removeNode(id: string): any
+  updateConfigNodeUsers(n: INode)
 }
 
-export class NodeManager extends Context {
+export class NodeManager extends Context{
   constructor(public nodes: INodes) {
     super()
+  }
+
+  updateConfigNodeUsers(n: INode) {
+    this._updateConfigNodeUsers(n);
   }
 
   /**

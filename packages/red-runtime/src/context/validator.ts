@@ -11,6 +11,7 @@ import {
 import {
   IEvent
 } from '../history/undo'
+import { log } from 'util';
 
 export interface IValidator {
   handleError(msg: string, data?: any)
@@ -112,10 +113,10 @@ export class Validator {
     this._validateObj(node, name, methodName, info)
     this._validateArray(node.types, `${name}.types`, methodName)
   }
-
+  
   _validateEvent(ev: IEvent, name: string, methodName: string, info?: any) {
     this._validateObj(ev, name, methodName, info)
-    this._validateStr(ev.t, `${name}.t`, methodName, info)
+    //this._validateStr(ev.t, `${name}.t`, methodName, info)
     if (ev.t === 'multi') {
       this._validateArray(ev.events, `${name}.events`, methodName, info)
     }
@@ -126,8 +127,8 @@ export class Validator {
       this._validateObj(ev.changes, `${name}.changes`, methodName, info)
       this._validateObj(ev.node, `${name}.node`, methodName, info)
     }
-
-    this._validateBool(ev.changed, `${name}.changed`, methodName, info)
+    
+    this._validateBool(Boolean(ev.changed), `${name}.changed`, methodName, info)
   }
 
   _validateNode(node: INode, name: string, methodName: string, info?: any) {

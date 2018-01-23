@@ -57,7 +57,16 @@ export class NodeTypeManager extends Context implements INodeTypeManager {
         nodeSet
       })
 
+      
+    /* edited code start*/
+    def.set = {}
+    if (nodeSet)
       def.set = nodeSet
+    else
+      def.set = {}
+    /* edited code end*/
+
+
       this._validateObj(def.set, 'def.set', 'registerNodeType')
 
       if (nodeSet) {

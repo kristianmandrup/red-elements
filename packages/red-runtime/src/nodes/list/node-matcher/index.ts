@@ -39,7 +39,7 @@ export class NodeMatcher extends Context {
       ])
 
     this._validateNode(subflow, 'subflow', 'checkForMatchingSubflow')
-    this._validateArray(subflowNodes, 'subflowNodes', 'checkForMatchingSubflow')
+    this._validateArray(Array(subflowNodes), 'subflowNodes', 'checkForMatchingSubflow')
 
     var i;
     var match = null;
