@@ -15,7 +15,6 @@ export class CanvasTouchEventHandler extends Context {
    * @param canvasMouseUp
    */
   handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp) {
-
     clearTimeout(touchStartTime);
     touchStartTime = null;
     if (!this.RED.touch) {
@@ -44,10 +43,11 @@ export class CanvasTouchEventHandler extends Context {
     scaleFactor,
     startTouchDistance,
     touchLongPressTimeout) {
+
     const {
-    clearTimeout,
+      clearTimeout,
       showTouchMenu
-  } = this
+    } = this.canvas
 
     var touch0;
 
@@ -114,9 +114,10 @@ export class CanvasTouchEventHandler extends Context {
     oldScaleFactor: any,
     scaleFactor: any,
     startTouchDistance: any) {
+
     const {
-    clearTimeout
-  } = this
+      clearTimeout
+    } = this
 
     if (!d3.event) {
       this.logWarning('handleOuterTouchStartEvent: d3 missing event object', {

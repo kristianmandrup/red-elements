@@ -53,9 +53,10 @@ import { CanvasDragLineManager } from './drag-line-manager';
 import { CanvasButtonManager } from './button-manager';
 import { CanvasEventManager } from './event-manager';
 
-const PORT_TYPE_INPUT = 1;
-const PORT_TYPE_OUTPUT = 0;
 export class Canvas extends Context {
+  PORT_TYPE_INPUT = 1;
+  PORT_TYPE_OUTPUT = 0;
+
   lasso: any
   oldScaleFactor: any
   scrollTop: any;
@@ -275,6 +276,37 @@ export class Canvas extends Context {
 
   canvasMouseUp() {
     this.canvasMouse.canvasMouseUp()
+  }
+
+  handleD3MouseDownEvent(evt) {
+    this.canvasMouse.handleD3MouseDownEvent(evt)
+  }
+
+  /**
+   * handle Outer Touch MoveEvent
+   * Use touchEventHandler: TouchEventHandler delegate class
+   * @param touchStartTime
+   * @param startTouchCenter
+   * @param lasso
+   * @param canvasMouseMove
+   * @param oldScaleFactor
+   * @param scaleFactor
+   * @param startTouchDistance
+   */
+  handleOuterTouchMoveEvent(touchStartTime,
+    startTouchCenter,
+    lasso,
+    canvasMouseMove,
+    oldScaleFactor,
+    scaleFactor,
+    startTouchDistance) {
+    this.touchEventHandler.handleOuterTouchMoveEvent(touchStartTime,
+      startTouchCenter,
+      lasso,
+      canvasMouseMove,
+      oldScaleFactor,
+      scaleFactor,
+      startTouchDistance)
   }
 
   /**

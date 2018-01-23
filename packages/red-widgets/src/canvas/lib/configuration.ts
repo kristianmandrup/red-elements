@@ -22,9 +22,11 @@ export class CanvasConfiguration extends Context {
     let {
       space_width,
       space_height,
-      handleD3MouseDownEvent,
+
       canvasMouseMove,
       canvasMouseDown,
+
+      handleD3MouseDownEvent,
       handleOuterTouchMoveEvent,
       touchStartTime,
       lasso,

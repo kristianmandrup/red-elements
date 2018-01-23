@@ -11,8 +11,11 @@ export class ClipboardConfiguration extends Context {
   }
 
   configure() {
-    let {
+    const {
       RED,
+    } = this
+
+    let {
       disabled,
     } = this
 
@@ -28,9 +31,9 @@ export class ClipboardConfiguration extends Context {
         'setupDialogs'
       ], this.clipboard)
 
-    this.disabled = false;
+    disabled = false;
 
-    setupDialogs();
+    setupDialogs()
 
     $('<input type="text" id="clipboard-hidden">').appendTo("body");
 
