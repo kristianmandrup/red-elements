@@ -89,13 +89,23 @@ export class Deploy extends Context {
       deploymentType,
       deploymentTypes
     } = this
+
+    const {
+      setInstanceVars,
+      handleError
+    } = this.rebind([
+        'setInstanceVars',
+        'handleError'
+      ], this)
+
     deploymentType = type;
-    this.setInstanceVars({
+    setInstanceVars({
       deploymentType
     })
+
     const $deploymentType = deploymentTypes[type]
     if (!$deploymentType) {
-      this.handleError('no such deploymentType registered with image for icon', {
+      handleError('no such deploymentType registered with image for icon', {
         deploymentTypes,
         type
       })
@@ -106,7 +116,6 @@ export class Deploy extends Context {
   async saveFlows(skipValidation, force) {
     return await this.flowsSaver.saveFlows(skipValidation, force)
   }
-
 
   async deployNodes(nodes) {
     return await this.deployer.deployNodes(nodes)
