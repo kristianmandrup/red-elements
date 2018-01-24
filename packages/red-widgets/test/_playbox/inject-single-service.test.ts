@@ -14,8 +14,13 @@ interface IGreeting {
   say(): string
 }
 
+const TYPES = {
+  HelloService: Symbol.for("HelloService")
+}
+
+
 @injectable()
-class HelloService {
+class HelloService implements IGreeting {
   constructor() {
   }
 
@@ -24,7 +29,7 @@ class HelloService {
   }
 }
 
-container.bind<IGreeting>(HelloService).to(HelloService)
+container.bind<IGreeting>(TYPES.HelloService).to(HelloService).inSingletonScope()
 
 /**
  * Injection of HelloService and ByeService should inject properties:
@@ -32,12 +37,12 @@ container.bind<IGreeting>(HelloService).to(HelloService)
  * - bye: ByeService
  */
 class GreetingService {
-  @lazyInject(HelloService) HelloService: IGreeting
+  @lazyInject(TYPES.HelloService) public hello: HelloService
   // TODO: add injection here or via class decorator similar to Angular
   constructor() {
     console.log('GreetingService', {
       service: this,
-      // bye: this.bye
+      hello: this.hello
     })
   }
 }
