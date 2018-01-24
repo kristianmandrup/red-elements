@@ -95,9 +95,9 @@ import {
 import {
   sidebar,
   Sidebar,
-  SidebarTabConfig,
+  SidebarTab,
   SidebarTabInfo,
-  Tips,
+  TabInfoTips,
 } from './sidebar'
 
 import {
@@ -163,9 +163,9 @@ export const widgets = {
   LibraryUI,
   Tray,
   Sidebar,
-  SidebarTabConfig,
+  SidebarTab,
   SidebarTabInfo,
-  Tips,
+  TabInfoTips,
   Search,
   TypeSearch,
   UserSettings,
@@ -202,9 +202,9 @@ export {
   LibraryUI,
   Tray,
   Sidebar,
-  SidebarTabConfig,
+  SidebarTab,
   SidebarTabInfo,
-  Tips,
+  TabInfoTips,
   Search,
   TypeSearch,
   UserSettings,

@@ -1,22 +1,22 @@
 import {
   Sidebar,
-  SidebarTabConfig,
+  SidebarTab,
   SidebarTabInfo,
-  Tips
+  TabInfoTips
 } from './lib'
 
 export const sidebar = {
   Sidebar,
-  SidebarTabConfig,
+  SidebarTab,
   SidebarTabInfo,
-  Tips
+  TabInfoTips
 }
 
 export default sidebar
 
 export {
   Sidebar,
-  SidebarTabConfig,
+  SidebarTab,
   SidebarTabInfo,
-  Tips
+  TabInfoTips
 }

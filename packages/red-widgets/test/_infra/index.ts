@@ -33,7 +33,7 @@ const ctx = {
   _: translate
 }
 
-let RED = ctx
+const RED = ctx
 
 jest
   .dontMock('fs')
@@ -49,7 +49,7 @@ require('jquery-ui-dist/jquery-ui')
 
 function readPage(name, basePath?) {
   basePath = basePath || __dirname
-  const filePath = path.resolve(basePath, 'app', `${name}.html`)
+  const filePath = path.resolve(basePath, 'documents', `${name}.html`)
   log('readPage', {
     basePath,
     filePath

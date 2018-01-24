@@ -10,7 +10,7 @@ export const lib = {
   Sidebar,
   SidebarTab,
   SidebarTabInfo,
-  Tips
+  TabInfoTips
 }
 
 export default lib
@@ -19,5 +19,5 @@ export {
   Sidebar,
   SidebarTab,
   SidebarTabInfo,
-  Tips
+  TabInfoTips
 }

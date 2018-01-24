@@ -1,3 +1,6 @@
+require("babel-core/register")
+require("babel-polyfill")
+
 Object.defineProperty(document, 'queryCommandSupported', {
   value: function (command) {
     return true

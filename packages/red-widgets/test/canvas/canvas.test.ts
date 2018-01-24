@@ -8,14 +8,12 @@ const {
   Canvas
 } = widgets
 
-import * as d3 from 'd3-selection'
-
 function create() {
   return new Canvas()
 }
 
 function init() {
-  return create().init()
+  return create() // .init() ??
 }
 
 const {

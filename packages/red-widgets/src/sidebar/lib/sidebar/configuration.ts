@@ -1,10 +1,10 @@
 import {
   SidebarTabInfo
-} from '../tab-info'
+} from './tab-info'
 
 import {
   SidebarTab
-} from './sidebar-tab'
+} from './tab'
 
 import { Sidebar } from './'
 import { Tabs, Context, $ } from '../../../common'
