@@ -56,6 +56,21 @@ Editor will provide facilities to edit each of these files in the right context
 
 NOTE: Tecla5 will likely not use this approach, we don't want to be file centric, we use templates to generate end-user files from generic structures (nodes/flows) instead!
 
+#### package.json
+
+Lists the npm dependencies (such as node plugins?) and external lib requirements
+The dependencies do not get installed in the project directory but at the top level in the user directory (as they would now)
+
+#### settings.json
+
+Contains project specific settings, a subset of those available in `settings.ts`
+Cannot contain code, must be reloadable and writable without side-effects by the runtime
+
+Introduce the concept of flow variables:
+- Extend the existing `$(ENV_VAR)` support to include properties defined in settings file
+- makes it easier to support deployment of a flow to different environments
+
+
 ## Feature: Version control
 
 - Allow a developer to take regular snapshots of their work and to revert back to previous versions
