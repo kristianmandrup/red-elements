@@ -17,6 +17,7 @@ import {
   Context,
   $
 } from '../../common'
+import { TrayConfiguration } from './configuration';
 import { TrayResizer } from './resizer';
 import { TrayDisplayer } from './display';
 
@@ -30,8 +31,19 @@ export class Tray extends Context {
   resizer: TrayResizer = new TrayResizer(this)
   display: TrayDisplayer = new TrayDisplayer(this)
 
+  protected configuration: TrayConfiguration = new TrayConfiguration(this)
+  
   constructor() {
     super()
+    this.configure()
+  }
+
+  /**
+   * Configure Tray
+   */
+  configure() {
+    this.configuration.configure()
+    return this
   }
 
   show(options) {
