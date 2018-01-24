@@ -3,6 +3,7 @@ import {
   SidebarTab
 } from '.'
 import { Tabs, Context, $ } from '../../../../common'
+import { I18n } from '@tecla5/red-runtime';
 
 export class SidebarTabConfiguration extends Context {
   sidebar_tabs: any
@@ -11,10 +12,22 @@ export class SidebarTabConfiguration extends Context {
     super()
   }
 
+  get sidebar() {
+    return this.sidebarTab.sidebar
+  }
+
   configure() {
     const { RED } = this
-    var content = document.createElement("div");
-    this.content = content
+    let {
+      toolbar,
+      globalCategories,
+      flowCategories,
+      subflowCategories,
+      showUnusedOnly,
+      categories,
+      i18n
+    } = this.sidebarTab
+    const content = document.createElement("div");
     content.className = "sidebar-node-config";
 
     $('<div class="button-group sidebar-header">' +
@@ -24,19 +37,29 @@ export class SidebarTabConfiguration extends Context {
     ).appendTo(content);
 
 
-    this.toolbar = $('<div>' +
+    toolbar = $('<div>' +
       '<a class="sidebar-footer-button" id="workspace-config-node-collapse-all" href="#"><i class="fa fa-angle-double-up"></i></a> ' +
       '<a class="sidebar-footer-button" id="workspace-config-node-expand-all" href="#"><i class="fa fa-angle-double-down"></i></a>' +
       '</div>');
 
-    this.globalCategories = $("<div/>").appendTo(content);
-    this.flowCategories = $("<div/>").appendTo(content);
-    this.subflowCategories = $("<div/>").appendTo(content);
+    globalCategories = $("<div/>").appendTo(content);
+    flowCategories = $("<div/>").appendTo(content);
+    subflowCategories = $("<div/>").appendTo(content);
 
-    this.showUnusedOnly = false;
+    showUnusedOnly = false;
 
-    this.categories = {};
+    categories = {};
 
-    this.i18n = new I18n()
+    i18n = new I18n()
+
+    this.setInstanceVars({
+      toolbar,
+      globalCategories,
+      flowCategories,
+      subflowCategories,
+      showUnusedOnly,
+      categories,
+      i18n
+    }, this.sidebarTab)
   }
 }
