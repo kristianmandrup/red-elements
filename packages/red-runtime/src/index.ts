@@ -20,6 +20,7 @@ export {
   NodesApi,
   SettingsApi,
   SessionApi,
+  RedApi
 } from './api'
 
 export {

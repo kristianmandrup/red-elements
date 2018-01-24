@@ -12,6 +12,7 @@ export {
   NodesApi,
   SettingsApi,
   SessionApi,
+  RedApi,
 
   ICommunications,
   Communications,
