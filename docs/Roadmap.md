@@ -43,11 +43,39 @@ Provide the tools to manage a system at scale.
 
 - A project exists locally on disk, but can be linked to a remote git repo
 
+### Structure
+
+A default project consists of:
+
+- `flow.json`
+- `package.json`
+- `README.md`
+- `settings.json`
+
+Editor will provide facilities to edit each of these files in the right context
+
+NOTE: Tecla5 will likely not use this approach, we don't want to be file centric, we use templates to generate end-user files from generic structures (nodes/flows) instead!
+
 ## Feature: Version control
 
 - Allow a developer to take regular snapshots of their work and to revert back to previous versions
 
 - Allow a team of developers to collaborate on a single set of flows in a controlled manner; each developing locally, but sharing changes and maintaining a history
+
+### Issues
+
+Node RED doesn't provide any integration with version control.
+Manually merging Flow JSON output is not really an option.
+A local developer's user data directory can quickly become litered with flow files
+as they switch between projects
+
+### Use cases
+
+A developer wants to develop flows under proper version control and to commit versions of the flows and rollback to previous versions
+
+A team of devs want to collaborate on a set of flows - each developing locally, using a shared git repo.
+
+A developer wants to quickly switch between different sets of flows (projects)
 
 ## Feature: Library redesign
 
