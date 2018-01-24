@@ -19,6 +19,8 @@ beforeEach(() => {
   ctx = new Contextable()
 })
 
-describe('Context: injects RED on creation', () => {
-  expect(ctx.RED).toBeDefined()
+describe('Context: constructor', () => {
+  test('injects RED', () => {
+    expect(ctx.RED).toBeDefined()
+  })
 })

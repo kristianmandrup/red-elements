@@ -14,8 +14,13 @@ interface IGreeting {
   say(): string
 }
 
+const TYPES = {
+  HelloService: Symbol.for("HelloService")
+}
+
+
 @injectable()
-class HelloService {
+class HelloService implements IGreeting {
   constructor() {
   }
 
@@ -24,19 +29,7 @@ class HelloService {
   }
 }
 
-container.bind<IGreeting>(HelloService).to(HelloService)
-
-@injectable()
-class ByeService {
-  constructor() {
-  }
-
-  say() {
-    return 'bye'
-  }
-}
-
-container.bind<IGreeting>(ByeService).to(ByeService)
+container.bind<IGreeting>(TYPES.HelloService).to(HelloService).inSingletonScope()
 
 /**
  * Injection of HelloService and ByeService should inject properties:
@@ -44,13 +37,12 @@ container.bind<IGreeting>(ByeService).to(ByeService)
  * - bye: ByeService
  */
 class GreetingService {
-  @lazyInject(ByeService) ByeService: IGreeting
-  // @lazyInject(HelloService) HelloService: IGreeting
+  @lazyInject(TYPES.HelloService) public hello: HelloService
   // TODO: add injection here or via class decorator similar to Angular
   constructor() {
     console.log('GreetingService', {
       service: this,
-      // bye: this.bye
+      hello: this.hello
     })
   }
 }
@@ -61,18 +53,6 @@ beforeEach(() => {
 })
 
 describe('Serviced: injection', () => {
-  describe('ByeService', () => {
-
-    test.only('injects bye: ByeService', () => {
-      expect(ctx.bye).toBeDefined()
-    })
-
-    test('can say hello', () => {
-      expect(ctx.bye.say()).toBe('bye')
-    })
-  })
-
-
   describe('HelloService', () => {
     test('injects hello: HelloService', () => {
       expect(ctx.hello.constructor).toBe(HelloService)
