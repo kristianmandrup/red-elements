@@ -16,8 +16,6 @@
 
 import {
   Context,
-  EditableList,
-  Menu
 } from '../../common'
 
 // import from red-runtime
@@ -57,53 +55,45 @@ import marked from 'marked'
 
 // TODO: perhaps just use generic redApi for each?
 import { RedApi } from '@tecla5/red-runtime/src/api/red-api';
-import { loadNode } from './load-nodes';
+import { LoadNodes } from './load-nodes';
+import { LoadFlows } from './load-flows';
+import { MainConfiguration } from './configuration';
 
 interface IBody extends JQuery<HTMLElement> {
   i18n: Function
 }
 
 export class Main extends Context {
-
   loaded: any = {}
 
   // TODO: perhaps just use generic redApi for each?
   protected api: RedApi
 
-  protected loadNodeList: loadNode = new loadNode(this)
+  protected loadNodesList: LoadNodes = new LoadNodes(this)
+  protected loadFlowsList: LoadFlows = new LoadFlows(this)
+  protected configuration: MainConfiguration = new MainConfiguration(this)
 
   constructor() {
     super();
-    this.loadNode()
-    new EditableList()
+    this.configure()
+  }
 
-    const {
-      RED,
-      loadEditor
-    } = this.rebind([
-        'loadEditor'
-      ])
-
-    $(() => {
-      if ((window.location.hostname !== 'localhost') && (window.location.hostname !== '127.0.0.1')) {
-        document.title = document.title + ' : ' + window.location.hostname;
-      }
-
-      // Fix: using normal require: https://github.com/thlorenz/brace/tree/master/ext
-      // ace.require
-      require('brace/ext/language_tools');
-
-      RED.i18n.init(function () {
-        RED.settings.init(loadEditor);
-      })
-    });
+  configure() {
+    this.configuration.configure()
   }
 
   // /**
   //  * Load nodes list
   //  */
   loadNode() {
-    this.loadNodeList.loadNodeList()
+    this.loadNodesList.loadNodes()
+  }
+
+  // /**
+  //  * Load nodes list
+  //  */
+  loadFlows() {
+    this.loadFlowsList.loadFlows()
   }
 
   showAbout() {
@@ -344,7 +334,7 @@ export class Main extends Context {
     $('#main-container').show();
     $('.header-toolbar').show();
 
-    this.loadNodeList.loadNodeList();
+    this.loadNodesList.loadNodeList();
 
     let { loaded } = this.loaded
     loaded.editor = {
