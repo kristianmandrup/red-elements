@@ -6,8 +6,24 @@ export interface IApiCallerContext {
   $context?: any
 }
 
+
+import {
+  ReadSettings
+} from './read';
+import {
+  UpdateSettings
+} from './update';
+import {
+  CreateSettings
+} from './create';
+
+
 export class SettingsApi extends BaseApi {
   basePath = 'settings'
+
+  public read: ReadSettings
+  public create: CreateSettings
+  public update: UpdateSettings
 
   constructor(config?: IApiCallerContext) {
     super(config)

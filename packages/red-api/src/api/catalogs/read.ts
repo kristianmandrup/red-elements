@@ -3,7 +3,7 @@ import {
   BaseApiMethod
 } from '../base'
 
-export class ReadCatalog extends BaseApiRead {
+export class ReadCatalogs extends BaseApiRead {
   protected namespace: string
 
   get basePath() {

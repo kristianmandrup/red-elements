@@ -3,13 +3,13 @@ import {
 } from '../base'
 
 import {
-  ReadCatalog
+  ReadCatalogs
 } from './read';
 
 export class I18nCatalogApi extends BaseApi {
   basePath = 'locales'
 
-  public read: ReadCatalog
+  public read: ReadCatalogs
 
   constructor(config?: any) {
     super(config)

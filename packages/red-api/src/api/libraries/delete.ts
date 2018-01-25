@@ -3,5 +3,5 @@ import {
   BaseApiMethod
 } from '../base'
 
-export class DeleteFlows extends BaseApiDelete {
+export class DeleteLibraries extends BaseApiDelete {
 }

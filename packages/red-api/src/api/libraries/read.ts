@@ -3,5 +3,5 @@ import {
   BaseApiMethod
 } from '../base'
 
-export class ReadNodes extends BaseApiRead {
+export class ReadLibraries extends BaseApiRead {
 }

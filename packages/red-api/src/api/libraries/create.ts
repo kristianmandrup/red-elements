@@ -3,5 +3,5 @@ import {
   BaseApiMethod
 } from '../base'
 
-export class CreateFlows extends BaseApiCreate {
+export class CreateLibraries extends BaseApiCreate {
 }

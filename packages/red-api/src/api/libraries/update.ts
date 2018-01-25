@@ -3,5 +3,5 @@ import {
   BaseApiMethod
 } from '../base'
 
-export class UpdateSettings extends BaseApiUpdate {
+export class UpdateLibraries extends BaseApiUpdate {
 }

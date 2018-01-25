@@ -11,7 +11,7 @@ export {
 
 export {
   DeployApi,
-} from './deploy'
+} from './deployments'
 
 export {
   FlowsApi,
@@ -19,11 +19,11 @@ export {
 
 export {
   I18nCatalogApi,
-} from './catalog'
+} from './catalogs'
 
 export {
   LibraryApi,
-} from './library'
+} from './libraries'
 
 export {
   NodesApi,
@@ -35,5 +35,5 @@ export {
 
 export {
   SessionApi,
-} from './session'
+} from './sessions'
 
