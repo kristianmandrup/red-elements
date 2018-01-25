@@ -13,13 +13,16 @@ import {
   ApiPost,
   ApiPut,
   ApiGet,
+  ApiDelete,
 } from './methods'
 
-import { IBaseApi } from '../../base-api';
+import { IBaseApi } from '../../api';
 
 export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter {
   protected apiGet
   protected apiPost
+  protected apiPut
+  protected apiDelete
 
   constructor(public config: any) {
     super()

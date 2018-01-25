@@ -11,12 +11,19 @@ export interface IApiMethod {
   send(config: IAjaxConfig): Promise<any>
 }
 
-export interface IApiPost extends IApiMethod {
-  setData(data: any): IApiMethod
+export interface IApiData extends IApiMethod {
+  setData(data: any): IApiData
 }
 
-export interface IApiPut extends IApiMethod {
-  setData(data: any): IApiMethod
+export interface IApiId extends IApiMethod {
+  setId(id: string): IApiId
+}
+
+
+export interface IApiPost extends IApiData {
+}
+
+export interface IApiPut extends IApiData {
 }
 
 export interface IApiGet extends IApiMethod {

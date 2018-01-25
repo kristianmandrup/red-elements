@@ -5,8 +5,8 @@ import {
 import { IBaseAdapter, IApiId } from '../../base';
 import { IAjaxConfig } from '../../../api';
 
-export class ApiGet extends ApiId implements IApiId {
-  // httpMethod: 'get'
+export class ApiDelete extends ApiId implements IApiId {
+  // httpMethod: 'delete'
 
   constructor(public adapter: IBaseAdapter) {
     super(adapter)

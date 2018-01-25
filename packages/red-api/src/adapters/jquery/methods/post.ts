@@ -1,38 +1,9 @@
 import {
-  ApiMethod
-} from './_base'
-import { IBaseAdapter, IApiMethod, IApiPost } from '../../base';
-import { IAjaxConfig } from '../../../base-api';
+  ApiData
+} from './_data'
+import { IBaseAdapter, IApiMethod, IApiData } from '../../base';
+import { IAjaxConfig } from '../../../api';
 
 
-export class ApiPost extends ApiMethod implements IApiPost {
-  protected data: any
-
-  constructor(public adapter: IBaseAdapter) {
-    super(adapter)
-  }
-
-  setData(data) {
-    this.data = data
-    return this
-  }
-
-  get ajaxOptions() {
-    const {
-      data,
-      config
-    } = this
-
-    return {
-      method: 'POST',
-      data: JSON.stringify(data),
-      contentType: 'application/json; charset=utf-8',
-      headers: {
-        'Accept': 'application/json'
-      },
-      dataType: 'json',
-      cache: false,
-      url: config.url
-    }
-  }
+export class ApiPost extends ApiData implements IApiData {
 }

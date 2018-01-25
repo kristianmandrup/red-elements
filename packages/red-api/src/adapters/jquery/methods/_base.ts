@@ -11,6 +11,10 @@ export abstract class ApiMethod extends Context {
     super()
   }
 
+  get httpMethod() {
+    return this.$api.method.httpMethod
+  }
+
   configure(config?: any) {
     this.config = config
     return this
@@ -100,8 +104,29 @@ export abstract class ApiMethod extends Context {
   }
 
   get ajaxOptions() {
+    return Object.assign({}, this.defaultAjaxOptions, this._ajaxMethodOptions)
+  }
+
+  get _ajaxMethodOptions() {
     return {}
   }
+
+  get defaultAjaxOptions() {
+    const {
+      config
+    } = this
+
+    return {
+      method: this.httpMethod,
+      headers: {
+        'Accept': 'application/json; charset=utf-8'
+      },
+      dataType: 'json',
+      cache: false,
+      url: config.url
+    }
+  }
+
 
   /**
    * Convert jQuery Deferreds to native JS Promise for use with await/async

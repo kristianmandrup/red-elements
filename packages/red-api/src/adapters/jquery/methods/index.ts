@@ -9,3 +9,7 @@ export {
 export {
   ApiGet
 } from './get'
+
+export {
+  ApiDelete
+} from './delete'
