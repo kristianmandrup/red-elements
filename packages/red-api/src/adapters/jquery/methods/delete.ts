@@ -2,10 +2,10 @@ import {
   ApiId
 } from './_id'
 
-import { IBaseAdapter, IApiId } from '../../base';
+import { IBaseAdapter, IApiId, IApiDelete } from '../../base';
 import { IAjaxConfig } from '../../../api';
 
-export class ApiDelete extends ApiId implements IApiId {
+export class ApiDelete extends ApiId implements IApiDelete {
   // httpMethod: 'delete'
 
   constructor(public adapter: IBaseAdapter) {

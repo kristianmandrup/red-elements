@@ -1,7 +1,10 @@
 import {
   IAjaxConfig,
   BaseAdapter,
-  IBaseAdapter
+  IBaseAdapter,
+  IApiPost,
+  IApiGet,
+  IApiPut
 } from '../base'
 
 import * as $ from 'jquery'
@@ -17,39 +20,73 @@ import {
 } from './methods'
 
 import { IBaseApi } from '../../api';
+import { IApiDelete } from '../../api/base/methods/delete';
 
 export class JQueryAjaxAdapter extends BaseAdapter implements IJQueryAjaxAdapter {
-  protected apiGet
-  protected apiPost
-  protected apiPut
-  protected apiDelete
+  // TODO: use service injection with factory
+  apiGet: IApiGet
+  apiPost: IApiPost
+  apiPut: IApiPut
+  apiDelete: IApiDelete
 
-  constructor(public config: any) {
-    super()
-    const { $api } = config
-
-    this.apiGet = new ApiGet($api)
-    this.apiPost = new ApiPost($api)
+  httpMethods = {
+    get: this.apiGet,
+    post: this.apiPost,
+    put: this.apiPut,
+    delete: this.apiDelete
   }
 
+  constructor(public api: any, config?: any) {
+    super(api)
+
+    // TODO: use service injection with factory
+    // perhaps iterate httpMethods
+    this.apiGet = new ApiGet(api)
+    this.apiPost = new ApiPost(api)
+    this.apiDelete = new ApiDelete(api)
+    this.apiPut = new ApiPut(api)
+
+    this.configure(config)
+  }
+
+  /**
+   * Configure all httpMethods
+   * @param config
+   */
   configure(config: any) {
-    this.apiGet.configure(config)
-    this.apiPost.configure(config)
+    Object.keys(this.httpMethods).map(name => {
+      const delegate = this.httpMethods[name]
+      delegate.configure(config)
+    })
     return this
   }
 
-  async put(data) {
-    this.apiPut.setData(data)
-    await this.apiPut.send()
+  /**
+   * Make a PUT request with data
+   * @param data
+   */
+  async put(options: any = {}) {
+    return await this.apiPut.setData(options.data).send(options)
   }
 
-  async post(data) {
-    this.apiPost.setData(data)
-    await this.apiPost.send()
+  /**
+   * Make a POST request with data
+   * @param data
+   */
+  async post(options: any = {}) {
+    return await this.apiPost.setData(options.data).send(options)
   }
 
-  async get() {
-    await this.apiGet.send()
+  /**
+   * Make a GET request, potentially with id
+   * @param data
+   */
+  async get(options: any = {}) {
+    return await this.apiGet.send(options)
+  }
+
+  async delete(options: any = {}) {
+    return await this.apiDelete.delete(options)
   }
 }
 

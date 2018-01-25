@@ -16,6 +16,7 @@
   "author": "Kristian Mandrup",
   "license": "ISC",
   "dependencies": {
+    "@tecla5/red-base": "^0.0.1",
     "axios": "^0.17.1",
     "es6-promise": "^4.2.2",
     "isomorphic-fetch": "^2.2.1",
