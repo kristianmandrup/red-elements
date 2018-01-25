@@ -1,7 +1,7 @@
 {
-  "name": "@tecla5/red-api",
+  "name": "@tecla5/red-base",
   "version": "0.0.1",
-  "description": "client side API for use with red-elements",
+  "description": "Base classes for red-elements",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -16,19 +16,12 @@
   "author": "Kristian Mandrup",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.17.1",
     "es6-promise": "^4.2.2",
-    "isomorphic-fetch": "^2.2.1",
-    "jquery": "^3.2.1",
     "promise-polyfill": "^6.0.2",
-    "request": "^2.83.0",
-    "superagent": "^3.8.2"
+    "reflect-metadata": "^0.1.10"
   },
   "devDependencies": {
     "@types/jest": "^21.1.9",
-    "@types/jquery": "^3.2.16",
-    "@types/websocket": "0.0.35",
-    "@types/ws": "^3.2.1",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
     "babel-jest": "^21.2.0",
@@ -41,9 +34,7 @@
     "inversify-inject-decorators": "^3.0.2",
     "jest": "^21.2.1",
     "jest-cli": "^21.2.1",
-    "jest-localstorage-mock": "^2.1.0",
     "nock": "^9.1.6",
-    "reflect-metadata": "^0.1.10",
     "promise": "^8.0.1",
     "puppeteer": "^0.13.0",
     "ts-jest": "^21.2.4",

@@ -1,6 +1,6 @@
 import {
   BaseApi
-} from './base-api'
+} from '../base'
 
 export class DeployApi extends BaseApi {
   basePath = 'deploy'

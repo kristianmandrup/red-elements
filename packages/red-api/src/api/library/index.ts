@@ -1,6 +1,6 @@
 import {
   BaseApi
-} from './base-api'
+} from '../base'
 
 export class LibraryApi extends BaseApi {
   basePath = 'libraries'

@@ -3,41 +3,37 @@ export {
   IBaseAdapter,
   BaseAdapter,
   IAjaxConfig
-} from './adapters'
+} from '../adapters'
 
 export {
   IBaseApi
-} from './base-api'
-
-export {
-  RedApi,
-} from './red-api'
+} from './base'
 
 export {
   DeployApi,
-} from './deploy-api'
+} from './deploy'
 
 export {
   FlowsApi,
-} from './flows-api'
+} from './flows'
 
 export {
   I18nCatalogApi,
-} from './i18n-catalog-api'
+} from './catalog'
 
 export {
   LibraryApi,
-} from './library-api'
+} from './library'
 
 export {
   NodesApi,
-} from './nodes-api'
+} from './nodes'
 
 export {
   SettingsApi,
-} from './settings-api'
+} from './settings'
 
 export {
   SessionApi,
-} from './session-api'
+} from './session'
 

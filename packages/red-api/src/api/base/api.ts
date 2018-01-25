@@ -2,7 +2,7 @@ import {
   JQueryAjaxAdapter,
   IBaseAdapter,
   IAjaxConfig
-} from './adapters'
+} from '../../adapters'
 
 export {
   IAjaxConfig
@@ -10,22 +10,15 @@ export {
 
 import {
   Context
-} from '../context'
-
-class ApiError extends Error {
-}
+} from '../../context'
 
 export interface IBaseApi {
+  adapter: IBaseAdapter
+  basePath: string
+
   errorCode(error: any)
   beforeSend(config?: any)
   setupApi(): void
-
-  load(config?: object): Promise<any> // alias for get
-  get(config?: object): Promise<any>
-  delete(config?: object): Promise<any>
-
-  post(data: any, config?: object): Promise<any>
-  put(data: any, config?: object): Promise<any>
 }
 
 export class BaseApi extends Context implements IBaseApi {
@@ -106,8 +99,8 @@ export class BaseApi extends Context implements IBaseApi {
    */
   get hostAndPort() {
     const {
-      port, host
-    } = this
+        port, host
+      } = this
     return port ? `${host}:${port}` : host
   }
 
@@ -125,67 +118,10 @@ export class BaseApi extends Context implements IBaseApi {
    */
   buildUrl(config) {
     const {
-      protocol,
+        protocol,
       hostAndPort
-    } = this
+      } = this
     return `${protocol}://${hostAndPort}/${config.url}`
   }
-
-  async put(data: any, config?: IAjaxConfig) {
-    return await this.adapter.$put(data, config)
-  }
-
-  async post(data: any, config?: IAjaxConfig) {
-    return await this.adapter.$post(data, config)
-  }
-
-  async delete(config?: IAjaxConfig | object) {
-  }
-
-  async get(config?: IAjaxConfig | object) {
-    return await this.load(config)
-  }
-  /**
-   * Load data from API via adapter
-   * @param config
-   */
-  async load(config?: IAjaxConfig | object) {
-    config = config || {}
-    const {
-      _onApiError,
-      _onApiSuccess
-    } = this.rebind([
-        '_onApiError',
-        '_onApiSuccess'
-      ])
-
-    const apiConfig = {
-      onError: _onApiError,
-      onSuccess: _onApiSuccess,
-      url: this.createUrl(this.basePath)
-    }
-
-    // have props in the passed in config override the defaults in apiConfig
-    const loadConfig = Object.assign(apiConfig, config)
-    return await this.adapter.$get(loadConfig)
-  }
-
-  /**
-   * Default handler for Api call success
-   * @param data
-   * @param api
-   */
-  protected _onApiSuccess(data, api) {
-    return data
-  }
-
-  /**
-   * Default handler for Api call error
-   * @param error
-   * @param api
-   */
-  protected _onApiError(error, api) {
-    throw new ApiError(error)
-  }
-
 }
+

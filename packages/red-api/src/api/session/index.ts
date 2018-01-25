@@ -1,6 +1,6 @@
 import {
   BaseApi
-} from './base-api'
+} from '../base'
 
 export class SessionApi extends BaseApi {
   basePath = 'auth'
