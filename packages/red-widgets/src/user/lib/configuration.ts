@@ -1,10 +1,14 @@
 import { User } from '../'
 import { Context } from '../../context'
+import { UserDisplay } from './display'
 
 export class UserConfiguration extends Context {
+
   constructor(public user: User) {
-    super()
+    super()    
   }
+  
+  protected display: UserDisplay = new UserDisplay(this.user)
 
   configure() {
     const { RED } = this
@@ -26,7 +30,9 @@ export class UserConfiguration extends Context {
           id: "btn-usermenu",
           options: []
         });
-        this.updateUserMenu();
+
+        this.display.updateUserMenu();
+        
       }
     }
   }
