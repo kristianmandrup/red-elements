@@ -1,13 +1,23 @@
 {
   "name": "@tecla5/red-api",
   "version": "0.0.1",
-  "description": "client side API for use with red-elements",
+  "description": "client API to access remote API via http, for use with red-elements",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "ava"
+    "test": "jest --no-cache --config ./jest.config.js",
+    "test:watch": "jest --watch",
+    "lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-api",
+    "lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
+    "lerna:update:win": "npm run lerna:clean:win && npm run lerna:bootstrap",
+    "lerna:clean": "rm -f package.json.lock 2> /dev/null && echo y | lerna clean --scope @tecla5/red-api",
+    "lerna:clean:win": "npm run clean:lock | lerna clean --scope @tecla5/red-api",
+    "clean:win": "npm run clean:lock | clean:modules",
+    "clean:lock": "del /s /f /q package-lock.json.lock",
+    "clean:modules": "del /s /f /q node_modules/*",
+    "link:shared": "npm link @tecla5/red-api"
   },
   "keywords": [
     "node-red",
