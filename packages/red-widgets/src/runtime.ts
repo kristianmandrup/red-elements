@@ -1,12 +1,16 @@
 export {
-  Nodes,
+  Nodes,  
+  I18n
+} from '@tecla5/red-runtime'
+
+export {  
   Actions,
   Clipboard,
   Deploy,
   Keyboard,
   Notifications,
-  state,
-  Subflow,
+  // state,
+  // Subflow,
   RadialMenu,
-  Utils,
-} from '@tecla5/red-runtime/src'
+  Utils
+} from '../src'
