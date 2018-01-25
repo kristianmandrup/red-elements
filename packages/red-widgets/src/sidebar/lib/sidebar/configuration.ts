@@ -8,7 +8,7 @@ import {
 
 import { Sidebar } from './'
 import { Tabs, Context, $ } from '../../../common'
-import { JQueryAjaxAdapter } from '../../../../../red-runtime/src/api/adapters/jquery/index';
+import { JQueryAjaxAdapter } from '@tecla5/red-api';
 
 interface ISidebar extends JQuery<HTMLElement> {
   tabs: Function

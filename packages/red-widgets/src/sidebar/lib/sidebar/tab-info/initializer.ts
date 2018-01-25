@@ -7,7 +7,7 @@ import marked from 'marked'
 import { Tabs, Context, $ } from '../../../../common'
 import { SidebarTabInfo } from '../../../../index';
 
-export class SidebarTabInfoInitializer extends Context {
+export class TabInfoInitializer extends Context {
   constructor(public sidebarTabInfo: SidebarTabInfo) {
     super()
   }

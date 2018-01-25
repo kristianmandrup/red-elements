@@ -19,10 +19,10 @@ interface I18nWidget extends JQuery<HTMLElement> {
 export class SidebarTabInitializer extends Context {
   constructor(public sidebarTab: SidebarTab) {
     super()
-    
+
   }
 
-  
+
   public content: HTMLElement;
   public toolbar: JQuery<HTMLElement>
   protected i18n: I18n
@@ -34,19 +34,23 @@ export class SidebarTabInitializer extends Context {
 
   // only called after i18n is initialized
   async init() {
-    let {
+    const {
       RED,
       categories,
-      showUnusedOnly
-    } = this.rebind([
-        'showUnusedOnly'
-      ])
+    } = this
 
+    let {
+      showUnusedOnly
+    } = this.sidebarTab
+
+    const {
+      refreshConfigNodeList
+  } = this.rebind([
+        'refreshConfigNodeList'
+      ])
 
     // FIX: when i18n is initialized (translation map loaded), we can continue constructor in init
     await this.i18n.init()
-
-    let refreshConfigNodeList = this.refreshConfigNodeList.bind(this)
 
     RED.sidebar.addTab({
       id: "config",
