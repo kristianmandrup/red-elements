@@ -3,7 +3,7 @@ import {
   $
 } from '../../../context'
 
-import { LibraryApi } from '@tecla5/red-runtime/src/api/library-api'
+import { LibraryApi } from '@tecla5/red-runtime'
 import { LibraryConfiguration } from './configuration';
 import { LibrarySaver } from './library-saver';
 import { FileListBuilder } from './file-list-builder';

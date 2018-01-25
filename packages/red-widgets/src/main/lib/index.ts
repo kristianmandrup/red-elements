@@ -54,7 +54,7 @@ import * as ace from 'brace'
 import marked from 'marked'
 
 // TODO: perhaps just use generic redApi for each?
-import { RedApi } from '@tecla5/red-runtime/src';
+import { RedApi } from '@tecla5/red-runtime';
 import { LoadNodes } from './load-nodes';
 import { LoadFlows } from './load-flows';
 import { MainConfiguration } from './configuration';

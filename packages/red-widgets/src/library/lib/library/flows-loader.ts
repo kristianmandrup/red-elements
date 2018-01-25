@@ -3,7 +3,7 @@ import {
   Library
 } from './'
 import { Context } from '../../../context';
-import { LibraryApi } from '@tecla5/red-runtime/src';
+import { LibraryApi } from '@tecla5/red-runtime';
 
 const { log } = console
 

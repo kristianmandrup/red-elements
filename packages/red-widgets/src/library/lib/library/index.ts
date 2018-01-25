@@ -20,7 +20,7 @@ import {
 
 import { LibraryUI } from '../library-ui'
 
-import { LibraryApi } from '@tecla5/red-runtime/src/api/library-api';
+import { LibraryApi } from '@tecla5/red-runtime';
 import { LibraryConfiguration } from './configuration';
 import { LibraryFlowsPoster } from './flows-poster';
 import { LibraryFlowsLoader } from './flows-loader';

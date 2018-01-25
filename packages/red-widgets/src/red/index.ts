@@ -21,7 +21,7 @@ import {
   Settings,
   History,
   Nodes,
-} from '@tecla5/red-runtime/src'
+} from '@tecla5/red-runtime'
 
 import {
   TextFormat,

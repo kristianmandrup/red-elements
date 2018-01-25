@@ -3,7 +3,7 @@ import {
   $
 } from '../../../context'
 
-import { LibraryApi } from '@tecla5/red-runtime/src'
+import { LibraryApi } from '@tecla5/red-runtime'
 import { LibraryUI } from './';
 
 export class LibraryPoster extends Context {
