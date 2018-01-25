@@ -7,7 +7,7 @@ import {
 } from './read';
 
 export class I18nCatalogApi extends BaseApi {
-  basePath = 'catalog'
+  basePath = 'locales'
 
   public read: ReadCatalog
 

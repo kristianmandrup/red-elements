@@ -4,32 +4,13 @@ import {
 } from '../base'
 
 export class ReadCatalog extends BaseApiRead {
-  // TODO: override default URLs to match
+  protected namespace: string
 
-  // loadLanguage: const url = 'locales/' + namespace + '?lng=' + lang
-  /**
-   * Load language from API and add as 18n resource bundle
-   * @param namespace
-   * @param lang
-   */
-  async language(namespace: string, lang: string) {
+  get basePath() {
+    return this._join(super.basePath, 'locales', this.namespace)
   }
 
-  /**
-   * Load a single node language
-   * @param lang
-   */
-  async nodeLang(lang) {
-  }
-  // loadNodeLang: 'locales/nodes?lng=' + lang
-
-  /**
-   * Load node catalogs
-   * For each language, load translation resource bundle for each (node) namespace
-   *
-   * Use backend API endpoint
-   *   locales/nodes?lng=[language]
-   */
-  async nodeCatalogs() {
+  configure(config: any = {}) {
+    this.namespace = config.namespace
   }
 }
