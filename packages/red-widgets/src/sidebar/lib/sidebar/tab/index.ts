@@ -21,6 +21,7 @@ import {
 import {
   I18n
 } from '@tecla5/red-runtime/src/i18n'
+import { Sidebar } from '../../index';
 
 interface I18nWidget extends JQuery<HTMLElement> {
   i18n: Function
@@ -33,13 +34,12 @@ export class SidebarTab extends Context {
   public flowCategories: JQuery<HTMLElement>
   public subflowCategories: JQuery<HTMLElement>
   public category: JQuery<HTMLElement>
+  public i18n: I18n
 
   public showUnusedOnly: Boolean
   public categories: Object
 
-  protected i18n: I18n
-
-  constructor() {
+  constructor(public sidebar: Sidebar) {
     super()
   }
 

@@ -10,8 +10,8 @@ import {
 import { I18nCatalogApi } from '../api/i18n-catalog-api';
 
 export interface ICatalog {
-  loadCatalog: (namespace: string) => void
-  loadNodeCatalogs: () => void
+  loadLanguages: (namespace: string) => void
+  loadNodeLanguages: () => void
 }
 
 /**
@@ -37,7 +37,7 @@ export class Catalog extends Context implements ICatalog {
    * Use backend API endpoint
    *   locales/[namespace]?lng=[language]
    */
-  async loadCatalog(namespace: string) {
+  async loadLanguages(namespace: string) {
     const {
       detectLanguage,
     } = this.i18n
@@ -87,54 +87,19 @@ export class Catalog extends Context implements ICatalog {
   }
 
   /**
-   * Load node catalogs
+   * Load node languages (catalogs)
    * For each language, load translation resource bundle for each (node) namespace
    *
    * Use backend API endpoint
    *   locales/nodes?lng=[language]
    */
-  async loadNodeCatalogs() {
+  async loadNodeLanguages() {
     const {
       detectLanguage,
       i18n
     } = this.i18n
 
-    this.prepareLoad()
-
-    var languageList = [detectLanguage()]
-    const promises = languageList.map(async (lang) => {
-      return this.loadNodeLang(lang)
-    })
-    return Promise.all(promises)
-  }
-
-  /**
-   * Load a single node language
-   * @param lang
-   */
-  async loadNodeLang(lang) {
-    const {
-      i18nCatalogApi
-    } = this
-    const {
-      i18n
-    } = this.i18n
-
-    const url = 'locales/nodes?lng=' + lang
-    try {
-      const data = await i18nCatalogApi.load({
-        url
-      })
-      var namespaces = Object.keys(data);
-      namespaces.forEach(function (ns) {
-        i18n.addResourceBundle(lang, ns, data[ns]);
-      });
-
-    } catch (err) {
-      this.handleError('loadLanguage', {
-        err
-      })
-    }
+    return this.loadLanguages('nodes')
   }
 }
 
