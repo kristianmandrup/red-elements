@@ -4,7 +4,7 @@ import {
 } from '../../../context'
 
 import { LibraryUI } from './';
-import { LibraryApi } from '@tecla5/red-runtime/src/api/library-api';
+import { LibraryApi } from '@tecla5/red-runtime/src';
 import { dirname } from 'path';
 
 /**
