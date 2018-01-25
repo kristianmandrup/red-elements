@@ -1,4 +1,4 @@
-import { IBaseApi } from '../../base-api'
+import { IBaseApi } from '../../api'
 
 export interface IAjaxConfig {
   url: string
@@ -26,7 +26,10 @@ export interface IApiPost extends IApiData {
 export interface IApiPut extends IApiData {
 }
 
-export interface IApiGet extends IApiMethod {
+export interface IApiGet extends IApiId {
+}
+
+export interface IApiDelete extends IApiId {
 }
 
 
@@ -43,13 +46,8 @@ import {
 } from '../../../context'
 
 export class BaseAdapter extends Context {
-  protected $api: IBaseApi
-
-  constructor(config: any = {}) {
+  constructor(public api: IBaseApi, protected config: any = {}) {
     super()
-
-    const { $api } = config
-    this.$api = $api
     this.beforeSend()
   }
 
