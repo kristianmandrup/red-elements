@@ -31,7 +31,7 @@ export function Widget(RED) {
      *   - sort(sort)
      *   - length()
      */
-    $.widget("nodered.editableList", {
+    $['widget']("nodered.editableList", {
       _create() {
         this.element.addClass('red-ui-editableList-list');
         this.uiWidth = this.element.width();

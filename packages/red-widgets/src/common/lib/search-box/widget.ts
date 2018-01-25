@@ -9,7 +9,7 @@ export function Widget(RED) {
     //   $widget: $.widget
     // })
 
-    $.widget("nodered.searchBox", {
+    $['widget']("nodered.searchBox", {
       _create: function () {
         var that = this;
         this.currentTimeout = null;
