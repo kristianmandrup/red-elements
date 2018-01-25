@@ -1,6 +1,10 @@
 export {
-  INode,
+  Context
+} from './context'
+
+export {
   INodeDef,
+  INode,
   INodeSet,
   JQElem,
   IFlow,
@@ -10,5 +14,4 @@ export {
   IEvents,
   EventType,
   IEvent
-} from '@tecla5/red-base'
-
+} from './interfaces'

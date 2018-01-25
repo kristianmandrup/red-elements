@@ -14,48 +14,24 @@ export {
 
 import {
   Serializer,
-  ISerializer
-} from './serializer'
-
-import {
+  ISerializer,
   INodeMatcher,
-  NodeMatcher
-} from './node-matcher'
-
-import {
+  NodeMatcher,
   IConverter,
-  Converter
-} from './converter'
-
-import {
+  Converter,
   IFilter,
-  Filter
-} from './filter'
-
-import {
+  Filter,
   IIterator,
-  Iterator
-} from './iterator'
-
-import {
+  Iterator,
   NodeManager,
-  INodeManager
-} from './node-manager'
-
-import {
+  INodeManager,
   LinkManager,
-  ILinkManager
-} from './link-manager'
-
-import {
+  ILinkManager,
   IFlowManager,
-  FlowManager
-} from './flow-manager'
-
-import {
+  FlowManager,
   WorkspaceManager,
   IWorkspaceManager
-} from './workspace-manager'
+} from './delegates'
 
 const { log } = console
 

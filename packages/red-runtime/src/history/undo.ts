@@ -11,38 +11,6 @@ import {
 } from '../interfaces'
 import { log } from 'util';
 
-type EventType =
-  'multi' |
-  'add' |
-  'replace' |
-  'delete' |
-  'move' |
-  'edit' |
-  'createSubflow' |
-  'reorder'
-
-export interface IEvent {
-  t: EventType,
-  events: IEvent[],
-  changed: boolean,
-  config: object,
-  rev: string, // revision (ie. version)
-  links: ILink[],
-  workspaces: any,
-  activeWorkspace: IWorkspace,
-  nodes: INode[],
-  subflow: ISubflow,
-  subflows: any,
-  removedLinks: any[],
-  subflowOutputs: any[],
-  subflowInputs: any[],
-  changes: any[],
-  node: INode,
-  outputMap: object,
-  order: any[],
-  dirty: boolean
-}
-
 /**
  * Undo an editor event
  * - undo effect of event
@@ -71,7 +39,7 @@ export class Undo extends Context implements IUndo {
     this._validateEvent(ev, 'ev', 'undoEvent')
 
     if (!ev) return this
-    
+
     switch (ev.t) {
       case 'multi': return this._multi(ev)
       case 'replace': return this._replace(ev)

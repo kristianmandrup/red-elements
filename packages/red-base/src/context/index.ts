@@ -1,4 +1,4 @@
-import { IRED, TYPES, container } from '../_infra';
+import { IRED, TYPES, container } from '../_infra'
 import getDecorators from 'inversify-inject-decorators';
 const { lazyInject } = getDecorators(container);
 
@@ -9,6 +9,15 @@ export {
 }
 
 import {
+  INode,
+  INodeDef,
+  INodeSet,
+  IEvent,
+  ILink,
+  JQElem
+} from '../interfaces'
+
+import {
   deepEquals
 } from './equals'
 
@@ -16,17 +25,6 @@ import {
   IValidator,
   Validator
 } from './validator'
-
-import {
-  INodeDef,
-  INode,
-  ILink,
-  INodeSet
-} from '../interfaces'
-
-import {
-  IEvent
-} from '../history/undo'
 
 export class Context {
   @lazyInject(TYPES.RED) RED: IRED;
@@ -119,7 +117,7 @@ export class Context {
     this.validator._validateBool(value, name, methodName, info)
   }
 
-  protected _validateJQ(obj: JQuery<HTMLElement>, name, methodName: string, info?: any) {
+  protected _validateJQ(obj: JQElem, name, methodName: string, info?: any) {
     this.validator._validateJQ(obj, name, methodName, info)
   }
   protected _validateDefined(value, name: string, methodName: string, info?: any) {

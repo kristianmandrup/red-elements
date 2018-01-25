@@ -20,7 +20,9 @@
     "link:shared": "npm link @tecla5/red-widgets"
   },
   "dependencies": {
+    "@tecla5/red-base": "^0.0.1",
     "@tecla5/red-runtime": "^0.0.1",
+    "@tecla5/red-api": "^0.0.1",
     "ace-builds": "^1.2.8",
     "bootstrap": "^4.0.0",
     "bootstrap-select": "^1.12.4",

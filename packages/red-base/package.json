@@ -21,6 +21,7 @@
     "reflect-metadata": "^0.1.10"
   },
   "devDependencies": {
+    "@types/jquery": "^3.2.16",
     "@types/jest": "^21.1.9",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
