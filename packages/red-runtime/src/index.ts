@@ -7,8 +7,28 @@ export {
 } from './history'
 
 export {
+  INode,
+  IEvents
+} from './interfaces'
+
+export {
+  JQueryAjaxAdapter,
+  IBaseAdapter,
+  BaseAdapter,
+  IAjaxConfig,
+
+  IBaseApi,
+  DeploymentsApi,
+  FlowsApi,
+  I18nCatalogApi,
+  LibrariesApi,
+  NodesApi,
+  SettingsApi,
+  SessionsApi
+} from './api'
+
+export {
   Node,
-  INode
 } from './node'
 
 export {
@@ -54,8 +74,7 @@ export {
 } from './comms'
 
 export {
-  Events,
-  IEvents
+  Events
 } from './events'
 
 export {

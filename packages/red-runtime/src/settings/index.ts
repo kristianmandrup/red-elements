@@ -66,7 +66,7 @@ export class Settings extends Context implements ISettings {
   protected tokenMatchExpr = /[?&]access_token=(.*?)(?:$|&)/
 
   protected localStorage: ILocalStorage = new LocalStorage() // service?
-  protected settingsApi: IBaseApi
+  protected settingsApi: SettingsApi
 
   constructor() {
     super()
@@ -154,7 +154,7 @@ export class Settings extends Context implements ISettings {
    * load user settings via Ajax call to server API: /settings
    */
   async load(): Promise<any> {
-    return await this.settingsApi.load()
+    return await this.settingsApi.read.all()
   }
 
   /**

@@ -5,14 +5,13 @@ export {
   IAjaxConfig,
 
   IBaseApi,
-  DeployApi,
+  DeploymentsApi,
   FlowsApi,
   I18nCatalogApi,
-  LibraryApi,
+  LibrariesApi,
   NodesApi,
   SettingsApi,
-  SessionApi,
-  RedApi,
+  SessionsApi,
 
   ICommunications,
   Communications,

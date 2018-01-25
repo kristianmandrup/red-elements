@@ -24,36 +24,45 @@ import {
   I18n
 } from '@tecla5/red-runtime/src/i18n'
 import { Sidebar } from '../../index';
+import {
+  JQElem
+} from '@tecla5/red-base';
+import { JQueryAjaxAdapter } from '../../../../../../red-api/src/adapters/jquery/index';
 
 interface I18nWidget extends JQuery<HTMLElement> {
   i18n: Function
 }
 
+export interface ISidebarTab {
+  getOrCreateCategory(name: string, parent?: any, label?: string)
+  show(id: string): ISidebarTab
+}
+
 export class SidebarTab extends Context {
-
-
-  
-
   public content: HTMLElement
-  public toolbar: JQuery<HTMLElement>
-  public globalCategories: JQuery<HTMLElement>
-  public flowCategories: JQuery<HTMLElement>
-  public subflowCategories: JQuery<HTMLElement>
-  public category: JQuery<HTMLElement>
+  public toolbar: JQElem
+  public globalCategories: JQElem
+  public flowCategories: JQElem
+  public subflowCategories: JQElem
+  public category: JQElem
   public i18n: I18n
 
   public showUnusedOnly: Boolean
   public categories: Object
 
-  protected initializer : SidebarTabInitializer 
-
+  protected initializer: SidebarTabInitializer
 
   constructor(public sidebar: Sidebar) {
-    super()    
-    
+    super()
   }
 
-  getOrCreateCategory(name, parent?, label?) {
+  /**
+   * Get or create Palette category
+   * @param name
+   * @param parent
+   * @param label
+   */
+  getOrCreateCategory(name: string, parent?: any, label?: string) {
     let {
       category
     } = this
@@ -70,18 +79,15 @@ export class SidebarTab extends Context {
     let categories = this.categories
 
     if (!categories[name]) {
-      var container = <I18nWidget>$('<div class="palette-category workspace-config-node-category" id="workspace-config-node-category-' + name + '"></div>').appendTo(parent);
-      var header = $('<div class="workspace-config-node-tray-header palette-header"><i class="fa fa-angle-down expanded"></i></div>').appendTo(container);
-      if (label) {
-        $('<span class="config-node-label"/>').text(label).appendTo(header);
-      } else {
-        $('<span class="config-node-label" data-i18n="sidebar.config.' + name + '">').appendTo(header);
-      }
-      $('<span class="config-node-filter-info"></span>').appendTo(header);
-      category = $('<ul class="palette-content config-node-list"></ul>').appendTo(container);
+      const container = this.createPaletteCategoryContainer(name, parent)
+      const header = this.appendHeader(container)
+      this.appendLabel(label, name, header)
+      this.appendNodeFilterInfo(header)
+
+      category = this.appendCategory(header)
       container.i18n();
-      var icon = header.find("i");
-      var result = {
+      const icon = header.find("i");
+      const result = {
         label: label,
         list: category,
         size: () => {
@@ -130,25 +136,29 @@ export class SidebarTab extends Context {
   }
 
 
-  show(id) {
+  /**
+   * Show sidebar tab
+   * @param id
+   */
+  show(id: string): ISidebarTab {
     let RED = this.ctx
     if (typeof id === 'boolean') {
       if (id) {
-        $('#workspace-config-node-filter-unused').click();
+        this.nodeFilterUnused.click();
       } else {
-        $('#workspace-config-node-filter-all').click();
+        this.nodeFilterAll.click();
       }
     }
     this.initializer.refreshConfigNodeList();
     if (typeof id === "string") {
-      $('#workspace-config-node-filter-all').click();
+      this.nodeFilterAll.click();
       id = id.replace(/\./g, "-");
       setTimeout(function () {
-        var node = $(".palette_node_id_" + id);
-        var y = node.position().top;
-        var h = node.height();
-        var scrollWindow = $(".sidebar-node-config");
-        var scrollHeight = scrollWindow.height();
+        const node = this.paletteNodeElem(id)
+        const y = node.position().top;
+        const h = node.height();
+        const scrollWindow = this.sidebarNodeConfig
+        const scrollHeight = scrollWindow.height();
 
         if (y + h > scrollHeight) {
           scrollWindow.animate({
@@ -159,13 +169,10 @@ export class SidebarTab extends Context {
             scrollTop: '+=' + (y - 10)
           }, 150);
         }
-        var flash = 21;
-        var flashFunc = function () {
-          if ((flash % 2) === 0) {
-            node.removeClass('node_highlighted');
-          } else {
-            node.addClass('node_highlighted');
-          }
+        let flash = 21;
+        const flashFunc = function () {
+          flash % 2 === 0 ? this.removeHighlight(node) : this.addHighlight(node)
+
           flash--;
           if (flash >= 0) {
             setTimeout(flashFunc, 100);
@@ -175,5 +182,56 @@ export class SidebarTab extends Context {
       }, 100);
     }
     RED.sidebar.show("config");
+    return this
+  }
+
+  // protected
+
+  protected get nodeFilterUnused() {
+    return $('#workspace-config-node-filter-unused')
+  }
+
+  protected get nodeFilterAll() {
+    return $('#workspace-config-node-filter-all')
+  }
+
+  protected get sidebarNodeConfig() {
+    return $(".sidebar-node-config")
+  }
+
+  protected paletteNodeElem(id) {
+    return $(".palette_node_id_" + id);
+  }
+
+  protected removeHiglight(node) {
+    node.removeClass('node_highlighted');
+  }
+
+  protected addHiglight(node) {
+    node.addClass('node_highlighted');
+  }
+
+  protected createPaletteCategoryContainer(name, parent): I18nWidget {
+    return <I18nWidget>$('<div class="palette-category workspace-config-node-category" id="workspace-config-node-category-' + name + '"></div>').appendTo(parent);
+  }
+
+  protected appendHeader(container): JQElem {
+    return $('<div class="workspace-config-node-tray-header palette-header"><i class="fa fa-angle-down expanded"></i></div>').appendTo(container);
+  }
+
+  protected appendLabel(label, name, header) {
+    if (label) {
+      $('<span class="config-node-label"/>').text(label).appendTo(header);
+    } else {
+      $('<span class="config-node-label" data-i18n="sidebar.config.' + name + '">').appendTo(header);
+    }
+  }
+
+  protected appendNodeFilterInfo(header) {
+    $('<span class="config-node-filter-info"></span>').appendTo(header);
+  }
+
+  protected appendCategory(container) {
+    return $('<ul class="palette-content config-node-list"></ul>').appendTo(container);
   }
 }

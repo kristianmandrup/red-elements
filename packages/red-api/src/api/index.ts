@@ -10,7 +10,7 @@ export {
 } from './base'
 
 export {
-  DeployApi,
+  DeploymentsApi,
 } from './deployments'
 
 export {
@@ -22,7 +22,7 @@ export {
 } from './catalogs'
 
 export {
-  LibraryApi,
+  LibrariesApi,
 } from './libraries'
 
 export {
@@ -34,6 +34,6 @@ export {
 } from './settings'
 
 export {
-  SessionApi,
+  SessionsApi,
 } from './sessions'
 

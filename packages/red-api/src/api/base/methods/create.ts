@@ -9,4 +9,8 @@ export class BaseApiCreate extends BaseApiData {
   protected _onePath() {
     return this._manyPath()
   }
+
+  async one(data: any): Promise<any> {
+    return await this._doOneData(data)
+  }
 }

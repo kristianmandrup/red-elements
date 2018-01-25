@@ -5,10 +5,10 @@ import {
   Deploy
 } from './'
 
-import { DeployApi } from '@tecla5/red-runtime/src';
+import { DeploymentsApi } from '@tecla5/red-runtime';
 
 export class Deployer extends Context {
-  protected deployApi: DeployApi
+  protected deploymentsApi: DeploymentsApi
 
   constructor(public deploy: Deploy) {
     super()
@@ -31,7 +31,7 @@ export class Deployer extends Context {
     }
 
     try {
-      const result = await this.deployApi.post(data)
+      const result = await this.deploymentsApi.create.one(data)
       this.onDeploySuccess(result)
     } catch (error) {
       onDeployError(error)

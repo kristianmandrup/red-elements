@@ -7,11 +7,11 @@ export {
 
 export {
   IBaseApi,
-  DeployApi,
+  DeploymentsApi,
   FlowsApi,
   I18nCatalogApi,
-  LibraryApi,
+  LibrariesApi,
   NodesApi,
   SettingsApi,
-  SessionApi
+  SessionsApi
 } from './api'

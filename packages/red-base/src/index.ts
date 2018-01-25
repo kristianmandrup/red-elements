@@ -1,5 +1,7 @@
 export {
-  Context
+  Context,
+  IRED,
+  TYPES
 } from './context'
 
 export {

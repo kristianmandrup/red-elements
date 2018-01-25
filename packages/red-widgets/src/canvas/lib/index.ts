@@ -44,7 +44,6 @@ import { CanvasNodeManager } from './node-manager';
 import { CanvasDrawer } from './drawer';
 import {
   CanvasTouchMenuManager,
-
 } from './touch';
 import { CanvasGridManager } from './grid-manager';
 import { CanvasNodeImporter } from './node-importer';
@@ -52,6 +51,244 @@ import { CanvasTouchEventHandler } from './touch/event-handler';
 import { CanvasDragLineManager } from './drag-line-manager';
 import { CanvasButtonManager } from './button-manager';
 import { CanvasEventManager } from './event-manager';
+
+export interface ICanvas {
+  configure()
+  /**
+   * show Drag Lines
+   * @param nodes
+   */
+  showDragLines(nodes)
+  /**
+   * hide Drag Lines
+   */
+  hideDragLines()
+  /**
+   * handle Outer Touch End Event
+   * @param touchStartTime
+   * @param lasso
+   * @param canvasMouseUp
+   */
+  handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp)
+  /**
+   * handle Outer Touch Start Event
+   * @param touchStartTime
+   * @param startTouchCenter
+   * @param scaleFactor
+   * @param startTouchDistance
+   * @param touchLongPressTimeout
+   */
+  handleOuterTouchStartEvent(touchStartTime,
+    startTouchCenter,
+    scaleFactor,
+    startTouchDistance,
+    touchLongPressTimeout)
+  /**
+   * portMouseDown
+   * @param d
+   * @param portType
+   * @param portIndex
+   */
+  portMouseDown(d, portType, portIndex)
+  /**
+   * port Mouse Up
+   * @param d
+   * @param portType
+   * @param portIndex
+   */
+  portMouseUp(d, portType, portIndex)
+  /**
+   * select All
+   */
+  selectAll()
+  /**
+   * clear Selection
+   */
+  clearSelection()
+  /**
+ * update Selection
+ */
+  updateSelection()
+  clearTimeout(timer)
+  /**
+   * zoom In
+   */
+  zoomIn()
+  /**
+   * zoom Out
+   */
+  zoomOut()
+  /**
+   * zoom Zero
+   */
+  zoomZero()
+  /**
+   * canvas Mouse Move
+   */
+  canvasMouseMove()
+  canvasMouseDown()
+  canvasMouseUp()
+  handleD3MouseDownEvent(evt)
+  /**
+   * handle Outer Touch MoveEvent
+   * Use touchEventHandler: TouchEventHandler delegate class
+   * @param touchStartTime
+   * @param startTouchCenter
+   * @param lasso
+   * @param canvasMouseMove
+   * @param oldScaleFactor
+   * @param scaleFactor
+   * @param startTouchDistance
+   */
+  handleOuterTouchMoveEvent(touchStartTime,
+    startTouchCenter,
+    lasso,
+    canvasMouseMove,
+    oldScaleFactor,
+    scaleFactor,
+    startTouchDistance)
+  /**
+   * reset Mouse Variables
+   */
+  resetMouseVars()
+  /**
+ * node Mouse Up handler
+ * @param d
+ */
+  nodeMouseUp(d)
+  /**
+   * node Mouse Down handler
+   * @param d
+   */
+  nodeMouseDown(d)
+  // CanvasGridManager
+  /**
+   * update canvas Grid
+   */
+  updateGrid()
+  /**
+   * end Keyboard Move
+   */
+  endKeyboardMove()
+  /**
+   * update Active Nodes
+   */
+  updateActiveNodes()
+  /**
+   * Add node
+   * @param type
+   * @param x
+   * @param y
+   */
+  addNode(type: any, x: any, y: any)
+  /**
+   * move Selection
+   * @param dx
+   * @param dy
+   */
+  moveSelection(dx, dy)
+  /**
+    * copy Selection
+    */
+  copySelection()
+  /**
+   * edit Selection
+   */
+  editSelection()
+  /**
+   * delete Selection
+   */
+  deleteSelection()
+  /**
+   * calculate Text Width
+   * @param str
+   * @param className
+   * @param offset
+   */
+  calculateTextWidth(str, className, offset)
+  /**
+   * get element position of node
+   * @param node
+   */
+  getNodeElementPosition(node)
+  /**
+   * get Port Label
+   * @param node
+   * @param portType
+   * @param portIndex
+   */
+  getPortLabel(node, portType, portIndex)
+  /**
+   * port Mouse Out
+   * @param port
+   * @param d
+   * @param portType
+   * @param portIndex
+   */
+  portMouseOut(port, d, portType, portIndex)
+  /**
+     * port Mouse Over
+     * @param port
+     * @param d
+     * @param portType
+     * @param portIndex
+     */
+  portMouseOver(port, d, portType, portIndex)
+  /**
+   * disable Quick Join Event Handler
+   * @param evt
+   */
+  disableQuickJoinEventHandler(evt)
+  /**
+   * handle WorkSpace Change Event
+   * @param event
+   * @param workspaceScrollPositions
+   */
+  handleWorkSpaceChangeEvent(event, workspaceScrollPositions)
+  /**
+   * check if Button is Enabled
+   * @param d
+   */
+  isButtonEnabled(d): boolean
+  /**
+   * Node button click handler
+   * @param d
+   */
+  nodeButtonClicked(d)
+  /**
+   * show Touch Menu (touch devices only)
+   * @param obj
+   * @param pos
+   */
+  showTouchMenu(obj, pos)
+  /**
+   * (Re)draw canvas
+   * @param updateActive
+   */
+  redraw(updateActive?: boolean)
+  focusView()
+  /**
+   * Imports a new collection of nodes from a JSON String.
+   *  - all get new IDs assigned
+   *  - all 'selected'
+   *  - attached to mouse for placing - 'IMPORT_DRAGGING'
+   */
+  importNodes(newNodesStr, addNewFlow?, touchImport?)
+  toggleStatus(s)
+  // API
+  state(state)
+  /**
+   * make a selection
+   */
+  selection()
+  /**
+   * Select a selection
+   * @param selection
+   */
+  select(selection)
+  scale()
+  getLinksAtPoint(x, y)
+}
 
 export class Canvas extends Context {
   PORT_TYPE_INPUT = 1;
@@ -116,6 +353,7 @@ export class Canvas extends Context {
     'grey': '#d3d3d3'
   }
 
+  // TODO: use (service) injection
   protected canvasMouse: CanvasMouse = new CanvasMouse(this)
   protected canvasPostMouse: CanvasPortMouse = new CanvasPortMouse(this)
   protected keyboard: CanvasKeyboard = new CanvasKeyboard(this)
@@ -147,6 +385,9 @@ export class Canvas extends Context {
     return new Canvas().configure()
   }
 
+  /**
+   * Configure Canvas
+   */
   configure() {
     this.configuration.configure()
   }
@@ -237,7 +478,10 @@ export class Canvas extends Context {
     return this.selectionManager.updateSelection()
   }
 
-
+  /**
+   * clear Timeout
+   * @param timer
+   */
   clearTimeout(timer) {
     clearTimeout(timer)
   }
@@ -270,14 +514,24 @@ export class Canvas extends Context {
     this.canvasMouse.canvasMouseMove()
   }
 
+  /**
+   * canvas Mouse Down
+   */
   canvasMouseDown() {
     this.canvasMouse.canvasMouseDown()
   }
 
+  /**
+   * canvas Mouse Up
+   */
   canvasMouseUp() {
     this.canvasMouse.canvasMouseUp()
   }
 
+  /**
+   * handle D3 Mouse Down Event
+   * @param evt
+   */
   handleD3MouseDownEvent(evt) {
     this.canvasMouse.handleD3MouseDownEvent(evt)
   }
@@ -374,8 +628,8 @@ export class Canvas extends Context {
   }
 
   /**
-    * copy Selection
-    */
+   * copy Selection
+   */
   copySelection() {
     return this.selectionManager.copySelection()
   }
@@ -516,6 +770,9 @@ export class Canvas extends Context {
     this.drawer.redraw(updateActive)
   }
 
+  /**
+   * Focus canvas view
+   */
   focusView() {
     try {
       // Workaround for browser unexpectedly scrolling iframe into full
@@ -543,6 +800,10 @@ export class Canvas extends Context {
     return this.nodesImporter.importNodes(newNodesStr, addNewFlow, touchImport)
   }
 
+  /**
+   * toggle Status
+   * @param s
+   */
   toggleStatus(s) {
     this.showStatus = s;
     this.RED.nodes.eachNode(function (n) {
@@ -553,7 +814,10 @@ export class Canvas extends Context {
     return this
   }
 
-  // API
+  /**
+   * Set mouse mode state
+   * @param state
+   */
   state(state) {
     if (state == null) {
       return this.mouse_mode
@@ -578,10 +842,18 @@ export class Canvas extends Context {
     return this.selectionManager.select(selection)
   }
 
+  /**
+   * Get the scaleFactor
+   */
   scale() {
-    return this.scaleFactor;
+    return this.scaleFactor
   }
 
+  /**
+   * get Links At Point (x,y)
+   * @param x
+   * @param y
+   */
   getLinksAtPoint(x, y) {
     var result = [];
     var links = this.outer.selectAll('.link_background')[0];

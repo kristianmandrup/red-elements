@@ -17,6 +17,14 @@ import {
   CreateSettings
 } from './create';
 
+export interface ISettingsApi {
+  read: ReadSettings
+  create: CreateSettings
+  update: UpdateSettings
+
+  beforeSend(config: any)
+}
+
 
 export class SettingsApi extends BaseApi {
   basePath = 'settings'

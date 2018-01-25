@@ -2,7 +2,7 @@ import {
   BaseApi
 } from '../base'
 
-export class SessionApi extends BaseApi {
+export class SessionsApi extends BaseApi {
   basePath = 'auth'
 
   constructor(config?: any) {

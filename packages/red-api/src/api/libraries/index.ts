@@ -16,7 +16,7 @@ import {
 } from './delete';
 
 
-export class LibraryApi extends BaseApi {
+export class LibrariesApi extends BaseApi {
   basePath = 'libraries'
 
   public read: ReadLibraries

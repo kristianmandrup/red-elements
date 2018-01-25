@@ -1,5 +1,5 @@
 export {
   IRED,
   TYPES,
-  container
+  // container
 } from '@tecla5/red-base/src/_infra'

@@ -8,7 +8,7 @@ export interface IApiData {
 }
 
 export class BaseApiData extends BaseApiMethod {
-  async one(data: any, id: string): Promise<any> {
+  async one(data: any, id?: string): Promise<any> {
     return await this._doOneData(data, id)
   }
 

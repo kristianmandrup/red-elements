@@ -1,5 +1,9 @@
 export {
   Context,
+  IRED,
+  TYPES,
+  container,
+
   INodeDef,
   INode,
   INodeSet,
@@ -10,6 +14,6 @@ export {
   ISubflow,
   IEvents,
   EventType,
-  IEvent
+  IEvent,
 } from './src'
 
