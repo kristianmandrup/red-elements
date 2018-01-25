@@ -34,6 +34,8 @@ export {
   TabInfoTips
 }
 
+import marked from 'marked'
+
 export class SidebarTabInfo extends Context {
   createStack(options) {
     // legacy: ctx.stack.create
