@@ -9,6 +9,10 @@ export class DiffMerger {
    */
   mergeDiff(diff: any) {
 
+    const {
+      RED,
+    } = this.diff
+
     var currentConfig = diff.localDiff.currentConfig;
     var localDiff = diff.localDiff;
     var remoteDiff = diff.remoteDiff;
@@ -31,7 +35,7 @@ export class DiffMerger {
     var localChangedStates = {};
     for (id in localDiff.newConfig.all) {
       if (localDiff.newConfig.all.hasOwnProperty(id)) {
-        node = this.RED.nodes.node(id);
+        node = RED.nodes.node(id);
         if (resolutions[id] === 'local') {
           if (node) {
             nodeChangedStates[id] = node.changed;
@@ -52,7 +56,7 @@ export class DiffMerger {
     }
     for (id in remoteDiff.added) {
       if (remoteDiff.added.hasOwnProperty(id)) {
-        node = this.RED.nodes.node(id);
+        node = RED.nodes.node(id);
         if (node) {
           nodeChangedStates[id] = node.changed;
         }
@@ -64,27 +68,27 @@ export class DiffMerger {
     }
     var historyEvent = {
       t: "replace",
-      config: this.RED.nodes.createCompleteNodeSet(),
+      config: RED.nodes.createCompleteNodeSet(),
       changed: nodeChangedStates,
-      dirty: this.RED.nodes.dirty(),
-      rev: this.RED.nodes.version()
+      dirty: RED.nodes.dirty(),
+      rev: RED.nodes.version()
     }
 
-    this.RED.history.push(historyEvent);
+    RED.history.push(historyEvent);
 
-    this.RED.nodes.clear();
-    var imported = this.RED.nodes.import(newConfig);
+    RED.nodes.clear();
+    var imported = RED.nodes.import(newConfig);
     imported[0].forEach((n) => {
       if (nodeChangedStates[n.id] || localChangedStates[n.id]) {
         n.changed = true;
       }
     })
 
-    this.RED.nodes.version(remoteDiff.rev);
+    RED.nodes.version(remoteDiff.rev);
 
-    this.RED.view.redraw(true);
-    this.RED.palette.refresh();
-    this.RED.workspaces.refresh();
-    this.RED.sidebar.config.refresh();
+    RED.view.redraw(true);
+    RED.palette.refresh();
+    RED.workspaces.refresh();
+    RED.sidebar.config.refresh();
   }
 }

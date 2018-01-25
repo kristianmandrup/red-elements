@@ -4,7 +4,7 @@ import {
 } from '../../common'
 
 import { log } from 'util';
-import { FlowsApi } from '@tecla5/red-runtime/src/api/flows-api';
+import { FlowsApi } from '@tecla5/red-runtime/src';
 import { FlowsLoader } from './flows-loader';
 import { DiffPanel } from './diff-panel';
 import { DiffResolver } from './diff-resolver';

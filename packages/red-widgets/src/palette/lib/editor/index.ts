@@ -14,7 +14,7 @@
  * limitations under the License.
  **/
 import { Context, $, EditableList, Searchbox } from '../../../common'
-import { NodesApi } from '@tecla5/red-runtime/src/api/nodes-api';
+import { NodesApi } from '@tecla5/red-runtime/src';
 import { PaletteEditorConfiguration } from './configuration';
 import { PaletteEditorNodeManager } from './node-manager/node-manager';
 

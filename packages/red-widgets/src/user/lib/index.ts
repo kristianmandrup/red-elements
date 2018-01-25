@@ -20,7 +20,7 @@ import {
 
 global.jQuery = $
 import 'jquery-ui-dist/jquery-ui'
-import { SessionApi } from '../../../../red-runtime/src/api/session-api';
+import { SessionApi } from '../../../../red-api';
 import { UserServer } from './server/index';
 import { UserConfiguration } from './configuration';
 import { UserDisplay } from './display';

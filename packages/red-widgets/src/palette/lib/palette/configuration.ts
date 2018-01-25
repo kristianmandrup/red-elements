@@ -1,10 +1,13 @@
 import { Context, $, EditableList, Searchbox } from '../../../common'
 import { Palette } from './';
+import { PaletteCategoryContainer } from './category-container'
 
 export class PaletteConfiguration extends Context {
+
   constructor(public palette: Palette) {
     super()
   }
+
 
   configure() {
     const { RED } = this
@@ -12,6 +15,7 @@ export class PaletteConfiguration extends Context {
     // make jquery Widget factories available for jQuery elements
     new Searchbox()
     new EditableList()
+    
 
     const {
       addNodeType,
@@ -19,14 +23,18 @@ export class PaletteConfiguration extends Context {
       showNodeType,
       hideNodeType,
       filterChange,
-      categoryContainers
+      categoryContainers,
+      createCategoryContainer,
+      coreCategories
     } = this.rebind([
         'addNodeType',
         'removeNodeType',
         'showNodeType',
         'hideNodeType',
         'filterChange',
-        'categoryContainers'
+        'categoryContainers',
+        'createCategoryContainer',
+        'coreCategories'
       ], this.palette)
 
     RED.events.on('registry:node-type-added', function (nodeType) {
@@ -92,7 +100,7 @@ export class PaletteConfiguration extends Context {
       categoryList = coreCategories
     }
     categoryList.forEach((category) => {
-      this.createCategoryContainer(category, RED._("palette.label." + category, {
+      createCategoryContainer(category, RED._("palette.label." + category, {
         defaultValue: category
       }));
     });
