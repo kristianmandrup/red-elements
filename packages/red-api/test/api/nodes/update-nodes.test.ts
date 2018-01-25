@@ -1,6 +1,6 @@
 import {
   NodesApi
-} from '../../../'
+} from '../../../src'
 
 import * as nock from 'nock'
 import { expectObj, expectError, expectNotError } from '../../_infra/helpers';

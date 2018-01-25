@@ -1,47 +1,49 @@
 import {
-  DeployApi
-} from '../../../'
+  LibraryApi
+} from '../../../src'
 
 import * as nock from 'nock'
 import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
 
-class Deploy {
-  name: string = 'deploy'
+class Library {
+  name: string = 'library'
 
   constructor() { }
 }
 
-function create(deploy: Deploy) {
-  return new DeployApi({
-    $context: deploy
+function create(library: Library) {
+  return new LibraryApi({
+    $context: library
   })
 }
 
 let api
 beforeEach(() => {
-  const deploy = new Deploy()
-  api = create(deploy)
+  const library = new Library()
+  api = create(library)
 })
 
-test('DeployApi: create', () => {
+test('LibraryApi: create', () => {
   expectObj(api)
 })
 
 
 
-test('DeployApi: create', () => {
+test('LibraryApi: create', () => {
   expectObj(api)
 })
+
+const basePath = 'libraries'
 
 function simulateResponseCode(code) {
   return nock(/localhost/)
-    .get('deploy')
+    .get('libraries')
     .reply(code);
 }
 
 function simulateResponseOK(data = {}) {
   return nock(/localhost/)
-    .get('deploy')
+    .get('libraries')
     .reply(200, data);
 }
 
@@ -56,22 +58,22 @@ async function load() {
   }
 }
 
-describe('DeployApi: load - server error - fails', () => {
+describe('LibraryApi: load - server error - fails', () => {
 
-  let api, deploy
+  let api, library
   beforeEach(() => {
-    deploy = new Deploy()
-    api = create(deploy)
+    library = new Library()
+    api = create(library)
   })
 
-  test('200 OK - missing deploy - fails', async () => {
-    deploy.deploy = null
+  test('200 OK - missing library - fails', async () => {
+    library.library = null
     simulateResponseOK() // OK
     const result = await load()
     expectError(result)
   })
 
-  test('200 OK - has deploy - no fail', async () => {
+  test('200 OK - has library - no fail', async () => {
     simulateResponseOK() // OK
     const result = await load()
     expectNotError(result)
@@ -79,13 +81,13 @@ describe('DeployApi: load - server error - fails', () => {
 })
 
 
-describe('DeployApi: load - server error - fails', () => {
+describe('LibraryApi: load - server error - fails', () => {
   const errorCodes = [401, 403, 404, 408]
 
-  let api, deploy
+  let api, library
   beforeEach(() => {
-    deploy = new Deploy()
-    api = create(deploy)
+    library = new Library()
+    api = create(library)
   })
 
   errorCodes.map(errorCode => {

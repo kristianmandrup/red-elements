@@ -1,47 +1,47 @@
 import {
-  I18nCatalogApi
-} from '../../../'
+  NodesApi
+} from '../../../src'
 
 import * as nock from 'nock'
 import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
 
-class Catalog {
-  name: string = 'catalog'
+class Nodes {
+  name: string = 'nodes'
 
   constructor() { }
 }
 
-function create(catalog: Catalog) {
-  return new I18nCatalogApi({
-    $context: catalog
+function create(nodes: Nodes) {
+  return new NodesApi({
+    $context: nodes
   })
 }
 
 let api
 beforeEach(() => {
-  const catalog = new Catalog()
-  api = create(catalog)
+  const nodes = new Nodes()
+  api = create(nodes)
 })
 
-test('CatalogApi: create', () => {
+test('NodesApi: create', () => {
   expectObj(api)
 })
 
 
 
-test('CatalogApi: create', () => {
+test('NodesApi: create', () => {
   expectObj(api)
 })
 
 function simulateResponseCode(code) {
   return nock(/localhost/)
-    .get('catalog')
+    .get('nodes')
     .reply(code);
 }
 
 function simulateResponseOK(data = {}) {
   return nock(/localhost/)
-    .get('catalog')
+    .get('nodes')
     .reply(200, data);
 }
 
@@ -56,22 +56,22 @@ async function load() {
   }
 }
 
-describe('CatalogApi: load - server error - fails', () => {
+describe('NodesApi: load - server error - fails', () => {
 
-  let api, catalog
+  let api, nodes
   beforeEach(() => {
-    catalog = new Catalog()
-    api = create(catalog)
+    nodes = new Nodes()
+    api = create(nodes)
   })
 
-  test('200 OK - missing catalog - fails', async () => {
-    catalog.catalog = null
+  test('200 OK - missing nodes - fails', async () => {
+    nodes.nodes = null
     simulateResponseOK() // OK
     const result = await load()
     expectError(result)
   })
 
-  test('200 OK - has catalog - no fail', async () => {
+  test('200 OK - has nodes - no fail', async () => {
     simulateResponseOK() // OK
     const result = await load()
     expectNotError(result)
@@ -79,13 +79,13 @@ describe('CatalogApi: load - server error - fails', () => {
 })
 
 
-describe('CatalogApi: load - server error - fails', () => {
+describe('NodesApi: load - server error - fails', () => {
   const errorCodes = [401, 403, 404, 408]
 
-  let api, catalog
+  let api, nodes
   beforeEach(() => {
-    catalog = new Catalog()
-    api = create(catalog)
+    nodes = new Nodes()
+    api = create(nodes)
   })
 
   errorCodes.map(errorCode => {

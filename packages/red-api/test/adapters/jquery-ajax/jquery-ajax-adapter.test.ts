@@ -1,9 +1,9 @@
 import {
   JQueryAjaxAdapter,
   SettingsApi
-} from '../../../../'
+} from '../../../src'
 
-import { expectObj, expectFunction } from '../../../_infra/helpers';
+import { expectObj, expectFunction } from '../../_infra/helpers';
 
 class Settings {
   name: string = 'settings'

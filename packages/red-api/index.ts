@@ -3,9 +3,7 @@ export {
   IBaseAdapter,
   BaseAdapter,
   IAjaxConfig,
-} from './adapters'
 
-export {
   IBaseApi,
   DeployApi,
   FlowsApi,
@@ -13,5 +11,5 @@ export {
   LibraryApi,
   NodesApi,
   SettingsApi,
-  SessionApi
-} from './api'
+  SessionApi,
+} from './src'

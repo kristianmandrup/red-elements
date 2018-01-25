@@ -1,50 +1,47 @@
 import {
-  SettingsApi
-} from '../../../'
+  NodesApi
+} from '../../../src'
 
 import * as nock from 'nock'
 import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
 
-const { log } = console
-
-const ctxSettings = {
-  get() {
-    return 'x'
-  }
-}
-
-class Settings {
-  name: string = 'settings'
-  settings = ctxSettings // needed for beforeSend of API
+class Nodes {
+  name: string = 'nodes'
 
   constructor() { }
 }
 
-function create(settings: Settings) {
-  return new SettingsApi({
-    $context: settings
+function create(nodes: Nodes) {
+  return new NodesApi({
+    $context: nodes
   })
 }
 
 let api
 beforeEach(() => {
-  const settings = new Settings()
-  api = create(settings)
+  const nodes = new Nodes()
+  api = create(nodes)
 })
 
-test('SettingsApi: create', () => {
+test('NodesApi: create', () => {
+  expectObj(api)
+})
+
+
+
+test('NodesApi: create', () => {
   expectObj(api)
 })
 
 function simulateResponseCode(code) {
   return nock(/localhost/)
-    .get('settings')
+    .get('nodes')
     .reply(code);
 }
 
 function simulateResponseOK(data = {}) {
   return nock(/localhost/)
-    .get('settings')
+    .get('nodes')
     .reply(200, data);
 }
 
@@ -59,22 +56,22 @@ async function load() {
   }
 }
 
-describe('SettingsApi: load - server error - fails', () => {
+describe('NodesApi: load - server error - fails', () => {
 
-  let api, settings
+  let api, nodes
   beforeEach(() => {
-    settings = new Settings()
-    api = create(settings)
+    nodes = new Nodes()
+    api = create(nodes)
   })
 
-  test('200 OK - missing settings - fails', async () => {
-    settings.settings = null
+  test('200 OK - missing nodes - fails', async () => {
+    nodes.nodes = null
     simulateResponseOK() // OK
     const result = await load()
     expectError(result)
   })
 
-  test('200 OK - has settings - no fail', async () => {
+  test('200 OK - has nodes - no fail', async () => {
     simulateResponseOK() // OK
     const result = await load()
     expectNotError(result)
@@ -82,22 +79,19 @@ describe('SettingsApi: load - server error - fails', () => {
 })
 
 
-describe('SettingsApi: load - server error - fails', () => {
+describe('NodesApi: load - server error - fails', () => {
   const errorCodes = [401, 403, 404, 408]
 
-  let api, settings
+  let api, nodes
   beforeEach(() => {
-    settings = new Settings()
-    api = create(settings)
+    nodes = new Nodes()
+    api = create(nodes)
   })
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
       simulateResponseCode(errorCode)
       const result = await load()
-      log({
-        result
-      })
       expectError(result)
     })
   })
