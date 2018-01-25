@@ -18,6 +18,8 @@ import {
   $
 } from '../../../../common'
 
+import { SidebarTabInitializer } from './config-nodelist-manager'
+
 import {
   I18n
 } from '@tecla5/red-runtime/src/i18n'
@@ -28,6 +30,10 @@ interface I18nWidget extends JQuery<HTMLElement> {
 }
 
 export class SidebarTab extends Context {
+
+
+  
+
   public content: HTMLElement
   public toolbar: JQuery<HTMLElement>
   public globalCategories: JQuery<HTMLElement>
@@ -39,8 +45,12 @@ export class SidebarTab extends Context {
   public showUnusedOnly: Boolean
   public categories: Object
 
+  protected initializer : SidebarTabInitializer 
+
+
   constructor(public sidebar: Sidebar) {
-    super()
+    super()    
+    
   }
 
   getOrCreateCategory(name, parent?, label?) {
@@ -129,7 +139,7 @@ export class SidebarTab extends Context {
         $('#workspace-config-node-filter-all').click();
       }
     }
-    this.refreshConfigNodeList();
+    this.initializer.refreshConfigNodeList();
     if (typeof id === "string") {
       $('#workspace-config-node-filter-all').click();
       id = id.replace(/\./g, "-");

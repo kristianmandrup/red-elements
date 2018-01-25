@@ -174,7 +174,8 @@ export class SidebarConfiguration extends Context {
     showSidebar();
 
     RED.sidebar.info = new SidebarTabInfo();
-    RED.sidebar.config = new SidebarTabConfig();
+    RED.sidebar.SidebarTab = new SidebarTab(RED.sidebar)
+    //RED.sidebar.config = new SidebarTabConfig();
     // hide info bar at start if screen rather narrow...
     if ($(window).width() < 600) {
       RED.menu.setSelected("menu-item-sidebar", false);

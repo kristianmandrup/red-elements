@@ -3,7 +3,7 @@ import {
 } from '../../context'
 
 import { Main } from "./index";
-import { NodesApi } from '@tecla5/red-runtime/src/api/nodes-api';
+import { NodesApi } from '@tecla5/red-runtime/src';
 // import { RedApi } from '@tecla5/red-runtime/src/api/red-api';
 
 interface IBody extends JQuery<HTMLElement> {

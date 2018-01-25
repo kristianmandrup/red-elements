@@ -27,9 +27,9 @@ export class ClipboardNodesExporter extends Context {
       return;
     }
 
-    const clipboard = this
+    // const clipboard = this
 
-    this.validateDialogContainer()
+    this.clipboard.validateDialogContainer()
 
     dialogContainer.empty();
     dialogContainer.append($(exportNodesDialog));

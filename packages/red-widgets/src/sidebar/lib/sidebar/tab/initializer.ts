@@ -4,10 +4,33 @@ import {
 } from '.'
 import { Tabs, Context, $ } from '../../../../common'
 
+
+import {
+  I18n
+} from '@tecla5/red-runtime/src/i18n'
+
+
+
+interface I18nWidget extends JQuery<HTMLElement> {
+  i18n: Function
+}
+
+
 export class SidebarTabInitializer extends Context {
   constructor(public sidebarTab: SidebarTab) {
     super()
+    
   }
+
+  
+  public content: HTMLElement;
+  public toolbar: JQuery<HTMLElement>
+  protected i18n: I18n
+
+  public categories: Object
+  public globalCategories: JQuery<HTMLElement>
+  public flowCategories: JQuery<HTMLElement>
+  public subflowCategories: JQuery<HTMLElement>
 
   // only called after i18n is initialized
   async init() {

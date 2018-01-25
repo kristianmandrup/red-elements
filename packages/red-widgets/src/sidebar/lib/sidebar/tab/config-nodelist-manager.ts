@@ -3,11 +3,18 @@ import {
   SidebarTab
 } from '.'
 import { Tabs, Context, $ } from '../../../../common'
+import {
+  I18n
+} from '@tecla5/red-runtime'
 
 export class SidebarTabInitializer extends Context {
   constructor(public sidebarTab: SidebarTab) {
     super()
   }
+  public categories: Object
+  public globalCategories: JQuery<HTMLElement>
+  public flowCategories: JQuery<HTMLElement>
+  public subflowCategories: JQuery<HTMLElement>
 
   createConfigNodeList(id, nodes) {
     let {
@@ -119,15 +126,15 @@ export class SidebarTabInitializer extends Context {
       "global": true
     };
 
-    this.getOrCreateCategory("global", globalCategories);
+    this.sidebarTab.getOrCreateCategory("global", globalCategories);
 
     RED.nodes.eachWorkspace((ws) => {
       validList[ws.id.replace(/\./g, "-")] = true;
-      this.getOrCreateCategory(ws.id, flowCategories, ws.label);
+      this.sidebarTab.getOrCreateCategory(ws.id, flowCategories, ws.label);
     })
     RED.nodes.eachSubflow((sf) => {
       validList[sf.id.replace(/\./g, "-")] = true;
-      this.getOrCreateCategory(sf.id, subflowCategories, sf.name);
+      this.sidebarTab.getOrCreateCategory(sf.id, subflowCategories, sf.name);
     })
     $(".workspace-config-node-category").each(function () {
       var id = $(this).attr('id').substring("workspace-config-node-category-".length);
