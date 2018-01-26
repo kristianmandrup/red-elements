@@ -1,6 +1,16 @@
 import { Context, $ } from '../../../common'
 import { Palette } from './';
 
+interface IChartSVG extends HTMLElement {
+  getIntersectionList: Function
+  createSVGRect: Function
+}
+
+import {
+  d3,
+  marked
+} from '../../../_libs'
+
 export class PaletteNodeTypeManager extends Context {
   constructor(public palette: Palette) {
     super()
@@ -23,7 +33,9 @@ export class PaletteNodeTypeManager extends Context {
     const {
       RED,
       categoryContainers,
-      marked
+      marked,
+      exclusion,
+      coreCategories
     } = this.palette
 
     let {
@@ -286,8 +298,7 @@ export class PaletteNodeTypeManager extends Context {
 
   refreshNodeTypes() {
     const {
-      RED,
-      marked
+      RED
     } = this
 
     RED.nodes.eachSubflow((sf) => {

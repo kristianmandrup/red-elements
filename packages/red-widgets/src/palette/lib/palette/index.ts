@@ -20,11 +20,6 @@ import {
 
 import * as d3 from 'd3'
 
-interface IChartSVG extends HTMLElement {
-  getIntersectionList: Function
-  createSVGRect: Function
-}
-
 export {
   PaletteEditor
 } from '../editor'
