@@ -13,4 +13,8 @@ export class BaseApiCreate extends BaseApiData {
   async one(data: any): Promise<any> {
     return await this._doOneData(data)
   }
+
+  async many(data: any[]): Promise<any> {
+    return await this._doMany(data)
+  }
 }
