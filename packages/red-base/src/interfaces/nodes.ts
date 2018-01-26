@@ -12,6 +12,7 @@ export interface INode {
   id: string,
   name?: string,
   label?: string,
+  resize?: boolean
   disabled?: boolean,
   info?: any,
   type: string,

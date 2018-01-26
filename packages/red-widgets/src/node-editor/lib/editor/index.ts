@@ -17,7 +17,9 @@ import {
   Tray
 } from '../../../tray'
 
-import marked from 'marked'
+import {
+  marked
+} from '../../../_libs'
 
 // TODO: alternatively, load from red-runtime/vendor/jsonata
 import { jsonata } from './jsonata/formatter'
@@ -28,6 +30,17 @@ import { Context } from '../../../context'
 import { NodeEditorConfiguration } from './configuration';
 import { NodeValidator } from './validator';
 import { INode } from '../../../../../red-runtime/src/interfaces/index';
+
+import {
+  SubflowDialog,
+  ConfigNodeDialog
+} from './dialog';
+
+import {
+  BufferEditor,
+  ExpressionEditor,
+  JsonEditor
+} from './edit';
 
 interface ITabSelect extends JQuery<HTMLElement> {
   i18n: Function
@@ -43,6 +56,15 @@ export class NodeEditor extends Context {
 
   protected configuration: NodeEditorConfiguration = new NodeEditorConfiguration(this)
   protected nodeValidator: NodeValidator = new NodeValidator(this)
+
+  // dialogs
+  protected subflowDialog: SubflowDialog = new SubflowDialog(this)
+  protected configNodeDialog: ConfigNodeDialog = new ConfigNodeDialog(this)
+
+  // editors
+  protected bufferEditor: BufferEditor = new BufferEditor(this)
+  protected exprEditor: ExpressionEditor = new ExpressionEditor(this)
+  protected jsonEditor: JsonEditor = new JsonEditor(this)
 
   constructor() {
     super()
@@ -102,7 +124,7 @@ export class NodeEditor extends Context {
    */
   updateNodeProperties(node: INode, outputMap?: object) {
     const {
-      ctx
+      RED
     } = this
 
     node.resize = true;
@@ -110,7 +132,7 @@ export class NodeEditor extends Context {
     var removedLinks = [];
     if (node.ports) {
       if (outputMap) {
-        ctx.nodes.eachLink(function (l) {
+        RED.nodes.eachLink(function (l) {
           if (l.source === node && outputMap.hasOwnProperty(l.sourcePort)) {
             if (outputMap[l.sourcePort] === "-1") {
               removedLinks.push(l);
@@ -124,7 +146,7 @@ export class NodeEditor extends Context {
         while (node.outputs < node.ports.length) {
           node.ports.pop();
         }
-        ctx.nodes.eachLink(function (l) {
+        RED.nodes.eachLink(function (l) {
           if (l.source === node && l.sourcePort >= node.outputs && removedLinks.indexOf(l) === -1) {
             removedLinks.push(l);
           }
@@ -136,12 +158,12 @@ export class NodeEditor extends Context {
       }
     }
     if (node.inputs === 0) {
-      removedLinks.concat(ctx.nodes.filterLinks({
+      removedLinks.concat(RED.nodes.filterLinks({
         target: node
       }));
     }
     for (var l = 0; l < removedLinks.length; l++) {
-      ctx.nodes.removeLink(removedLinks[l]);
+      RED.nodes.removeLink(removedLinks[l]);
     }
     return removedLinks;
   }
@@ -154,7 +176,7 @@ export class NodeEditor extends Context {
    */
   prepareConfigNodeSelect(node, property, type, prefix) {
     const {
-      ctx
+      RED
     } = this
 
     const {
@@ -215,11 +237,11 @@ export class NodeEditor extends Context {
       e.preventDefault();
     });
     var label = "";
-    var configNode = ctx.nodes.node(node[property]);
-    var node_def = ctx.nodes.getType(type);
+    var configNode = RED.nodes.node(node[property]);
+    var node_def = RED.nodes.getType(type);
 
     if (configNode) {
-      label = ctx.utils.getNodeLabel(configNode, configNode.id);
+      label = RED.utils.getNodeLabel(configNode, configNode.id);
     }
     input.val(label);
 
@@ -234,7 +256,7 @@ export class NodeEditor extends Context {
    */
   prepareConfigNodeButton(node, property, type, prefix) {
     const {
-      ctx,
+      RED,
     } = this
 
     const {
@@ -266,9 +288,9 @@ export class NodeEditor extends Context {
     input.after(button);
 
     if (node[property]) {
-      button.text(ctx._("editor.configEdit"));
+      button.text(RED._("editor.configEdit"));
     } else {
-      button.text(ctx._("editor.configAdd"));
+      button.text(RED._("editor.configAdd"));
     }
 
     button.click(function (e) {
@@ -287,7 +309,7 @@ export class NodeEditor extends Context {
    */
   preparePropertyEditor(node, property, prefix, definition) {
     const {
-      ctx
+      RED
     } = this
 
     this._validateStr(prefix, 'prefix', 'preparePropertyEditor')
@@ -310,12 +332,12 @@ export class NodeEditor extends Context {
         val = "";
       }
       if (definition !== undefined && definition[property].hasOwnProperty("format") && definition[property].format !== "" && input[0].nodeName === "DIV") {
-        input.html(ctx.text.format.getHtml(val, definition[property].format, {}, false, "en"));
-        ctx.text.format.attach(input[0], definition[property].format, {}, false, "en");
+        input.html(RED.text.format.getHtml(val, definition[property].format, {}, false, "en"));
+        RED.text.format.attach(input[0], definition[property].format, {}, false, "en");
       } else {
         input.val(val);
         if (input[0].nodeName === 'INPUT' || input[0].nodeName === 'TEXTAREA') {
-          ctx.text.bidi.prepareInput(input);
+          RED.text.bidi.prepareInput(input);
         }
       }
     }
@@ -442,7 +464,7 @@ export class NodeEditor extends Context {
    */
   prepareEditDialog(node, definition, prefix, done) {
     const {
-      ctx
+      RED
     } = this
 
     const {
@@ -469,7 +491,7 @@ export class NodeEditor extends Context {
     for (var d in definition.defaults) {
       if (definition.defaults.hasOwnProperty(d)) {
         if (definition.defaults[d].type) {
-          var configTypeDef = ctx.nodes.getType(definition.defaults[d].type);
+          var configTypeDef = RED.nodes.getType(definition.defaults[d].type);
           if (configTypeDef) {
             if (configTypeDef.exclusive) {
               prepareConfigNodeButton(node, d, definition.defaults[d].type, prefix);
@@ -531,7 +553,7 @@ export class NodeEditor extends Context {
 
   getEditStackTitle() {
     const {
-      ctx,
+      RED,
       editStack
     } = this
 
@@ -542,18 +564,18 @@ export class NodeEditor extends Context {
 
       var label = node.type;
       if (node.type === '_expression') {
-        label = ctx._("expressionEditor.title");
+        label = RED._("expressionEditor.title");
       } else if (node.type === '_json') {
-        label = ctx._("jsonEditor.title");
+        label = RED._("jsonEditor.title");
       } else if (node.type === '_buffer') {
-        label = ctx._("bufferEditor.title");
+        label = RED._("bufferEditor.title");
       } else if (node.type === 'subflow') {
-        label = ctx._("subflow.editSubflow", {
+        label = RED._("subflow.editSubflow", {
           name: node.name
         })
       } else if (node.type.indexOf("subflow:") === 0) {
-        var subflow = ctx.nodes.subflow(node.type.substring(8));
-        label = ctx._("subflow.editSubflow", {
+        var subflow = RED.nodes.subflow(node.type.substring(8));
+        label = RED._("subflow.editSubflow", {
           name: subflow.name
         })
       } else {
@@ -565,12 +587,12 @@ export class NodeEditor extends Context {
           }
         }
         if (i === editStack.length - 1) {
-          if (ctx.nodes.node(node.id)) {
-            label = ctx._("editor.editNode", {
+          if (RED.nodes.node(node.id)) {
+            label = RED._("editor.editNode", {
               type: label
             });
           } else {
-            label = ctx._("editor.addNewConfig", {
+            label = RED._("editor.addNewConfig", {
               type: label
             });
           }
@@ -621,7 +643,7 @@ export class NodeEditor extends Context {
 
   refreshLabelForm(container, node) {
     let {
-      ctx,
+      RED,
     } = this
 
     const {
@@ -634,8 +656,8 @@ export class NodeEditor extends Context {
 
     this._validateNode(node, 'node', 'refreshLabelForm')
 
-    var inputPlaceholder = node._def.inputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
-    var outputPlaceholder = node._def.outputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
+    var inputPlaceholder = node._def.inputLabels ? RED._("editor.defaultLabel") : RED._("editor.noDefaultLabel");
+    var outputPlaceholder = node._def.outputLabels ? RED._("editor.defaultLabel") : RED._("editor.noDefaultLabel");
 
     var inputsDiv = $("#node-label-form-inputs");
     var outputsDiv = $("#node-label-form-outputs");
@@ -741,7 +763,7 @@ export class NodeEditor extends Context {
 
   buildLabelRow(type, index, value, placeHolder) {
     const {
-      ctx
+      RED
     } = this
 
     var result = $('<div>', {
@@ -749,7 +771,7 @@ export class NodeEditor extends Context {
     });
 
     if (type === undefined) {
-      $('<span>').html(ctx._("editor.noDefaultLabel")).appendTo(result);
+      $('<span>').html(RED._("editor.noDefaultLabel")).appendTo(result);
       result.addClass("node-label-form-none");
     } else {
       this._validateStr(type, 'type', 'buildLabelRow')
@@ -776,7 +798,7 @@ export class NodeEditor extends Context {
 
   buildLabelForm(container, node) {
     const {
-      ctx
+      RED
     } = this
 
     const {
@@ -800,8 +822,8 @@ export class NodeEditor extends Context {
     var inputLabels = node.inputLabels || [];
     var outputLabels = node.outputLabels || [];
 
-    var inputPlaceholder = node._def.inputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
-    var outputPlaceholder = node._def.outputLabels ? ctx._("editor.defaultLabel") : ctx._("editor.noDefaultLabel");
+    var inputPlaceholder = node._def.inputLabels ? RED._("editor.defaultLabel") : RED._("editor.noDefaultLabel");
+    var outputPlaceholder = node._def.outputLabels ? RED._("editor.defaultLabel") : RED._("editor.noDefaultLabel");
 
     var i, row;
     $('<div class="form-row"><span data-i18n="editor.labelInputs"></span><div id="node-label-form-inputs"></div></div>').appendTo(dialogForm);
@@ -826,7 +848,7 @@ export class NodeEditor extends Context {
 
   showEditDialog(node) {
     let {
-      ctx,
+      RED,
       editStack,
     } = this
 
@@ -854,7 +876,7 @@ export class NodeEditor extends Context {
 
     var editing_node = node;
     editStack.push(node);
-    ctx.view.state(ctx.state.EDITING);
+    RED.view.state(RED.state.EDITING);
 
     let type = node.type;
     this._validateStr(type, 'node.type', 'showEditDialog')
@@ -868,12 +890,12 @@ export class NodeEditor extends Context {
       buttons: [{
         id: "node-dialog-delete",
         class: 'leftButton',
-        text: ctx._("common.label.delete"),
+        text: RED._("common.label.delete"),
         click: () => {
-          var startDirty = ctx.nodes.dirty();
+          var startDirty = RED.nodes.dirty();
           var removedNodes = [];
           var removedLinks = [];
-          var removedEntities = ctx.nodes.remove(editing_node.id);
+          var removedEntities = RED.nodes.remove(editing_node.id);
           removedNodes.push(editing_node);
           removedNodes = removedNodes.concat(removedEntities.nodes);
           removedLinks = removedLinks.concat(removedEntities.links);
@@ -886,15 +908,15 @@ export class NodeEditor extends Context {
             dirty: startDirty
           }
 
-          ctx.nodes.dirty(true);
-          ctx.view.redraw(true);
-          ctx.history.push(historyEvent);
-          ctx.tray.close();
+          RED.nodes.dirty(true);
+          RED.view.redraw(true);
+          RED.history.push(historyEvent);
+          RED.tray.close();
         }
       },
       {
         id: "node-dialog-cancel",
-        text: ctx._("common.label.cancel"),
+        text: RED._("common.label.cancel"),
         click: () => {
           if (editing_node._def) {
             if (editing_node._def.oneditcancel) {
@@ -909,7 +931,7 @@ export class NodeEditor extends Context {
               if (editing_node._def.defaults.hasOwnProperty(d)) {
                 var def = editing_node._def.defaults[d];
                 if (def.type) {
-                  var configTypeDef = ctx.nodes.getType(def.type);
+                  var configTypeDef = RED.nodes.getType(def.type);
                   if (configTypeDef && configTypeDef.exclusive) {
                     var input = $("#node-input-" + d).val() || "";
                     if (input !== "" && !editing_node[d]) {
@@ -917,7 +939,7 @@ export class NodeEditor extends Context {
                       // has just been added. As the user is cancelling
                       // the edit, need to delete the just-added config
                       // node so that it doesn't get orphaned.
-                      ctx.nodes.remove(input);
+                      RED.nodes.remove(input);
                     }
                   }
                 }
@@ -925,17 +947,17 @@ export class NodeEditor extends Context {
 
             }
           }
-          ctx.tray.close();
+          RED.tray.close();
         }
       },
       {
         id: "node-dialog-ok",
-        text: ctx._("common.label.done"),
+        text: RED._("common.label.done"),
         class: "primary",
         click: () => {
           var changes: any = {};
           var changed = false;
-          var wasDirty = ctx.nodes.dirty();
+          var wasDirty = RED.nodes.dirty();
           var d;
           var outputMap;
 
@@ -1034,12 +1056,12 @@ export class NodeEditor extends Context {
                         newValue = "";
                       }
                       // Change to a related config node
-                      var configNode = ctx.nodes.node(editing_node[d]);
+                      var configNode = RED.nodes.node(editing_node[d]);
                       if (configNode) {
                         var users = configNode.users;
                         users.splice(users.indexOf(editing_node), 1);
                       }
-                      configNode = ctx.nodes.node(newValue);
+                      configNode = RED.nodes.node(newValue);
                       if (configNode) {
                         configNode.users.push(editing_node);
                       }
@@ -1107,14 +1129,14 @@ export class NodeEditor extends Context {
           if (changed) {
             var wasChanged = editing_node.changed;
             editing_node.changed = true;
-            ctx.nodes.dirty(true);
+            RED.nodes.dirty(true);
 
-            var activeSubflow = ctx.nodes.subflow(ctx.workspaces.active());
+            var activeSubflow = RED.nodes.subflow(RED.workspaces.active());
             var subflowInstances = null;
             if (activeSubflow) {
               subflowInstances = [];
-              ctx.nodes.eachNode(function (n) {
-                if (n.type == "subflow:" + ctx.workspaces.active()) {
+              RED.nodes.eachNode(function (n) {
+                if (n.type == "subflow:" + RED.workspaces.active()) {
                   subflowInstances.push({
                     id: n.id,
                     changed: n.changed
@@ -1143,12 +1165,12 @@ export class NodeEditor extends Context {
                 instances: subflowInstances
               }
             }
-            ctx.history.push(historyEvent);
+            RED.history.push(historyEvent);
           }
           editing_node.dirty = true;
           validateNode(editing_node);
-          ctx.events.emit("editor:save", editing_node);
-          ctx.tray.close();
+          RED.events.emit("editor:save", editing_node);
+          RED.tray.close();
         }
       }
       ],
@@ -1179,20 +1201,20 @@ export class NodeEditor extends Context {
         var trayBody = tray.find('.editor-tray-body');
         trayBody.parent().css('overflow', 'hidden');
 
-        this._validateObj(ctx.stack, 'ctx.stack', 'showEditDialog trayOptions:open')
+        this._validateObj(RED.stack, 'RED.stack', 'showEditDialog trayOptions:open')
 
-        var stack = ctx.stack.create({
+        var stack = RED.stack.create({
           container: trayBody,
           singleExpanded: true
         });
         var nodeProperties = stack.add({
-          title: ctx._("editor.nodeProperties"),
+          title: RED._("editor.nodeProperties"),
           expanded: true
         });
         nodeProperties.content.addClass("editor-tray-content");
 
         var portLabels = stack.add({
-          title: ctx._("editor.portLabels"),
+          title: RED._("editor.portLabels"),
           onexpand: function () {
             refreshLabelForm(this.content, node);
           }
@@ -1200,7 +1222,7 @@ export class NodeEditor extends Context {
         portLabels.content.addClass("editor-tray-content");
 
         if (editing_node) {
-          ctx.sidebar.info.refresh(editing_node);
+          RED.sidebar.info.refresh(editing_node);
         }
         var ns;
         const { set } = node._def
@@ -1231,19 +1253,19 @@ export class NodeEditor extends Context {
         });
       },
       close: () => {
-        if (ctx.view.state() != ctx.state.IMPORT_DRAGGING) {
-          ctx.view.state(ctx.state.DEFAULT);
+        if (RED.view.state() != RED.state.IMPORT_DRAGGING) {
+          RED.view.state(RED.state.DEFAULT);
         }
         if (editing_node) {
-          ctx.sidebar.info.refresh(editing_node);
+          RED.sidebar.info.refresh(editing_node);
         }
-        ctx.workspaces.refresh();
-        ctx.view.redraw(true);
+        RED.workspaces.refresh();
+        RED.view.redraw(true);
         editStack.pop();
       },
       show: () => {
         if (editing_node) {
-          ctx.sidebar.info.refresh(editing_node);
+          RED.sidebar.info.refresh(editing_node);
         }
       }
     }
@@ -1256,17 +1278,18 @@ export class NodeEditor extends Context {
       trayOptions.buttons.unshift({
         id,
         class: 'leftButton',
-        text: ctx._("subflow.edit"),
+        text: RED._("subflow.edit"),
         click: () => {
-          ctx.workspaces.show(id);
+          RED.workspaces.show(id);
           $("#node-dialog-ok").click();
         }
       });
     }
 
-    ctx.tray.show(trayOptions);
+    RED.tray.show(trayOptions);
     return this
   }
+
   /**
    * name - name of the property that holds this config node
    * type - type of config node
@@ -1274,365 +1297,7 @@ export class NodeEditor extends Context {
    * prefix - the input prefix of the parent property
    */
   showEditConfigNodeDialog(name, type, id, prefix) {
-    const {
-      ctx,
-      editStack,
-    } = this
-
-    const {
-      getEditStackTitle,
-      buildEditForm,
-      prepareEditDialog,
-      validateNode,
-      updateNodeCredentials,
-      updateConfigNodeSelect
-    } = this.rebind([
-        'getEditStackTitle',
-        'buildEditForm',
-        'prepareEditDialog',
-        'validateNode',
-        'updateNodeCredentials',
-        'updateConfigNodeSelect'
-      ])
-
-    this._validateStr(prefix, 'prefix', 'showEditConfigNodeDialog')
-
-    var adding = (id == "_ADD_");
-    var node_def = ctx.nodes.getType(type);
-    var editing_config_node = ctx.nodes.node(id);
-
-    this._validateNodeDef(node_def, 'node_def', 'showEditConfigNodeDialog')
-
-    var ns;
-    if (node_def.set.module === "node-red") {
-      ns = "node-red";
-    } else {
-      ns = node_def.set.id;
-    }
-    var configNodeScope = ""; // default to global
-    var activeSubflow = ctx.nodes.subflow(ctx.workspaces.active());
-    if (activeSubflow) {
-      configNodeScope = activeSubflow.id;
-    }
-    if (editing_config_node == null) {
-      editing_config_node = {
-        id: ctx.nodes.id(),
-        _def: node_def,
-        type: type,
-        z: configNodeScope,
-        users: []
-      }
-      for (var d in node_def.defaults) {
-        if (node_def.defaults[d].value) {
-          editing_config_node[d] = JSON.parse(JSON.stringify(node_def.defaults[d].value));
-        }
-      }
-      editing_config_node["_"] = node_def._;
-    }
-    editStack.push(editing_config_node);
-
-    ctx.view.state(ctx.state.EDITING);
-    var trayOptions = {
-      buttons: [],
-      title: getEditStackTitle(), //(adding?ctx._("editor.addNewConfig", {type:type}):ctx._("editor.editConfig", {type:type})),
-      resize: function () {
-        if (editing_config_node && editing_config_node._def.oneditresize) {
-          var form = $("#node-config-dialog-edit-form");
-          try {
-            editing_config_node._def.oneditresize.call(editing_config_node, {
-              width: form.width(),
-              height: form.height()
-            });
-          } catch (err) {
-            log("oneditresize", editing_config_node.id, editing_config_node.type, err.toString());
-          }
-        }
-      },
-      open: function (tray, done) {
-        var trayHeader = tray.find(".editor-tray-header");
-        var trayFooter = tray.find(".editor-tray-footer");
-
-        if (node_def.hasUsers !== false) {
-          trayFooter.prepend('<div id="node-config-dialog-user-count"><i class="fa fa-info-circle"></i> <span></span></div>');
-        }
-        trayFooter.append('<span id="node-config-dialog-scope-container"><span id="node-config-dialog-scope-warning" data-i18n="[title]editor.errors.scopeChange"><i class="fa fa-warning"></i></span><select id="node-config-dialog-scope"></select></span>');
-
-        var dialogForm = buildEditForm(tray.find('.editor-tray-body'), "node-config-dialog-edit-form", type, ns);
-
-        prepareEditDialog(editing_config_node, node_def, "node-config-input", function () {
-          if (editing_config_node._def.exclusive) {
-            $("#node-config-dialog-scope").hide();
-          } else {
-            $("#node-config-dialog-scope").show();
-          }
-          $("#node-config-dialog-scope-warning").hide();
-
-          var nodeUserFlows = {};
-          editing_config_node.users.forEach(function (n) {
-            nodeUserFlows[n.z] = true;
-          });
-          var flowCount = Object.keys(nodeUserFlows).length;
-          var tabSelect = <ITabSelect>$("#node-config-dialog-scope").empty();
-          tabSelect.off("change");
-          tabSelect.append('<option value=""' + (!editing_config_node.z ? " selected" : "") + ' data-i18n="sidebar.config.global"></option>');
-          tabSelect.append('<option disabled data-i18n="sidebar.config.flows"></option>');
-          ctx.nodes.eachWorkspace(function (ws) {
-            var workspaceLabel = ws.label;
-            if (nodeUserFlows[ws.id]) {
-              workspaceLabel = "* " + workspaceLabel;
-            }
-            tabSelect.append('<option value="' + ws.id + '"' + (ws.id == editing_config_node.z ? " selected" : "") + '>' + workspaceLabel + '</option>');
-          });
-          tabSelect.append('<option disabled data-i18n="sidebar.config.subflows"></option>');
-          ctx.nodes.eachSubflow(function (ws) {
-            var workspaceLabel = ws.name;
-            if (nodeUserFlows[ws.id]) {
-              workspaceLabel = "* " + workspaceLabel;
-            }
-            tabSelect.append('<option value="' + ws.id + '"' + (ws.id == editing_config_node.z ? " selected" : "") + '>' + workspaceLabel + '</option>');
-          });
-          if (flowCount > 0) {
-            tabSelect.on('change', function () {
-              var newScope: string = String($(this).val());
-              if (newScope === '') {
-                // global scope - everyone can use it
-                $("#node-config-dialog-scope-warning").hide();
-              } else if (!nodeUserFlows[parseInt(newScope)] || flowCount > 1) {
-                // a user will loose access to it
-                $("#node-config-dialog-scope-warning").show();
-              } else {
-                $("#node-config-dialog-scope-warning").hide();
-              }
-            });
-          }
-
-          tabSelect.i18n();
-          dialogForm.i18n();
-
-          if (node_def.hasUsers !== false) {
-            $("#node-config-dialog-user-count").find("span").html(ctx._("editor.nodesUse", {
-              count: editing_config_node.users.length
-            })).parent().show();
-          }
-          done();
-        });
-      },
-      close: function () {
-        ctx.workspaces.refresh();
-        editStack.pop();
-      },
-      show: function () {
-        if (editing_config_node) {
-          ctx.sidebar.info.refresh(editing_config_node);
-        }
-      }
-    }
-    trayOptions.buttons = [{
-      id: "node-config-dialog-cancel",
-      text: ctx._("common.label.cancel"),
-      click: function () {
-        var configType = type;
-        var configId = editing_config_node.id;
-        var configAdding = adding;
-        var configTypeDef = ctx.nodes.getType(configType);
-
-        if (configTypeDef.oneditcancel) {
-          // TODO: what to pass as this to call
-          if (configTypeDef.oneditcancel) {
-            var cn = ctx.nodes.node(configId);
-            if (cn) {
-              try {
-                configTypeDef.oneditcancel.call(cn, false);
-              } catch (err) {
-                log("oneditcancel", cn.id, cn.type, err.toString());
-              }
-            } else {
-              try {
-                configTypeDef.oneditcancel.call({
-                  id: configId
-                }, true);
-              } catch (err) {
-                log("oneditcancel", configId, configType, err.toString());
-              }
-            }
-          }
-        }
-        ctx.tray.close();
-      }
-    },
-    {
-      id: "node-config-dialog-ok",
-      text: adding ? ctx._("editor.configAdd") : ctx._("editor.configUpdate"),
-      class: "primary",
-      click: function () {
-        var configProperty = name;
-        var configId = editing_config_node.id;
-        var configType = type;
-        var configAdding = adding;
-        var configTypeDef = ctx.nodes.getType(configType);
-        var d;
-        var input;
-        var scope = $("#node-config-dialog-scope").val();
-
-        if (configTypeDef.oneditsave) {
-          try {
-            configTypeDef.oneditsave.call(editing_config_node);
-          } catch (err) {
-            log("oneditsave", editing_config_node.id, editing_config_node.type, err.toString());
-          }
-        }
-
-        for (d in configTypeDef.defaults) {
-          if (configTypeDef.defaults.hasOwnProperty(d)) {
-            var newValue;
-            input = $("#node-config-input-" + d);
-            if (input.attr('type') === "checkbox") {
-              newValue = input.prop('checked');
-            } else if ("format" in configTypeDef.defaults[d] && configTypeDef.defaults[d].format !== "" && input[0].nodeName === "DIV") {
-              newValue = input.text();
-            } else {
-              newValue = input.val();
-            }
-            if (newValue != null && newValue !== editing_config_node[d]) {
-              if (editing_config_node._def.defaults[d].type) {
-                if (newValue == "_ADD_") {
-                  newValue = "";
-                }
-                // Change to a related config node
-                var configNode = ctx.nodes.node(editing_config_node[d]);
-                if (configNode) {
-                  var users = configNode.users;
-                  users.splice(users.indexOf(editing_config_node), 1);
-                }
-                configNode = ctx.nodes.node(newValue);
-                if (configNode) {
-                  configNode.users.push(editing_config_node);
-                }
-              }
-              editing_config_node[d] = newValue;
-            }
-          }
-        }
-        editing_config_node.label = configTypeDef.label;
-        editing_config_node.z = scope;
-
-        if (scope) {
-          // Search for nodes that use this one that are no longer
-          // in scope, so must be removed
-          editing_config_node.users = editing_config_node.users.filter(function (n) {
-            var keep = true;
-            for (var d in n._def.defaults) {
-              if (n._def.defaults.hasOwnProperty(d)) {
-                if (n._def.defaults[d].type === editing_config_node.type &&
-                  n[d] === editing_config_node.id &&
-                  n.z !== scope) {
-                  keep = false;
-                  // Remove the reference to this node
-                  // and revalidate
-                  n[d] = null;
-                  n.dirty = true;
-                  n.changed = true;
-                  validateNode(n);
-                }
-              }
-            }
-            return keep;
-          });
-        }
-
-        if (configAdding) {
-          ctx.nodes.add(editing_config_node);
-        }
-
-        if (configTypeDef.credentials) {
-          updateNodeCredentials(editing_config_node, configTypeDef.credentials, "node-config-input");
-        }
-        validateNode(editing_config_node);
-        var validatedNodes = {};
-        validatedNodes[editing_config_node.id] = true;
-
-        var userStack = editing_config_node.users.slice();
-        while (userStack.length > 0) {
-          var user = userStack.pop();
-          if (!validatedNodes[user.id]) {
-            validatedNodes[user.id] = true;
-            if (user.users) {
-              userStack = userStack.concat(user.users);
-            }
-            validateNode(user);
-          }
-        }
-        ctx.nodes.dirty(true);
-        ctx.view.redraw(true);
-        if (!configAdding) {
-          ctx.events.emit("editor:save", editing_config_node);
-        }
-        ctx.tray.close(function () {
-          updateConfigNodeSelect(configProperty, configType, editing_config_node.id, prefix);
-        });
-      }
-    }
-    ];
-
-    if (!adding) {
-      trayOptions.buttons.unshift({
-        class: 'leftButton',
-        text: ctx._("editor.configDelete"), //'<i class="fa fa-trash"></i>',
-        click: function () {
-          var configProperty = name;
-          var configId = editing_config_node.id;
-          var configType = type;
-          var configTypeDef = ctx.nodes.getType(configType);
-
-          try {
-
-            if (configTypeDef.ondelete) {
-              // Deprecated: never documented but used by some early nodes
-              log("Deprecated API warning: config node type ", configType, " has an ondelete function - should be oneditdelete");
-              configTypeDef.ondelete.call(editing_config_node);
-            }
-            if (configTypeDef.oneditdelete) {
-              configTypeDef.oneditdelete.call(editing_config_node);
-            }
-          } catch (err) {
-            log("oneditdelete", editing_config_node.id, editing_config_node.type, err.toString());
-          }
-
-          var historyEvent = {
-            t: 'delete',
-            nodes: [editing_config_node],
-            changes: {},
-            dirty: ctx.nodes.dirty()
-          }
-          for (var i = 0; i < editing_config_node.users.length; i++) {
-            var user = editing_config_node.users[i];
-            historyEvent.changes[user.id] = {
-              changed: user.changed,
-              valid: user.valid
-            };
-            for (var d in user._def.defaults) {
-              if (user._def.defaults.hasOwnProperty(d) && user[d] == configId) {
-                historyEvent.changes[user.id][d] = configId
-                user[d] = "";
-                user.changed = true;
-                user.dirty = true;
-              }
-            }
-            validateNode(user);
-          }
-          ctx.nodes.remove(configId);
-          ctx.nodes.dirty(true);
-          ctx.view.redraw(true);
-          ctx.history.push(historyEvent);
-          ctx.tray.close(function () {
-            updateConfigNodeSelect(configProperty, configType, "", prefix);
-          });
-        }
-      });
-    }
-
-    ctx.tray.show(trayOptions);
-    return this
+    this.configNodeDialog.showEditConfigNodeDialog(name, type, id, prefix)
   }
 
   defaultConfigNodeSort(A, B) {
@@ -1646,7 +1311,7 @@ export class NodeEditor extends Context {
 
   updateConfigNodeSelect(name, type, value, prefix) {
     const {
-      ctx,
+      RED,
       defaultConfigNodeSort
     } = this
     // if prefix is null, there is no config select to update
@@ -1654,27 +1319,27 @@ export class NodeEditor extends Context {
       var button = $("#" + prefix + "-edit-" + name);
       if (button.length) {
         if (value) {
-          button.text(ctx._("editor.configEdit"));
+          button.text(RED._("editor.configEdit"));
         } else {
-          button.text(ctx._("editor.configAdd"));
+          button.text(RED._("editor.configAdd"));
         }
         $("#" + prefix + "-" + name).val(value);
       } else {
 
         var select = $("#" + prefix + "-" + name);
-        var node_def = ctx.nodes.getType(type);
+        var node_def = RED.nodes.getType(type);
         select.children().remove();
 
-        var activeWorkspace = ctx.nodes.workspace(ctx.workspaces.active());
+        var activeWorkspace = RED.nodes.workspace(RED.workspaces.active());
         if (!activeWorkspace) {
-          activeWorkspace = ctx.nodes.subflow(ctx.workspaces.active());
+          activeWorkspace = RED.nodes.subflow(RED.workspaces.active());
         }
 
         var configNodes = [];
 
-        ctx.nodes.eachConfig(function (config) {
+        RED.nodes.eachConfig(function (config) {
           if (config.type == type && (!config.z || config.z === activeWorkspace.id)) {
-            var label = ctx.utils.getNodeLabel(config, config.id);
+            var label = RED.utils.getNodeLabel(config, config.id);
             config.__label__ = label;
             configNodes.push(config);
           }
@@ -1690,11 +1355,11 @@ export class NodeEditor extends Context {
         }
 
         configNodes.forEach(function (cn) {
-          select.append('<option value="' + cn.id + '"' + (value == cn.id ? " selected" : "") + '>' + ctx.text.bidi.enforceTextDirectionWithUCC(cn.__label__) + '</option>');
+          select.append('<option value="' + cn.id + '"' + (value == cn.id ? " selected" : "") + '>' + RED.text.bidi.enforceTextDirectionWithUCC(cn.__label__) + '</option>');
           delete cn.__label__;
         });
 
-        select.append('<option value="_ADD_"' + (value === "" ? " selected" : "") + '>' + ctx._("editor.addNewType", {
+        select.append('<option value="_ADD_"' + (value === "" ? " selected" : "") + '>' + RED._("editor.addNewType", {
           type: type
         }) + '</option>');
         window.setTimeout(function () {
@@ -1706,646 +1371,19 @@ export class NodeEditor extends Context {
   }
 
   showEditSubflowDialog(subflow) {
-    let {
-      ctx,
-      editStack,
-    } = this
+    this.subflowDialog.showEditSubflowDialog(subflow)
+  }
 
-    let {
-      getEditStackTitle,
-      buildEditForm,
-      updateNodeProperties,
-      buildLabelForm
-    } = this.rebind([
-        'getEditStackTitle',
-        'buildEditForm',
-        'updateNodeProperties',
-        'buildLabelForm'
-      ])
-
-
-    var editing_node = subflow;
-
-    this.validateArray(editStack, 'editStack', 'showEditSubflowDialog')
-
-    editStack.push(subflow);
-    ctx.view.state(ctx.state.EDITING);
-    var subflowEditor;
-
-    var title = getEditStackTitle()
-    var trayOptions = {
-      title,
-      buttons: [{
-        id: "node-dialog-cancel",
-        text: ctx._("common.label.cancel"),
-        click: function () {
-          ctx.tray.close();
-        }
-      },
-      {
-        id: "node-dialog-ok",
-        class: "primary",
-        text: ctx._("common.label.done"),
-        click: function () {
-          var i;
-          var changes: any = {};
-          var changed = false;
-          var wasDirty = ctx.nodes.dirty();
-
-          var newName = $("#subflow-input-name").val();
-
-          if (newName != editing_node.name) {
-            changes['name'] = editing_node.name;
-            editing_node.name = newName;
-            changed = true;
-          }
-
-          var newDescription = subflowEditor.getValue();
-
-          if (newDescription != editing_node.info) {
-            changes['info'] = editing_node.info;
-            editing_node.info = newDescription;
-            changed = true;
-          }
-          var inputLabels = $("#node-label-form-inputs").children().find("input");
-          var outputLabels = $("#node-label-form-outputs").children().find("input");
-
-          var newValue = inputLabels.map(function () {
-            return $(this).val();
-          }).toArray().slice(0, editing_node.inputs);
-          if (JSON.stringify(newValue) !== JSON.stringify(editing_node.inputLabels)) {
-            changes.inputLabels = editing_node.inputLabels;
-            editing_node.inputLabels = newValue;
-            changed = true;
-          }
-          newValue = outputLabels.map(function () {
-            return $(this).val();
-          }).toArray().slice(0, editing_node.outputs);
-          if (JSON.stringify(newValue) !== JSON.stringify(editing_node.outputLabels)) {
-            changes.outputLabels = editing_node.outputLabels;
-            editing_node.outputLabels = newValue;
-            changed = true;
-          }
-
-          ctx.palette.refresh();
-
-          if (changed) {
-            var subflowInstances = [];
-            ctx.nodes.eachNode(function (n) {
-              if (n.type == "subflow:" + editing_node.id) {
-                subflowInstances.push({
-                  id: n.id,
-                  changed: n.changed
-                })
-                n.changed = true;
-                n.dirty = true;
-                updateNodeProperties(n);
-              }
-            });
-            var wasChanged = editing_node.changed;
-            editing_node.changed = true;
-            ctx.nodes.dirty(true);
-            var historyEvent = {
-              t: 'edit',
-              node: editing_node,
-              changes: changes,
-              dirty: wasDirty,
-              changed: wasChanged,
-              subflow: {
-                instances: subflowInstances
-              }
-            };
-
-            ctx.history.push(historyEvent);
-          }
-          editing_node.dirty = true;
-          ctx.tray.close();
-        }
-      }
-      ],
-      resize: (dimensions) => {
-        $(".editor-tray-content").height(dimensions.height - 78);
-        var form = $(".editor-tray-content form").height(dimensions.height - 78 - 40);
-
-        var rows = $("#dialog-form>div:not(.node-text-editor-row)");
-        var editorRow = $("#dialog-form>div.node-text-editor-row");
-        var height = $("#dialog-form").height();
-        var rowCount = rows.length
-
-        for (var i = 0; i < rowCount; i++) {
-          height -= $(rows[i]).outerHeight(true);
-        }
-        height -= (parseInt($("#dialog-form").css("marginTop")) + parseInt($("#dialog-form").css("marginBottom")));
-        $(".node-text-editor").css("height", height + "px");
-        subflowEditor.resize();
-      },
-      open: function (tray) {
-        var trayFooter = tray.find(".editor-tray-footer");
-        var trayBody = tray.find('.editor-tray-body');
-        trayBody.parent().css('overflow', 'hidden');
-
-        var stack = ctx.stack.create({
-          container: trayBody,
-          singleExpanded: true
-        });
-        var nodeProperties = stack.add({
-          title: ctx._("editor.nodeProperties"),
-          expanded: true
-        });
-        nodeProperties.content.addClass("editor-tray-content");
-        var portLabels = stack.add({
-          title: ctx._("editor.portLabels")
-        });
-        portLabels.content.addClass("editor-tray-content");
-
-        if (editing_node) {
-          ctx.sidebar.info.refresh(editing_node);
-        }
-        var dialogForm = buildEditForm(nodeProperties.content, "dialog-form", "subflow-template");
-        subflowEditor = ctx.editor.createEditor({
-          id: 'subflow-input-info-editor',
-          mode: 'ace/mode/markdown',
-          value: ""
-        });
-
-        $("#subflow-input-name").val(subflow.name);
-        ctx.text.bidi.prepareInput($("#subflow-input-name"));
-        subflowEditor.getSession().setValue(subflow.info || "", -1);
-        var userCount = 0;
-        var subflowType = "subflow:" + editing_node.id;
-
-        ctx.nodes.eachNode(function (n) {
-          if (n.type === subflowType) {
-            userCount++;
-          }
-        });
-        $("#subflow-dialog-user-count").html(ctx._("subflow.subflowInstances", {
-          count: userCount
-        })).show();
-
-        buildLabelForm(portLabels.content, subflow);
-        trayBody.i18n();
-      },
-      close: function () {
-        if (ctx.view.state() != ctx.state.IMPORT_DRAGGING) {
-          ctx.view.state(ctx.state.DEFAULT);
-        }
-        ctx.sidebar.info.refresh(editing_node);
-        ctx.workspaces.refresh();
-        subflowEditor.destroy();
-        editStack.pop();
-        editing_node = null;
-      },
-      show: function () { }
-    }
-    ctx.tray.show(trayOptions);
-    return this
+  editBuffer(options) {
+    this.bufferEditor.editBuffer(options)
   }
 
   editExpression(options) {
-    const {
-      ctx,
-      editStack,
-      editTrayWidthCache,
-    } = this
-
-    const {
-      getEditStackTitle,
-      buildEditForm,
-      expressionTestCache
-    } = this.rebind([
-        'getEditStackTitle',
-        'buildEditForm',
-        'expressionTestCache'
-      ])
-
-    var expressionTestCacheId = "_";
-    if (editStack.length > 0) {
-      expressionTestCacheId = editStack[editStack.length - 1].id;
-    }
-
-    this._validateProps(options, ['value', 'complete'], 'editExpression')
-
-    var value = options.value;
-    var onComplete = options.complete;
-    var type = "_expression"
-    editStack.push({
-      type: type
-    });
-    ctx.view.state(ctx.state.EDITING);
-    var expressionEditor;
-    var testDataEditor;
-    var testResultEditor
-    var panels;
-
-    var trayOptions = {
-      width: null,
-      title: getEditStackTitle(),
-      buttons: [{
-        id: "node-dialog-cancel",
-        text: ctx._("common.label.cancel"),
-        click: function () {
-          ctx.tray.close();
-        }
-      },
-      {
-        id: "node-dialog-ok",
-        text: ctx._("common.label.done"),
-        class: "primary",
-        click: function () {
-          $("#node-input-expression-help").html("");
-          onComplete(expressionEditor.getValue());
-          ctx.tray.close();
-        }
-      }
-      ],
-      missingDimensions: (dimensions?: any) => {
-        // TODO
-      },
-      resize: function (dimensions?: any) {
-        if (!dimensions) {
-          dimensions = trayOptions.missingDimensions(dimensions)
-        }
-
-        if (dimensions) {
-          editTrayWidthCache[type] = dimensions.width;
-        }
-        var height = $("#dialog-form").height();
-        if (panels) {
-          panels.resize(height);
-        }
-
-      },
-      open: function (tray) {
-        var trayBody = tray.find('.editor-tray-body');
-        trayBody.addClass("node-input-expression-editor")
-        var dialogForm = buildEditForm(tray.find('.editor-tray-body'), 'dialog-form', '_expression', 'editor');
-        var funcSelect = $("#node-input-expression-func");
-
-        Object.keys(jsonata.functions).forEach(function (f) {
-          funcSelect.append($("<option></option>").val(f).text(f));
-        })
-
-        funcSelect.change(function (e) {
-          var f = $(this).val();
-          var args = ctx._('jsonata:' + f + ".args", {
-            defaultValue: ''
-          });
-          var title = "<h5>" + f + "(" + args + ")</h5>";
-          var body = marked(ctx._('jsonata:' + f + '.desc', {
-            defaultValue: ''
-          }));
-          $("#node-input-expression-help").html(title + "<p>" + body + "</p>");
-
-        })
-        expressionEditor = ctx.editor.createEditor({
-          id: 'node-input-expression',
-          value: "",
-          mode: "ace/mode/jsonata",
-          options: {
-            enableBasicAutocompletion: true,
-            enableSnippets: true,
-            enableLiveAutocompletion: true
-          }
-        });
-        var currentToken = null;
-        var currentTokenPos = -1;
-        var currentFunctionMarker = null;
-
-        expressionEditor.getSession().setValue(value || "", -1);
-        expressionEditor.on("changeSelection", function () {
-          var c = expressionEditor.getCursorPosition();
-          var token = expressionEditor.getSession().getTokenAt(c.row, c.column);
-          if (token !== currentToken || (token && /paren/.test(token.type) && c.column !== currentTokenPos)) {
-            currentToken = token;
-            var r, p;
-            var scopedFunction = null;
-            if (token && token.type === 'keyword') {
-              r = c.row;
-              scopedFunction = token;
-            } else {
-              var depth = 0;
-              var next = false;
-              if (token) {
-                if (token.type === 'paren.rparen') {
-                  // If this is a block of parens ')))', set
-                  // depth to offset against the cursor position
-                  // within the block
-                  currentTokenPos = c.column;
-                  depth = c.column - (token.start + token.value.length);
-                }
-                r = c.row;
-                p = token.index;
-              } else {
-                r = c.row - 1;
-                p = -1;
-              }
-              while (scopedFunction === null && r > -1) {
-                var rowTokens = expressionEditor.getSession().getTokens(r);
-                if (p === -1) {
-                  p = rowTokens.length - 1;
-                }
-                while (p > -1) {
-                  var type = rowTokens[p].type;
-                  if (next) {
-                    if (type === 'keyword') {
-                      scopedFunction = rowTokens[p];
-                      // log("HIT",scopedFunction);
-                      break;
-                    }
-                    next = false;
-                  }
-                  if (type === 'paren.lparen') {
-                    depth -= rowTokens[p].value.length;
-                  } else if (type === 'paren.rparen') {
-                    depth += rowTokens[p].value.length;
-                  }
-                  if (depth < 0) {
-                    next = true;
-                    depth = 0;
-                  }
-                  // log(r,p,depth,next,rowTokens[p]);
-                  p--;
-                }
-                if (!scopedFunction) {
-                  r--;
-                }
-              }
-            }
-            expressionEditor.session.removeMarker(currentFunctionMarker);
-            if (scopedFunction) {
-              //log(token,.map(function(t) { return t.type}));
-              funcSelect.val(scopedFunction.value).change();
-            }
-          }
-        });
-
-        dialogForm.i18n();
-        $("#node-input-expression-func-insert").click(function (e) {
-          e.preventDefault();
-          var pos = expressionEditor.getCursorPosition();
-          var f = funcSelect.val();
-          var snippet = jsonata.getFunctionSnippet(f);
-          expressionEditor.insertSnippet(snippet);
-          expressionEditor.focus();
-        });
-        $("#node-input-expression-reformat").click(function (evt) {
-          evt.preventDefault();
-          var v = expressionEditor.getValue() || "";
-          try {
-            v = jsonata.format(v);
-          } catch (err) {
-            // TODO: do an optimistic auto-format
-          }
-          expressionEditor.getSession().setValue(v || "", -1);
-        });
-
-        var tabs = ctx.tabs.create({
-          element: $("#node-input-expression-tabs"),
-          onchange: function (tab) {
-            $(".node-input-expression-tab-content").hide();
-            tab.content.show();
-            trayOptions.resize();
-          }
-        })
-
-        tabs.addTab({
-          id: 'expression-help',
-          label: 'Function reference',
-          content: $("#node-input-expression-tab-help")
-        });
-        tabs.addTab({
-          id: 'expression-tests',
-          label: 'Test',
-          content: $("#node-input-expression-tab-test")
-        });
-        testDataEditor = ctx.editor.createEditor({
-          id: 'node-input-expression-test-data',
-          value: expressionTestCache[expressionTestCacheId] || '{\n    "payload": "hello world"\n}',
-          mode: "ace/mode/json",
-          lineNumbers: false
-        });
-        var changeTimer;
-        $(".node-input-expression-legacy").click(function (e) {
-          e.preventDefault();
-          ctx.sidebar.info.set(ctx._("expressionEditor.compatModeDesc"));
-          ctx.sidebar.info.show();
-        })
-        var testExpression = function () {
-          var value = testDataEditor.getValue();
-          var parsedData;
-          var currentExpression = expressionEditor.getValue();
-          var expr;
-          var usesContext = false;
-          var legacyMode = /(^|[^a-zA-Z0-9_'"])msg([^a-zA-Z0-9_'"]|$)/.test(currentExpression);
-          $(".node-input-expression-legacy").toggle(legacyMode);
-          try {
-            expr = jsonata(currentExpression);
-            expr.assign('flowContext', function (val) {
-              usesContext = true;
-              return null;
-            });
-            expr.assign('globalContext', function (val) {
-              usesContext = true;
-              return null;
-            });
-          } catch (err) {
-            testResultEditor.setValue(ctx._("expressionEditor.errors.invalid-expr", {
-              message: err.message
-            }), -1);
-            return;
-          }
-          try {
-            parsedData = JSON.parse(value);
-          } catch (err) {
-            testResultEditor.setValue(ctx._("expressionEditor.errors.invalid-msg", {
-              message: err.toString()
-            }))
-            return;
-          }
-
-          try {
-            var result = expr.evaluate(legacyMode ? {
-              msg: parsedData
-            } : parsedData);
-            if (usesContext) {
-              testResultEditor.setValue(ctx._("expressionEditor.errors.context-unsupported"), -1);
-              return;
-            }
-
-            var formattedResult;
-            if (result !== undefined) {
-              formattedResult = JSON.stringify(result, null, 4);
-            } else {
-              formattedResult = ctx._("expressionEditor.noMatch");
-            }
-            testResultEditor.setValue(formattedResult, -1);
-          } catch (err) {
-            testResultEditor.setValue(ctx._("expressionEditor.errors.eval", {
-              message: err.message
-            }), -1);
-          }
-        }
-
-        testDataEditor.getSession().on('change', function () {
-          clearTimeout(changeTimer);
-          changeTimer = setTimeout(testExpression, 200);
-          expressionTestCache[expressionTestCacheId] = testDataEditor.getValue();
-        });
-        expressionEditor.getSession().on('change', function () {
-          clearTimeout(changeTimer);
-          changeTimer = setTimeout(testExpression, 200);
-        });
-
-        testResultEditor = ctx.editor.createEditor({
-          id: 'node-input-expression-test-result',
-          value: "",
-          mode: "ace/mode/json",
-          lineNumbers: false,
-          readOnly: true
-        });
-        panels = ctx.panels.create({
-          id: "node-input-expression-panels",
-          resize: function (p1Height, p2Height) {
-            var p1 = $("#node-input-expression-panel-expr");
-            p1Height -= $(p1.children()[0]).outerHeight(true);
-            var editorRow = $(p1.children()[1]);
-            p1Height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
-            $("#node-input-expression").css("height", (p1Height - 5) + "px");
-            expressionEditor.resize();
-
-            var p2 = $("#node-input-expression-panel-info > .form-row > div:first-child");
-            p2Height -= p2.outerHeight(true) + 20;
-            $(".node-input-expression-tab-content").height(p2Height);
-            $("#node-input-expression-test-data").css("height", (p2Height - 5) + "px");
-            testDataEditor.resize();
-            $("#node-input-expression-test-result").css("height", (p2Height - 5) + "px");
-            testResultEditor.resize();
-          }
-        });
-
-        $("#node-input-example-reformat").click(function (evt) {
-          evt.preventDefault();
-          var v = testDataEditor.getValue() || "";
-          try {
-            v = JSON.stringify(JSON.parse(v), null, 4);
-          } catch (err) {
-            // TODO: do an optimistic auto-format
-          }
-          testDataEditor.getSession().setValue(v || "", -1);
-        });
-
-        testExpression();
-      },
-      close: function () {
-        editStack.pop();
-        expressionEditor.destroy();
-        testDataEditor.destroy();
-      },
-      show: function () { }
-    }
-
-    if (editTrayWidthCache.hasOwnProperty(type)) {
-      trayOptions.width = editTrayWidthCache[type];
-    }
-    ctx.tray.show(trayOptions);
-    return this
+    this.exprEditor.editExpression(options)
   }
 
-
   editJSON(options) {
-    const {
-      ctx,
-      editStack,
-      editTrayWidthCache
-    } = this
-
-    const {
-      getEditStackTitle,
-      buildEditForm
-    } = this.rebind([
-        'getEditStackTitle',
-        'buildEditForm'
-      ])
-
-    this._validateProps(options, ['value', 'complete'], 'editExpression')
-
-    var value = options.value;
-    var onComplete = options.complete;
-    var type = "_json"
-    editStack.push({
-      type: type
-    });
-    ctx.view.state(ctx.state.EDITING);
-    var expressionEditor;
-
-    var trayOptions = {
-      title: getEditStackTitle(),
-      buttons: [{
-        id: "node-dialog-cancel",
-        text: ctx._("common.label.cancel"),
-        click: function () {
-          ctx.tray.close();
-        }
-      },
-      {
-        id: "node-dialog-ok",
-        text: ctx._("common.label.done"),
-        class: "primary",
-        click: function () {
-          onComplete(expressionEditor.getValue());
-          ctx.tray.close();
-        }
-      }
-      ],
-      resize: function (dimensions) {
-        editTrayWidthCache[type] = dimensions.width;
-
-        var rows = $("#dialog-form>div:not(.node-text-editor-row)");
-        var editorRow = $("#dialog-form>div.node-text-editor-row");
-        var height = $("#dialog-form").height();
-        var rowCount = rows.length
-
-        for (var i = 0; i < rowCount; i++) {
-          height -= $(rows[i]).outerHeight(true);
-        }
-        height -= (parseInt($("#dialog-form").css("marginTop")) + parseInt($("#dialog-form").css("marginBottom")));
-        $(".node-text-editor").css("height", height + "px");
-        expressionEditor.resize();
-      },
-      open: function (tray) {
-        var trayBody = tray.find('.editor-tray-body');
-        var dialogForm = buildEditForm(tray.find('.editor-tray-body'), 'dialog-form', type, 'editor');
-        expressionEditor = ctx.editor.createEditor({
-          id: 'node-input-json',
-          value: "",
-          mode: "ace/mode/json"
-        });
-        expressionEditor.getSession().setValue(value || "", -1);
-        $("#node-input-json-reformat").click(function (evt) {
-          evt.preventDefault();
-          var v = expressionEditor.getValue() || "";
-          try {
-            v = JSON.stringify(JSON.parse(v), null, 4);
-          } catch (err) {
-            // TODO: do an optimistic auto-format
-          }
-          expressionEditor.getSession().setValue(v || "", -1);
-        });
-        dialogForm.i18n();
-      },
-      close: function () {
-        editStack.pop();
-        expressionEditor.destroy();
-      },
-      show: function () { },
-      width: null
-    }
-    if (editTrayWidthCache.hasOwnProperty(type)) {
-      trayOptions.width = editTrayWidthCache[type];
-    }
-    ctx.tray.show(trayOptions);
-    return this
+    this.jsonEditor.editJSON(options)
   }
 
   stringToUTF8Array(str) {
@@ -2376,190 +1414,6 @@ export class NodeEditor extends Context {
     return data;
   }
 
-  editBuffer(options) {
-    let {
-      ctx,
-      editStack,
-      editTrayWidthCache,
-    } = this
-
-    const {
-      buildEditForm,
-      getEditStackTitle,
-      stringToUTF8Array
-    } = this.rebind([
-        'buildEditForm',
-        'getEditStackTitle',
-        'stringToUTF8Array'
-      ])
-
-    this._validateProps(options, ['value', 'complete'], 'editExpression')
-
-    var value = options.value;
-    var onComplete = options.complete;
-    var type = "_buffer"
-
-    editStack.push({
-      type: type
-    });
-    ctx.view.state(ctx.state.EDITING);
-    var bufferStringEditor, bufferBinValue, bufferBinEditor;
-
-    var panels;
-
-    var trayOptions = {
-      title: getEditStackTitle(),
-      buttons: [{
-        id: "node-dialog-cancel",
-        text: ctx._("common.label.cancel"),
-        click: function () {
-          ctx.tray.close();
-        }
-      },
-      {
-        id: "node-dialog-ok",
-        text: ctx._("common.label.done"),
-        class: "primary",
-        click: function () {
-          onComplete(JSON.stringify(bufferBinValue));
-          ctx.tray.close();
-        }
-      }
-      ],
-      resize: function (dimensions) {
-        if (dimensions) {
-          editTrayWidthCache[type] = dimensions.width;
-        }
-        var height = $("#dialog-form").height();
-        if (panels) {
-          panels.resize(height);
-        }
-      },
-      open: (tray) => {
-        var trayBody = tray.find('.editor-tray-body');
-        var dialogForm = buildEditForm(tray.find('.editor-tray-body'), 'dialog-form', type, 'editor');
-
-        bufferStringEditor = ctx.editor.createEditor({
-          id: 'node-input-buffer-str',
-          value: "",
-          mode: "ace/mode/text"
-        });
-
-        bufferStringEditor.getSession().setValue(value || "", -1);
-
-        bufferBinEditor = ctx.editor.createEditor({
-          id: 'node-input-buffer-bin',
-          value: "",
-          mode: "ace/mode/text",
-          readOnly: true
-        });
-
-        var changeTimer;
-        var buildBuffer = (data) => {
-          if (!data) {
-            this.handleError('editBuffer:trayOptions:buildBuffer(data) data is invalid', {
-              data
-            })
-          }
-          var valid = true;
-          var isString = typeof data === 'string';
-          var binBuffer = [];
-          bufferBinValue = isString ? stringToUTF8Array(data) : data
-          var i = 0,
-            l = bufferBinValue.length;
-          var c = 0;
-          for (i = 0; i < l; i++) {
-            var d = parseInt(bufferBinValue[i]);
-            if (!isString && (isNaN(d) || d < 0 || d > 255)) {
-              valid = false;
-              break;
-            }
-            if (i > 0) {
-              if (i % 8 === 0) {
-                if (i % 16 === 0) {
-                  binBuffer.push("\n");
-                } else {
-                  binBuffer.push("  ");
-                }
-              } else {
-                binBuffer.push(" ");
-              }
-            }
-            binBuffer.push((d < 16 ? "0" : "") + d.toString(16).toUpperCase());
-          }
-          if (valid) {
-            $("#node-input-buffer-type-string").toggle(isString);
-            $("#node-input-buffer-type-array").toggle(!isString);
-            bufferBinEditor.setValue(binBuffer.join(""), 1);
-          }
-          return valid;
-        }
-        var bufferStringUpdate = function () {
-          var value = bufferStringEditor.getValue();
-          var isValidArray = false;
-          if (/^[\s]*\[[\s\S]*\][\s]*$/.test(value)) {
-            isValidArray = true;
-            try {
-              var data = JSON.parse(value);
-              isValidArray = buildBuffer(data);
-            } catch (err) {
-              isValidArray = false;
-            }
-          }
-          if (!isValidArray) {
-            buildBuffer(value);
-          }
-
-        }
-        bufferStringEditor.getSession().on('change', function () {
-          clearTimeout(changeTimer);
-          changeTimer = setTimeout(bufferStringUpdate, 200);
-        });
-
-        bufferStringUpdate();
-
-        dialogForm.i18n();
-
-        panels = ctx.panels.create({
-          id: "node-input-buffer-panels",
-          resize: function (p1Height, p2Height) {
-            var p1 = $("#node-input-buffer-panel-str");
-            p1Height -= $(p1.children()[0]).outerHeight(true);
-            var editorRow = $(p1.children()[1]);
-            p1Height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
-            $("#node-input-buffer-str").css("height", (p1Height - 5) + "px");
-            bufferStringEditor.resize();
-
-            var p2 = $("#node-input-buffer-panel-bin");
-            editorRow = $(p2.children()[0]);
-            p2Height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
-            $("#node-input-buffer-bin").css("height", (p2Height - 5) + "px");
-            bufferBinEditor.resize();
-          }
-        });
-
-        $(".node-input-buffer-type").click(function (e) {
-          e.preventDefault();
-          ctx.sidebar.info.set(ctx._("bufferEditor.modeDesc"));
-          ctx.sidebar.info.show();
-        })
-
-
-      },
-      close: function () {
-        editStack.pop();
-        bufferStringEditor.destroy();
-        bufferBinEditor.destroy();
-      },
-      show: function () { },
-      width: null
-    }
-    if (editTrayWidthCache.hasOwnProperty(type)) {
-      trayOptions.width = editTrayWidthCache[type];
-    }
-    ctx.tray.show(trayOptions);
-    return this
-  }
 
   createEditor(options) {
     const { id } = options
