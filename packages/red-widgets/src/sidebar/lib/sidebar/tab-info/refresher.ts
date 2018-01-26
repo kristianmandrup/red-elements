@@ -7,13 +7,14 @@ import {
   marked
 } from '../../../../_libs'
 import { read } from 'fs';
+import { INode } from '../../../../_interfaces';
 
 export class TabInfoRefresher extends Context {
   constructor(public sidebarTabInfo: SidebarTabInfo) {
     super()
   }
 
-  refresh(node) {
+  refresh(node?: INode) {
     const {
       RED,
       rebind,

@@ -28,6 +28,7 @@ import {
   JQElem
 } from '@tecla5/red-base';
 import { JQueryAjaxAdapter } from '../../../../../../red-api/src/adapters/jquery/index';
+import { SidebarTabConfiguration } from './configuration';
 
 interface I18nWidget extends JQuery<HTMLElement> {
   i18n: Function
@@ -45,15 +46,21 @@ export class SidebarTab extends Context {
   public flowCategories: JQElem
   public subflowCategories: JQElem
   public category: JQElem
-  public i18n: I18n
 
-  public showUnusedOnly: Boolean
-  public categories: Object
+  showUnusedOnly = false;
+  categories = {};
+  i18n: I18n = new I18n()
 
   protected initializer: SidebarTabInitializer
+  protected configuration: SidebarTabConfiguration
 
   constructor(public sidebar: Sidebar) {
     super()
+    this.configure()
+  }
+
+  configure() {
+    this.configuration.configure()
   }
 
   /**
@@ -187,10 +194,12 @@ export class SidebarTab extends Context {
 
   // protected
 
+  // TODO: reuse same method in initializer!!
   protected get nodeFilterUnused() {
     return $('#workspace-config-node-filter-unused')
   }
 
+  // TODO: reuse same method in initializer!!
   protected get nodeFilterAll() {
     return $('#workspace-config-node-filter-all')
   }

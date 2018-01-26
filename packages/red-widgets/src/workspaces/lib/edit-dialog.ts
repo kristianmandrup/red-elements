@@ -10,6 +10,7 @@ export class WorkspaceEditDialog extends Context {
     super()
   }
 
+
   /**
    * show rename Workspace Dialog
    * @param id
@@ -55,7 +56,7 @@ export class WorkspaceEditDialog extends Context {
         class: "primary",
         text: RED._("common.label.done"),
         click: () => {
-          var label = $("#node-input-name").val();
+          var label = this.nameInput.val();
           var changed = false;
           var changes = {
             label: null,
@@ -68,7 +69,7 @@ export class WorkspaceEditDialog extends Context {
             workspace.label = label;
             workspace_tabs.renameTab(workspace.id, label);
           }
-          var disabled = $("#node-input-disabled").prop("checked");
+          var disabled = this.disabledInput.prop("checked");
           if (workspace.disabled !== disabled) {
             changes.disabled = workspace.disabled;
             changed = true;
@@ -80,7 +81,8 @@ export class WorkspaceEditDialog extends Context {
             changed = true;
             workspace.info = info;
           }
-          $("#red-ui-tab-" + (workspace.id.replace(".", "-"))).toggleClass('workspace-disabled', workspace.disabled);
+
+          this.setWorkspaceTab(workspace)
           // $("#workspace").toggleClass("workspace-disabled",workspace.disabled);
 
           if (changed) {
@@ -118,43 +120,22 @@ export class WorkspaceEditDialog extends Context {
       },
       open: (tray) => {
         var trayBody = tray.find('.editor-tray-body');
-        var dialogForm = <IDialogForm>$('<form id="dialog-form" class="form-horizontal"></form>').appendTo(trayBody);
+        const dialogForm = this.buildDialogForm(trayBody)
 
-        $('<div class="form-row">' +
-          '<label for="node-input-name" data-i18n="[append]editor:common.label.name"><i class="fa fa-tag"></i> </label>' +
-          '<input type="text" id="node-input-name">' +
-          '</div>').appendTo(dialogForm);
-
-        $('<div class="form-row">' +
-          '<label for="node-input-disabled-btn" data-i18n="editor:workspace.status"></label>' +
-          '<button id="node-input-disabled-btn" class="editor-button"><i class="fa fa-toggle-on"></i> <span id="node-input-disabled-label"></span></button> ' +
-          '<input type="checkbox" id="node-input-disabled" style="display: none;"/>' +
-          '</div>').appendTo(dialogForm);
-
-        $('<div class="form-row node-text-editor-row">' +
-          '<label for="node-input-info" data-i18n="editor:workspace.info" style="width:300px;"></label>' +
-          '<div style="height:250px;" class="node-text-editor" id="node-input-info"></div>' +
-          '</div>').appendTo(dialogForm);
         tabflowEditor = RED.editor.createEditor({
           id: 'node-input-info',
           mode: 'ace/mode/markdown',
           value: ""
         });
 
-        $('<div class="form-tips" data-i18n="editor:workspace.tip"></div>').appendTo(dialogForm);
+        this.addFormTips(dialogForm)
 
         dialogForm.find('#node-input-disabled-btn').on("click", (e) => {
           var i = $(this).find("i");
           if (i.hasClass('fa-toggle-off')) {
-            i.addClass('fa-toggle-on');
-            i.removeClass('fa-toggle-off');
-            $("#node-input-disabled").prop("checked", false);
-            $("#node-input-disabled-label").html(RED._("editor:workspace.enabled"));
+            this.toggleOn(i)
           } else {
-            i.addClass('fa-toggle-off');
-            i.removeClass('fa-toggle-on');
-            $("#node-input-disabled").prop("checked", true);
-            $("#node-input-disabled-label").html(RED._("editor:workspace.disabled"));
+            this.toggleOff(i)
           }
         })
 
@@ -191,4 +172,65 @@ export class WorkspaceEditDialog extends Context {
     RED.tray.show(trayOptions);
     return this
   }
+
+  // protected
+
+  protected toggleOn(i) {
+    const {
+      RED
+    } = this
+    i.addClass('fa-toggle-on');
+    i.removeClass('fa-toggle-off');
+    $("#node-input-disabled").prop("checked", false);
+    $("#node-input-disabled-label").html(RED._("editor:workspace.enabled"));
+  }
+
+  protected toggleOff(i) {
+    const {
+      RED
+    } = this
+    i.addClass('fa-toggle-off');
+    i.removeClass('fa-toggle-on');
+    $("#node-input-disabled").prop("checked", true);
+    $("#node-input-disabled-label").html(RED._("editor:workspace.disabled"));
+  }
+
+
+  protected get disabledInput() {
+    return $("#node-input-disabled")
+  }
+
+  protected get nameInput() {
+    return $("#node-input-name")
+  }
+
+  protected setWorkspaceTab(workspace) {
+    $("#red-ui-tab-" + (workspace.id.replace(".", "-"))).toggleClass('workspace-disabled', workspace.disabled);
+  }
+
+  protected buildDialogForm(trayBody) {
+    const dialogForm = <IDialogForm>$('<form id="dialog-form" class="form-horizontal"></form>').appendTo(trayBody);
+
+    $('<div class="form-row">' +
+      '<label for="node-input-name" data-i18n="[append]editor:common.label.name"><i class="fa fa-tag"></i> </label>' +
+      '<input type="text" id="node-input-name">' +
+      '</div>').appendTo(dialogForm);
+
+    $('<div class="form-row">' +
+      '<label for="node-input-disabled-btn" data-i18n="editor:workspace.status"></label>' +
+      '<button id="node-input-disabled-btn" class="editor-button"><i class="fa fa-toggle-on"></i> <span id="node-input-disabled-label"></span></button> ' +
+      '<input type="checkbox" id="node-input-disabled" style="display: none;"/>' +
+      '</div>').appendTo(dialogForm);
+
+    $('<div class="form-row node-text-editor-row">' +
+      '<label for="node-input-info" data-i18n="editor:workspace.info" style="width:300px;"></label>' +
+      '<div style="height:250px;" class="node-text-editor" id="node-input-info"></div>' +
+      '</div>').appendTo(dialogForm);
+    return dialogForm
+  }
+
+  protected addFormTips(dialogForm) {
+    $('<div class="form-tips" data-i18n="editor:workspace.tip"></div>').appendTo(dialogForm);
+  }
+
 }

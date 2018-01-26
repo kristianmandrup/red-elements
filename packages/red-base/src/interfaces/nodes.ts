@@ -4,12 +4,15 @@ export interface INodeDef {
   credentials?: Object,
   category?: string,
   _?: any
-  set?: any
+  set?: any,
+  info?: any
 }
 
 export interface INode {
   id: string,
   name?: string,
+  label?: string,
+  disabled?: boolean,
   info?: any,
   type: string,
   credentials?: any,

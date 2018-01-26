@@ -72,9 +72,7 @@ export class TabInfoInitializer extends Context {
 
     RED.actions.add("core:show-info-tab", show);
 
-    var stackContainer = $("<div>", {
-      class: "sidebar-node-info-stack"
-    }).appendTo(content);
+    const stackContainer = this.buildStackContainer(content)
 
     // create stack
     sections = RED.stack = createStack({
@@ -92,17 +90,17 @@ export class TabInfoInitializer extends Context {
     infoSection.content.css("padding", "6px");
     infoSection.container.css("border-bottom", "none");
 
-    var tipContainer = $('<div class="node-info-tips"></div>').appendTo(content);
-    tipBox = $('<div class="node-info-tip"></div>').appendTo(tipContainer);
-    var tipButtons = $('<div class="node-info-tips-buttons"></div>').appendTo(tipContainer);
+    var tipContainer = this.addTipContainer(content)
+    tipBox = this.addTipBox(tipContainer)
+    var tipButtons = this.addTipButtons(tipContainer);
+    var tipRefresh = this.addTipRefresh(tipButtons);
 
-    var tipRefresh = $('<a href="#" class="workspace-footer-button"><i class="fa fa-refresh"></a>').appendTo(tipButtons);
     tipRefresh.click(function (e) {
       e.preventDefault();
       tips.next();
     })
 
-    var tipClose = $('<a href="#" class="workspace-footer-button"><i class="fa fa-times"></a>').appendTo(tipButtons);
+    var tipClose = this.addTipClose(tipButtons)
     tipClose.click(function (e) {
       e.preventDefault();
       RED.actions.invoke("core:toggle-show-tips");
@@ -148,5 +146,33 @@ export class TabInfoInitializer extends Context {
         }
       }
     })
+  }
+
+  // protected
+
+  protected buildStackContainer(content) {
+    return $("<div>", {
+      class: "sidebar-node-info-stack"
+    }).appendTo(content);
+  }
+
+  protected addTipContainer(content) {
+    return $('<div class="node-info-tips"></div>').appendTo(content);
+  }
+
+  protected addTipBox(tipContainer) {
+    return $('<div class="node-info-tip"></div>').appendTo(tipContainer);
+  }
+
+  protected addTipButtons(tipContainer) {
+    return $('<div class="node-info-tips-buttons"></div>').appendTo(tipContainer);
+  }
+
+  protected addTipRefresh(tipButtons) {
+    return $('<a href="#" class="workspace-footer-button"><i class="fa fa-refresh"></a>').appendTo(tipButtons);
+  }
+
+  protected addTipClose(tipButtons) {
+    return $('<a href="#" class="workspace-footer-button"><i class="fa fa-times"></a>').appendTo(tipButtons);
   }
 }

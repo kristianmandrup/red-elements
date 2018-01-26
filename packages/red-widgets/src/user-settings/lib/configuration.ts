@@ -18,7 +18,10 @@ export interface IViewSetting {
 }
 
 export class UserSettingsConfiguration extends Context {
-  protected allSettings = {}
+  allSettings = {}
+  trayWidth = 700;
+  settingsVisible = false;
+  panes = [];
 
   protected display: UserSettingsDisplay = new UserSettingsDisplay(this.settings, this)
 
@@ -29,7 +32,9 @@ export class UserSettingsConfiguration extends Context {
   configure() {
     const {
       RED,
-    } = this.settings
+      rebind,
+      settings
+  } = this
 
     let {
       viewSettings,
@@ -44,26 +49,14 @@ export class UserSettingsConfiguration extends Context {
       setInstanceVars,
       addPane,
       setSelected
-    } = this.rebind([
+    } = rebind([
         'show',
         'createViewPane',
         'handleError',
         'setInstanceVars',
         'addPane',
         'setSelected'
-      ])
-
-    var trayWidth = 700;
-    var settingsVisible = false;
-    var panes = [];
-
-    // Set instance variables
-    // TODO: reuse this mechanism in other widgets
-    setInstanceVars({
-      trayWidth,
-      settingsVisible,
-      panes
-    })
+      ], settings)
 
     if (!RED.actions) {
       handleError('UserSettings: missing actions', RED);

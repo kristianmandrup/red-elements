@@ -9,15 +9,19 @@ export class TrayDisplayer extends Context {
 
   show(options) {
     const {
-      showTray
-    } = this.rebind([
+      tray,
+      rebind
+    } = this
+    const {
+      showTray,
+    } = rebind([
         'showTray'
-      ])
+      ], tray)
 
     const {
       stack,
       editorStack
-    } = this.tray
+    } = tray
 
     if (stack.length > 0) {
       var oldTray = stack[stack.length - 1];
@@ -50,23 +54,23 @@ export class TrayDisplayer extends Context {
         'handleWindowResize'
       ], this.tray)
 
-    var editor;
-    var el = <any>$('<div class="editor-tray"></div>');
-    var header = $('<div class="editor-tray-header"></div>').appendTo(el);
-    var bodyWrapper = $('<div class="editor-tray-body-wrapper"></div>').appendTo(el);
-    var body = $('<div class="editor-tray-body"></div>').appendTo(bodyWrapper);
-    var footer = $('<div class="editor-tray-footer"></div>').appendTo(el);
-    var resizer = $('<div class="editor-tray-resize-handle"></div>').appendTo(el);
+    let editor;
+    const el = <any>$('<div class="editor-tray"></div>');
+    const header = this.addHeader(el);
+    const bodyWrapper = this.addBodyWrapper(el)
+    const body = this.addBody(bodyWrapper);
+    const footer = this.addFooter(el);
+    const resizer = this.addResizeHandle(el);
     // var growButton = $('<a class="editor-tray-resize-button" style="cursor: w-resize;"><i class="fa fa-angle-left"></i></a>').appendTo(resizer);
     // var shrinkButton = $('<a class="editor-tray-resize-button" style="cursor: e-resize;"><i style="margin-left: 1px;" class="fa fa-angle-right"></i></a>').appendTo(resizer);
     if (options.title) {
-      $('<div class="editor-tray-titlebar">' + options.title + '</div>').appendTo(header);
+      this.addTrayTitle(options.title, header)
     }
     if (options.width === Infinity) {
       options.maximized = true;
       resizer.addClass('editor-tray-resize-maximised');
     }
-    var buttonBar = $('<div class="editor-tray-toolbar"></div>').appendTo(header);
+    var buttonBar = this.addTrayToolbar(header)
     var primaryButton;
     if (options.buttons) {
       for (var i = 0; i < options.buttons.length; i++) {
@@ -148,10 +152,10 @@ export class TrayDisplayer extends Context {
     }
 
     let finishBuild = () => {
-      $("#header-shade").show();
-      $("#editor-shade").show();
-      $("#palette-shade").show();
-      $(".sidebar-shade").show();
+      this.headerShade.show();
+      this.editorShade.show();
+      this.paletteShade.show();
+      this.sidebarShade.show();
 
       tray.preferredWidth = Math.max(el.width(), 500);
       body.css({
@@ -186,13 +190,13 @@ export class TrayDisplayer extends Context {
         right: -(el.width() + 10) + "px",
         transition: "right 0.25s ease"
       });
-      $("#workspace").scrollLeft(0);
+      this.workspace.scrollLeft(0);
       handleWindowResize();
       openingTray = true;
       setTimeout(function () {
         setTimeout(function () {
           if (!options.width) {
-            el.width(Math.min(tray.preferredWidth, $("#editor-stack").position().left - 8));
+            el.width(Math.min(tray.preferredWidth, this.editorStack.position().left - 8));
           }
           if (options.resize) {
             options.resize({
@@ -217,7 +221,7 @@ export class TrayDisplayer extends Context {
 
     this.setInstanceVars({
       openingTray
-    }, this.tray)
+    }, tray)
 
     if (options.open) {
       if (options.open.length === 1) {
@@ -229,6 +233,57 @@ export class TrayDisplayer extends Context {
     } else {
       finishBuild();
     }
+  }
+
+  // protected
+
+  get editorStack() {
+    return $("#editor-stack")
+  }
+
+  get workspace() {
+    return $("#workspace")
+  }
+
+  get headerShade() {
+    return $("#header-shade")
+  }
+  get editorShade() {
+    return $("#editor-shade")
+  }
+  get paletteShade() {
+    return $("#palette-shade")
+  }
+  get sidebarShade() {
+    return $(".sidebar-shade")
+  }
+
+  addHeader(el) {
+    return $('<div class="editor-tray-header"></div>').appendTo(el);
+  }
+
+  addBodyWrapper(el) {
+    return $('<div class="editor-tray-header"></div>').appendTo(el);
+  }
+
+  addBody(el) {
+    return $('<div class="editor-tray-body"></div>').appendTo(el);
+  }
+
+  addFooter(el) {
+    return $('<div class="editor-tray-footer"></div>').appendTo(el);
+  }
+
+  addResizeHandle(el) {
+    return $('<div class="editor-tray-resize-handle"></div>').appendTo(el);
+  }
+
+  addTrayTitle(title, header) {
+    $('<div class="editor-tray-titlebar">' + title + '</div>').appendTo(header);
+  }
+
+  addTrayToolbar(header) {
+    $('<div class="editor-tray-toolbar"></div>').appendTo(header);
   }
 }
 

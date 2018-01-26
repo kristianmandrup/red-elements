@@ -45,7 +45,6 @@ export class TabInfoTips extends Context {
         }
       }
     });
-    // log('Tips: created')
   }
 
   setTip() {
@@ -100,20 +99,25 @@ export class TabInfoTips extends Context {
   }
 
   start() {
-    // log('startTips')
-    let {
+    const {
       RED,
       enabled,
       startDelay,
-      tipCount,
-      startTimeout,
-      refreshTimeout,
       maxTipCount
     } = this
-    const {
+    let {
+      tipCount
+    } = this
+    let {
       setTip,
+      startTimeout,
+      refreshTimeout,
+      setInstanceVars
     } = this.rebind([
-        'setTip'
+        'setTip',
+        'setInstanceVars',
+        'startTimeout',
+        'refreshTimeout'
       ])
 
     let sidebarNodeInfoElem = $(".sidebar-node-info")
@@ -138,9 +142,11 @@ export class TabInfoTips extends Context {
             // })
           }
         }
-        this.startTimeout = setTimeout(setTip, startDelay);
+        startTimeout = setTimeout(setTip, startDelay);
       }
-      this.tipCount = tipCount
+      setInstanceVars({
+        tipCount
+      })
     }
     return this
   }

@@ -46,24 +46,31 @@ export class SidebarTabManager extends Context {
       options = title;
     }
 
-    options.wrapper = $('<div>', {
+    let {
+      toolbar,
+      wrapper,
+      enableOnEdit,
+      shade,
+      id,
+      name
+    } = options
+
+    wrapper = $('<div>', {
       style: "height:100%"
     }).appendTo("#sidebar-content")
-    options.wrapper.append(options.content);
-    options.wrapper.hide();
+    wrapper.append(options.content);
+    wrapper.hide();
 
-    if (!options.enableOnEdit) {
-      options.shade = $('<div>', {
+    if (!enableOnEdit) {
+      shade = $('<div>', {
         class: "sidebar-shade hide"
-      }).appendTo(options.wrapper);
+      }).appendTo(wrapper);
     }
 
-    if (options.toolbar) {
-      $("#sidebar-footer").append(options.toolbar);
-      $(options.toolbar).hide();
+    if (toolbar) {
+      this.appendToolbar(toolbar)
+      $(toolbar).hide();
     }
-    var id = options.id;
-
     if (!id) {
       this.handleError('addTab: options must have id of tab to add', {
         id,
@@ -72,15 +79,15 @@ export class SidebarTabManager extends Context {
     }
 
     RED.menu.addItem("menu-item-view-menu", {
-      id: "menu-item-view-menu-" + options.id,
-      label: options.name,
+      id: "menu-item-view-menu-" + id,
+      label: name,
       onselect: () => {
-        showSidebar(options.id);
+        showSidebar(id);
       },
       group: "sidebar-tabs"
     });
 
-    let tabId = options.id
+    const tabId = id
     knownTabs[tabId] = options;
 
     if (options.visible !== false) {
@@ -137,12 +144,22 @@ export class SidebarTabManager extends Context {
       })
     }
 
-    $(knownTab.wrapper).remove();
-    let footer = knownTab.footer
+    const {
+      wrapper,
+      footer
+    } = knownTab
+
+    $(wrapper).remove();
     if (footer) {
       footer.remove();
     }
     delete knownTabs[id];
     RED.menu.removeItem("menu-item-view-menu-" + id);
+  }
+
+  // protected
+
+  appendToolbar(toolbar) {
+    $("#sidebar-footer").append(toolbar);
   }
 }

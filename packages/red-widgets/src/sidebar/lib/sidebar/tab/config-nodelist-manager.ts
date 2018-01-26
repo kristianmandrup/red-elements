@@ -7,6 +7,11 @@ import {
   I18n
 } from '@tecla5/red-runtime'
 
+// TODO: use from /_interfaces
+import {
+  I18nWidget
+} from '../../../../_interfaces'
+
 export class SidebarTabInitializer extends Context {
   constructor(public sidebarTab: SidebarTab) {
     super()

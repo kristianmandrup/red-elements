@@ -30,36 +30,39 @@ export class SidebarTabConfiguration extends Context {
     const content = document.createElement("div");
     content.className = "sidebar-node-config";
 
-    $('<div class="button-group sidebar-header">' +
-      '<a class="sidebar-header-button-toggle selected" id="workspace-config-node-filter-all" href="#"><span data-i18n="sidebar.config.filterAll"></span></a>' +
-      '<a class="sidebar-header-button-toggle" id="workspace-config-node-filter-unused" href="#"><span data-i18n="sidebar.config.filterUnused"></span></a> ' +
-      '</div>'
-    ).appendTo(content);
+    this.addSidebarHeader(content)
+    toolbar = this.buildToolbar()
 
-
-    toolbar = $('<div>' +
-      '<a class="sidebar-footer-button" id="workspace-config-node-collapse-all" href="#"><i class="fa fa-angle-double-up"></i></a> ' +
-      '<a class="sidebar-footer-button" id="workspace-config-node-expand-all" href="#"><i class="fa fa-angle-double-down"></i></a>' +
-      '</div>');
-
-    globalCategories = $("<div/>").appendTo(content);
-    flowCategories = $("<div/>").appendTo(content);
-    subflowCategories = $("<div/>").appendTo(content);
-
-    showUnusedOnly = false;
-
-    categories = {};
-
-    i18n = new I18n()
+    globalCategories = this.appendDiv(content)
+    flowCategories = this.appendDiv(content)
+    subflowCategories = this.appendDiv(content)
 
     this.setInstanceVars({
       toolbar,
       globalCategories,
       flowCategories,
-      subflowCategories,
-      showUnusedOnly,
-      categories,
-      i18n
+      subflowCategories
     }, this.sidebarTab)
+  }
+
+  // protected
+
+  protected appendDiv(content) {
+    return $("<div/>").appendTo(content);
+  }
+
+  protected addSidebarHeader(content) {
+    $('<div class="button-group sidebar-header">' +
+      '<a class="sidebar-header-button-toggle selected" id="workspace-config-node-filter-all" href="#"><span data-i18n="sidebar.config.filterAll"></span></a>' +
+      '<a class="sidebar-header-button-toggle" id="workspace-config-node-filter-unused" href="#"><span data-i18n="sidebar.config.filterUnused"></span></a> ' +
+      '</div>'
+    ).appendTo(content);
+  }
+
+  protected buildToolbar() {
+    return $('<div>' +
+      '<a class="sidebar-footer-button" id="workspace-config-node-collapse-all" href="#"><i class="fa fa-angle-double-up"></i></a> ' +
+      '<a class="sidebar-footer-button" id="workspace-config-node-expand-all" href="#"><i class="fa fa-angle-double-down"></i></a>' +
+      '</div>');
   }
 }

@@ -106,11 +106,15 @@ export class WorkspaceManager extends Context {
   }
 
   removeWorkspace(ws: IWorkspaceDef) {
-    let {
+    const {
       RED,
+      workspaces,
+      rebind
+    } = this
+    const {
       activeWorkspace,
       workspace_tabs
-    } = this.workspaces
+    } = workspaces
     const {
       hasTabId,
       deleteWorkspace,
@@ -119,7 +123,7 @@ export class WorkspaceManager extends Context {
         'hasTabId',
         'deleteWorkspace',
         'logWarning'
-      ])
+      ], workspaces)
 
     const id = ws
     if (!ws) {

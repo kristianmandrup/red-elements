@@ -4,11 +4,9 @@ import {
 } from '.'
 import { Tabs, Context, $ } from '../../../../common'
 
-
 import {
   I18n
 } from '@tecla5/red-runtime/src/i18n'
-
 
 
 interface I18nWidget extends JQuery<HTMLElement> {
@@ -68,7 +66,7 @@ export class SidebarTabInitializer extends Context {
       RED.sidebar.show('config')
     });
 
-    $("#workspace-config-node-collapse-all").on("click", (e) => {
+    this.collapseAll.on("click", (e) => {
       e.preventDefault();
       for (var cat in categories) {
         if (categories.hasOwnProperty(cat)) {
@@ -76,7 +74,7 @@ export class SidebarTabInitializer extends Context {
         }
       }
     });
-    $("#workspace-config-node-expand-all").on("click", (e) => {
+    this.expandAll.on("click", (e) => {
       e.preventDefault();
       for (var cat in categories) {
         if (categories.hasOwnProperty(cat)) {
@@ -86,23 +84,41 @@ export class SidebarTabInitializer extends Context {
         }
       }
     });
-    $('#workspace-config-node-filter-all').on("click", (e) => {
+    this.filterAll.on("click", (e) => {
       e.preventDefault();
       if (showUnusedOnly) {
         $(this).addClass('selected');
-        $('#workspace-config-node-filter-unused').removeClass('selected');
+        this.filterUnused.removeClass('selected');
         showUnusedOnly = !showUnusedOnly;
         refreshConfigNodeList();
       }
     });
-    $('#workspace-config-node-filter-unused').on("click", (e) => {
+    this.filterUnused.on("click", (e) => {
       e.preventDefault();
       if (!showUnusedOnly) {
         $(this).addClass('selected');
-        $('#workspace-config-node-filter-all').removeClass('selected');
+        this.filterAll.removeClass('selected');
         showUnusedOnly = !showUnusedOnly;
         refreshConfigNodeList();
       }
     });
+  }
+
+  // protected
+
+  protected get collapseAll() {
+    return $("#workspace-config-node-collapse-all")
+  }
+
+  protected get expandAll() {
+    return $("#workspace-config-node-expand-all")
+  }
+
+  protected get filterAll() {
+    return $('#workspace-config-node-filter-all')
+  }
+
+  protected get filterUnused() {
+    return $('#workspace-config-node-filter-unused')
   }
 }
