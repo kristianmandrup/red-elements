@@ -5,3 +5,7 @@ export {
 export {
   SubflowDialog
 } from './subflow-dialog'
+
+export {
+  EditDialog
+} from './edit-dialog'

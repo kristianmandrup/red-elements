@@ -2,7 +2,7 @@ import { NodeEditor } from '../'
 import { Context, $ } from '../../../../common'
 
 /**
- * Node Validator for NodeEditor
+ * Config Node Dialog for NodeEditor
  */
 export class ConfigNodeDialog extends Context {
   constructor(public editor: NodeEditor) {

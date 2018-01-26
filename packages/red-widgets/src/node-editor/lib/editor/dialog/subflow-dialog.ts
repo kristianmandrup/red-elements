@@ -2,7 +2,7 @@ import { NodeEditor } from '../'
 import { Context, $ } from '../../../../common'
 
 /**
- * Node Validator for NodeEditor
+ * Subflow Dialog for NodeEditor
  */
 export class SubflowDialog extends Context {
   constructor(public editor: NodeEditor) {
