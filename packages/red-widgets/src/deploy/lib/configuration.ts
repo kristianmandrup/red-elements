@@ -110,60 +110,19 @@ export class DeployConfiguration extends Context {
         }
       }
       ],
-      create: function () {
+      create: () => {
         log('confirmDeployDialog: create')
-
-        $("#node-dialog-confirm-deploy").parent().find("div.ui-dialog-buttonpane")
-          .prepend('<div style="height:0; vertical-align: middle; display:inline-block; margin-top: 13px; float:left;">' +
-          '<input style="vertical-align:top;" type="checkbox" id="node-dialog-confirm-deploy-hide"> ' +
-          '<label style="display:inline;" for="node-dialog-confirm-deploy-hide" data-i18n="deploy.confirm.doNotWarn"></label>' +
-          '<input type="hidden" id="node-dialog-confirm-deploy-type">' +
-          '</div>');
+        this.createConfirmDeployDialog()
       },
-      open: function () {
+      open: () => {
         log('confirmDeployDialog: open')
 
         const deployType = <string>$("#node-dialog-confirm-deploy-type").val();
         if (/conflict/.test(deployType)) {
-          const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
-          confirmDeployDialog.dialog('option', 'title', RED._('deploy.confirm.button.review'));
-          $("#node-dialog-confirm-deploy-deploy").hide();
-          $("#node-dialog-confirm-deploy-review").addClass('disabled').show();
-          $("#node-dialog-confirm-deploy-merge").addClass('disabled').show();
-          $("#node-dialog-confirm-deploy-overwrite").toggle(deployType === "deploy-conflict");
-          currentDiff = null;
-          $("#node-dialog-confirm-deploy-conflict-checking").show();
-          $("#node-dialog-confirm-deploy-conflict-auto-merge").hide();
-          $("#node-dialog-confirm-deploy-conflict-manual-merge").hide();
+          this.openDeploymentConflictDialog(deployType, currentDiff)
 
-          var now = Date.now();
-          RED.diff.getRemoteDiff(function (diff) {
-            var ellapsed = Math.max(1000 - (Date.now() - now), 0);
-            currentDiff = diff;
-            setTimeout(function () {
-              $("#node-dialog-confirm-deploy-conflict-checking").hide();
-              var d = Object.keys(diff.conflicts);
-              if (d.length === 0) {
-                $("#node-dialog-confirm-deploy-conflict-auto-merge").show();
-                $("#node-dialog-confirm-deploy-merge").removeClass('disabled')
-              } else {
-                $("#node-dialog-confirm-deploy-conflict-manual-merge").show();
-              }
-              $("#node-dialog-confirm-deploy-review").removeClass('disabled')
-            }, ellapsed);
-          })
-
-
-          $("#node-dialog-confirm-deploy-hide").parent().hide();
         } else {
-          const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
-          confirmDeployDialog.dialog('option', 'title', RED._('deploy.confirm.button.confirm'));
-
-          $("#node-dialog-confirm-deploy-deploy").show();
-          $("#node-dialog-confirm-deploy-overwrite").hide();
-          $("#node-dialog-confirm-deploy-review").hide();
-          $("#node-dialog-confirm-deploy-merge").hide();
-          $("#node-dialog-confirm-deploy-hide").parent().show();
+          this.openDeploymentDialog()
         }
       }
     });
@@ -209,6 +168,52 @@ export class DeployConfiguration extends Context {
     });
   }
 
+  // protected ?
+
+  openDeploymentDialog() {
+    const {
+      RED
+    } = this
+
+    const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
+    confirmDeployDialog.dialog('option', 'title', RED._('deploy.confirm.button.confirm'));
+
+    $("#node-dialog-confirm-deploy-deploy").show();
+    $("#node-dialog-confirm-deploy-overwrite").hide();
+    $("#node-dialog-confirm-deploy-review").hide();
+    $("#node-dialog-confirm-deploy-merge").hide();
+    $("#node-dialog-confirm-deploy-hide").parent().show();
+  }
+
+  openDeploymentConflictDialog(deployType, currentDiff) {
+    const {
+      RED
+    } = this
+
+    this.openConfirmDeployDialog(deployType)
+    currentDiff = null;
+
+    var now = Date.now();
+    RED.diff.getRemoteDiff(function (diff) {
+      var ellapsed = Math.max(1000 - (Date.now() - now), 0);
+      currentDiff = diff;
+      setTimeout(function () {
+        $("#node-dialog-confirm-deploy-conflict-checking").hide();
+        var d = Object.keys(diff.conflicts);
+        if (d.length === 0) {
+          $("#node-dialog-confirm-deploy-conflict-auto-merge").show();
+          $("#node-dialog-confirm-deploy-merge").removeClass('disabled')
+        } else {
+          $("#node-dialog-confirm-deploy-conflict-manual-merge").show();
+        }
+        $("#node-dialog-confirm-deploy-review").removeClass('disabled')
+      }, ellapsed);
+    })
+
+
+    $("#node-dialog-confirm-deploy-hide").parent().hide()
+  }
+
   configureSimple(options) {
     const {
     RED
@@ -220,6 +225,35 @@ export class DeployConfiguration extends Context {
       icon = options.icon;
     }
 
+    this.addDeployButtonsToToolbar(icon, label)
+  }
+
+  openConfirmDeployDialog(deployType) {
+    const {
+      RED
+    } = this
+
+    const confirmDeployDialog = <IDialog>$("#node-dialog-confirm-deploy")
+    confirmDeployDialog.dialog('option', 'title', RED._('deploy.confirm.button.review'));
+    $("#node-dialog-confirm-deploy-deploy").hide();
+    $("#node-dialog-confirm-deploy-review").addClass('disabled').show();
+    $("#node-dialog-confirm-deploy-merge").addClass('disabled').show();
+    $("#node-dialog-confirm-deploy-overwrite").toggle(deployType === "deploy-conflict");
+    $("#node-dialog-confirm-deploy-conflict-checking").show();
+    $("#node-dialog-confirm-deploy-conflict-auto-merge").hide();
+    $("#node-dialog-confirm-deploy-conflict-manual-merge").hide();
+  }
+
+  createConfirmDeployDialog() {
+    return $("#node-dialog-confirm-deploy").parent().find("div.ui-dialog-buttonpane")
+      .prepend('<div style="height:0; vertical-align: middle; display:inline-block; margin-top: 13px; float:left;">' +
+      '<input style="vertical-align:top;" type="checkbox" id="node-dialog-confirm-deploy-hide"> ' +
+      '<label style="display:inline;" for="node-dialog-confirm-deploy-hide" data-i18n="deploy.confirm.doNotWarn"></label>' +
+      '<input type="hidden" id="node-dialog-confirm-deploy-type">' +
+      '</div>');
+  }
+
+  addDeployButtonsToToolbar(icon, label) {
     $('<li><span class="deploy-button-group button-group">' +
       '<a id="btn-deploy" class="deploy-button disabled" href="#">' +
       '<span class="deploy-button-content">' +
@@ -232,6 +266,7 @@ export class DeployConfiguration extends Context {
       '</a>' +
       '</span></li>').prependTo(".header-toolbar");
   }
+
 
   configureDefault() {
     const {

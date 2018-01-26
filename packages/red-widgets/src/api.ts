@@ -5,11 +5,11 @@ export {
   IAjaxConfig,
 
   IBaseApi,
-  DeployApi,
+  DeploymentsApi,
   FlowsApi,
   I18nCatalogApi,
-  LibraryApi,
+  LibrariesApi,
   NodesApi,
   SettingsApi,
-  SessionApi
+  SessionsApi
 } from '@tecla5/red-api'

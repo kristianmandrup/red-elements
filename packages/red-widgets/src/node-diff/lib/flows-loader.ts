@@ -2,8 +2,8 @@
 import {
   Diff
 } from './'
-import { Context } from '../../context';
-import { FlowsApi } from '@tecla5/red-runtime';
+import { Context } from '../../context'
+import { FlowsApi } from '../../api'
 
 const { log } = console
 

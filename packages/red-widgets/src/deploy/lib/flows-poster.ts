@@ -5,9 +5,7 @@ import {
   Deploy
 } from './'
 
-import {
-  FlowsApi
-} from '@tecla5/red-runtime';
+import { FlowsApi } from '../../api'
 
 export class FlowsPoster extends Context {
   protected flowsApi: FlowsApi
