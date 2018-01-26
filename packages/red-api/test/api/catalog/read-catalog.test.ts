@@ -1,8 +1,8 @@
 import {
-  createApiMethods
+  createApiMethods,
+  createResponseSimulations,
+  expectObj, expectError, expectNotError
 } from '../_infra'
-import * as nock from 'nock'
-import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
 
 import {
   I18nCatalogApi
@@ -27,10 +27,8 @@ beforeEach(() => {
 })
 
 const {
-  one,
-  many
-} = createApiMethods(api)
-
+  simulateResponse
+} = createResponseSimulations('libraries')
 
 test('CatalogApi: create', () => {
   expectObj(api)
@@ -42,22 +40,23 @@ test('CatalogApi: create', () => {
 
 describe('CatalogApi: load - server error - fails', () => {
 
-  let api, catalog
+  let api, catalog, $api
   beforeEach(() => {
     catalog = new Catalog()
     api = create(catalog)
+    $api = createApiMethods(api, 'create')
   })
 
   test('200 OK - missing catalog - fails', async () => {
     catalog.catalog = null
-    simulateResponseOK() // OK
-    const result = await one()
+    simulateResponse() // OK
+    const result = await $api.one()
     expectError(result)
   })
 
   test('200 OK - has catalog - no fail', async () => {
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await $api.one()
     expectNotError(result)
   })
 })
@@ -66,16 +65,17 @@ describe('CatalogApi: load - server error - fails', () => {
 describe('CatalogApi: load - server error - fails', () => {
   const errorCodes = [401, 403, 404, 408]
 
-  let api, catalog
+  let api, catalog, $api
   beforeEach(() => {
     catalog = new Catalog()
     api = create(catalog)
+    $api = createApiMethods(api, 'create')
   })
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
-      const result = await load()
+      simulateResponse(errorCode)
+      const result = await $api.one()
       expectError(result)
     })
   })

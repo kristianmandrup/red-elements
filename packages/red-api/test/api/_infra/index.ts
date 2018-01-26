@@ -9,7 +9,7 @@ import {
   mockResponses
 } from '../_mock-responses'
 
-export function createResponseSimulations(modelName, id?) {
+export function createResponseSimulations(modelName, method = 'get', id?) {
   return {
     simulateResponse(code = 200, data?) {
       const model = mockResponses[modelName]
@@ -22,14 +22,15 @@ export function createResponseSimulations(modelName, id?) {
       const path = id ? [modelName, id].join('/') : modelName
 
       return nock(/localhost/)
-        .get(path)
+      [method](path)
         .reply(code, data || fakeData);
     }
   }
 }
 
 
-export function createApiMethods(api) {
+export function createApiMethods(api, method = 'read') {
+  api = api[method]
   return {
     one: async (id = 'x', data?) => {
       id = id || 'x'

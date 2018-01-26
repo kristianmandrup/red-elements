@@ -1,6 +1,6 @@
 import {
   createApiMethods,
-  nock,
+  createResponseSimulations,
   expectObj, expectError, expectNotError
 } from '../_infra'
 
@@ -27,16 +27,12 @@ beforeEach(() => {
 })
 
 const {
-  one,
-  many
-} = createApiMethods(api)
-
+  simulateResponse
+} = createResponseSimulations('libraries', 'delete')
 
 test('LibraryApi: create', () => {
   expectObj(api)
 })
-
-
 
 test('LibraryApi: create', () => {
   expectObj(api)
@@ -44,47 +40,25 @@ test('LibraryApi: create', () => {
 
 const basePath = 'libraries'
 
-function simulateResponseCode(code) {
-  return nock(/localhost/)
-    .get('libraries')
-    .reply(code);
-}
-
-function simulateResponseOK(data = {}) {
-  return nock(/localhost/)
-    .get('libraries')
-    .reply(200, data);
-}
-
-
-async function load() {
-  try {
-    return await api.load()
-  } catch (err) {
-    return {
-      error: err
-    }
-  }
-}
-
 describe('LibraryApi: load - server error - fails', () => {
 
-  let api, library
+  let api, library, $api
   beforeEach(() => {
     library = new Library()
     api = create(library)
+    $api = createApiMethods(api, 'create')
   })
 
   test('200 OK - missing library - fails', async () => {
     library.library = null
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await $api.one()
     expectError(result)
   })
 
   test('200 OK - has library - no fail', async () => {
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await $api.one()
     expectNotError(result)
   })
 })
@@ -93,16 +67,17 @@ describe('LibraryApi: load - server error - fails', () => {
 describe('LibraryApi: load - server error - fails', () => {
   const errorCodes = [401, 403, 404, 408]
 
-  let api, library
+  let api, library, $api
   beforeEach(() => {
     library = new Library()
     api = create(library)
+    $api = createApiMethods(api, 'create')
   })
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
-      const result = await load()
+      simulateResponse(errorCode)
+      const result = await $api.one()
       expectError(result)
     })
   })
