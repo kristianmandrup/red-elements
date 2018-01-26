@@ -1,9 +1,12 @@
 import {
+  createApiMethods,
+  nock,
+  expectObj, expectError, expectNotError
+} from '../_infra'
+
+import {
   SettingsApi
 } from '../../../src'
-
-import * as nock from 'nock'
-import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
 
 const { log } = console
 
@@ -31,6 +34,12 @@ beforeEach(() => {
   const settings = new Settings()
   api = create(settings)
 })
+
+const {
+  one,
+  many
+} = createApiMethods(api)
+
 
 test('SettingsApi: create', () => {
   expectObj(api)

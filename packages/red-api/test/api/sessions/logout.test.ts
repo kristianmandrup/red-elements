@@ -1,9 +1,12 @@
 import {
-  SessionApi
-} from '../../../'
+  createApiMethods,
+  nock,
+  expectObj, expectError, expectNotError
+} from '../_infra'
 
-import * as nock from 'nock'
-import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
+import {
+  SessionsApi
+} from '../../../'
 
 class Session {
   name: string = 'session'
@@ -14,7 +17,7 @@ class Session {
 const auth = new Session()
 
 function create(auth) {
-  return new SessionApi({
+  return new SessionsApi({
     $context: auth
   })
 }
@@ -24,7 +27,17 @@ beforeEach(() => {
   api = create(auth)
 })
 
-test('SessionApi: token - create', () => {
+async function logout() {
+  try {
+    return await api.logout()
+  } catch (err) {
+    return {
+      error: err
+    }
+  }
+}
+
+test('SessionsApi: token - create', () => {
   expectObj(api)
 })
 
@@ -51,7 +64,7 @@ async function load() {
   }
 }
 
-describe('SessionApi: token - server error - fails', () => {
+describe('SessionsApi: token - server error - fails', () => {
 
   let api, auth
   beforeEach(() => {
@@ -74,7 +87,7 @@ describe('SessionApi: token - server error - fails', () => {
 })
 
 
-describe('SessionApi: token - server error - fails', () => {
+describe('SessionsApi: token - server error - fails', () => {
   const errorCodes = [401, 403, 404, 408]
 
   let api, auth

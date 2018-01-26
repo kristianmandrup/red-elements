@@ -1,9 +1,12 @@
 import {
+  createApiMethods,
+  nock,
+  expectObj, expectError, expectNotError
+} from '../_infra'
+
+import {
   FlowsApi
 } from '../../../src'
-
-import * as nock from 'nock'
-import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
 
 class Flows {
   name: string = 'flows'
@@ -22,6 +25,11 @@ beforeEach(() => {
   const flows = new Flows()
   api = create(flows)
 })
+
+const {
+  one,
+  many
+} = createApiMethods(api)
 
 test('FlowsApi: create', () => {
   expectObj(api)

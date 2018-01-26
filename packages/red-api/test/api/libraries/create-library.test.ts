@@ -1,9 +1,12 @@
 import {
-  LibraryApi
+  createApiMethods,
+  createResponseSimulations,
+  expectObj, expectError, expectNotError
+} from '../_infra'
+import {
+  LibrariesApi
 } from '../../../src'
 
-import * as nock from 'nock'
-import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
 
 class Library {
   name: string = 'library'
@@ -12,7 +15,7 @@ class Library {
 }
 
 function create(library: Library) {
-  return new LibraryApi({
+  return new LibrariesApi({
     $context: library
   })
 }
@@ -22,6 +25,15 @@ beforeEach(() => {
   const library = new Library()
   api = create(library)
 })
+
+
+const {
+  one,
+  many
+} = createApiMethods(api)
+const {
+  simulateResponse
+} = createResponseSimulations('libraries')
 
 test('LibraryApi: create', () => {
   expectObj(api)
@@ -35,29 +47,6 @@ test('LibraryApi: create', () => {
 
 const basePath = 'libraries'
 
-function simulateResponseCode(code) {
-  return nock(/localhost/)
-    .get('libraries')
-    .reply(code);
-}
-
-function simulateResponseOK(data = {}) {
-  return nock(/localhost/)
-    .get('libraries')
-    .reply(200, data);
-}
-
-
-async function load() {
-  try {
-    return await api.load()
-  } catch (err) {
-    return {
-      error: err
-    }
-  }
-}
-
 describe('LibraryApi: load - server error - fails', () => {
 
   let api, library
@@ -68,14 +57,14 @@ describe('LibraryApi: load - server error - fails', () => {
 
   test('200 OK - missing library - fails', async () => {
     library.library = null
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await one()
     expectError(result)
   })
 
   test('200 OK - has library - no fail', async () => {
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await one()
     expectNotError(result)
   })
 })
@@ -92,8 +81,8 @@ describe('LibraryApi: load - server error - fails', () => {
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
-      const result = await load()
+      simulateResponse(errorCode)
+      const result = await one()
       expectError(result)
     })
   })

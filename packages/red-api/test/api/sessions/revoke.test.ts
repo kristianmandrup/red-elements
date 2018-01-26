@@ -1,9 +1,12 @@
 import {
+  createApiMethods,
+  nock,
+  expectObj, expectError, expectNotError
+} from '../_infra'
+
+import {
   SessionApi
 } from '../../../'
-
-import * as nock from 'nock'
-import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
 
 class Session {
   name: string = 'session'
@@ -23,6 +26,17 @@ let api
 beforeEach(() => {
   api = create(auth)
 })
+
+async function revoke(token) {
+  try {
+    return await api.revoke(token)
+  } catch (err) {
+    return {
+      error: err
+    }
+  }
+}
+
 
 test('SessionApi: revoke - create', () => {
   expectObj(api)

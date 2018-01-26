@@ -1,9 +1,12 @@
 import {
-  LibraryApi
-} from '../../../src'
+  createApiMethods,
+  nock,
+  expectObj, expectError, expectNotError
+} from '../_infra'
 
-import * as nock from 'nock'
-import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
+import {
+  LibrariesApi
+} from '../../../src'
 
 class Library {
   name: string = 'library'
@@ -12,7 +15,7 @@ class Library {
 }
 
 function create(library: Library) {
-  return new LibraryApi({
+  return new LibrariesApi({
     $context: library
   })
 }
@@ -22,6 +25,12 @@ beforeEach(() => {
   const library = new Library()
   api = create(library)
 })
+
+const {
+  one,
+  many
+} = createApiMethods(api)
+
 
 test('LibraryApi: create', () => {
   expectObj(api)

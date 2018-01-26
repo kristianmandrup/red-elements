@@ -1,9 +1,12 @@
 import {
-  I18nCatalogApi
-} from '../../../src'
-
+  createApiMethods
+} from '../_infra'
 import * as nock from 'nock'
 import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
+
+import {
+  I18nCatalogApi
+} from '../../../src'
 
 class Catalog {
   name: string = 'catalog'
@@ -23,38 +26,19 @@ beforeEach(() => {
   api = create(catalog)
 })
 
+const {
+  one,
+  many
+} = createApiMethods(api)
+
+
 test('CatalogApi: create', () => {
   expectObj(api)
 })
 
-
-
 test('CatalogApi: create', () => {
   expectObj(api)
 })
-
-function simulateResponseCode(code) {
-  return nock(/localhost/)
-    .get('catalog')
-    .reply(code);
-}
-
-function simulateResponseOK(data = {}) {
-  return nock(/localhost/)
-    .get('catalog')
-    .reply(200, data);
-}
-
-
-async function load() {
-  try {
-    return await api.load()
-  } catch (err) {
-    return {
-      error: err
-    }
-  }
-}
 
 describe('CatalogApi: load - server error - fails', () => {
 
@@ -67,7 +51,7 @@ describe('CatalogApi: load - server error - fails', () => {
   test('200 OK - missing catalog - fails', async () => {
     catalog.catalog = null
     simulateResponseOK() // OK
-    const result = await load()
+    const result = await one()
     expectError(result)
   })
 

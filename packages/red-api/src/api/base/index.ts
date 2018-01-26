@@ -9,4 +9,6 @@ export {
   BaseApiDelete,
   BaseApiRead,
   BaseApiMethod,
+  BaseApiData,
+  BaseApiId
 } from './methods'

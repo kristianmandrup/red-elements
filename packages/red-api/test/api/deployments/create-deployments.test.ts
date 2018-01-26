@@ -1,9 +1,12 @@
 import {
-  DeployApi
-} from '../../../src'
+  createApiMethods,
+  createResponseSimulations,
+  expectObj, expectError, expectNotError
+} from '../_infra'
 
-import * as nock from 'nock'
-import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
+import {
+  DeploymentsApi
+} from '../../../src'
 
 class Deploy {
   name: string = 'deploy'
@@ -12,7 +15,7 @@ class Deploy {
 }
 
 function create(deploy: Deploy) {
-  return new DeployApi({
+  return new DeploymentsApi({
     $context: deploy
   })
 }
@@ -23,33 +26,18 @@ beforeEach(() => {
   api = create(deploy)
 })
 
+const {
+  one,
+  many
+} = createApiMethods(api)
+const {
+  simulateResponse
+} = createResponseSimulations('deployments')
+
 test('DeployApi: create', () => {
   expectObj(api)
 })
 
-
-function simulateResponseCode(code) {
-  return nock(/localhost/)
-    .get('deploy')
-    .reply(code);
-}
-
-function simulateResponseOK(data = {}) {
-  return nock(/localhost/)
-    .get('deploy')
-    .reply(200, data);
-}
-
-
-async function load() {
-  try {
-    return await api.load()
-  } catch (err) {
-    return {
-      error: err
-    }
-  }
-}
 
 describe('DeployApi: load - server error - fails', () => {
 
@@ -61,14 +49,14 @@ describe('DeployApi: load - server error - fails', () => {
 
   test('200 OK - missing deploy - fails', async () => {
     deploy.deploy = null
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await one()
     expectError(result)
   })
 
   test('200 OK - has deploy - no fail', async () => {
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await one()
     expectNotError(result)
   })
 })
@@ -85,8 +73,8 @@ describe('DeployApi: load - server error - fails', () => {
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
-      const result = await load()
+      simulateResponse(errorCode)
+      const result = await one()
       expectError(result)
     })
   })

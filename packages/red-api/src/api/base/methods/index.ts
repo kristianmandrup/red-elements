@@ -23,4 +23,10 @@ export {
   IApiMethod
 } from './_base'
 
+export {
+  BaseApiData
+} from './_data'
 
+export {
+  BaseApiId
+} from './_id'

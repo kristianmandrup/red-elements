@@ -1,9 +1,12 @@
 import {
+  createApiMethods,
+  nock,
+  expectObj, expectError, expectNotError
+} from '../_infra'
+
+import {
   NodesApi
 } from '../../../src'
-
-import * as nock from 'nock'
-import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
 
 class Nodes {
   name: string = 'nodes'
@@ -23,10 +26,15 @@ beforeEach(() => {
   api = create(nodes)
 })
 
+const {
+  one,
+  many
+} = createApiMethods(api)
+
+
 test('NodesApi: create', () => {
   expectObj(api)
 })
-
 
 
 test('NodesApi: create', () => {

@@ -1,9 +1,12 @@
 import {
-  LibraryApi
-} from '../../../src'
+  createApiMethods,
+  nock,
+  expectObj, expectError, expectNotError
+} from '../_infra'
 
-import * as nock from 'nock'
-import { expectObj, expectError, expectNotError } from '../../_infra/helpers';
+import {
+  LibrariesApi
+} from '../../../src'
 
 class Library {
   name: string = 'library'
@@ -12,7 +15,7 @@ class Library {
 }
 
 function create(library: Library) {
-  return new LibraryApi({
+  return new LibrariesApi({
     $context: library
   })
 }
@@ -23,13 +26,17 @@ beforeEach(() => {
   api = create(library)
 })
 
-test('LibraryApi: create', () => {
+const {
+  one,
+  many
+} = createApiMethods(api)
+
+
+test('LibrariesApi: create', () => {
   expectObj(api)
 })
 
-
-
-test('LibraryApi: create', () => {
+test('LibrariesApi: create', () => {
   expectObj(api)
 })
 
@@ -47,18 +54,7 @@ function simulateResponseOK(data = {}) {
     .reply(200, data);
 }
 
-
-async function load() {
-  try {
-    return await api.load()
-  } catch (err) {
-    return {
-      error: err
-    }
-  }
-}
-
-describe('LibraryApi: load - server error - fails', () => {
+describe('LibrariesApi: load - server error - fails', () => {
 
   let api, library
   beforeEach(() => {
@@ -81,7 +77,7 @@ describe('LibraryApi: load - server error - fails', () => {
 })
 
 
-describe('LibraryApi: load - server error - fails', () => {
+describe('LibrariesApi: load - server error - fails', () => {
   const errorCodes = [401, 403, 404, 408]
 
   let api, library
