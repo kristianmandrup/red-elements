@@ -1,6 +1,6 @@
 import {
   createApiMethods,
-  nock,
+  createResponseSimulations,
   expectObj, expectError, expectNotError
 } from '../_infra'
 
@@ -44,6 +44,10 @@ const {
   many
 } = createApiMethods(api)
 
+const {
+  simulateResponse
+} = createResponseSimulations('settings', 'update')
+
 describe('SettingsApi: load - server error - fails', () => {
 
   let api, settings
@@ -54,14 +58,14 @@ describe('SettingsApi: load - server error - fails', () => {
 
   test('200 OK - missing settings - fails', async () => {
     settings.settings = null
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await one()
     expectError(result)
   })
 
   test('200 OK - has settings - no fail', async () => {
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await one()
     expectNotError(result)
   })
 })
@@ -78,8 +82,8 @@ describe('SettingsApi: load - server error - fails', () => {
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
-      const result = await load()
+      simulateResponse(errorCode)
+      const result = await one()
       log({
         result
       })

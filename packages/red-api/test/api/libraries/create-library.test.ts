@@ -34,8 +34,6 @@ test('LibraryApi: create', () => {
   expectObj(api)
 })
 
-
-
 test('LibraryApi: create', () => {
   expectObj(api)
 })

@@ -1,11 +1,11 @@
 import {
   createApiMethods,
-  nock,
+  createResponseSimulations,
   expectObj, expectError, expectNotError
 } from '../_infra'
 
 import {
-  SessionApi
+  SessionsApi
 } from '../../../'
 
 class Session {
@@ -17,7 +17,7 @@ class Session {
 const auth = new Session()
 
 function create(auth) {
-  return new SessionApi({
+  return new SessionsApi({
     $context: auth
   })
 }
@@ -27,7 +27,7 @@ beforeEach(() => {
   api = create(auth)
 })
 
-async function revoke(token) {
+async function revoke(token = 'xyz123') {
   try {
     return await api.revoke(token)
   } catch (err) {
@@ -37,33 +37,13 @@ async function revoke(token) {
   }
 }
 
+const {
+  simulateResponse
+} = createResponseSimulations('revoke', 'post')
 
 test('SessionApi: revoke - create', () => {
   expectObj(api)
 })
-
-function simulateResponseCode(code) {
-  return nock(/localhost/)
-    .get('auth/revoke')
-    .reply(code);
-}
-
-function simulateResponseOK(data = {}) {
-  return nock(/localhost/)
-    .get('auth/revoke')
-    .reply(200, data);
-}
-
-
-async function load() {
-  try {
-    return await api.load()
-  } catch (err) {
-    return {
-      error: err
-    }
-  }
-}
 
 describe('SessionApi: revoke - server error - fails', () => {
 
@@ -75,14 +55,14 @@ describe('SessionApi: revoke - server error - fails', () => {
 
   test('200 OK - missing auth - fails', async () => {
     auth.auth = null
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await revoke(auth)
     expectError(result)
   })
 
   test('200 OK - has auth - no fail', async () => {
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await revoke(auth)
     expectNotError(result)
   })
 })
@@ -99,8 +79,8 @@ describe('SessionApi: revoke - server error - fails', () => {
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
-      const result = await load()
+      simulateResponse(errorCode)
+      const result = await revoke(auth)
       expectError(result)
     })
   })

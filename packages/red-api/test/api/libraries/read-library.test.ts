@@ -1,6 +1,6 @@
 import {
   createApiMethods,
-  nock,
+  createResponseSimulations,
   expectObj, expectError, expectNotError
 } from '../_infra'
 
@@ -31,6 +31,9 @@ const {
   many
 } = createApiMethods(api)
 
+const {
+  simulateResponse
+} = createResponseSimulations('libraries', 'get')
 
 test('LibraryApi: create', () => {
   expectObj(api)

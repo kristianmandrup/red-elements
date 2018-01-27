@@ -10,6 +10,9 @@ import {
 } from '../_mock-responses'
 
 export function createResponseSimulations(modelName, method = 'get', id?) {
+  if (method === 'read') method = 'get'
+  if (method === 'create') method = 'post'
+
   return {
     simulateResponse(code = 200, data?) {
       const model = mockResponses[modelName]
@@ -30,6 +33,9 @@ export function createResponseSimulations(modelName, method = 'get', id?) {
 
 
 export function createApiMethods(api, method = 'read') {
+  if (method === 'read') method = 'get'
+  if (method === 'create') method = 'post'
+
   api = api[method]
   return {
     one: async (id = 'x', data?) => {

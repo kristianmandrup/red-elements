@@ -28,7 +28,7 @@ beforeEach(() => {
 
 const {
   simulateResponse
-} = createResponseSimulations('libraries', 'delete')
+} = createResponseSimulations('flows', 'delete')
 
 
 test('FlowsApi: create', () => {

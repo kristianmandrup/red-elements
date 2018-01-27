@@ -1,6 +1,6 @@
 import {
   createApiMethods,
-  nock,
+  createResponseSimulations,
   expectObj, expectError, expectNotError
 } from '../_infra'
 
@@ -40,33 +40,14 @@ const {
   many
 } = createApiMethods(api)
 
+const {
+  simulateResponse
+} = createResponseSimulations('settings', 'post')
 
 test('SettingsApi: create', () => {
   expectObj(api)
 })
 
-function simulateResponseCode(code) {
-  return nock(/localhost/)
-    .get('settings')
-    .reply(code);
-}
-
-function simulateResponseOK(data = {}) {
-  return nock(/localhost/)
-    .get('settings')
-    .reply(200, data);
-}
-
-
-async function load() {
-  try {
-    return await api.load()
-  } catch (err) {
-    return {
-      error: err
-    }
-  }
-}
 
 describe('SettingsApi: load - server error - fails', () => {
 

@@ -1,6 +1,6 @@
 import {
   createApiMethods,
-  nock,
+  createResponseSimulations,
   expectObj, expectError, expectNotError
 } from '../_infra'
 
@@ -29,7 +29,11 @@ beforeEach(() => {
 const {
   one,
   many
-} = createApiMethods(api)
+} = createApiMethods(api, 'read')
+
+const {
+  simulateResponse
+} = createResponseSimulations('libraries', 'update')
 
 
 test('LibrariesApi: create', () => {
@@ -42,18 +46,6 @@ test('LibrariesApi: create', () => {
 
 const basePath = 'libraries'
 
-function simulateResponseCode(code) {
-  return nock(/localhost/)
-    .get('libraries')
-    .reply(code);
-}
-
-function simulateResponseOK(data = {}) {
-  return nock(/localhost/)
-    .get('libraries')
-    .reply(200, data);
-}
-
 describe('LibrariesApi: load - server error - fails', () => {
 
   let api, library
@@ -64,14 +56,14 @@ describe('LibrariesApi: load - server error - fails', () => {
 
   test('200 OK - missing library - fails', async () => {
     library.library = null
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await one()
     expectError(result)
   })
 
   test('200 OK - has library - no fail', async () => {
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await one()
     expectNotError(result)
   })
 })
@@ -88,8 +80,8 @@ describe('LibrariesApi: load - server error - fails', () => {
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
-      const result = await load()
+      simulateResponse(errorCode)
+      const result = await one()
       expectError(result)
     })
   })

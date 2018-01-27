@@ -1,6 +1,6 @@
 import {
   createApiMethods,
-  nock,
+  createResponseSimulations,
   expectObj, expectError, expectNotError
 } from '../_infra'
 
@@ -37,32 +37,14 @@ async function logout() {
   }
 }
 
+const {
+  simulateResponse
+} = createResponseSimulations('logout', 'post')
+
+
 test('SessionsApi: token - create', () => {
   expectObj(api)
 })
-
-function simulateResponseCode(code) {
-  return nock(/localhost/)
-    .get('auth/token')
-    .reply(code);
-}
-
-function simulateResponseOK(data = {}) {
-  return nock(/localhost/)
-    .get('auth/token')
-    .reply(200, data);
-}
-
-
-async function load() {
-  try {
-    return await api.load()
-  } catch (err) {
-    return {
-      error: err
-    }
-  }
-}
 
 describe('SessionsApi: token - server error - fails', () => {
 
@@ -74,14 +56,14 @@ describe('SessionsApi: token - server error - fails', () => {
 
   test('200 OK - missing auth - fails', async () => {
     auth.auth = null
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await logout()
     expectError(result)
   })
 
   test('200 OK - has auth - no fail', async () => {
-    simulateResponseOK() // OK
-    const result = await load()
+    simulateResponse() // OK
+    const result = await logout()
     expectNotError(result)
   })
 })
@@ -98,8 +80,8 @@ describe('SessionsApi: token - server error - fails', () => {
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
-      const result = await load()
+      simulateResponse(errorCode)
+      const result = await logout()
       expectError(result)
     })
   })
