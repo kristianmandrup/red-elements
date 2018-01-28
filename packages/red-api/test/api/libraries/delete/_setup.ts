@@ -26,9 +26,11 @@ beforeEach(() => {
   api = create(library)
 })
 
+const $method = 'delete'
+
 const {
   simulateResponse
-} = createResponseSimulations('libraries', 'delete')
+} = createResponseSimulations('libraries', $method)
 
 function createApi(method?) {
   const library = new Library()
@@ -36,7 +38,7 @@ function createApi(method?) {
 
   return {
     library,
-    $api: createApiMethods(api, method || 'update')
+    $api: createApiMethods(api, method || $method)
   }
 }
 

@@ -1,52 +1,19 @@
 import {
+  simulateResponse,
+  api,
+  create,
+  Settings,
+  SettingsApi,
+  createApi,
   createApiMethods,
   createResponseSimulations,
   expectObj, expectError, expectNotError
-} from '../_infra'
-
-import {
-  SettingsApi
-} from '../../../src'
-
-const { log } = console
-
-const ctxSettings = {
-  get() {
-    return 'x'
-  }
-}
-
-class Settings {
-  name: string = 'settings'
-  settings = ctxSettings // needed for beforeSend of API
-
-  constructor() { }
-}
-
-function create(settings: Settings) {
-  return new SettingsApi({
-    $context: settings
-  })
-}
-
-let api
-beforeEach(() => {
-  const settings = new Settings()
-  api = create(settings)
-})
+} from './_setup'
 
 test('SettingsApi: create', () => {
   expectObj(api)
 })
 
-const {
-  one,
-  many
-} = createApiMethods(api)
-
-const {
-  simulateResponse
-} = createResponseSimulations('settings', 'update')
 
 describe('SettingsApi: load - server error - fails', () => {
 
@@ -58,14 +25,14 @@ describe('SettingsApi: load - server error - fails', () => {
 
   test('200 OK - missing settings - fails', async () => {
     settings.settings = null
-    simulateResponse() // OK
-    const result = await one()
+    simulateResponseOK() // OK
+    const result = await load()
     expectError(result)
   })
 
   test('200 OK - has settings - no fail', async () => {
-    simulateResponse() // OK
-    const result = await one()
+    simulateResponseOK() // OK
+    const result = await load()
     expectNotError(result)
   })
 })
@@ -82,8 +49,8 @@ describe('SettingsApi: load - server error - fails', () => {
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
-      simulateResponse(errorCode)
-      const result = await one()
+      simulateResponseCode(errorCode)
+      const result = await load()
       log({
         result
       })

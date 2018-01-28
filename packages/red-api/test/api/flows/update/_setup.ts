@@ -26,9 +26,21 @@ beforeEach(() => {
   api = create(flows)
 })
 
+const $method = 'update'
+
 const {
   simulateResponse
-} = createResponseSimulations('flows', 'update')
+} = createResponseSimulations('flows', $method)
+
+function createApi(method?) {
+  const flows = new Flows()
+  const api = create(flows)
+
+  return {
+    flows,
+    $api: createApiMethods(api, method || $method)
+  }
+}
 
 export {
   simulateResponse,

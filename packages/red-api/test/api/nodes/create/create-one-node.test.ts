@@ -1,70 +1,18 @@
 import {
+  simulateResponse,
+  api,
+  create,
+  Nodes,
+  NodesApi,
+  createApi,
   createApiMethods,
   createResponseSimulations,
   expectObj, expectError, expectNotError
-} from '../_infra'
-
-import {
-  NodesApi
-} from '../../../src'
-
-class Nodes {
-  name: string = 'nodes'
-
-  constructor() { }
-}
-
-function create(nodes: Nodes) {
-  return new NodesApi({
-    $context: nodes
-  })
-}
-
-let api
-beforeEach(() => {
-  const nodes = new Nodes()
-  api = create(nodes)
-})
+} from './_setup'
 
 test('NodesApi: create', () => {
   expectObj(api)
 })
-
-const {
-  one,
-  many
-} = createApiMethods(api)
-
-const {
-  simulateResponse
-} = createResponseSimulations('nodes', 'delete')
-
-test('NodesApi: create', () => {
-  expectObj(api)
-})
-
-function simulateResponseCode(code) {
-  return nock(/localhost/)
-    .get('nodes')
-    .reply(code);
-}
-
-function simulateResponseOK(data = {}) {
-  return nock(/localhost/)
-    .get('nodes')
-    .reply(200, data);
-}
-
-
-async function load() {
-  try {
-    return await api.load()
-  } catch (err) {
-    return {
-      error: err
-    }
-  }
-}
 
 describe('NodesApi: load - server error - fails', () => {
 

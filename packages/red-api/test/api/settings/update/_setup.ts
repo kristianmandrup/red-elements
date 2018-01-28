@@ -5,39 +5,40 @@ import {
 } from '../../_infra'
 
 import {
-  FlowsApi
+  SettingsApi
 } from '../../../../src'
 
-class Flows {
-  name: string = 'flows'
+class Settings {
+  name: string = 'settings'
 
   constructor() { }
 }
 
-function create(flows: Flows) {
-  return new FlowsApi({
-    $context: flows
+function create(library: Settings) {
+  return new SettingsApi({
+    $context: library
   })
 }
 
 let api
 beforeEach(() => {
-  const flows = new Flows()
-  api = create(flows)
+  const library = new Settings()
+  api = create(library)
 })
 
-const $method = 'read'
+const $method = 'update'
+const $basePath = 'settings'
 
 const {
   simulateResponse
-} = createResponseSimulations('flows', $method)
+} = createResponseSimulations($basePath, $method)
 
 function createApi(method?) {
-  const flows = new Flows()
-  const api = create(flows)
+  const library = new Settings()
+  const api = create(library)
 
   return {
-    flows,
+    library,
     $api: createApiMethods(api, method || $method)
   }
 }
@@ -45,9 +46,10 @@ function createApi(method?) {
 export {
   simulateResponse,
   api,
+  createApi,
   create,
-  Flows,
-  FlowsApi,
+  Settings,
+  SettingsApi,
   createApiMethods,
   createResponseSimulations,
   expectObj, expectError, expectNotError

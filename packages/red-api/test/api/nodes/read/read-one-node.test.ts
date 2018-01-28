@@ -1,72 +1,18 @@
 import {
+  simulateResponse,
+  api,
+  create,
+  Nodes,
+  NodesApi,
+  createApi,
   createApiMethods,
   createResponseSimulations,
   expectObj, expectError, expectNotError
-} from '../_infra'
-
-import {
-  NodesApi
-} from '../../../src'
-
-class Nodes {
-  name: string = 'nodes'
-
-  constructor() { }
-}
-
-function create(nodes: Nodes) {
-  return new NodesApi({
-    $context: nodes
-  })
-}
-
-let api
-beforeEach(() => {
-  const nodes = new Nodes()
-  api = create(nodes)
-})
-
-const {
-  one,
-  many
-} = createApiMethods(api)
-
-const {
-  simulateResponse
-} = createResponseSimulations('nodes', 'post')
-
+} from './_setup'
 
 test('NodesApi: create', () => {
   expectObj(api)
 })
-
-
-test('NodesApi: create', () => {
-  expectObj(api)
-})
-
-function simulateResponseCode(code) {
-  return nock(/localhost/)
-    .get('nodes')
-    .reply(code);
-}
-
-function simulateResponseOK(data = {}) {
-  return nock(/localhost/)
-    .get('nodes')
-    .reply(200, data);
-}
-
-
-async function load() {
-  try {
-    return await api.load()
-  } catch (err) {
-    return {
-      error: err
-    }
-  }
-}
 
 describe('NodesApi: load - server error - fails', () => {
 
@@ -78,13 +24,13 @@ describe('NodesApi: load - server error - fails', () => {
 
   test('200 OK - missing nodes - fails', async () => {
     nodes.nodes = null
-    simulateResponseOK() // OK
+    simulateResponse() // OK
     const result = await load()
     expectError(result)
   })
 
   test('200 OK - has nodes - no fail', async () => {
-    simulateResponseOK() // OK
+    simulateResponse() // OK
     const result = await load()
     expectNotError(result)
   })
@@ -102,7 +48,7 @@ describe('NodesApi: load - server error - fails', () => {
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
+      simulateResponse(errorCode)
       const result = await load()
       expectError(result)
     })
