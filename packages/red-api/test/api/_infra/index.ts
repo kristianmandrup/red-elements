@@ -12,6 +12,7 @@ import {
 export function createResponseSimulations(modelName, method = 'get', id?) {
   if (method === 'read') method = 'get'
   if (method === 'create') method = 'post'
+  if (method === 'update') method = 'put'
 
   return {
     simulateResponse(code = 200, data?) {
@@ -35,6 +36,7 @@ export function createResponseSimulations(modelName, method = 'get', id?) {
 export function createApiMethods(api, method = 'read') {
   if (method === 'read') method = 'get'
   if (method === 'create') method = 'post'
+  if (method === 'update') method = 'put'
 
   api = api[method]
   return {

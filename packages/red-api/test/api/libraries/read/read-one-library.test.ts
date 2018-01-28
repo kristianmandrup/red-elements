@@ -1,52 +1,25 @@
 import {
+  simulateResponse,
+  api,
+  create,
+  createApi,
+  Library,
+  LibrariesApi,
   createApiMethods,
   createResponseSimulations,
   expectObj, expectError, expectNotError
-} from '../_infra'
-import {
-  LibrariesApi
-} from '../../../src'
-
-
-class Library {
-  name: string = 'library'
-
-  constructor() { }
-}
-
-function create(library: Library) {
-  return new LibrariesApi({
-    $context: library
-  })
-}
-
-let api
-beforeEach(() => {
-  const library = new Library()
-  api = create(library)
-})
-
-const {
-  simulateResponse
-} = createResponseSimulations('libraries', 'post')
+} from './_setup'
 
 test('LibraryApi: create', () => {
   expectObj(api)
 })
 
-test('LibraryApi: create', () => {
-  expectObj(api)
-})
-
-const basePath = 'libraries'
 
 describe('LibraryApi: load - server error - fails', () => {
 
-  let api, library, $api
+  let $api, library
   beforeEach(() => {
-    library = new Library()
-    api = create(library)
-    $api = createApiMethods(api, 'create')
+    ({ $api, library } = createApi())
   })
 
   test('200 OK - missing library - fails', async () => {
@@ -67,11 +40,9 @@ describe('LibraryApi: load - server error - fails', () => {
 describe('LibraryApi: load - server error - fails', () => {
   const errorCodes = [401, 403, 404, 408]
 
-  let api, library, $api
+  let $api, library
   beforeEach(() => {
-    library = new Library()
-    api = create(library)
-    $api = createApiMethods(api, 'create')
+    ({ $api, library } = createApi())
   })
 
   errorCodes.map(errorCode => {
@@ -81,7 +52,4 @@ describe('LibraryApi: load - server error - fails', () => {
       expectError(result)
     })
   })
-})
-
-describe('LibraryApi: create - server error - fails', () => {
 })

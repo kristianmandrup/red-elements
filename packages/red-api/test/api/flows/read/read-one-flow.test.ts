@@ -1,44 +1,18 @@
 import {
+  simulateResponse,
+  api,
+  create,
+  Flows,
+  FlowsApi,
   createApiMethods,
   createResponseSimulations,
   expectObj, expectError, expectNotError
-} from '../_infra'
-
-import {
-  FlowsApi
-} from '../../../src'
-
-class Flows {
-  name: string = 'flows'
-
-  constructor() { }
-}
-
-function create(flows: Flows) {
-  return new FlowsApi({
-    $context: flows
-  })
-}
-
-let api
-beforeEach(() => {
-  const flows = new Flows()
-  api = create(flows)
-})
-
-const {
-  simulateResponse
-} = createResponseSimulations('flows', 'delete')
-
+} from './_setup'
 
 test('FlowsApi: create', () => {
   expectObj(api)
 })
 
-
-test('FlowsApi: create', () => {
-  expectObj(api)
-})
 
 describe('FlowsApi: load - server error - fails', () => {
 
@@ -52,13 +26,13 @@ describe('FlowsApi: load - server error - fails', () => {
   test('200 OK - missing flows - fails', async () => {
     flows.flows = null
     simulateResponse() // OK
-    const result = await load()
+    const result = await $api.one()
     expectError(result)
   })
 
   test('200 OK - has flows - no fail', async () => {
     simulateResponse() // OK
-    const result = await load()
+    const result = await $api.one()
     expectNotError(result)
   })
 })
@@ -77,7 +51,7 @@ describe('FlowsApi: load - server error - fails', () => {
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
       simulateResponse(errorCode)
-      const result = await load()
+      const result = await $api.one()
       expectError(result)
     })
   })

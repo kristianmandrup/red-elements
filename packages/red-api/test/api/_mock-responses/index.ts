@@ -2,7 +2,15 @@ export const mockResponses = {
   settings: {
     _200() {
       return {
-        status: 'ok'
+        user: {
+          anonymous: false
+        },
+        'auth-tokens': {
+          accessToken: 'abc123'
+        },
+        editorTheme: {
+
+        }
       }
     }
   }

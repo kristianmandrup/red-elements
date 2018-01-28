@@ -1,44 +1,14 @@
 import {
+  simulateResponse,
+  api,
+  create,
+  createApi,
+  Library,
+  LibrariesApi,
   createApiMethods,
   createResponseSimulations,
   expectObj, expectError, expectNotError
-} from '../_infra'
-
-import {
-  LibrariesApi
-} from '../../../src'
-
-class Library {
-  name: string = 'library'
-
-  constructor() { }
-}
-
-function create(library: Library) {
-  return new LibrariesApi({
-    $context: library
-  })
-}
-
-let api
-beforeEach(() => {
-  const library = new Library()
-  api = create(library)
-})
-
-const {
-  one,
-  many
-} = createApiMethods(api, 'read')
-
-const {
-  simulateResponse
-} = createResponseSimulations('libraries', 'update')
-
-
-test('LibrariesApi: create', () => {
-  expectObj(api)
-})
+} from './_setup'
 
 test('LibrariesApi: create', () => {
   expectObj(api)
@@ -48,22 +18,21 @@ const basePath = 'libraries'
 
 describe('LibrariesApi: load - server error - fails', () => {
 
-  let api, library
+  let $api, library
   beforeEach(() => {
-    library = new Library()
-    api = create(library)
+    ({ $api, library } = createApi())
   })
 
   test('200 OK - missing library - fails', async () => {
     library.library = null
     simulateResponse() // OK
-    const result = await one()
+    const result = await $api.one()
     expectError(result)
   })
 
   test('200 OK - has library - no fail', async () => {
     simulateResponse() // OK
-    const result = await one()
+    const result = await $api.one()
     expectNotError(result)
   })
 })
@@ -72,16 +41,15 @@ describe('LibrariesApi: load - server error - fails', () => {
 describe('LibrariesApi: load - server error - fails', () => {
   const errorCodes = [401, 403, 404, 408]
 
-  let api, library
+  let $api, library
   beforeEach(() => {
-    library = new Library()
-    api = create(library)
+    ({ $api, library } = createApi())
   })
 
   errorCodes.map(errorCode => {
     test(`${errorCode} error`, async () => {
       simulateResponse(errorCode)
-      const result = await one()
+      const result = await $api.one()
       expectError(result)
     })
   })
