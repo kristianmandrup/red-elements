@@ -27,10 +27,11 @@ beforeEach(() => {
 })
 
 const $method = 'update'
+const $basePath = 'libraries'
 
 const {
   simulateResponse
-} = createResponseSimulations('libraries', $method)
+} = createResponseSimulations($basePath, $method)
 
 function createApi(method?) {
   const library = new Library()

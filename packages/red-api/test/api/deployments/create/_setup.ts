@@ -5,37 +5,51 @@ import {
 } from '../../_infra'
 
 import {
-  FlowsApi
+  DeploymentsApi
 } from '../../../../src'
 
-class Flows {
-  name: string = 'flows'
+class Deployments {
+  name: string = 'deployments'
 
   constructor() { }
 }
 
-function create(flows: Flows) {
-  return new FlowsApi({
-    $context: flows
+function create(deployments: Deployments) {
+  return new DeploymentsApi({
+    $context: deployments
   })
 }
 
 let api
 beforeEach(() => {
-  const flows = new Flows()
-  api = create(flows)
+  const deployments = new Deployments()
+  api = create(deployments)
 })
+
+const $method = 'create'
+const $basePath = 'deployments'
 
 const {
   simulateResponse
-} = createResponseSimulations('flows', 'create')
+} = createResponseSimulations($basePath, $method)
+
+function createApi(method?) {
+  const deployments = new Deployments()
+  const api = create(deployments)
+
+  return {
+    deployments,
+    $api: createApiMethods(api, method || $method)
+  }
+}
 
 export {
   simulateResponse,
   api,
+  createApi,
   create,
-  Flows,
-  FlowsApi,
+  Deployments,
+  DeploymentsApi,
   createApiMethods,
   createResponseSimulations,
   expectObj, expectError, expectNotError

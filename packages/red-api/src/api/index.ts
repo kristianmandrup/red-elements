@@ -37,3 +37,6 @@ export {
   SessionsApi,
 } from './sessions'
 
+export {
+  ProjectsApi,
+} from './projects'

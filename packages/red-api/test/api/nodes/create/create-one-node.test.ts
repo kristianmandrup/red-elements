@@ -14,43 +14,50 @@ test('NodesApi: create', () => {
   expectObj(api)
 })
 
-describe('NodesApi: load - server error - fails', () => {
+describe('NodesApi: one', () => {
+  describe('OK', () => {
+    let nodes, $api
+    beforeEach(() => {
+      ({ $api, nodes } = createApi())
+    })
 
-  let api, nodes
-  beforeEach(() => {
-    nodes = new Nodes()
-    api = create(nodes)
+    test('has nodes - works', async () => {
+      simulateResponse() // OK
+      const result = await $api.one()
+      expectNotError(result)
+    })
   })
 
-  test('200 OK - missing nodes - fails', async () => {
-    nodes.nodes = null
-    simulateResponseOK() // OK
-    const result = await load()
-    expectError(result)
-  })
+  describe('API errors', () => {
+    let nodes, $api
+    beforeEach(() => {
+      ({ $api, nodes } = createApi())
+    })
 
-  test('200 OK - has nodes - no fail', async () => {
-    simulateResponseOK() // OK
-    const result = await load()
-    expectNotError(result)
-  })
-})
-
-
-describe('NodesApi: load - server error - fails', () => {
-  const errorCodes = [401, 403, 404, 408]
-
-  let api, nodes
-  beforeEach(() => {
-    nodes = new Nodes()
-    api = create(nodes)
-  })
-
-  errorCodes.map(errorCode => {
-    test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
-      const result = await load()
+    test('200 OK - missing ??', async () => {
+      // TODO: setup nodes to be missing sth
+      // nodes.nodes = null
+      simulateResponse() // OK
+      const result = await $api.many()
       expectError(result)
+    })
+
+    describe('HTTP server error', () => {
+      const errorCodes = [401, 403, 404, 408]
+
+      let nodes, $api
+      beforeEach(() => {
+        ({ $api, nodes } = createApi())
+      })
+
+      errorCodes.map(errorCode => {
+        test(`${errorCode} error`, async () => {
+          simulateResponse(errorCode)
+          const result = await $api.one()
+          expectError(result)
+        })
+      })
     })
   })
 })
+

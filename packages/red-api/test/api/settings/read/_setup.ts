@@ -14,16 +14,16 @@ class Settings {
   constructor() { }
 }
 
-function create(library: Settings) {
+function create(settings: Settings) {
   return new SettingsApi({
-    $context: library
+    $context: settings
   })
 }
 
 let api
 beforeEach(() => {
-  const library = new Settings()
-  api = create(library)
+  const settings = new Settings()
+  api = create(settings)
 })
 
 const $method = 'read'
@@ -34,11 +34,11 @@ const {
 } = createResponseSimulations($basePath, $method)
 
 function createApi(method?) {
-  const library = new Settings()
-  const api = create(library)
+  const settings = new Settings()
+  const api = create(settings)
 
   return {
-    library,
+    settings,
     $api: createApiMethods(api, method || $method)
   }
 }

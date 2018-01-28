@@ -14,8 +14,6 @@
  * limitations under the License.
  **/
 
-import * as crypto from 'crypto'
-
 import {
   Logger
 } from '../../log'
@@ -28,7 +26,24 @@ import {
   Context
 } from '../../context'
 
+import {
+  crypto
+} from '../../_libs'
+
+import { NodeCredentialsLoader } from './loader';
+import { NodeCredentialsExporter } from './exporter';
+
 export interface INodeCredentials {
+  encryptedCredentials: any
+  credentialCache: any
+  credentialsDef: any
+  removeDefaultKey: boolean
+  encryptionEnabled: boolean
+  encryptionAlgorithm: string
+  encryptionKey: any
+  log: Logger
+  settings: Settings
+
   load(credentials: any): Promise<any>
   add(id: string, creds: any): INodeCredentials
   get(id: string): any
@@ -39,7 +54,7 @@ export interface INodeCredentials {
   dirty: boolean
 }
 
-export class NodeCredentials extends Context {
+export class NodeCredentials extends Context implements INodeCredentials {
   protected _dirty = false;
 
   encryptedCredentials = null;
@@ -51,8 +66,11 @@ export class NodeCredentials extends Context {
   encryptionKey;
 
   // TOODO: Fix - use service injection instead
-  log: any = new Logger()
-  settings: any = new Settings()
+  log: Logger = new Logger()
+  settings: Settings = new Settings()
+
+  protected loader: NodeCredentialsLoader = new NodeCredentialsLoader(this)
+  protected exporter: NodeCredentialsExporter = new NodeCredentialsExporter(this)
 
   // use service injection instead
   constructor(runtime?: any) {
@@ -77,161 +95,11 @@ export class NodeCredentials extends Context {
     })
   }
 
-  protected _decryptCredentials(key, credentials) {
-    const {
-      encryptionAlgorithm
-    } = this
-
-    var creds = credentials["$"];
-    var initVector = new Buffer(creds.substring(0, 32), 'hex');
-    creds = creds.substring(32);
-    var decipher = crypto.createDecipheriv(encryptionAlgorithm, key, initVector);
-    var decrypted = decipher.update(creds, 'base64', 'utf8') + decipher.final('utf8');
-    return JSON.parse(decrypted);
-  }
-
-
   /**
-   * Sets the credentials from storage.
-   * Loads asynchronously
+   * Export credentials
    */
-  async load(credentials: any): Promise<any> {
-    const {
-      log,
-      settings,
-      _decryptCredentials
-    } = this
-    let {
-      encryptedCredentials,
-      encryptionKey,
-      removeDefaultKey,
-      encryptionEnabled,
-      dirty,
-      credentialCache
-    } = this
-
-    const {
-      markClean,
-      markDirty,
-      decryptCredentials
-    } = this.rebind([
-        'markClean',
-        'markDirty',
-        'decryptCredentials'
-      ])
-
-    markClean()
-    /*
-      - if encryptionEnabled === null, check the current configuration
-    */
-    var credentialsEncrypted = credentials.hasOwnProperty("$") && Object.keys(credentials).length === 1;
-
-    // TODO: use native Promise via async/await instead!
-    let setupEncryption = null
-
-    if (encryptionEnabled === null) {
-      var defaultKey;
-      try {
-        defaultKey = settings.get('_credentialSecret');
-      } catch (err) { }
-      if (defaultKey) {
-        defaultKey = crypto.createHash('sha256').update(defaultKey).digest();
-      }
-      var userKey;
-      try {
-        userKey = settings.get('credentialSecret');
-      } catch (err) {
-        userKey = false;
-      }
-      if (userKey === false) {
-        log.debug("red/runtime/nodes/credentials.load : user disabled encryption");
-        // User has disabled encryption
-        encryptionEnabled = false;
-        // Check if we have a generated _credSecret to decrypt with and remove
-        if (defaultKey) {
-          log.debug("red/runtime/nodes/credentials.load : default key present. Will migrate");
-          if (credentialsEncrypted) {
-            try {
-              credentials = _decryptCredentials(defaultKey, credentials)
-            } catch (err) {
-              credentials = {};
-              log.warn(log._("nodes.credentials.error", {
-                message: err.toString()
-              }))
-            }
-          }
-          markDirty()
-          removeDefaultKey = true;
-        }
-      } else if (typeof userKey === 'string') {
-        log.debug("red/runtime/nodes/credentials.load : user provided key");
-        // User has provided own encryption key, get the 32-byte hash of it
-        encryptionKey = crypto.createHash('sha256').update(userKey).digest();
-        encryptionEnabled = true;
-
-        if (defaultKey) {
-          log.debug("red/runtime/nodes/credentials.load : default key present. Will migrate");
-          // User has provided their own key, but we already have a default key
-          // Decrypt using default key
-          if (credentialsEncrypted) {
-            try {
-              credentials = _decryptCredentials(defaultKey, credentials)
-            } catch (err) {
-              credentials = {};
-              log.warn(log._("nodes.credentials.error", {
-                message: err.toString()
-              }))
-            }
-          }
-          dirty = true;
-          removeDefaultKey = true;
-        }
-      } else {
-        log.debug("red/runtime/nodes/credentials.load : no user key present");
-        // User has not provide their own key
-        encryptionKey = defaultKey;
-        encryptionEnabled = true;
-        if (encryptionKey === undefined) {
-          log.debug("red/runtime/nodes/credentials.load : no default key present - generating one");
-          // No user-provided key, no generated key
-          // Generate a new key
-          defaultKey = crypto.randomBytes(32).toString('hex');
-          try {
-            setupEncryption = settings.set('_credentialSecret', defaultKey);
-            encryptionKey = crypto.createHash('sha256').update(defaultKey).digest();
-          } catch (err) {
-            log.debug("red/runtime/nodes/credentials.load : settings unavailable - disabling encryption");
-            // Settings unavailable
-            encryptionEnabled = false;
-            encryptionKey = null;
-          }
-          dirty = true;
-        } else {
-          log.debug("red/runtime/nodes/credentials.load : using default key");
-        }
-      }
-    }
-    if (encryptionEnabled && !dirty) {
-      encryptedCredentials = credentials;
-    }
-
-    await setupEncryption()
-
-    if (credentials.hasOwnProperty("$")) {
-      // These are encrypted credentials
-      try {
-        credentialCache = decryptCredentials(encryptionKey, credentials)
-      } catch (err) {
-        credentialCache = {};
-        markDirty();
-        log.warn(log._("nodes.credentials.error", {
-          message: err.toString()
-        }))
-
-      }
-    } else {
-      credentialCache = credentials;
-    }
+  async export(): Promise<any> {
+    return await this.exporter.export()
   }
 
   /**
@@ -399,6 +267,14 @@ export class NodeCredentials extends Context {
   }
 
   /**
+   * Sets the credentials from storage.
+   * Loads asynchronously
+   */
+  async load(credentials: any): Promise<any> {
+    this.loader.load(credentials)
+  }
+
+  /**
    * Gets the credential definition for the given node type
    * @param type the node type
    * @return the credential definition
@@ -419,58 +295,4 @@ export class NodeCredentials extends Context {
     this._dirty = false
   }
 
-  async export(): Promise<any> {
-    let {
-      dirty,
-      markDirty,
-      markClean,
-      removeDefaultKey
-    } = this
-
-    const {
-      log,
-      settings,
-      credentialCache,
-      encryptedCredentials,
-      encryptionEnabled,
-      encryptionAlgorithm,
-      encryptionKey
-    } = this
-
-    // const {
-    // } = this.rebind([
-    //   ])
-
-    var result = credentialCache;
-    if (encryptionEnabled) {
-      if (dirty) {
-        try {
-          log.debug("red/runtime/nodes/credentials.export : encrypting");
-          var initVector = crypto.randomBytes(16);
-          var cipher = crypto.createCipheriv(encryptionAlgorithm, encryptionKey, initVector);
-          result = {
-            "$": initVector.toString('hex') + cipher.update(JSON.stringify(credentialCache), 'utf8', 'base64') + cipher.final('base64')
-          };
-        } catch (err) {
-          log.warn(log._("nodes.credentials.error-saving", {
-            message: err.toString()
-          }))
-        }
-      } else {
-        result = encryptedCredentials;
-      }
-    }
-
-    markClean()
-
-    if (removeDefaultKey) {
-      log.debug("red/runtime/nodes/credentials.export : removing unused default key");
-      return settings.delete('_credentialSecret').then(function () {
-        removeDefaultKey = false;
-        return result;
-      })
-    } else {
-      return await result
-    }
-  }
 }

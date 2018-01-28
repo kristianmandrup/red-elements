@@ -14,16 +14,16 @@ class Nodes {
   constructor() { }
 }
 
-function create(library: Nodes) {
+function create(nodes: Nodes) {
   return new NodesApi({
-    $context: library
+    $context: nodes
   })
 }
 
 let api
 beforeEach(() => {
-  const library = new Nodes()
-  api = create(library)
+  const nodes = new Nodes()
+  api = create(nodes)
 })
 
 const $method = 'read'
@@ -34,11 +34,11 @@ const {
 } = createResponseSimulations($basePath, $method)
 
 function createApi(method?) {
-  const library = new Nodes()
-  const api = create(library)
+  const nodes = new Nodes()
+  const api = create(nodes)
 
   return {
-    library,
+    nodes,
     $api: createApiMethods(api, method || $method)
   }
 }

@@ -23,10 +23,12 @@ import {
 } from './localstorage'
 
 export interface ISettings {
+  settingsApi: SettingsApi
   userDir: string
   hasLocalStorage(): boolean
   get(key: string): string
   set(key: string, value: any)
+  delete(prop: string)
 
   /**
    * Initialize user settings by preparing access token and ajax call
@@ -56,6 +58,7 @@ import {
   SettingsApi,
   IBaseApi
 } from '../api'
+import { ISettingsLoader, SettingsLoader } from './loader';
 
 const { log } = console
 export class Settings extends Context implements ISettings {
@@ -66,13 +69,21 @@ export class Settings extends Context implements ISettings {
   protected tokenMatchExpr = /[?&]access_token=(.*?)(?:$|&)/
 
   protected localStorage: ILocalStorage = new LocalStorage() // service?
-  protected settingsApi: SettingsApi
+  settingsApi: SettingsApi = new SettingsApi({
+    $context: this
+  })
+
+  protected loader: ISettingsLoader = new SettingsLoader(this) // service
 
   constructor() {
     super()
-    this.settingsApi = new SettingsApi({
-      $context: this
-    })
+  }
+
+  /**
+   * load user settings via Ajax call to server API: /settings
+   */
+  async load(): Promise<any> {
+    return await this.loader.load()
   }
 
   /**
@@ -150,62 +161,12 @@ export class Settings extends Context implements ISettings {
     return this
   };
 
-  /**
-   * load user settings via Ajax call to server API: /settings
-   */
-  async load(): Promise<any> {
-    return await this.settingsApi.read.all()
-  }
-
-  /**
-   *
-   * Handle load success on Ajax API call to /settings
-   * @param data { object } the user settings data
-   */
-  protected _onApiSuccess(data, api: IBaseApi) {
-    this.logInfo('_onApiSuccess', {
-      data
-    })
-
+  delete(prop: string) {
     const {
-      ctx,
-      setProperties,
-      log
-    } = this.rebind([
-        'setProperties',
-        'log'
-      ])
-
-    setProperties(data);
-    if (!ctx.settings.user || ctx.settings.user.anonymous) {
-      ctx.settings.remove('auth-tokens');
-    }
-    log('Node-RED: ' + data.version);
-  }
-
-  /**
-   * Handle load error on Ajax API call to /settings
-   * @param error { object } the error
-   */
-  protected _onApiError(error, api: IBaseApi) {
-    const {
-      AccessTokenExp
+      ctx
     } = this
-
-    this.logInfo('_onApiError', {
-      error
-    })
-
-    if (api.errorCode(error) === 401) {
-      if (AccessTokenExp.test(window.location.search)) {
-        window.location.search = '';
-      }
-      // ctx.user.login(this.load);
-    } else {
-      this.handleError('Unexpected error:', {
-        error
-      });
-    }
+    delete ctx.settings[prop]
+    return this
   }
 
   /**

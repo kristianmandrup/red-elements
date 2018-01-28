@@ -15,46 +15,50 @@ test('SettingsApi: create', () => {
 })
 
 
-describe('SettingsApi: load - server error - fails', () => {
+describe('SettingsApi: one', () => {
+  describe('OK', () => {
+    let settings, $api
+    beforeEach(() => {
+      ({ $api, settings } = createApi())
+    })
 
-  let api, settings
-  beforeEach(() => {
-    settings = new Settings()
-    api = create(settings)
+    test('has settings - works', async () => {
+      simulateResponse() // OK
+      const result = await $api.one()
+      expectNotError(result)
+    })
   })
 
-  test('200 OK - missing settings - fails', async () => {
-    settings.settings = null
-    simulateResponseOK() // OK
-    const result = await load()
-    expectError(result)
-  })
+  describe('API errors', () => {
+    let settings, $api
+    beforeEach(() => {
+      ({ $api, settings } = createApi())
+    })
 
-  test('200 OK - has settings - no fail', async () => {
-    simulateResponseOK() // OK
-    const result = await load()
-    expectNotError(result)
-  })
-})
-
-
-describe('SettingsApi: load - server error - fails', () => {
-  const errorCodes = [401, 403, 404, 408]
-
-  let api, settings
-  beforeEach(() => {
-    settings = new Settings()
-    api = create(settings)
-  })
-
-  errorCodes.map(errorCode => {
-    test(`${errorCode} error`, async () => {
-      simulateResponseCode(errorCode)
-      const result = await load()
-      log({
-        result
-      })
+    test('200 OK - missing ??', async () => {
+      // TODO: setup settings to be missing sth
+      // settings.settings = null
+      simulateResponse() // OK
+      const result = await $api.many()
       expectError(result)
+    })
+
+    describe('HTTP server error', () => {
+      const errorCodes = [401, 403, 404, 408]
+
+      let settings, $api
+      beforeEach(() => {
+        ({ $api, settings } = createApi())
+      })
+
+      errorCodes.map(errorCode => {
+        test(`${errorCode} error`, async () => {
+          simulateResponse(errorCode)
+          const result = await $api.one()
+          expectError(result)
+        })
+      })
     })
   })
 })
+

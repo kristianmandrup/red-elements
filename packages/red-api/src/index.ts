@@ -13,5 +13,6 @@ export {
   LibrariesApi,
   NodesApi,
   SettingsApi,
-  SessionsApi
+  SessionsApi,
+  ProjectsApi,
 } from './api'
