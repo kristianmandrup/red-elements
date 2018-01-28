@@ -14,11 +14,6 @@ test('DeploymentsApi: create', () => {
   expectObj(api)
 })
 
-
-test('DeploymentsApi: create', () => {
-  expectObj(api)
-})
-
 describe('DeploymentsApi: many', () => {
   describe('OK', () => {
     let deployments, $api

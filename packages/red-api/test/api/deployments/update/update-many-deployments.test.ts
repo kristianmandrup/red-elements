@@ -1,25 +1,24 @@
 import {
   simulateResponse,
   api,
-  create,
-  Library,
-  LibrariesApi,
   createApi,
+  create,
+  Deployments,
+  DeploymentsApi,
   createApiMethods,
   createResponseSimulations,
   expectObj, expectError, expectNotError
 } from './_setup'
 
-test('LibraryApi: create', () => {
+test('DeploymentsApi: create', () => {
   expectObj(api)
 })
 
-
-describe('LibrariesApi: many', () => {
+describe('DeploymentsApi: many', () => {
   describe('OK', () => {
-    let $api, library
+    let deployments, $api
     beforeEach(() => {
-      ({ $api, library } = createApi())
+      ({ $api, deployments } = createApi())
     })
 
     test('has flows - works', async () => {
@@ -30,13 +29,14 @@ describe('LibrariesApi: many', () => {
   })
 
   describe('API errors', () => {
-    let $api, library
+    let deployments, $api
     beforeEach(() => {
-      ({ $api, library } = createApi())
+      ({ $api, deployments } = createApi())
     })
 
-    test('200 OK - missing ???', async () => {
-      // flows.flows = null
+    test('200 OK - missing ??', async () => {
+      // TODO: setup deployments to be missing sth
+      // deployments.flows = null
       simulateResponse() // OK
       const result = await $api.many()
       expectError(result)
@@ -45,9 +45,11 @@ describe('LibrariesApi: many', () => {
     describe('HTTP server error', () => {
       const errorCodes = [401, 403, 404, 408]
 
-      let $api, library
+      let api, flows, $api
       beforeEach(() => {
-        ({ $api, library } = createApi())
+        flows = new Deployments()
+        api = create(flows)
+        $api = createApiMethods(api, 'create')
       })
 
       errorCodes.map(errorCode => {
