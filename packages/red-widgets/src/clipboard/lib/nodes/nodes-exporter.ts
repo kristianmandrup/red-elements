@@ -12,9 +12,10 @@ export class ClipboardNodesExporter extends Context {
 
   constructor(protected clipboard: Clipboard) {
     super()
+    this.exportNodes(clipboard)
   }
 
-  exportNodes() {
+  exportNodes(clipboard: Clipboard) {
     const {
       RED,
       disabled,
@@ -27,9 +28,8 @@ export class ClipboardNodesExporter extends Context {
       return;
     }
 
-    // const clipboard = this
-
-    this.clipboard.validateDialogContainer()
+     //const clipboard = this
+    clipboard.validateDialogContainer()
 
     dialogContainer.empty();
     dialogContainer.append($(exportNodesDialog));
@@ -74,6 +74,7 @@ export class ClipboardNodesExporter extends Context {
       var flow = "";
       var nodes = null;
 
+      //const { clipboard } = this.clipboard
       if (type === 'export-range-selected') {
         var selection = RED.view.selection();
         clipboard._validateObj(selection, 'selection', 'exportNodes', 'exportRangeGroupLink.click')
@@ -117,7 +118,7 @@ export class ClipboardNodesExporter extends Context {
     $("#clipboard-dialog-copy").hide();
     $("#clipboard-dialog-close").hide();
     var selection = RED.view.selection();
-    clipboard._validateObj(selection, 'selection', 'exportNodes')
+    this._validateObj(selection, 'selection', 'exportNodes')
 
     const { nodes } = selection
     if (nodes) {
