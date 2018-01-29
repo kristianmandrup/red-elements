@@ -39,6 +39,13 @@ export class BaseContainer {
     return this
   }
 
+  mergeInto(container: BaseContainer) {
+    this._map.forEach((key, value) => {
+      container.set(key, value)
+    });
+    return this
+  }
+
   /**
    *
    */
@@ -116,6 +123,13 @@ export class BaseContainer {
  *
  */
 export class EnvContainer extends BaseContainer {
+  /**
+   *
+   * @param container
+   */
+  mergeInto(container: EnvContainer) {
+    return super.mergeInto(container)
+  }
 }
 
 /**
@@ -124,6 +138,14 @@ export class EnvContainer extends BaseContainer {
 export class ContainerMap extends BaseContainer {
   default: EnvContainer = null
   createMode: boolean = false
+
+  /**
+   *
+   * @param container
+   */
+  mergeInto(container: ContainerMap) {
+    return super.mergeInto(container)
+  }
 
   /**
    *
