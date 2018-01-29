@@ -138,6 +138,8 @@ export class Popover extends Context {
       delay
     } = this
 
+    const { } = this
+
     if (!active) {
       if (div) {
         div.fadeOut('fast', function () {
@@ -181,14 +183,16 @@ export class Popover extends Context {
   }
 
   open() {
+    const { openPopup } = this
     this.active = true;
-    this.openPopup();
+    openPopup();
     return this
   }
 
   close() {
+    const { closePopup } = this
     this.active = false;
-    this.closePopup();
+    closePopup();
     return this
   }
 }

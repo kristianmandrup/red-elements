@@ -52,7 +52,12 @@ export class Menu extends Context {
 
   createMenuItem(opt) {
     const {
-      menuItems
+      menuItems,
+      setSelected,
+      triggerAction,
+      setInitialState,
+      isSelected,
+      createMenuItem
     } = this
 
     var item;
@@ -71,7 +76,6 @@ export class Menu extends Context {
 
       if (opt.group) {
         item.addClass('menu-group-' + opt.group);
-
       }
       var linkContent = '<a ' + (opt.id ? 'id="' + opt.id + '" ' : '') + 'tabindex="-1" href="#">';
       if (opt.toggle) {
@@ -106,28 +110,28 @@ export class Menu extends Context {
             return;
           }
           if (opt.toggle) {
-            var selected = this.isSelected(opt.id);
+            var selected = isSelected(opt.id);
             if (typeof opt.toggle === 'string') {
               if (!selected) {
                 for (var m in menuItems) {
                   if (menuItems.hasOwnProperty(m)) {
                     var mi = menuItems[m];
                     if (mi.id != opt.id && opt.toggle == mi.toggle) {
-                      this.setSelected(mi.id, false);
+                      setSelected(mi.id, false);
                     }
                   }
                 }
-                this.setSelected(opt.id, true);
+                setSelected(opt.id, true);
               }
             } else {
-              this.setSelected(opt.id, !selected);
+              setSelected(opt.id, !selected);
             }
           } else {
-            this.triggerAction(opt.id);
+            triggerAction(opt.id);
           }
         });
         if (opt.toggle) {
-          this.setInitialState(opt, link);
+          setInitialState(opt, link);
         }
       } else if (opt.href) {
         link.attr('target', '_blank').attr('href', opt.href);
@@ -142,7 +146,7 @@ export class Menu extends Context {
         var submenu = $('<ul id="' + opt.id + '-submenu" class="dropdown-menu"></ul>').appendTo(item);
 
         for (var i = 0; i < opt.options.length; i++) {
-          var li = this.createMenuItem(opt.options[i]);
+          var li = createMenuItem(opt.options[i]);
           if (li) {
             li.appendTo(submenu);
           }
@@ -159,38 +163,45 @@ export class Menu extends Context {
   }
 
   setInitialState(opt, link) {
+    const {
+      RED,
+      triggerAction
+    } = this
+
     var savedStateActive = this.RED.settings.get('menu-' + opt.id);
     if (opt.setting) {
       // May need to migrate pre-0.17 setting
 
       if (savedStateActive !== null) {
-        this.RED.settings.set(opt.setting, savedStateActive);
-        this.RED.settings.remove('menu-' + opt.id);
+        RED.settings.set(opt.setting, savedStateActive);
+        RED.settings.remove('menu-' + opt.id);
       } else {
         savedStateActive = this.RED.settings.get(opt.setting);
       }
     }
     if (savedStateActive) {
       link.addClass('active');
-      this.triggerAction(opt.id, true);
+      triggerAction(opt.id, true);
     } else if (savedStateActive === false) {
       link.removeClass('active');
-      this.triggerAction(opt.id, false);
+      triggerAction(opt.id, false);
     } else if (opt.hasOwnProperty('selected')) {
       if (opt.selected) {
         link.addClass('active');
       } else {
         link.removeClass('active');
       }
-      this.triggerAction(opt.id, opt.selected);
+      triggerAction(opt.id, opt.selected);
     }
   }
 
   triggerAction(id, args?) {
+    const { RED } = this
+
     var opt = this.menuItems[id];
     var callback = opt.onselect;
     if (typeof opt.onselect === 'string') {
-      callback = this.RED.actions.get(opt.onselect);
+      callback = RED.actions.get(opt.onselect);
     }
     if (callback) {
       callback.call(opt, args);
@@ -204,7 +215,12 @@ export class Menu extends Context {
   }
 
   setSelected(id, state) {
-    if (this.isSelected(id) == state) {
+    const {
+      RED,
+      isSelected,
+      triggerAction } = this
+
+    if (isSelected(id) == state) {
       return;
     }
     var opt = this.menuItems[id];
@@ -214,13 +230,14 @@ export class Menu extends Context {
       $('#' + id).removeClass('active');
     }
     if (opt && opt.onselect) {
-      this.triggerAction(opt.id, state);
+      triggerAction(opt.id, state);
     }
-    this.RED.settings.set(opt.setting || ('menu-' + opt.id), state);
+    RED.settings.set(opt.setting || ('menu-' + opt.id), state);
   }
 
   toggleSelected(id) {
-    this.setSelected(id, !this.isSelected(id));
+    const { setSelected } = this
+    setSelected(id, !this.isSelected(id));
   }
 
   setDisabled(id, state) {

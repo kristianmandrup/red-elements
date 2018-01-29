@@ -471,10 +471,12 @@ export class KeyboardConfiguration extends Context {
     } = this
     const {
       buildShortcutRow,
-      endEditShortcut
+      endEditShortcut,
+      _validateObj
     } = this.rebind([
         'endEditShortcut',
-        'buildShortcutRow'
+        'buildShortcutRow',
+        '_validateObj'
       ])
 
     e.preventDefault();
@@ -483,7 +485,7 @@ export class KeyboardConfiguration extends Context {
     container = container || $(this);
     var object = container.data('data');
 
-    this._validateObj(object, 'object', 'endEditShortcut')
+    _validateObj(object, 'object', 'endEditShortcut')
 
     log('editShortcut', {
       container,
