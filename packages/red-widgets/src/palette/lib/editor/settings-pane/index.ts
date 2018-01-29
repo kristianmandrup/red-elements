@@ -1,4 +1,21 @@
-export class SettingsPaneManager {
+import {
+  Context,
+  $
+} from '../../../../context'
+
+interface ISearchResults extends JQuery<HTMLElement> {
+  editableList: Function
+}
+
+interface IDialogWidget extends JQuery<HTMLElement> {
+  dialog: Function
+}
+
+interface ISearchTerm extends JQuery<HTMLElement> {
+}
+
+export class SettingsPaneManager extends Context {
+
   getSettingsPane() {
     let {
       settingsPane,
@@ -57,7 +74,7 @@ export class SettingsPaneManager {
       '<ul id="palette-editor-tabs"></ul>' +
       '</div>').appendTo(settingsPane);
 
-    this.settingsPane = settingsPane
+    settingsPane = settingsPane
 
     let options = {
       element: settingsPane.find('#palette-editor-tabs'),
@@ -83,7 +100,7 @@ export class SettingsPaneManager {
       minimumActiveTabWidth: 110
     }
     editorTabs = this.RED.tabs.create(options, this.RED);
-    this.editorTabs = editorTabs
+    editorTabs = editorTabs
 
     var modulesTab = $('<div>', {
       class: "palette-editor-tab"
@@ -107,7 +124,7 @@ export class SettingsPaneManager {
         filterChange($(this).val());
       }
     });
-    this.filterInput = filterInput
+    filterInput = filterInput
 
     nodeList = <ISearchResults>$('<ol>', {
       id: "palette-module-list",
@@ -299,7 +316,7 @@ export class SettingsPaneManager {
       }
     });
 
-    this.nodeList = nodeList
+    nodeList = nodeList
 
     var installTab = $('<div>', {
       class: "palette-editor-tab hide"
@@ -321,7 +338,7 @@ export class SettingsPaneManager {
     searchInput = $('<input type="text" data-i18n="[placeholder]palette.search"></input>')
       .appendTo(searchDiv)
 
-    this.searchInput = searchInput
+    searchInput = searchInput
 
     searchInput.searchBox({
       delay: 300,
@@ -486,7 +503,7 @@ export class SettingsPaneManager {
       }
     });
 
-    this.packageList = packageList
+    packageList = packageList
 
     $('<div id="palette-module-install-shade" class="palette-module-shade hide"><div class="palette-module-shade-status"></div><img src="red/images/spin.svg" class="palette-spinner"/></div>').appendTo(installTab);
 
