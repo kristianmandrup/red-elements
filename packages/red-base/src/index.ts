@@ -1,8 +1,20 @@
 export {
   Context,
   IRED,
-  TYPES
+  TYPES,
+  IValidator,
+  Validator
 } from './context'
+
+export {
+  container
+} from './_infra'
+
+export {
+  createContainer,
+  delegate,
+  delegates
+} from './delegation'
 
 export {
   INodeDef,

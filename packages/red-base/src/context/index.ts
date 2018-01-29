@@ -26,6 +26,11 @@ import {
   Validator
 } from './validator'
 
+export {
+  IValidator,
+  Validator
+}
+
 export class Context {
   @lazyInject(TYPES.RED) RED: IRED;
 

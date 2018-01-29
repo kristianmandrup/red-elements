@@ -2,8 +2,12 @@ export {
   Context,
   IRED,
   TYPES,
+  IValidator,
+  Validator,
   container,
-
+  createContainer,
+  delegate,
+  delegates,
   INodeDef,
   INode,
   INodeSet,
@@ -16,4 +20,5 @@ export {
   EventType,
   IEvent,
 } from './src'
+
 
