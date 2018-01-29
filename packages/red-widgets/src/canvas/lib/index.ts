@@ -16,10 +16,10 @@
 import {
   Context,
   $
-} from '../../common'
+} from '../../context'
 
-import * as $d3 from 'd3'
-import * as d3Select from 'd3-selection'
+import * as $d3 from '../lib/d3'
+import * as d3Select from '../lib/d3-selection'
 
 const {
   log
