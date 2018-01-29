@@ -1,10 +1,13 @@
 import {
-  Context,
+  Context
+} from '../../context'
+
+import {
   EditableList
 } from '../../common'
 
 import { log } from 'util';
-import { FlowsApi } from '../../api'
+import { FlowsApi } from '@tecla5/red-runtime';
 import { FlowsLoader } from './flows-loader';
 import { DiffPanel } from './diff-panel';
 import { DiffResolver } from './diff-resolver';
