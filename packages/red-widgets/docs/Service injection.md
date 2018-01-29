@@ -347,8 +347,9 @@ After declaring a binding for Shuriken:
 
 All the resolved instances of `Ninja` will contain an instance of `Shuriken`.
 
-Default values
-If a dependency is decorated with the @optional() decorator, we will be able to to declare a default value just like you can do in any other TypeScript application:
+### Default values
+
+If a dependency is decorated with the `@optional()` decorator, we will be able to to declare a default value just like you can do in any other TypeScript application:
 
 ```js
 @injectable()
