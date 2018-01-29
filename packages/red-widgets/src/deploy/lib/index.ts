@@ -39,6 +39,19 @@ const icons = {
   deployFlows: 'deploy-flows-o.png'
 }
 
+import {
+  delegates,
+  container
+} from './container'
+
+@delegates({
+  container,
+  map: {
+    configuration: DeployConfiguration,
+    flowsSaver: FlowsSaver,
+    deployer: Deployer
+  }
+})
 export class Deploy extends Context {
   /**
    * options:
@@ -69,10 +82,10 @@ export class Deploy extends Context {
     invalid: false
   }
 
-  // injected services
-  protected configuration: DeployConfiguration = new DeployConfiguration(this)
-  protected flowsSaver = new FlowsSaver(this)
-  protected deployer = new Deployer(this)
+  // injected services via delegates container!
+  protected configuration: DeployConfiguration // = new DeployConfiguration(this)
+  protected flowsSaver // = new FlowsSaver(this)
+  protected deployer // = new Deployer(this)
 
   constructor(options: any = {}) {
     super()

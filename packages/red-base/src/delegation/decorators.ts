@@ -1,3 +1,7 @@
+function isObject(obj) {
+  return obj === Object(obj);
+}
+
 export function delegate(config: any) {
   const {
     container,
@@ -6,9 +10,24 @@ export function delegate(config: any) {
   } = config
 
   return (target: Object) => {
-    container.getScopedOrDefault(scope).set(key, target)
+    const className = key ? key : target['name']
+    container.getScopedEnv(scope).set(className, target)
   }
 }
+
+function getClassName(containerItemId, map) {
+  if (typeof containerItemId === 'string') return containerItemId
+  if (isObject(containerItemId)) {
+    return containerItemId.constructor.name
+  }
+  const errMsg = 'Invalid class name in @delegates map. Use a string or class reference'
+  console.error(errMsg, {
+    id: containerItemId,
+    map
+  })
+  throw new Error(errMsg)
+}
+
 
 export function delegates(config: any) {
   const {
@@ -39,8 +58,8 @@ export function delegates(config: any) {
       const constructed = construct(original, args);
 
       Object.keys(map).map(key => {
-        const clazzName = map[key]
-
+        const containerItemId = map[key]
+        const clazzName = getClassName(containerItemId, map)
         const clazz = container.resolve(clazzName)
         constructed[key] = new clazz(constructed)
       })
