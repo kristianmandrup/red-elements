@@ -1,11 +1,11 @@
 /**
- * Copyright JS Foundation and other contributors, http://js.foundation
+ * Copyright JS Foundation and other contributors, http:js.foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http:www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,14 @@
  * limitations under the License.
  **/
 import {
-  Context,
+  Context
+} from '../../context'
+
+import {
   Tabs
 } from '../../common'
+
+
 import { WorkspacesConfiguration } from './configuration';
 import { WorkspaceManager, IWorkspaceDef } from './workspace-manager';
 import { WorkspaceEditDialog } from './edit-dialog';
@@ -32,7 +37,7 @@ export class Workspaces extends Context {
 
   public activeWorkspace: number = 0
   public workspaceIndex: number = 0
-  public workspace_tabs: any // TODO: Array<Tab> ??
+  public workspace_tabs: any  //TODO: Array<Tab> ??
 
   protected configuration: WorkspacesConfiguration = new WorkspacesConfiguration(this)
   protected manager: WorkspaceManager = new WorkspaceManager(this)
@@ -42,9 +47,7 @@ export class Workspaces extends Context {
 
   constructor() {
     super()
-    const { RED } = this
     this.createWorkspaceTabs();
-
     this.configure()
   }
 
@@ -53,6 +56,7 @@ export class Workspaces extends Context {
    */
   configure() {
     this.configuration.configure()
+
     return this
   }
 
@@ -78,6 +82,7 @@ export class Workspaces extends Context {
    */
   deleteWorkspace(ws: IWorkspaceDef) {
     return this.manager.deleteWorkspace(ws)
+
   }
 
   /**
@@ -86,6 +91,7 @@ export class Workspaces extends Context {
    */
   removeWorkspace(ws: IWorkspaceDef) {
     return this.manager.removeWorkspace(ws)
+
   }
 
   /**
@@ -94,6 +100,7 @@ export class Workspaces extends Context {
    */
   setWorkspaceOrder(order: any[]) {
     return this.manager.setWorkspaceOrder(order)
+
   }
 
   /**
@@ -102,6 +109,7 @@ export class Workspaces extends Context {
    */
   showRenameWorkspaceDialog(id: string | number) {
     this.editDialog.showRenameWorkspaceDialog(id)
+
   }
 
   /**
@@ -109,6 +117,7 @@ export class Workspaces extends Context {
    */
   createWorkspaceTabs() {
     this.workspaceTabs.createWorkspaceTabs()
+
   }
 
   /**
@@ -116,6 +125,7 @@ export class Workspaces extends Context {
    */
   get tabs() {
     return this.workspaceTabs.tabs
+
   }
 
   /**
@@ -123,6 +133,7 @@ export class Workspaces extends Context {
    */
   get tabIds(): string[] {
     return this.workspaceTabs.tabIds
+
   }
 
   /**
@@ -131,6 +142,7 @@ export class Workspaces extends Context {
    */
   hasTabId(id: string) {
     return this.workspaceTabs.hasTabId(id)
+
   }
 
   /**
@@ -139,6 +151,7 @@ export class Workspaces extends Context {
    */
   workspaceTabAt(workspaceIndex: number) {
     return this.workspaceTabs.workspaceTabAt(workspaceIndex)
+
   }
 
   /**
@@ -150,6 +163,7 @@ export class Workspaces extends Context {
       activeWorkspace
     } = this
     this.showRenameWorkspaceDialog(id || activeWorkspace);
+
     return this
   }
 
@@ -159,6 +173,7 @@ export class Workspaces extends Context {
    */
   contains(id) {
     return this.hasTabId(id);
+
   }
 
   /**
@@ -166,6 +181,7 @@ export class Workspaces extends Context {
    */
   get count(): number {
     return this.workspace_tabs.count();
+
   }
 
   /**
@@ -173,6 +189,7 @@ export class Workspaces extends Context {
    */
   get active() {
     return this.activeWorkspace
+
   }
 
   /**
@@ -182,6 +199,7 @@ export class Workspaces extends Context {
    */
   show(id: string) {
     this.workspacesDisplay.show(id)
+
   }
 
   /**
@@ -189,6 +207,7 @@ export class Workspaces extends Context {
    */
   refresh() {
     this.workspacesDisplay.refresh()
+
   }
 
   /**

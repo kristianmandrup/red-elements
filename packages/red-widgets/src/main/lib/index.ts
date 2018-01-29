@@ -26,8 +26,8 @@ import {
   Deploy,
   Keyboard,
   Notifications,
-  state,
-  Subflow,
+  //state,
+  //Subflow,
   RadialMenu,
   Utils,
 } from '../../runtime'
@@ -54,10 +54,11 @@ import * as ace from 'brace'
 import marked from 'marked'
 
 // TODO: perhaps just use generic redApi for each?
-import { RedApi } from '@tecla5/red-runtime/src';
+import { RedApi } from '@tecla5/red-runtime';
 import { LoadNodes } from './load-nodes';
 import { LoadFlows } from './load-flows';
 import { MainConfiguration } from './configuration';
+import { Menu } from '../../common/lib/menu/index';
 
 interface IBody extends JQuery<HTMLElement> {
   i18n: Function
@@ -294,7 +295,7 @@ export class Main extends Context {
     }
 
     RED.touch = {
-      radialMenu: new RadialMenu(RED)
+      radialMenu: new RadialMenu()
     }
     RED.nodes = new Nodes()
     RED.view = new Canvas()

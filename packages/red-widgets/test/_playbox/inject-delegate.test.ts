@@ -21,6 +21,7 @@ interface IHolder {
 
 interface IShield {
   parent: IShieldHolder;
+  owner(): string;
 }
 
 interface IWeapon {
@@ -37,6 +38,7 @@ interface IShieldHolder extends IHolder {
 interface IWeaponHolder {
   name: string;
   weapon: IWeapon;
+  shield: IShield;
   fight(): string;
 }
 
