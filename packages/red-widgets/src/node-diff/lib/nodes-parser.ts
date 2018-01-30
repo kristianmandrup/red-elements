@@ -1,7 +1,19 @@
-import { Diff } from './index'
+import { Diff } from './'
+import {
+  log,
+  $,
+  Context,
+  container,
+  delegate
+} from './_base'
 
-export class NodesParser {
+
+@delegate({
+  container,
+})
+export class NodesParser extends Context {
   constructor(public diff: Diff) {
+    super()
   }
 
 

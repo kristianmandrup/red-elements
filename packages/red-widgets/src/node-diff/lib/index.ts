@@ -16,6 +16,10 @@ import { DiffMerger } from './diff-merger';
 import { NodesParser } from './nodes-parser';
 import { DiffDisplayer } from './diff-displayer';
 
+/**
+ * Calculate and display Nodes difference
+ */
+
 export class Diff extends Context {
   public currentDiff: any = {};
   public diffVisible: Boolean = false;

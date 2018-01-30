@@ -1,13 +1,20 @@
 import { Main } from './index';
 import {
   Context,
+  $,
   EditableList,
-  Menu
-} from '../../common'
+  Menu,
+  container,
+  delegate,
+  log
+} from './_base'
 
 /**
- * TODO
+ * Main widget configuration
  */
+@delegate({
+  container,
+})
 export class MainConfiguration extends Context {
   constructor(public main: Main) {
     super()

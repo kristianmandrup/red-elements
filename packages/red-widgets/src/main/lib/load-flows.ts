@@ -1,15 +1,23 @@
 import {
-  Context
-} from '../../context'
+  Context,
+  container,
+  delegate,
+  log,
+  FlowsApi
+} from './_base'
 
-import { Main } from "./index";
-import { FlowsApi } from '@tecla5/red-runtime';
-// import { RedApi } from '@tecla5/red-runtime';
+import { Main } from './'
 
 interface IBody extends JQuery<HTMLElement> {
   i18n: Function
 }
 
+/**
+ * Load flows via Api
+ */
+@delegate({
+  container,
+})
 export class LoadFlows extends Context {
   loaded: any = {}
 
@@ -22,20 +30,20 @@ export class LoadFlows extends Context {
 
   async loadFlows() {
     const {
-        RED
-      } = this.main
+      RED
+    } = this.main
     const { nodes } = RED
 
     const {
-        flowsApi,
+      flowsApi,
       onLoadFlowsSuccess,
       onLoadFlowsError
-      } = this
+    } = this
 
     this.flowsApi = new FlowsApi()
 
     try {
-      const result = await flowsApi.load()
+      const result = await flowsApi.read.all()
       onLoadFlowsSuccess(result)
     } catch (error) {
       onLoadFlowsError(error)

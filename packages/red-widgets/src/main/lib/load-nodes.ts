@@ -1,15 +1,24 @@
 import {
-  Context
-} from '../../context'
+  Context,
+  container,
+  delegate,
+  log,
+  NodesApi
+} from './_base'
 
-import { Main } from "./index";
-import { NodesApi } from '@tecla5/red-runtime/src';
-// import { RedApi } from '@tecla5/red-runtime/src/api/red-api';
+import { Main } from './';
+
 
 interface IBody extends JQuery<HTMLElement> {
   i18n: Function
 }
 
+/**
+ * Load nodes via Api
+ */
+@delegate({
+  container,
+})
 export class LoadNodes extends Context {
   loaded: any = {}
 
