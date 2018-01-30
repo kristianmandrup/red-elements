@@ -7,6 +7,15 @@ import {
 
 import { DeployApi } from '@tecla5/red-runtime';
 
+import {
+  delegate,
+  container
+} from './container'
+
+@delegate({
+  container,
+  // key: 'Deployer'
+})
 export class Deployer extends Context {
   protected deployApi: DeployApi
 

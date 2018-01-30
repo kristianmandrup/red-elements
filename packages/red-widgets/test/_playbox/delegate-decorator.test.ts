@@ -17,7 +17,8 @@ interface IConfiguration {
 const container: any = createContainer({
   dev: 'development', // first is implicit default
   test: 'testing',
-})
+  prod: 'prouction'
+}) // .setMode('create')
 // containerMap.setDefault('development')
 
 @delegate({
@@ -34,12 +35,28 @@ interface IExecuter {
 
 @delegate({
   container,
-  key: 'Executer'
+  key: 'Executer' // override implicit class name key
 })
 class MyExecuter implements IExecuter {
   constructor(parent: any) {
   }
 }
+
+// if 'prod' environment container is not registered on main container
+// it will be set on the default environment
+// you can change this behavior, so that the main container
+// will create the environment container if not found using setMode('create')
+
+@delegate({
+  container,
+  scope: 'prod' // production scope only
+  // key: 'Executer' // use implicit key via class name
+})
+class Executer implements IExecuter {
+  constructor(parent: any) {
+  }
+}
+
 
 @delegates({
   container,
