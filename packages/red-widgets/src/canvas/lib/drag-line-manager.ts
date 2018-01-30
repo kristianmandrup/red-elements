@@ -3,6 +3,15 @@ import {
 } from '../../context'
 import { Canvas } from '../../';
 
+import {
+  container,
+  delegate
+} from './container'
+
+@delegate({
+  container,
+})
+
 export class CanvasDragLineManager extends Context {
   constructor(protected canvas: Canvas) {
     super()

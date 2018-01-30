@@ -1,11 +1,20 @@
 import {
   Context
 } from '../../context'
-import { Canvas } from '../../';
+import { Canvas } from '../../'
 
 import {
   d3
 } from './d3'
+
+import {
+  container,
+  delegate
+} from './container'
+
+@delegate({
+  container,
+})
 
 export class CanvasNodeManager extends Context {
   constructor(protected canvas: Canvas) {

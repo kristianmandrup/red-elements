@@ -7,6 +7,15 @@ import {
   d3
 } from './d3'
 
+import {
+  container,
+  delegate
+} from './container'
+
+@delegate({
+  container,
+})
+
 export class CanvasConfiguration extends Context {
   disabled: boolean
 

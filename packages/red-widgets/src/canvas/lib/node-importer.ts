@@ -1,7 +1,16 @@
 import {
   Context
 } from '../../context'
-import { Canvas } from '../../';
+import { Canvas } from '../../'
+
+import {
+  container,
+  delegate
+} from './container'
+
+@delegate({
+  container,
+})
 
 export class CanvasNodeImporter extends Context {
   constructor(protected canvas: Canvas) {

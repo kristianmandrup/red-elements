@@ -6,6 +6,16 @@ import { Canvas } from '../../';
 import {
   d3
 } from './d3'
+
+import {
+  container,
+  delegate
+} from './container'
+
+@delegate({
+  container,
+})
+
 export class CanvasDrawer extends Context {
   constructor(protected canvas: Canvas) {
     super()

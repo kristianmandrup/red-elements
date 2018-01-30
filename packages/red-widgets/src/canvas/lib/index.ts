@@ -290,6 +290,33 @@ export interface ICanvas {
   getLinksAtPoint(x, y)
 }
 
+import {
+  delegates,
+  container
+} from './container'
+
+@delegates({
+  container,
+  map: {
+    canvasMouse: CanvasMouse,
+    canvasPostMouse: CanvasPortMouse,
+    keyboard: CanvasKeyboard,
+    configuration: CanvasConfiguration,
+    zoomer: CanvasZoomer,
+    selectionManager: CanvasSelectionManager,
+    calculator: CanvasTextCalculator,
+    nodeMouse: CanvasNodeMouse,
+    nodeManager: CanvasNodeManager,
+    drawer: CanvasDrawer,
+    touchMenuManager: CanvasTouchMenuManager,
+    gridManager: CanvasGridManager,
+    nodesImporter: CanvasNodeImporter,
+    touchEventHandler: CanvasTouchEventHandler,
+    dragLineManager: CanvasDragLineManager,
+    eventManager: CanvasEventManager,
+    buttonManager: CanvasButtonManager
+  }
+})
 export class Canvas extends Context {
   PORT_TYPE_INPUT = 1;
   PORT_TYPE_OUTPUT = 0;
@@ -354,24 +381,24 @@ export class Canvas extends Context {
   }
 
   // TODO: use (service) injection
-  protected canvasMouse: CanvasMouse = new CanvasMouse(this)
-  protected canvasPostMouse: CanvasPortMouse = new CanvasPortMouse(this)
-  protected keyboard: CanvasKeyboard = new CanvasKeyboard(this)
+  protected canvasMouse: CanvasMouse // = new CanvasMouse(this)
+  protected canvasPostMouse: CanvasPortMouse // = new CanvasPortMouse(this)
+  protected keyboard: CanvasKeyboard // = new CanvasKeyboard(this)
 
-  protected configuration: CanvasConfiguration = new CanvasConfiguration(this)
-  protected zoomer: CanvasZoomer = new CanvasZoomer(this)
-  protected selectionManager: CanvasSelectionManager = new CanvasSelectionManager(this)
-  protected calculator: CanvasTextCalculator = new CanvasTextCalculator(this)
-  protected nodeMouse: CanvasNodeMouse = new CanvasNodeMouse(this)
-  protected nodeManager: CanvasNodeManager = new CanvasNodeManager(this)
-  protected drawer: CanvasDrawer = new CanvasDrawer(this)
-  protected touchMenuManager: CanvasTouchMenuManager = new CanvasTouchMenuManager(this)
-  protected gridManager: CanvasGridManager = new CanvasGridManager(this)
-  protected nodesImporter: CanvasNodeImporter = new CanvasNodeImporter(this)
-  protected touchEventHandler: CanvasTouchEventHandler = new CanvasTouchEventHandler(this)
-  protected dragLineManager: CanvasDragLineManager = new CanvasDragLineManager(this)
-  protected eventManager: CanvasEventManager = new CanvasEventManager(this)
-  protected buttonManager: CanvasButtonManager = new CanvasButtonManager(this)
+  protected configuration: CanvasConfiguration // = new CanvasConfiguration(this)
+  protected zoomer: CanvasZoomer // = new CanvasZoomer(this)
+  protected selectionManager: CanvasSelectionManager // = new CanvasSelectionManager(this)
+  protected calculator: CanvasTextCalculator // = new CanvasTextCalculator(this)
+  protected nodeMouse: CanvasNodeMouse // = new CanvasNodeMouse(this)
+  protected nodeManager: CanvasNodeManager // = new CanvasNodeManager(this)
+  protected drawer: CanvasDrawer // = new CanvasDrawer(this)
+  protected touchMenuManager: CanvasTouchMenuManager // = new CanvasTouchMenuManager(this)
+  protected gridManager: CanvasGridManager // = new CanvasGridManager(this)
+  protected nodesImporter: CanvasNodeImporter // = new CanvasNodeImporter(this)
+  protected touchEventHandler: CanvasTouchEventHandler // = new CanvasTouchEventHandler(this)
+  protected dragLineManager: CanvasDragLineManager // = new CanvasDragLineManager(this)
+  protected eventManager: CanvasEventManager // = new CanvasEventManager(this)
+  protected buttonManager: CanvasButtonManager // = new CanvasButtonManager(this)
 
   constructor() {
     super()
