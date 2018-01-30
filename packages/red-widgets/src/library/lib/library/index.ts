@@ -15,12 +15,12 @@
  **/
 import {
   Context,
-  $
-} from '../../../context'
+  $,
+  callDelegate
+} from './_base'
 
 import { LibraryUI } from '../library-ui'
 
-import { LibraryApi } from '@tecla5/red-runtime/src/api/library-api';
 import { LibraryConfiguration } from './configuration';
 import { LibraryFlowsPoster } from './flows-poster';
 import { LibraryFlowsLoader } from './flows-loader';
@@ -42,8 +42,9 @@ export class Library extends Context {
     this.configure()
   }
 
+  @callDelegate('configuration')
   configure(options: any = {}) {
-    this.libraryConfiguration.configure()
+    //this.libraryConfiguration.configure()
   }
 
   async postLibraryFlow(flowName) {

@@ -1,14 +1,12 @@
 import {
   Context,
-  $
-} from '../../../context'
+  $,
+  callDelegate
+} from './_base'
 
-import { LibraryApi } from '@tecla5/red-runtime/src/api/library-api'
 import { LibraryConfiguration } from './configuration';
 import { LibrarySaver } from './library-saver';
 import { FileListBuilder } from './file-list-builder';
-
-const { log } = console
 
 export interface ILibraryUI {
   buildFileList(root: string, data: any[])
@@ -31,10 +29,12 @@ export class LibraryUI extends Context {
     this.configure(options)
   }
 
+  @callDelegate('configuration')
   configure(options: any) {
-    this.configuration.configure(options)
+    // this.configuration.configure(options)
   }
 
+  @callDelegate('libraryFileListBuilder')
   buildFileList(root: string, data: any[]) {
     this.libraryFileListBuilder.buildFileList(root, data)
   }

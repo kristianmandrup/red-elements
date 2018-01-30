@@ -1,10 +1,10 @@
 import { NodeEditor } from '.'
-import { Context, $ } from '../../../common'
+import { Context, $ } from '../../common'
 
 import {
   container,
   delegate
-} from '../../../node-editor/lib/container'
+} from '../../node-editor/lib/container'
 
 @delegate({
   container,

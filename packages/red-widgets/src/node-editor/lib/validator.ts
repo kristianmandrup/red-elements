@@ -1,11 +1,11 @@
 import { NodeEditor } from '../'
-import { Context, $ } from '../../../common'
-import { INode } from '../../../../../red-runtime/src/interfaces/index';
+import { Context, $ } from '../../common'
+import { INode } from '../../_interfaces';
 
 import {
   container,
   delegate
-} from '../../../node-editor/lib/container'
+} from './container'
 
 @delegate({
   container,

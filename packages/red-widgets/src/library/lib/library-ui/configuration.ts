@@ -6,7 +6,8 @@ import {
   log,
   Context,
   container,
-  delegate
+  delegate,
+  callDelegate
 } from './_base'
 
 import {
