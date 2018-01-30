@@ -5,7 +5,7 @@ import {
   Deploy
 } from './'
 
-import { DeployApi } from '@tecla5/red-runtime';
+import { DeploymentsApi } from '../../api';
 
 import {
   delegate,
@@ -17,7 +17,7 @@ import {
   // key: 'Deployer'
 })
 export class Deployer extends Context {
-  protected deployApi: DeployApi
+  protected deployApi: DeploymentsApi
 
   constructor(public deploy: Deploy) {
     super()
