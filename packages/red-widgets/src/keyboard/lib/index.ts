@@ -79,6 +79,17 @@ import {
 import * as d3 from './d3'
 import { KeyboardConfiguration } from './configuration';
 
+import {
+  delegates,
+  container
+} from '../../deploy/lib/container'
+
+@delegates({
+  container,
+  map: {
+    configuration: KeyboardConfiguration
+  }
+})
 export class Keyboard extends Context {
   public handlers = {};
   public partialState = null;
@@ -86,7 +97,7 @@ export class Keyboard extends Context {
   public defaultKeyMap = {};
   public mainElement: HTMLElement
 
-  protected configuration: KeyboardConfiguration = new KeyboardConfiguration(this)
+  protected configuration: KeyboardConfiguration //= new KeyboardConfiguration(this)
 
   constructor() {
     super()
