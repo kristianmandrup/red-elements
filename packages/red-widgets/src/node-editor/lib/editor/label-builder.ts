@@ -1,6 +1,15 @@
 import { NodeEditor } from '.'
 import { Context, $ } from '../../../common'
 
+import {
+  container,
+  delegate
+} from '../../../node-editor/lib/container'
+
+@delegate({
+  container,
+})
+
 /**
  * Label Builder for NodeEditor
  */

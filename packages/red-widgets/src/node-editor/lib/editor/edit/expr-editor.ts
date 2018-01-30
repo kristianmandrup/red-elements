@@ -1,6 +1,15 @@
 import { NodeEditor } from '../'
 import { Context, $ } from '../../../../common'
 
+import {
+  container,
+  delegate
+} from '../../container'
+
+@delegate({
+  container,
+})
+
 /**
  * Node Validator for NodeEditor
  */
