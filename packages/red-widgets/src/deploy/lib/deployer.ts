@@ -38,7 +38,7 @@ export class Deployer extends Context {
     }
 
     try {
-      const result = await this.deployApi.post(data)
+      const result = await this.deployApi.create.one(data)
       this.onDeploySuccess(result)
     } catch (error) {
       onDeployError(error)

@@ -41,7 +41,8 @@ const icons = {
 
 import {
   delegates,
-  container
+  container,
+  callDelegate
 } from './container'
 
 @delegates({
@@ -92,9 +93,10 @@ export class Deploy extends Context {
     this.configure(options)
   }
 
+  @callDelegate('configuration')
   configure(options) {
-    this.configuration.configure(options)
-    return this
+    // this.configuration.configure(options)
+    // return this
   }
 
   changeDeploymentType(type) {
