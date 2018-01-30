@@ -1,6 +1,15 @@
 import { User } from '../'
 import { Context } from '../../context'
 
+import {
+  delegates,
+  container
+} from './container'
+
+@delegates({
+  container,
+})
+
 export class UserDisplay extends Context {
   constructor(public user: User) {
     super()
