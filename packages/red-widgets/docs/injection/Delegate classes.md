@@ -66,7 +66,6 @@ This way, the `ClipboardConfiguration` will have access to everything defined on
 
 The `configure` method can leverage all this to avoid using `this`, except for references to its own properties and functions. Everything else is dereferences via parent context in the hierarchy (most often just one level up).
 
-
 ```js
   configure() {
     // pre-bind all references (ie. vars & functions) to correct context before use
@@ -128,3 +127,92 @@ export class Clipboard extends Context {
     return this
   }
 ```
+
+## Dependency injection of delegate classes
+
+We use specialized decorators and containers for dependency injection of delegate classes. The API is demonstrated in `test/_playbox/delegate-decorator.test.ts`.
+An example can be seen for the `Deploy` widget:
+
+### Create scope binding container
+
+We first define a `container.ts`, to contain class bindings per environment.
+This means we can swap which delegate class will be used, depending on the environment/scope (such as `dev`, `test`, `prod` etc.)
+
+```js
+import {
+  createContainer
+} from '@tecla5/red-base'
+
+export {
+  delegate,
+  delegates,
+} from '@tecla5/red-base'
+
+// TODO: use widget container or merge widget level containers into higher lv widget container
+export const container = createContainer({
+  dev: 'development'
+})
+```
+
+### Create delegate class with container binding
+
+```js
+import {
+  delegate,
+  container
+} from './container'
+
+@delegate({
+  container,
+  // key: 'Deployer' // implicit using class name
+})
+export class Deployer extends Context {
+  protected deployApi: DeploymentsApi
+
+  constructor(public deploy: Deploy) {
+    super()
+  }
+  // ...
+}
+```
+
+### Create delegator class with binding to delegates
+
+Create the delegator class, using the same `container`, with a binding `map` that defines which name to lookup for each class property that is a delegate class.
+
+Example: `deployer: Deployer` will lookup `'Deployer'` binding in the container for the environment container matching the current application scope at that time.
+
+This makes it possible to switch delagate classes being used for different environments or scopes.
+
+```js
+import {
+  delegates,
+  container
+} from './container'
+
+@delegates({
+  container,
+  map: {
+    configuration: DeployConfiguration,
+    flowsSaver: FlowsSaver,
+    deployer: Deployer
+  }
+})
+export class Deploy extends Context {
+
+  // injected services via delegates container!
+  protected configuration: IDeployConfiguration
+  protected flowsSaver: IFlowsSaver
+  protected deployer: IDeployer
+
+  constructor(options: any = {}) {
+    super()
+    this.configure(options)
+  }
+  // ...
+}
+```
+
+### Container merging
+
+Containers can be merged via `mergeInto` method, so that widget containers can be merged into a full widget project container and so on to form a hierarchy and full application setup in a very modular way.
