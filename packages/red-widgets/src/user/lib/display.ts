@@ -2,14 +2,13 @@ import { User } from '../'
 import { Context } from '../../context'
 
 import {
-  delegates,
+  delegateTarget,
   container
 } from './container'
 
-@delegates({
+@delegateTarget({
   container,
 })
-
 export class UserDisplay extends Context {
   constructor(public user: User) {
     super()
@@ -18,10 +17,15 @@ export class UserDisplay extends Context {
   updateUserMenu() {
     const {
       RED,
+      rebind,
+      user
+    } = this
+
+    const {
       updateUserMenu
-    } = this.rebind([
+    } = rebind([
         'updateUserMenu'
-      ])
+      ], user)
 
     $("#btn-usermenu-submenu li").remove();
     if (RED.settings.user.anonymous) {

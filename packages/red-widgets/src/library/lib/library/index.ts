@@ -16,7 +16,7 @@
 import {
   Context,
   $,
-  callDelegate
+  delegateTo
 } from './_base'
 
 import { LibraryUI } from '../library-ui'
@@ -42,7 +42,7 @@ export class Library extends Context {
     this.configure()
   }
 
-  @callDelegate('configuration')
+  @delegateTo('configuration')
   configure(options: any = {}) {
     //this.libraryConfiguration.configure()
   }

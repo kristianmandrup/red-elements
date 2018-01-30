@@ -1,19 +1,18 @@
 import { NodeEditor } from '../'
-import { Context, $ } from '../../../../common'
 
 import {
+  Context,
+  $,
   container,
-  delegate
-} from '../../container'
-
-@delegate({
-  container,
-})
-
+  delegateTarget
+} from './_base'
 
 /**
  * Config Node Dialog for NodeEditor
  */
+@delegateTarget({
+  container,
+})
 export class ConfigNodeDialog extends Context {
   constructor(public editor: NodeEditor) {
     super()

@@ -1,8 +1,4 @@
 import {
-  Context
-} from '../../../../context'
-
-import {
   Search
 } from '../'
 
@@ -11,14 +7,14 @@ export interface ISearchResults extends JQuery<HTMLElement> {
 }
 
 import {
+  Context,
   container,
-  delegates
-} from '../../container'
+  delegateTarget
+} from './_base'
 
-@delegates({
+@delegateTarget({
   container
 })
-
 export class SearchResultsBuilder extends Context {
   constructor(public search: Search) {
     super()

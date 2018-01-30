@@ -3,10 +3,21 @@ import {
   SidebarTab
 } from '..'
 
-import marked from 'marked'
-import { Tabs, Context, $ } from '../../../../common'
-import { SidebarTabInfo } from '../../../../index';
 
+import { SidebarTabInfo } from './';
+
+import {
+  marked,
+  Context,
+  $,
+  Tabs,
+  container,
+  delegateTarget
+} from '../_base'
+
+@delegateTarget({
+  container,
+})
 export class TabInfoInitializer extends Context {
   constructor(public sidebarTabInfo: SidebarTabInfo) {
     super()

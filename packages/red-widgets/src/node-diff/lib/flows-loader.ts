@@ -2,8 +2,6 @@
 import {
   Diff
 } from './'
-import { Context } from '../../context';
-import { FlowsApi } from '@tecla5/red-runtime';
 
 const { log } = console
 
@@ -12,14 +10,15 @@ interface IDialog extends JQuery<HTMLElement> {
 }
 
 import {
+  Context,
   container,
-  delegate
-} from './container'
+  delegateTarget,
+  FlowsApi
+} from './_base'
 
-@delegate({
+@delegateTarget({
   container,
 })
-
 export class FlowsLoader extends Context {
   protected flowsApi: FlowsApi
 

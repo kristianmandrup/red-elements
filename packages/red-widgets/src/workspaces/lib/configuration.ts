@@ -1,15 +1,14 @@
 import { Workspaces } from './'
-import { Context } from '../../context'
 
 import {
-  delegates,
+  Context,
+  delegateTarget,
   container
-} from './container'
+} from './_base'
 
-@delegates({
+delegateTarget({
   container,
 })
-
 export class WorkspacesConfiguration extends Context {
   protected allSettings = {}
 

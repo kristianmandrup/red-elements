@@ -1,6 +1,14 @@
 import { Sidebar } from './'
-import { Context } from '../../../context'
+import {
+  Context,
+  $,
+  delegateTarget,
+  container
+} from './_base'
 
+@delegateTarget({
+  container
+})
 export class SidebarTabManager extends Context {
   constructor(public sidebar: Sidebar) {
     super()

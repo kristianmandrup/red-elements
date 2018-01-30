@@ -1,7 +1,7 @@
 import {
   Context,
   container,
-  delegate,
+  delegateTarget,
   log,
   FlowsApi
 } from './_base'
@@ -15,7 +15,7 @@ interface IBody extends JQuery<HTMLElement> {
 /**
  * Load flows via Api
  */
-@delegate({
+@delegateTarget({
   container,
 })
 export class LoadFlows extends Context {

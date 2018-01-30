@@ -1,6 +1,8 @@
 import {
-  Context
-} from '../../../../context'
+  Context,
+  container,
+  delegateTarget
+} from './_base'
 
 import {
   Search
@@ -10,6 +12,9 @@ export interface ISearchResults extends JQuery<HTMLElement> {
   editableList: Function
 }
 
+@delegateTarget({
+  container
+})
 export class SearchContainerBuilder extends Context {
   constructor(public search: Search) {
     super()

@@ -1,7 +1,17 @@
 import { Diff } from './'
 
-export class DiffMerger {
+import {
+  Context,
+  container,
+  delegateTarget
+} from './_base'
+
+@delegateTarget({
+  container,
+})
+export class DiffMerger extends Context {
   constructor(public diff: Diff) {
+    super()
   }
 
   /**

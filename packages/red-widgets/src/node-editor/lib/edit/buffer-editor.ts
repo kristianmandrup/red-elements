@@ -1,40 +1,43 @@
 import { NodeEditor } from '../'
-import { Context, $ } from '../../../../common'
 
 import {
+  Context, $,
   container,
-  delegate
-} from '../../container'
-
-@delegate({
-  container,
-})
-
+  delegateTarget
+} from './_base'
 
 /**
  * Node Validator for NodeEditor
  */
+@delegateTarget({
+  container,
+})
 export class BufferEditor extends Context {
   constructor(public editor: NodeEditor) {
     super()
   }
 
   editBuffer(options) {
-    let {
+    const {
       RED,
+      editor,
+      rebind
+    } = this
+
+    const {
       editStack,
       editTrayWidthCache,
-    } = this
+    } = editor
 
     const {
       buildEditForm,
       getEditStackTitle,
       stringToUTF8Array
-    } = this.rebind([
+    } = rebind([
         'buildEditForm',
         'getEditStackTitle',
         'stringToUTF8Array'
-      ])
+      ], editor)
 
     this._validateProps(options, ['value', 'complete'], 'editExpression')
 

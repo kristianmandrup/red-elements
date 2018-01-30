@@ -33,12 +33,12 @@ import {
 } from './_base'
 
 import {
-  delegates
+  delegator
 } from './container'
 
 const { log } = console
 
-@delegates({
+@delegator({
   container,
   map: {
     configuration: ClipboardConfiguration,

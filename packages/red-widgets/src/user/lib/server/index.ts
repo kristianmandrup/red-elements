@@ -1,32 +1,36 @@
 import { User } from '../'
-import { Context } from '../../../context'
 import { ServerLogin } from './server-login';
 import { ServerLogout } from './server-logout';
-import { SessionApi } from '../../../../../red-runtime';
+
 import { ServerTokenPoster } from './token-poster';
 
 import {
-  delegates,
-  container
-} from './container'
+  Context,
+  delegator,
+  delegateTo,
+  delegateTarget,
+  container,
+  SessionsApi
+} from '../_base'
 
-
-@delegates({
+@delegator({
   container,
   map: {
     userLogin: ServerLogin,
     userLogout: ServerLogout,
     tokenPoster: ServerTokenPoster,
-    sessionApi: SessionApi
+    // sessionsApi: SessionsApi
   }
 })
-
+@delegateTarget({
+  container,
+})
 export class UserServer extends Context {
   userLogin: ServerLogin // = new ServerLogin(this)
   userLogout: ServerLogout // = new ServerLogout(this)
   tokenPoster: ServerTokenPoster // = new ServerTokenPoster(this)
 
-  public sessionApi: SessionApi // = new SessionApi()
+  sessionsApi: SessionsApi // = new SessionApi()
 
   constructor(public user: User) {
     super()

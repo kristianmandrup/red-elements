@@ -2,18 +2,23 @@ import { Sidebar } from '../'
 import {
   SidebarTab
 } from '.'
-import { Tabs, Context, $ } from '../../../../common'
-
-import {
-  I18n
-} from '@tecla5/red-runtime/src/i18n'
-
 
 interface I18nWidget extends JQuery<HTMLElement> {
   i18n: Function
 }
 
+import {
+  I18n,
+  Context,
+  $,
+  Tabs,
+  container,
+  delegateTarget
+} from '../_base'
 
+@delegateTarget({
+  container,
+})
 export class SidebarTabInitializer extends Context {
   constructor(public sidebarTab: SidebarTab) {
     super()

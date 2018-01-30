@@ -1,11 +1,12 @@
 import { User } from '../'
-import { Context } from '../../context'
 import { ServerTokenPoster } from './server/token-poster';
 
 import {
-  delegates,
+  Context,
+  delegateTarget,
+  delegator,
   container
-} from './container'
+} from './_base'
 
 interface IDialogElem extends JQuery<HTMLElement> {
   dialog: Function
@@ -15,12 +16,17 @@ interface IButton extends JQuery<HTMLElement> {
   button: Function
 }
 
-@delegates({
+@delegateTarget({
   container,
 })
-
+@delegator({
+  container,
+  map: {
+    tokenPoster: ServerTokenPoster
+  }
+})
 export class UserLogin extends Context {
-  public tokenPoster: ServerTokenPoster = new ServerTokenPoster(this.user.server)
+  public tokenPoster: ServerTokenPoster // = new ServerTokenPoster(this.user.server)
 
   constructor(public user: User) {
     super()

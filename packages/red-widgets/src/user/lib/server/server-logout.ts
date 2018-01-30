@@ -3,11 +3,11 @@ import { Context } from '../../../context'
 import { UserServer } from './index';
 
 import {
-  delegates,
+  delegator,
   container
-} from './container'
+} from './_base'
 
-@delegates({
+@delegator({
   container,
 })
 

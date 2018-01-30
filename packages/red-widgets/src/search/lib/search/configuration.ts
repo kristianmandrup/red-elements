@@ -1,21 +1,22 @@
-import { Context, $, EditableList, Searchbox } from '../../../common'
-
 import {
   Search
 } from './'
 
 import {
+  Context,
+  $,
+  EditableList,
+  Searchbox,
   container,
-  delegates
-} from '../container'
-
-@delegates({
-  container
-})
+  delegateTarget
+} from './_base'
 
 /**
  * Takes care of search configuration, such as setting up event/action handlers
  */
+@delegateTarget({
+  container
+})
 export class SearchConfiguration extends Context {
   constructor(public search: Search) {
     super()
@@ -116,5 +117,4 @@ export class SearchConfiguration extends Context {
     $('#palette-shade').on('mousedown', hide);
     $('#sidebar-shade').on('mousedown', hide);
   }
-
 }

@@ -13,14 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  Context,
-  $
-} from '../../../common'
-
 type JQElem = JQuery<HTMLElement>
-
-const { log } = console
 
 import {
   SearchInputBuilder,
@@ -34,14 +27,18 @@ import {
 } from './configuration'
 
 import {
+  Context,
+  $,
   container,
-  delegates
-} from '../container'
+  delegator
+} from './_base'
 
-@delegates({
-  container
+@delegator({
+  container,
+  map: {
+    configuration: SearchConfiguration
+  }
 })
-
 export class Search extends Context {
   public disabled: Boolean = false
   public dialog: any = null
@@ -56,7 +53,7 @@ export class Search extends Context {
   /**
    * The selector for the main container elements
    */
-  protected $mainContainer: JQElem = $('#main-container')
+  $mainContainer: JQElem = $('#main-container')
 
   protected $headerShade: JQElem = $('#header-shade')
   protected $editorShade: JQElem = $('#editor-shade')
@@ -64,10 +61,12 @@ export class Search extends Context {
   protected $sidebarShade: JQElem = $('#sidebar-shade')
   protected $sidebarSeparator: JQElem = $('#sidebar-separator')
 
+  protected configuration: SearchConfiguration // = new SearchConfiguration(this)
+
   constructor() {
     super()
     // use SearchConfiguration delegate class to configure
-    new SearchConfiguration(this)
+
   }
 
   /**

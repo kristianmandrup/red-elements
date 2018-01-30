@@ -1,25 +1,31 @@
 import { User } from '../'
-import { Context } from '../../../context'
-import { UserServer } from './index';
+import { UserServer } from './';
 
 import {
-  delegates,
-  container
-} from './container'
+  IButton,
+  IDialogElem
+} from '../../../_interfaces'
 
-@delegates({
+import {
+  Context,
+  delegator,
+  delegateTo,
+  delegateTarget,
+  container,
+  SessionsApi
+} from './_base'
+
+@delegateTarget({
   container,
 })
-
 export class ServerLogin extends Context {
   constructor(public userServer: UserServer) {
     super()
   }
 
-  get sessionApi() {
-    return this.userServer.sessionApi
+  get sessionsApi() {
+    return this.userServer.sessionsApi
   }
-
 
   get user() {
     return this.userServer.user
@@ -30,11 +36,11 @@ export class ServerLogin extends Context {
       onUserLoginSuccess,
       onUserLoginError
     } = this
-    this.sessionApi = new SessionApi().configure({
+    this.sessionsApi.configure({
       url: 'auth/login'
     })
     try {
-      const result = await this.sessionApi.post({})
+      const result = await this.sessionsApi.login({})
       onUserLoginSuccess(result, opts)
     } catch (error) {
       onUserLoginError(error)

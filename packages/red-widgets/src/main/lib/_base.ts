@@ -11,5 +11,7 @@ export { FlowsApi, NodesApi } from '../../api';
 
 export {
   container,
-  delegate
+  delegateTarget,
+  delegator,
+  delegateTo
 } from './container'

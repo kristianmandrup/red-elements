@@ -15,19 +15,17 @@
  **/
 import {
   Context,
-  $
-} from '../../../../common'
+  $,
+  delegator,
+  container,
+  I18n,
+  JQElem
+} from '../_base'
 
 import { SidebarTabInitializer } from './config-nodelist-manager'
 
-import {
-  I18n
-} from '@tecla5/red-runtime/src/i18n'
-import { Sidebar } from '../../index';
-import {
-  JQElem
-} from '@tecla5/red-base';
-import { JQueryAjaxAdapter } from '../../../../../../red-api/src/adapters/jquery/index';
+import { Sidebar } from '../';
+
 import { SidebarTabConfiguration } from './configuration';
 
 interface I18nWidget extends JQuery<HTMLElement> {
@@ -39,6 +37,14 @@ export interface ISidebarTab {
   show(id: string): ISidebarTab
 }
 
+
+@delegator({
+  container,
+  map: {
+    initializer: SidebarTabInitializer,
+    configuration: SidebarTabConfiguration
+  }
+})
 export class SidebarTab extends Context {
   public content: HTMLElement
   public toolbar: JQElem

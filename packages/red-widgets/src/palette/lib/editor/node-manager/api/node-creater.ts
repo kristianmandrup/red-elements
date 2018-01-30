@@ -1,18 +1,14 @@
-import {
-  Context
-} from '../../../../../context'
 import { NodeApi } from './';
 
 import {
+  Context,
   container,
-  delegates
-} from '../../container'
+  delegateTarget
+} from './_base'
 
-@delegates({
+@delegateTarget({
   container
 })
-
-
 export class NodeCreater extends Context {
   constructor(public api: NodeApi) {
     super()
@@ -30,7 +26,7 @@ export class NodeCreater extends Context {
 
     // TODO: try/catch should be handled by API
     try {
-      const result = await nodesApi.post(data)
+      const result = await nodesApi.create.one(data)
       onNodePostSuccess(result, options)
     } catch (error) {
       onNodePostError(error)

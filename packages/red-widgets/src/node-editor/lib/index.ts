@@ -32,8 +32,8 @@ import { INode } from '../../_interfaces'
 import {
   Context,
   container,
-  delegates,
-  callDelegate
+  delegator,
+  delegateTo
 } from './_base'
 
 import {
@@ -54,7 +54,7 @@ interface ITabSelect extends JQuery<HTMLElement> {
   i18n: Function
 }
 
-@delegates({
+@delegator({
   container,
   map: {
     configuration: NodeEditorConfiguration,
@@ -97,7 +97,7 @@ export class NodeEditor extends Context {
     this.configure()
   }
 
-  @callDelegate('configuration')
+  @delegateTo('configuration')
   configure() {
     // this.configuration.configure()
     // return this
@@ -114,7 +114,7 @@ export class NodeEditor extends Context {
    * @param node - the node being validated
    * @returns {boolean} whether the node is valid. Sets node.dirty if needed
    */
-  @callDelegate('nodeValidator')
+  @delegateTo('nodeValidator')
   validateNode(node) {
     return this.nodeValidator.validateNode(node)
   }
@@ -126,7 +126,7 @@ export class NodeEditor extends Context {
    * @param properties { string[] }- the node property values to validate
    * @returns {boolean} whether the node's properties are valid
    */
-  @callDelegate('nodeValidator')
+  @delegateTo('nodeValidator')
   validateNodeProperties(node: INode, definition: any, properties: string[]) {
     // return this.nodeValidator.validateNodeProperties(node, definition, properties)
   }
@@ -139,7 +139,7 @@ export class NodeEditor extends Context {
    * @param value { string } - the property value being validated
    * @returns {boolean} whether the node proprty is valid
    */
-  @callDelegate('nodeValidator')
+  @delegateTo('nodeValidator')
   validateNodeProperty(node: INode, definition: any, property: string, value: string) {
     // return this.nodeValidator.validateNodeProperty(node, definition, property, value)
   }
@@ -813,7 +813,7 @@ export class NodeEditor extends Context {
    * @param value
    * @param placeHolder
    */
-  @callDelegate('labelBuilder')
+  @delegateTo('labelBuilder')
   buildLabelRow(type, index, value, placeHolder) {
     // this.labelBuilder.buildLabelRow(type, index, value, placeHolder)
   }
@@ -823,7 +823,7 @@ export class NodeEditor extends Context {
    * @param container
    * @param node
    */
-  @callDelegate('labelBuilder')
+  @delegateTo('labelBuilder')
   buildLabelForm(container, node) {
     // this.labelBuilder.buildLabelForm(container, node)
   }
@@ -832,7 +832,7 @@ export class NodeEditor extends Context {
    * show Edit Dialog
    * @param node
    */
-  @callDelegate('editDialog')
+  @delegateTo('editDialog')
   showEditDialog(node: INode) {
     // this.editDialog.showEditDialog(node)
   }
@@ -844,7 +844,7 @@ export class NodeEditor extends Context {
    * @param id {string} id of config node to edit. _ADD_ for a new one
    * @param prefix {string} the input prefix of the parent property
    */
-  @callDelegate('configNodeDialog')
+  @delegateTo('configNodeDialog')
   showEditConfigNodeDialog(name: string, type: string, id: string, prefix: string) {
     this.configNodeDialog.showEditConfigNodeDialog(name, type, id, prefix)
   }
@@ -935,7 +935,7 @@ export class NodeEditor extends Context {
    * show Edit Subflow Dialog
    * @param subflow
    */
-  @callDelegate('subflowDialog')
+  @delegateTo('subflowDialog')
   showEditSubflowDialog(subflow) {
     this.subflowDialog.showEditSubflowDialog(subflow)
   }
@@ -944,7 +944,7 @@ export class NodeEditor extends Context {
    * edit Buffer
    * @param options
    */
-  @callDelegate('bufferEditor')
+  @delegateTo('bufferEditor')
   editBuffer(options: any) {
     this.bufferEditor.editBuffer(options)
   }

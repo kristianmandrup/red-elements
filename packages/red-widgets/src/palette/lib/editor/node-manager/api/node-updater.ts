@@ -1,17 +1,14 @@
-import {
-  Context
-} from '../../../../../context'
 import { NodeApi } from './';
 
 import {
+  Context,
   container,
-  delegates
-} from '../../container'
+  delegateTarget
+} from './_base'
 
-@delegates({
+@delegateTarget({
   container
 })
-
 export class NodeUpdater extends Context {
   constructor(public api: NodeApi) {
     super()

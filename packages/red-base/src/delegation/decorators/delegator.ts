@@ -16,7 +16,7 @@ function getClassName(containerItemId, map) {
 }
 
 
-export function delegates(config: any) {
+export function delegator(config: any) {
   const {
     container,
     map

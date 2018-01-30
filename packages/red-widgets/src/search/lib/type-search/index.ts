@@ -1,9 +1,3 @@
-import { Context, $, EditableList, Searchbox } from '../../common'
-
-const {
-  log
-} = console
-
 interface ISearchDiv extends JQuery<HTMLElement> {
   searchBox: Function
 }
@@ -14,13 +8,16 @@ interface ISearchResultsWidget extends JQuery<HTMLElement> {
 
 import {
   container,
-  delegates
-} from './container'
+  delegator,
+  Context,
+  $,
+  EditableList,
+  Searchbox
+} from './_base'
 
-@delegates({
+@delegator({
   container,
 })
-
 export class TypeSearch extends Context {
   public disabled: Boolean = false
   public dialog: any = null
@@ -35,13 +32,24 @@ export class TypeSearch extends Context {
 
   constructor() {
     super()
+    this.configure()
+  }
 
+  configure() {
+    this.prepareWidgetFactories()
+  }
+
+  protected prepareWidgetFactories() {
     // ensure jQuery widget factories are available
     new Searchbox()
     new EditableList()
   }
 
-  search(val) {
+  /**
+   *
+   * @param val
+   */
+  search(val: string) {
     let {
       searchResults,
       selected
@@ -55,6 +63,9 @@ export class TypeSearch extends Context {
     }, 100);
   }
 
+  /**
+   *
+   */
   ensureSelectedIsVisible() {
     let {
       searchResults
@@ -79,6 +90,9 @@ export class TypeSearch extends Context {
     }
   }
 
+  /**
+   *
+   */
   createDialog() {
     let {
       searchResults,

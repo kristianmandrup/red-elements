@@ -40,14 +40,16 @@ import { PaletteConfiguration } from './configuration';
 
 import {
   container,
-  delegates
+  delegator,
+  delegateTo
 } from '../container'
 
-@delegates({
-  container
+@delegator({
+  container,
+  map: {
+    configuration: PaletteConfiguration
+  }
 })
-
-
 export class Palette extends Context {
   public categoryContainers = {}
   exclusion = [
@@ -67,15 +69,16 @@ export class Palette extends Context {
     'advanced'
   ]
 
-  configuration: PaletteConfiguration = new PaletteConfiguration(this)
+  configuration: PaletteConfiguration // = new PaletteConfiguration(this)
 
   constructor() {
     super()
     this.configure()
   }
 
+  @delegateTo('configuration')
   configure() {
-    this.configuration.configure()
+    // this.configuration.configure()
   }
 
   marked(content) {

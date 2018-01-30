@@ -3,9 +3,9 @@ import {
 } from '@tecla5/red-base'
 
 export {
-  delegate,
-  delegates,
-  callDelegate
+  delegateTarget,
+  delegator,
+  delegateTo
 } from '@tecla5/red-base'
 
 // TODO: use widget container or merge widget level containers into higher lv widget container

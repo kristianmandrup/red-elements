@@ -1,15 +1,14 @@
 import { Tray } from './'
-import { Context } from '../../context'
 
 import {
-  delegates,
+  Context,
+  delegateTarget,
   container
-} from './container'
+} from './_base'
 
-@delegates({
+@delegateTarget({
   container,
 })
-
 export class TrayConfiguration extends Context {
   constructor(public tray: Tray) {
     super()

@@ -13,3 +13,14 @@ export {
 export interface I18nWidget extends JQElem {
   i18n: Function
 }
+
+interface IDialog {
+  remove()
+}
+
+export interface IButton extends JQElem {
+  button: () => any
+}
+export interface IDialogElem extends JQElem {
+  dialog: (name: string) => IDialog
+}

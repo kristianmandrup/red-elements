@@ -2,18 +2,17 @@ import { NodeEditor } from '.'
 
 import {
   container,
-  delegate,
+  delegateTarget,
   Context,
   $
 } from './_base'
 
-@delegate({
-  container,
-})
-
 /**
  * Editor Utils for NodeEditor
  */
+@delegateTarget({
+  container,
+})
 export class EditorUtils extends Context {
   constructor(public editor: NodeEditor) {
     super()

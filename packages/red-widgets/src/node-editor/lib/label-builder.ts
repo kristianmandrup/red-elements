@@ -1,18 +1,17 @@
 import { NodeEditor } from '.'
-import { Context, $ } from '../../common'
 
 import {
+  Context, $,
   container,
-  delegate
-} from '../../node-editor/lib/container'
-
-@delegate({
-  container,
-})
+  delegateTarget
+} from './_base'
 
 /**
  * Label Builder for NodeEditor
  */
+@delegateTarget({
+  container,
+})
 export class LabelBuilder extends Context {
   constructor(public editor: NodeEditor) {
     super()

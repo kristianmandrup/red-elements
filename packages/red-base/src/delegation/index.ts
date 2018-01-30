@@ -3,7 +3,7 @@ export {
 } from './containers'
 
 export {
-  delegate,
-  delegates,
-  callDelegate
+  delegateTarget,
+  delegator,
+  delegateTo
 } from './decorators'

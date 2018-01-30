@@ -1,4 +1,3 @@
-import { Context, $, EditableList, Searchbox } from '../../../common'
 import { Palette } from './';
 
 export interface IPaletteConfiguration {
@@ -6,14 +5,17 @@ export interface IPaletteConfiguration {
 }
 
 import {
+  EditableList,
+  Searchbox,
+  Context,
+  $,
   container,
-  delegates
-} from '../container'
+  delegator
+} from './_base'
 
-@delegates({
+@delegator({
   container
 })
-
 export class PaletteConfiguration extends Context {
   // TODO: inject service Events
 

@@ -7,13 +7,22 @@ import {
 } from './tab'
 
 import { Sidebar } from './'
-import { Tabs, Context, $ } from '../../../common'
-import { JQueryAjaxAdapter } from '@tecla5/red-api';
+
+import {
+  Tabs,
+  Context,
+  $,
+  delegateTarget,
+  container
+} from './_base'
 
 interface ISidebar extends JQuery<HTMLElement> {
   tabs: Function
 }
 
+@delegateTarget({
+  container
+})
 export class SidebarConfiguration extends Context {
   constructor(public sidebar: Sidebar) {
     super()

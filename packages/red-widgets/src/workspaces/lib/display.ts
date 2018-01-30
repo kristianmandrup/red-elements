@@ -1,16 +1,14 @@
 import { Workspaces } from './'
-import { Context } from '../../context'
 
 import {
-  delegates,
+  Context,
+  delegateTarget,
   container
-} from './container'
+} from './_base'
 
-@delegates({
+delegateTarget({
   container,
 })
-
-
 export class WorkspacesDisplay extends Context {
   constructor(public workspaces: Workspaces) {
     super()

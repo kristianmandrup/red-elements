@@ -144,8 +144,8 @@ import {
 } from '@tecla5/red-base'
 
 export {
-  delegate,
-  delegates,
+  delegateTarget,
+  delegator,
 } from '@tecla5/red-base'
 
 // TODO: use widget container or merge widget level containers into higher lv widget container
@@ -158,11 +158,11 @@ export const container = createContainer({
 
 ```js
 import {
-  delegate,
+  delegateTarget,
   container
 } from './container'
 
-@delegate({
+@delegateTarget({
   container,
   // key: 'Deployer' // implicit using class name
 })
@@ -186,11 +186,11 @@ This makes it possible to switch delagate classes being used for different envir
 
 ```js
 import {
-  delegates,
+  delegator,
   container
 } from './container'
 
-@delegates({
+@delegator({
   container,
   map: {
     configuration: DeployConfiguration,

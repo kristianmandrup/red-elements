@@ -1,11 +1,11 @@
 export {
-  delegate
-} from './delegate'
+  delegateTarget
+} from './delegate-target'
 
 export {
-  delegates
-} from './delegates'
+  delegator
+} from './delegator'
 
 export {
-  callDelegate
-} from './call-delegate'
+  delegateTo
+} from './delegate-to'

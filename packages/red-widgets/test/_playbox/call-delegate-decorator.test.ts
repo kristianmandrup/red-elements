@@ -1,5 +1,5 @@
 import {
-  callDelegate
+  delegateTo
 } from '@tecla5/red-base'
 
 interface IDelegate {
@@ -11,8 +11,8 @@ class TestMe {
 
   }
 
-  @callDelegate('myDelegate')
-  delegator(): string {
+  @delegateTo('myDelegate')
+  delegatorFun(): string {
     return 'must be delegated'
   }
 }
@@ -20,7 +20,7 @@ class TestMe {
 class Delegate implements IDelegate {
   ok = true
 
-  delegator(): string {
+  delegatorFun(): string {
     return `success: ${this.ok}`
   }
 }
@@ -28,20 +28,20 @@ class Delegate implements IDelegate {
 class BadDelegate implements IDelegate {
   ok = true
 
-  _delegator(): string {
+  _delegatorFun(): string {
     return `success: ${this.ok}`
   }
 }
 
 
-test('delegates call to instance method of delegate class', () => {
+test('delegates delegatorFun call to instance method of delegate class', () => {
   const delegate = new Delegate()
-  const result = new TestMe(delegate).delegator()
+  const result = new TestMe(delegate).delegatorFun()
   expect(result).toEqual('success: true')
 })
 
-test('delegates call to instance method defaults to own if no delegator function in delegate class', () => {
+test('delegates call to instance method defaults to own if no delegatorFun function in delegate class', () => {
   const delegate = new BadDelegate()
-  const result = new TestMe(delegate).delegator()
+  const result = new TestMe(delegate).delegatorFun()
   expect(result).toEqual('must be delegated')
 })

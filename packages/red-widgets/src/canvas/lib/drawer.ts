@@ -9,10 +9,10 @@ import {
 
 import {
   container,
-  delegate
+  delegateTarget
 } from './container'
 
-@delegate({
+@delegateTarget({
   container,
 })
 

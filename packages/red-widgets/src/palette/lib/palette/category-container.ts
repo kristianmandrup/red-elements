@@ -1,15 +1,15 @@
-import { Context, $ } from '../../../common'
 import { Palette } from './';
 
 import {
+  Context,
+  $,
   container,
-  delegates
-} from '../container'
+  delegator
+} from './_base'
 
-@delegates({
+@delegator({
   container
 })
-
 export class PaletteCategoryContainer extends Context {
   constructor(public palette: Palette) {
     super()
@@ -37,7 +37,7 @@ export class PaletteCategoryContainer extends Context {
     }
 
     // append palette to #palette-container
-    const catDiv = this.buildCategoryContainer(category, container)
+    const catDiv = this.buildCategoryContainer(category, container, label)
     const paletteBaseCategory = this.paletteBaseCategory(category)
     const paletteHeaderI = this.paletteHeaderCategory(category, true)
     const paletteHeader = this.paletteHeaderCategory(category)
@@ -82,7 +82,7 @@ export class PaletteCategoryContainer extends Context {
     return $("#palette-header-" + category)
   }
 
-  protected buildCategoryContainer(category, container) {
+  protected buildCategoryContainer(category, container, label) {
     return $('<div id="palette-container-' + category + '" class="palette-category palette-close hide">' +
       '<div id="palette-header-' + category + '" class="palette-header"><i class="expanded fa fa-angle-down"></i><span>' + label + '</span></div>' +
       '<div class="palette-content" id="palette-base-category-' + category + '">' +

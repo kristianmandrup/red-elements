@@ -1,21 +1,24 @@
-import {
-  Context
-} from '../../../../context'
-
 import { NodeApi } from './api';
 import { PaletteEditor } from '../';
 
 import {
+  Context,
   container,
-  delegates
-} from '../../container'
+  delegateTarget,
+  delegator
+} from './_base'
 
-@delegates({
+@delegateTarget({
   container
 })
-
+@delegator({
+  container,
+  map: {
+    api: NodeApi
+  }
+})
 export class PaletteEditorNodeManager extends Context {
-  protected api: NodeApi = new NodeApi(this)
+  protected api: NodeApi // = new NodeApi(this)
 
   constructor(public editor: PaletteEditor) {
     super()

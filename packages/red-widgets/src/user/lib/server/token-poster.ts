@@ -3,15 +3,15 @@ import { Context } from '../../../context'
 import { UserServer } from './index';
 
 import {
-  delegates,
+  delegator,
   container
-} from './container'
+} from './_base'
 
 interface IDialogElem extends JQuery<HTMLElement> {
   dialog: Function
 }
 
-@delegates({
+@delegator({
   container,
 })
 
@@ -21,7 +21,7 @@ export class ServerTokenPoster extends Context {
   }
 
   get sessionApi() {
-    return this.userServer.sessionApi
+    return this.userServer.sessionsApi
   }
 
 

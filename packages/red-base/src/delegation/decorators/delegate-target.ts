@@ -1,4 +1,4 @@
-export function delegate(config: any) {
+export function delegateTarget(config: any) {
   const {
     container,
     scope,

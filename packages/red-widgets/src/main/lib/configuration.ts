@@ -5,14 +5,14 @@ import {
   EditableList,
   Menu,
   container,
-  delegate,
+  delegateTarget,
   log
 } from './_base'
 
 /**
  * Main widget configuration
  */
-@delegate({
+@delegateTarget({
   container,
 })
 export class MainConfiguration extends Context {

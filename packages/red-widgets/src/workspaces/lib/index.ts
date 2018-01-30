@@ -14,10 +14,6 @@
  * limitations under the License.
  **/
 import {
-  Context
-} from '../../context'
-
-import {
   Tabs
 } from '../../common'
 
@@ -28,13 +24,14 @@ import { WorkspaceEditDialog } from './edit-dialog';
 import { WorkspaceTabs } from './tabs';
 import { WorkspacesDisplay } from './display';
 import {
+  Context,
   container,
-  delegate
-} from './container'
+  delegator,
+  delegateTo,
+  log
+} from './_base'
 
-const { log } = console
-
-@delegate({
+@delegator({
   container,
   map: {
     configuration: WorkspacesConfiguration,
@@ -69,17 +66,18 @@ export class Workspaces extends Context {
   /**
    * Configure workspaces
    */
+  @delegateTo('configuration')
   configure() {
-    this.configuration.configure()
-
-    return this
+    // this.configuration.configure()
+    // return this
   }
 
   /**
    * activate Last Workspace
    */
+  @delegateTo('manager')
   activateLastWorkspace() {
-    return this.manager.activateLastWorkspace()
+    // return this.manager.activateLastWorkspace()
   }
 
   /**
@@ -87,52 +85,53 @@ export class Workspaces extends Context {
    * @param ws
    * @param skipHistoryEntry
    */
-  addWorkspace(ws: IWorkspaceDef, skipHistoryEntry?: boolean): IWorkspaceDef {
-    return this.manager.addWorkspace(ws, skipHistoryEntry)
+  @delegateTo('manager')
+  addWorkspace(ws: IWorkspaceDef, skipHistoryEntry?: boolean): any {
+    // return this.manager.addWorkspace(ws, skipHistoryEntry)
   }
 
   /**
    * delete Workspace
    * @param ws
    */
+  @delegateTo('manager')
   deleteWorkspace(ws: IWorkspaceDef) {
-    return this.manager.deleteWorkspace(ws)
-
+    // return this.manager.deleteWorkspace(ws)
   }
 
   /**
    * remove Workspace
    * @param ws
    */
+  @delegateTo('manager')
   removeWorkspace(ws: IWorkspaceDef) {
-    return this.manager.removeWorkspace(ws)
-
+    // return this.manager.removeWorkspace(ws)
   }
 
   /**
    * set Workspace Order
    * @param order
    */
+  @delegateTo('manager')
   setWorkspaceOrder(order: any[]) {
-    return this.manager.setWorkspaceOrder(order)
-
+    // return this.manager.setWorkspaceOrder(order)
   }
 
   /**
    * show rename Workspace Dialog
    * @param id
    */
+  @delegateTo('editDialog')
   showRenameWorkspaceDialog(id: string | number) {
-    this.editDialog.showRenameWorkspaceDialog(id)
-
+    // this.editDialog.showRenameWorkspaceDialog(id)
   }
 
   /**
    * create Workspace Tabs
    */
+  @delegateTo('workspaceTabs')
   createWorkspaceTabs() {
-    this.workspaceTabs.createWorkspaceTabs()
-
+    // this.workspaceTabs.createWorkspaceTabs()
   }
 
   /**
@@ -140,7 +139,6 @@ export class Workspaces extends Context {
    */
   get tabs() {
     return this.workspaceTabs.tabs
-
   }
 
   /**
@@ -148,25 +146,24 @@ export class Workspaces extends Context {
    */
   get tabIds(): string[] {
     return this.workspaceTabs.tabIds
-
   }
 
   /**
    * Detect if workspace has tab with specific id
    * @param id
    */
+  @delegateTo('workspaceTabs')
   hasTabId(id: string) {
-    return this.workspaceTabs.hasTabId(id)
-
+    // return this.workspaceTabs.hasTabId(id)
   }
 
   /**
    * retrieve workspace Tab at index
    * @param workspaceIndex
    */
+  @delegateTo('workspaceTabs')
   workspaceTabAt(workspaceIndex: number) {
-    return this.workspaceTabs.workspaceTabAt(workspaceIndex)
-
+    // return this.workspaceTabs.workspaceTabAt(workspaceIndex)
   }
 
   /**
@@ -178,7 +175,6 @@ export class Workspaces extends Context {
       activeWorkspace
     } = this
     this.showRenameWorkspaceDialog(id || activeWorkspace);
-
     return this
   }
 
@@ -188,7 +184,6 @@ export class Workspaces extends Context {
    */
   contains(id) {
     return this.hasTabId(id);
-
   }
 
   /**
@@ -196,7 +191,6 @@ export class Workspaces extends Context {
    */
   get count(): number {
     return this.workspace_tabs.count();
-
   }
 
   /**
@@ -204,7 +198,6 @@ export class Workspaces extends Context {
    */
   get active() {
     return this.activeWorkspace
-
   }
 
   /**
@@ -212,23 +205,24 @@ export class Workspaces extends Context {
    * also activates it via activateTab
    * @param id
    */
+  @delegateTo('workspacesDisplay')
   show(id: string) {
-    this.workspacesDisplay.show(id)
-
+    // this.workspacesDisplay.show(id)
   }
 
   /**
    * Refresh workspace display
    */
+  @delegateTo('workspacesDisplay')
   refresh() {
-    this.workspacesDisplay.refresh()
-
+    // this.workspacesDisplay.refresh()
   }
 
   /**
    * Resize workspace display
    */
+  @delegateTo('workspacesDisplay')
   resize() {
-    this.workspacesDisplay.refresh()
+    this.workspacesDisplay.resize()
   }
 }

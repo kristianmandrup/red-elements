@@ -2,9 +2,19 @@ import { Sidebar } from '../'
 import {
   SidebarTab
 } from '.'
-import { Tabs, Context, $ } from '../../../../common'
-import { I18n } from '@tecla5/red-runtime';
 
+import {
+  I18n,
+  Context,
+  $,
+  Tabs,
+  container,
+  delegateTarget
+} from '../_base'
+
+@delegateTarget({
+  container,
+})
 export class SidebarTabConfiguration extends Context {
   sidebar_tabs: any
 

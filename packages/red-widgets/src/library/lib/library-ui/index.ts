@@ -29,12 +29,12 @@ export class LibraryUI extends Context {
     this.configure(options)
   }
 
-  @callDelegate('configuration')
+  @delegateTo('configuration')
   configure(options: any) {
     // this.configuration.configure(options)
   }
 
-  @callDelegate('libraryFileListBuilder')
+  @delegateTo('libraryFileListBuilder')
   buildFileList(root: string, data: any[]) {
     this.libraryFileListBuilder.buildFileList(root, data)
   }

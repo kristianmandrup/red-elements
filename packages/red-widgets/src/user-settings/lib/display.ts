@@ -4,11 +4,11 @@ import { IViewSetting, UserSettingsConfiguration } from './configuration';
 
 
 import {
-  delegates,
+  delegator,
   container
 } from './container'
 
-@delegates({
+@delegator({
   container,
 })
 

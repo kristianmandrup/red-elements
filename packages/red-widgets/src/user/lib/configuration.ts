@@ -1,19 +1,23 @@
 import { User } from '../'
-import { Context } from '../../context'
 import { UserDisplay } from './display'
 
 import {
-  delegates,
+  Context,
+  delegator,
+  delegateTarget,
+  delegateTo,
   container
-} from './container'
+} from './_base'
 
-@delegates({
+@delegator({
   container,
-  map:{
+  map: {
     display: UserDisplay
   }
 })
-
+@delegateTarget({
+  container
+})
 export class UserConfiguration extends Context {
 
   constructor(public user: User) {
@@ -34,11 +38,17 @@ export class UserConfiguration extends Context {
           options: []
         });
 
-        this.display.updateUserMenu();
+        this.updateUserMenu();
 
       }
     }
   }
+
+  @delegateTo('display')
+  updateUserMenu() {
+    // this.display.updateUserMenu();
+  }
+
 
   // protected
 

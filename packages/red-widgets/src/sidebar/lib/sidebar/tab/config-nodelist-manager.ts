@@ -2,16 +2,24 @@ import { Sidebar } from '../'
 import {
   SidebarTab
 } from '.'
-import { Tabs, Context, $ } from '../../../../common'
-import {
-  I18n
-} from '@tecla5/red-runtime'
 
 // TODO: use from /_interfaces
 import {
   I18nWidget
 } from '../../../../_interfaces'
 
+import {
+  I18n,
+  Context,
+  $,
+  Tabs,
+  container,
+  delegateTarget
+} from '../_base'
+
+@delegateTarget({
+  container,
+})
 export class SidebarTabInitializer extends Context {
   constructor(public sidebarTab: SidebarTab) {
     super()

@@ -93,7 +93,7 @@ export class Deploy extends Context {
     this.configure(options)
   }
 
-  @callDelegate('configuration')
+  @delegateTo('configuration')
   configure(options) {
     // this.configuration.configure(options)
     // return this

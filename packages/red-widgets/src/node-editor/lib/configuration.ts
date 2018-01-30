@@ -6,18 +6,17 @@ import { NodeEditor } from '../'
 
 import {
   container,
-  delegate,
+  delegateTarget,
   Context,
   $
 } from './_base'
 
-@delegate({
-  container,
-})
-
 /**
  * NodeEditor configuration
  */
+@delegateTarget({
+  container,
+})
 export class NodeEditorConfiguration extends Context {
   constructor(public editor: NodeEditor) {
     super()

@@ -17,7 +17,7 @@
 import {
   Context,
   $
-} from '../../context'
+} from './_base'
 
 export class Bidi extends Context {
   constructor() {

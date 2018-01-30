@@ -1,18 +1,19 @@
 import { NodeEditor } from '../'
-import { Context, $ } from '../../../../common'
+import { } from '../../../../common'
 
 import {
+  Context,
+  $,
   container,
-  delegate
-} from '../../container'
-
-@delegate({
-  container,
-})
+  delegateTarget
+} from './_base'
 
 /**
  * Node Validator for NodeEditor
  */
+@delegateTarget({
+  container,
+})
 export class ExpressionEditor extends Context {
   constructor(public editor: NodeEditor) {
     super()
@@ -21,19 +22,24 @@ export class ExpressionEditor extends Context {
   editExpression(options) {
     const {
       RED,
+      editor,
+      rebind
+    } = this
+
+    const {
       editStack,
       editTrayWidthCache,
-    } = this
+    } = editor
 
     const {
       getEditStackTitle,
       buildEditForm,
       expressionTestCache
-    } = this.rebind([
+    } = rebind([
         'getEditStackTitle',
         'buildEditForm',
         'expressionTestCache'
-      ])
+      ], editor)
 
     var expressionTestCacheId = "_";
     if (editStack.length > 0) {

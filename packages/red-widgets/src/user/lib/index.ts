@@ -20,18 +20,18 @@ import {
 
 global.jQuery = $
 import 'jquery-ui-dist/jquery-ui'
-import { SessionApi } from '../../../../red-runtime';
+import { SessionsApi } from '../../api';
 import { UserServer } from './server/index';
 import { UserConfiguration } from './configuration';
 import { UserDisplay } from './display';
 import { UserLogin } from './login';
 
 import {
-  delegates,
+  delegator,
   container
 } from './container'
 
-@delegates({
+@delegator({
   container,
   map: {
     configuration: UserConfiguration,

@@ -1,16 +1,15 @@
 
 import { Tray } from './'
-import { Context } from '../../context'
 
 import {
-  container,
-  delegate
-} from './container'
+  Context,
+  delegateTarget,
+  container
+} from './_base'
 
-@delegate({
+@delegateTarget({
   container,
 })
-
 export class TrayResizer extends Context {
   constructor(public tray: Tray) {
     super()

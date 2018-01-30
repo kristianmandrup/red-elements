@@ -5,13 +5,12 @@ import { Canvas } from '../../'
 
 import {
   container,
-  delegate
+  delegateTarget
 } from './container'
 
-@delegate({
+@delegateTarget({
   container,
 })
-
 export class CanvasSelectionManager extends Context {
   constructor(protected canvas: Canvas) {
     super()

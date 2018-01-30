@@ -1,18 +1,17 @@
 import { NodeEditor } from '../'
-import { Context, $ } from '../../../../common'
 
 import {
+  Context, $,
   container,
-  delegate
-} from '../../container'
-
-@delegate({
-  container,
-})
+  delegateTarget
+} from './_base'
 
 /**
  * Node Validator for NodeEditor
  */
+@delegateTarget({
+  container,
+})
 export class JsonEditor extends Context {
   constructor(public editor: NodeEditor) {
     super()
@@ -21,17 +20,21 @@ export class JsonEditor extends Context {
   editJSON(options) {
     const {
       RED,
+      editor,
+      rebind
+    } = this
+    let {
       editStack,
       editTrayWidthCache
-    } = this
+    } = editor
 
     const {
       getEditStackTitle,
       buildEditForm
-    } = this.rebind([
+    } = rebind([
         'getEditStackTitle',
         'buildEditForm'
-      ])
+      ], editor)
 
     this._validateProps(options, ['value', 'complete'], 'editExpression')
 

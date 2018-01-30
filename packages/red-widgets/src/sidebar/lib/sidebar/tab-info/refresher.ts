@@ -1,14 +1,23 @@
-import {
-  Context
-} from '../../../../context'
 import { SidebarTabInfo } from '../../../';
 
 import {
   marked
 } from '../../../../_libs'
+
 import { read } from 'fs';
 import { INode } from '../../../../_interfaces';
 
+import {
+  Context,
+  $,
+  Tabs,
+  container,
+  delegateTarget
+} from '../_base'
+
+@delegateTarget({
+  container,
+})
 export class TabInfoRefresher extends Context {
   constructor(public sidebarTabInfo: SidebarTabInfo) {
     super()

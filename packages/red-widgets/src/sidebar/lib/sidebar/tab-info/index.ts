@@ -16,8 +16,13 @@
 
 import {
   Context,
-  $
-} from '../../../../common'
+  $,
+  container,
+  delegator,
+  I18n,
+  marked,
+  JQElem
+} from '../_base'
 
 import {
   TabInfoRefresher
@@ -30,17 +35,19 @@ import {
   Stack
 } from '../../../../common'
 
-import {
-  I18n
-} from '@tecla5/red-runtime'
-
 export {
   TabInfoTips
 }
 
-import marked from 'marked'
 import { TabInfoInitializer } from './initializer';
 
+@delegator({
+  container,
+  map: {
+    initializer: TabInfoInitializer,
+    refresher: TabInfoRefresher
+  }
+})
 export class SidebarTabInfo extends Context {
   createStack(options) {
     // legacy: ctx.stack.create
@@ -52,7 +59,7 @@ export class SidebarTabInfo extends Context {
   public sections: any // JQuery<HTMLElement>;
   public nodeSection: any; // JQuery<HTMLElement>;
   public infoSection: any; // JQuery<HTMLElement>;
-  public tipBox: JQuery<HTMLElement>;
+  public tipBox: JQElem
   public expandedSections: any; // JQuery<HTMLElement>;
 
   protected initializer: TabInfoInitializer

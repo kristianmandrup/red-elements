@@ -30,16 +30,17 @@ interface ISearchResults extends JQuery<HTMLElement> {
 
 import {
   container,
-  delegates
-} from '../container'
+  delegator,
+  delegateTo
+} from './_base'
 
-@delegates({
-  container
+@delegator({
+  container,
+  map: {
+    configuration: PaletteEditorConfiguration,
+    nodeManager: PaletteEditorNodeManager
+  }
 })
-
-const {
-  log
-} = console
 export class PaletteEditor extends Context {
   public disabled: Boolean = false
   public loadedList: Array<any> = [];
@@ -66,17 +67,17 @@ export class PaletteEditor extends Context {
 
   public activeSort: any = this.sortModulesAZ;
 
-  protected configuration: PaletteEditorConfiguration = new PaletteEditorConfiguration(this)
-
-  nodeManager: PaletteEditorNodeManager = new PaletteEditorNodeManager(this)
+  configuration: PaletteEditorConfiguration // = new PaletteEditorConfiguration(this)
+  nodeManager: PaletteEditorNodeManager // = new PaletteEditorNodeManager(this)
 
   constructor() {
     super()
     this.configure()
   }
 
+  @delegateTo('configuration')
   configure() {
-    this.configuration.configure()
+    // this.configuration.configure()
   }
 
   /**

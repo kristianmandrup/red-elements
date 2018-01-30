@@ -1,7 +1,17 @@
 import { Diff } from './index'
 
-export class DiffGenerator {
+import {
+  Context,
+  container,
+  delegateTarget
+} from './_base'
+
+@delegateTarget({
+  container,
+})
+export class DiffGenerator extends Context {
   constructor(public diff: Diff) {
+    super()
 
   }
 

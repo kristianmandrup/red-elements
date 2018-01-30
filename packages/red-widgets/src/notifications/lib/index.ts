@@ -19,15 +19,6 @@ import {
 } from '../../context'
 
 
-import {
-  delegates,
-  container
-} from './container'
-
-@delegates({
-  container,
-})
-
 export class Notifications extends Context {
   public currentNotifications = [];
   public c = 0; // number of notifications made

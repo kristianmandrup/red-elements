@@ -3,9 +3,15 @@ export {
   $,
 } from '../../common'
 
+export {
+  FlowsApi
+} from '../../api';
+
 export const { log } = console
 
 export {
   container,
-  delegate
+  delegateTarget,
+  delegator,
+  delegateTo
 } from './container'

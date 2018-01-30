@@ -1,6 +1,6 @@
 const $log = console.log
 
-export function callDelegate(delegateName: any) {
+export function delegateTo(delegateName: any) {
   return function (target, name, descriptor) {
     // obtain the original function
     let fn = descriptor.value;

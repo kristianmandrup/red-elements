@@ -1,15 +1,14 @@
 import {
   Context,
   container,
-  delegate
+  delegateTarget
 } from './_base'
 
 import { Clipboard } from '../'
 
-@delegate({
+@delegateTarget({
   container,
 })
-
 export class ClipboardConfiguration extends Context {
   disabled: boolean
 

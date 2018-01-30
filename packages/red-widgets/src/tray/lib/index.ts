@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  Context,
-  $
-} from '../../common'
 import { TrayConfiguration } from './configuration';
 import { TrayResizer } from './resizer';
 import { TrayDisplayer } from './display';
 
 import {
-  delegates,
+  Context,
+  $,
+  delegator,
+  delegateTo,
   container
-} from './container'
-
+} from './_base'
 
 const { log } = console
 
-@delegates({
+@delegator({
   container,
   map: {
     configuration: TrayConfiguration,
@@ -55,17 +53,20 @@ export class Tray extends Context {
   /**
    * Configure Tray
    */
+  @delegateTo('configuration')
   configure() {
-    this.configuration.configure()
-    return this
+    // this.configuration.configure()
+    // return this
   }
 
+  @delegateTo('diaplay')
   show(options) {
-    this.display.show(options)
+    // this.display.show(options)
   }
 
+  @delegateTo('resizer')
   handleWindowResize() {
-    this.resizer.handleWindowResize()
+    // this.resizer.handleWindowResize()
   }
 
   async close() {

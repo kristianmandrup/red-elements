@@ -1,4 +1,3 @@
-import { Context, $ } from '../../../common'
 import { Palette } from './';
 
 interface IChartSVG extends HTMLElement {
@@ -12,14 +11,15 @@ import {
 } from '../../../_libs'
 
 import {
+  Context,
+  $,
   container,
-  delegates
-} from '../container'
+  delegateTarget
+} from './_base'
 
-@delegates({
+@delegateTarget({
   container
 })
-
 export class PaletteNodeTypeManager extends Context {
   constructor(public palette: Palette) {
     super()

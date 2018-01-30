@@ -5,17 +5,17 @@ interface IDiffWidget extends JQuery<HTMLElement> {
 import { Diff } from './index'
 
 import {
+  Context,
   container,
-  delegate
-} from './container'
+  delegateTarget
+} from './_base'
 
-@delegate({
+@delegateTarget({
   container,
 })
-
-export class DiffDisplayer {
+export class DiffDisplayer extends Context {
   constructor(public diff: Diff) {
-
+    super()
   }
 
   showDiff(diff) {

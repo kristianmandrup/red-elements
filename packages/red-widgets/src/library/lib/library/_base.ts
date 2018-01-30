@@ -4,6 +4,6 @@ export const { log } = console
 
 export {
   container,
-  delegate,
-  callDelegate
+  delegateTarget,
+  delegateTo
 } from './container'

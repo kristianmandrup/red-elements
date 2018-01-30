@@ -1,18 +1,23 @@
 import { Diff } from './index'
 
 import {
+  Context,
   container,
-  delegate
-} from './container'
+  delegateTarget
+} from './_base'
 
-@delegate({
+@delegateTarget({
   container,
 })
-export class NodesParser {
+export class NodesParser extends Context {
   constructor(public diff: Diff) {
+    super()
   }
 
-
+  /**
+   * parse nodes
+   * @param nodeList
+   */
   parseNodes(nodeList) {
     var tabOrder = [];
     var tabs = {};

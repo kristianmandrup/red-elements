@@ -1,10 +1,9 @@
 import { Workspaces } from './'
-import { Context } from '../../context'
-
 import {
-  delegates,
+  Context,
+  delegateTarget,
   container
-} from './container'
+} from './_base'
 
 export interface IWorkspaceDef {
   type: string
@@ -14,10 +13,9 @@ export interface IWorkspaceDef {
   label: string
 }
 
-@delegates({
+@delegateTarget({
   container,
 })
-
 export class WorkspaceManager extends Context {
   constructor(public workspaces: Workspaces) {
     super()

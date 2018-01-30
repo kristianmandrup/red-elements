@@ -1,12 +1,12 @@
-import { Context, $, EditableList, Searchbox } from '../../../common'
 import { PaletteEditor } from './';
 
 import {
+  Context, $, EditableList, Searchbox,
   container,
-  delegates
-} from '../container'
+  delegator
+} from './_base'
 
-@delegates({
+@delegator({
   container
 })
 

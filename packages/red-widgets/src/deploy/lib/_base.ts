@@ -3,7 +3,9 @@ export const { log } = console
 
 export {
   container,
-  delegate
+  delegateTarget,
+  delegator,
+  delegateTo
 } from './container'
 
 export { DeploymentsApi } from '../../api';

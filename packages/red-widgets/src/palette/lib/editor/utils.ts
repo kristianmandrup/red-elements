@@ -2,13 +2,12 @@ import { Context } from "../../../context";
 
 import {
   container,
-  delegates
-} from './container'
+  delegateTarget
+} from './_base'
 
-@delegates({
+@delegateTarget({
   container
 })
-
 export class PaletteUtils extends Context {
   formatUpdatedAt(dateString) {
     const {

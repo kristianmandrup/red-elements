@@ -16,8 +16,11 @@
 import {
   Context,
   $,
-  Tabs
-} from '../../../common'
+  Tabs,
+  container,
+  delegator,
+  delegateTo
+} from './_base'
 
 import {
   SidebarTab
@@ -46,10 +49,16 @@ const log = console.log
 import {
   Actions
 } from '../../..'
+
 import { SidebarConfiguration } from './configuration';
 
 // Note: Ensure Jquery UI has been initialized so .draggable widget is available
-
+@delegator({
+  container,
+  map: {
+    configuration: SidebarConfiguration
+  }
+})
 export class Sidebar extends Context {
   sidebarSeparator: any = {}
   knownTabs: any = {}
@@ -85,6 +94,7 @@ export class Sidebar extends Context {
   /**
    * Configure display of sidebar
    */
+  @delegateTo('configuration')
   configure() {
     this.configuration.configure()
   }

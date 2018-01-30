@@ -12,9 +12,9 @@ export {
 
 export {
   createContainer,
-  delegate,
-  delegates,
-  callDelegate
+  delegateTarget,
+  delegator,
+  delegateTo
 } from './delegation'
 
 export {

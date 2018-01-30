@@ -18,10 +18,11 @@ import { DiffDisplayer } from './diff-displayer';
 
 import {
   container,
-  delegate
+  delegator,
+  delegateTo
 } from './container'
 
-@delegate({
+@delegator({
   container,
   map: {
     flowsLoader: FlowsLoader,
