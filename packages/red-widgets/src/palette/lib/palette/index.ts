@@ -14,11 +14,17 @@
  * limitations under the License.
  **/
 
-import {
-  default as marked
-} from 'marked'
+// import {
+//   default as marked
+// } from 'marked'
 
-import * as d3 from 'd3'
+// import * as d3 from 'd3'
+
+import {
+  d3,
+  marked
+} from '../../../_libs'
+
 
 export {
   PaletteEditor
@@ -31,6 +37,16 @@ import {
   EditableList
 } from '../../../common'
 import { PaletteConfiguration } from './configuration';
+
+import {
+  container,
+  delegates
+} from '../container'
+
+@delegates({
+  container
+})
+
 
 export class Palette extends Context {
   public categoryContainers = {}

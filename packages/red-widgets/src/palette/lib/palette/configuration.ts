@@ -5,6 +5,15 @@ export interface IPaletteConfiguration {
   configure()
 }
 
+import {
+  container,
+  delegates
+} from '../container'
+
+@delegates({
+  container
+})
+
 export class PaletteConfiguration extends Context {
   // TODO: inject service Events
 

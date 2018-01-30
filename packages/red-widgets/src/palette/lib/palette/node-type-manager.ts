@@ -11,6 +11,15 @@ import {
   marked
 } from '../../../_libs'
 
+import {
+  container,
+  delegates
+} from '../container'
+
+@delegates({
+  container
+})
+
 export class PaletteNodeTypeManager extends Context {
   constructor(public palette: Palette) {
     super()

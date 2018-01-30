@@ -2,6 +2,15 @@ import { Context } from '../../../../context'
 import { PaletteEditor } from '../'
 import { NodeModuleManager } from './manager';
 
+import {
+  container,
+  delegates
+} from '../../container'
+
+@delegates({
+  container
+})
+
 export class NodeModuleRefresher extends Context {
   constructor(public manager: NodeModuleManager) {
     super()

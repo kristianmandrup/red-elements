@@ -5,6 +5,15 @@ import {
 import { NodeApi } from './api';
 import { PaletteEditor } from '../';
 
+import {
+  container,
+  delegates
+} from '../../container'
+
+@delegates({
+  container
+})
+
 export class PaletteEditorNodeManager extends Context {
   protected api: NodeApi = new NodeApi(this)
 

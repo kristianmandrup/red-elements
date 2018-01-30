@@ -17,13 +17,27 @@ import {
 import { PaletteEditorNodeManager } from '../node-manager';
 import { NodesApi } from '@tecla5/red-runtime';
 
+import {
+  container,
+  delegates
+} from '../../container'
+
+@delegates({
+  container,
+  map: {
+    creator: NodeCreater,
+    deleter: NodeDeleter,
+    updater: NodeUpdater
+  }
+})
+
 export class NodeApi extends Context {
   // shared api
   nodesApi: NodesApi = new NodesApi()
 
-  protected creator: NodeCreater = new NodeCreater(this)
-  protected deleter: NodeDeleter = new NodeDeleter(this)
-  protected updater: NodeUpdater = new NodeUpdater(this)
+  protected creator: NodeCreater //= new NodeCreater(this)
+  protected deleter: NodeDeleter //= new NodeDeleter(this)
+  protected updater: NodeUpdater //= new NodeUpdater(this)
 
   constructor(public manager: PaletteEditorNodeManager) {
     super()
