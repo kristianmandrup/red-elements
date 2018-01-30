@@ -28,7 +28,25 @@ interface IButton extends JQuery<HTMLElement> {
   button: Function
 }
 
+import {
+  container
+} from './_base'
+
+import {
+  delegates
+} from './container'
+
 const { log } = console
+
+@delegates({
+  container,
+  map: {
+    configuration: ClipboardConfiguration,
+    dialogs: ClipboardDialogs,
+    nodesExporter: ClipboardNodesExporter,
+    nodesImporter: ClipboardNodesImporter
+  }
+})
 
 /**
  * Clipboard for copy/paste operations
@@ -40,10 +58,10 @@ export class Clipboard extends Context {
   public exportNodesDialog: any
   public importNodesDialog: any
 
-  protected configuration: ClipboardConfiguration = new ClipboardConfiguration(this)
-  protected dialogs: ClipboardDialogs = new ClipboardDialogs(this)
-  protected nodesExporter: ClipboardNodesExporter = new ClipboardNodesExporter(this)
-  protected nodesImporter: ClipboardNodesImporter = new ClipboardNodesImporter(this)
+  protected configuration: ClipboardConfiguration //= new ClipboardConfiguration(this)
+  protected dialogs: ClipboardDialogs //= new ClipboardDialogs(this)
+  protected nodesExporter: ClipboardNodesExporter //= new ClipboardNodesExporter(this)
+  protected nodesImporter: ClipboardNodesImporter //= new ClipboardNodesImporter(this)
 
   constructor() {
     super()

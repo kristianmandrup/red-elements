@@ -1,6 +1,15 @@
 import { Context, $, EditableList, Searchbox } from '../../../common'
 import { PaletteEditor } from './';
 
+import {
+  container,
+  delegates
+} from '../container'
+
+@delegates({
+  container
+})
+
 export class PaletteEditorConfiguration extends Context {
   constructor(public editor: PaletteEditor) {
     super()

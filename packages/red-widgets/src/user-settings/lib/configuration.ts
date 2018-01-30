@@ -2,6 +2,11 @@ import { UserSettings } from './';
 import { Context } from '../../context';
 import { UserSettingsDisplay } from './display';
 
+import {
+  delegates,
+  container
+} from './container'
+
 export interface IViewSettingOption {
   setting: string
   oldSetting?: string
@@ -17,6 +22,9 @@ export interface IViewSetting {
   options: IViewSettingOption[]
 }
 
+@delegates({
+  container,
+})
 export class UserSettingsConfiguration extends Context {
   allSettings = {}
   trayWidth = 700;

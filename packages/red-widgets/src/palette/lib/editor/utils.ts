@@ -1,5 +1,14 @@
 import { Context } from "../../../context";
 
+import {
+  container,
+  delegates
+} from './container'
+
+@delegates({
+  container
+})
+
 export class PaletteUtils extends Context {
   formatUpdatedAt(dateString) {
     const {

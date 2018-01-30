@@ -1,6 +1,15 @@
 import { Context } from '../../../common'
 import { PaletteEditor } from './';
 
+import {
+  container,
+  delegates
+} from './container'
+
+@delegates({
+  container
+})
+
 export class InstallTab extends Context {
   constructor(public editor: PaletteEditor) {
     super()

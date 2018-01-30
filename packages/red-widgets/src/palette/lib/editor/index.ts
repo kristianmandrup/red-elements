@@ -14,7 +14,7 @@
  * limitations under the License.
  **/
 import { Context, $, EditableList, Searchbox } from '../../../common'
-import { NodesApi } from '@tecla5/red-runtime/src/api/nodes-api';
+import { NodesApi } from '@tecla5/red-runtime';
 import { PaletteEditorConfiguration } from './configuration';
 import { PaletteEditorNodeManager } from './node-manager/node-manager';
 
@@ -27,6 +27,15 @@ interface IDialogWidget extends JQuery<HTMLElement> {
 interface ISearchResults extends JQuery<HTMLElement> {
   editableList: Function
 }
+
+import {
+  container,
+  delegates
+} from '../container'
+
+@delegates({
+  container
+})
 
 const {
   log

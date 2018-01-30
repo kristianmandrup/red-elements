@@ -27,8 +27,23 @@ import { WorkspaceManager, IWorkspaceDef } from './workspace-manager';
 import { WorkspaceEditDialog } from './edit-dialog';
 import { WorkspaceTabs } from './tabs';
 import { WorkspacesDisplay } from './display';
+import {
+  container,
+  delegate
+} from './container'
 
 const { log } = console
+
+@delegate({
+  container,
+  map: {
+    configuration: WorkspacesConfiguration,
+    manager: WorkspaceManager,
+    editDialog: WorkspaceEditDialog,
+    workspaceTabs: WorkspaceTabs,
+    workspacesDisplay: WorkspacesDisplay
+  }
+})
 
 export class Workspaces extends Context {
   static createTabs(options) {
@@ -39,11 +54,11 @@ export class Workspaces extends Context {
   public workspaceIndex: number = 0
   public workspace_tabs: any  //TODO: Array<Tab> ??
 
-  protected configuration: WorkspacesConfiguration = new WorkspacesConfiguration(this)
-  protected manager: WorkspaceManager = new WorkspaceManager(this)
-  protected editDialog: WorkspaceEditDialog = new WorkspaceEditDialog(this)
-  protected workspaceTabs: WorkspaceTabs = new WorkspaceTabs(this)
-  protected workspacesDisplay: WorkspacesDisplay = new WorkspacesDisplay(this)
+  protected configuration: WorkspacesConfiguration // = new WorkspacesConfiguration(this)
+  protected manager: WorkspaceManager // = new WorkspaceManager(this)
+  protected editDialog: WorkspaceEditDialog // = new WorkspaceEditDialog(this)
+  protected workspaceTabs: WorkspaceTabs // = new WorkspaceTabs(this)
+  protected workspacesDisplay: WorkspacesDisplay // = new WorkspacesDisplay(this)
 
   constructor() {
     super()

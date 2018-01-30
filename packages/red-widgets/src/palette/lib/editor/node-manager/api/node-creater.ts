@@ -3,6 +3,16 @@ import {
 } from '../../../../../context'
 import { NodeApi } from './';
 
+import {
+  container,
+  delegates
+} from '../../container'
+
+@delegates({
+  container
+})
+
+
 export class NodeCreater extends Context {
   constructor(public api: NodeApi) {
     super()

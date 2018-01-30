@@ -1,6 +1,15 @@
 import { Context, $ } from '../../../common'
 import { Palette } from './';
 
+import {
+  container,
+  delegates
+} from '../container'
+
+@delegates({
+  container
+})
+
 export class PaletteCategoryContainer extends Context {
   constructor(public palette: Palette) {
     super()

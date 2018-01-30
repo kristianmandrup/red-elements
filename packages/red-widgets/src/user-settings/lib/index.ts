@@ -21,9 +21,22 @@ import {
 } from '../../common'
 import { UserSettingsConfiguration } from './configuration';
 
+import {
+  delegates,
+  container
+} from './container'
+
+
 const {
   log
 } = console
+
+@delegates({
+  container,
+  map: {
+    configuration: UserSettingsConfiguration,
+  }
+})
 
 export class UserSettings extends Context {
   allSettings: any;
@@ -31,7 +44,7 @@ export class UserSettings extends Context {
   trayWidth: any;
   panes: any;
 
-  protected configuration: UserSettingsConfiguration = new UserSettingsConfiguration(this)
+  protected configuration: UserSettingsConfiguration // = new UserSettingsConfiguration(this)
 
   constructor() {
     super()
