@@ -1,21 +1,20 @@
 import {
   Library
-} from './'
+} from '.'
 
 import {
   Context,
   container,
-  delegate
+  delegateTarget
 } from './_base'
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
-@delegate({
+@delegateTarget({
   container,
 })
-
 export class LibraryConfiguration extends Context {
   constructor(public library: Library) {
     super()

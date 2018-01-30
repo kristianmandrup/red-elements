@@ -1,16 +1,11 @@
-import {
-  Context
-} from '../../context'
-import { Canvas } from '../../';
+import { Canvas } from '.'
 
 import {
-  d3
-} from './d3'
-
-import {
+  d3,
+  Context,
   container,
   delegateTarget
-} from './container'
+} from './_base'
 
 @delegateTarget({
   container,

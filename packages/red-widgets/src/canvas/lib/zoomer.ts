@@ -5,10 +5,10 @@ import { Canvas } from '../../'
 
 import {
   container,
-  delegate
-} from './container'
+  delegateTarget
+} from './_base'
 
-@delegate({
+@delegateTarget({
   container,
 })
 

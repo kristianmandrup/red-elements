@@ -7,6 +7,10 @@ import {
   delegateTarget
 } from './_base'
 
+import {
+  ITabSelect
+} from '../../../_interfaces'
+
 /**
  * Config Node Dialog for NodeEditor
  */

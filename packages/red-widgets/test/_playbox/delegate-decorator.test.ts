@@ -1,7 +1,7 @@
 import {
   createContainer,
-  delegates,
-  delegate
+  delegator,
+  delegateTarget
 } from '@tecla5/red-base'
 
 const $log = console.log
@@ -21,7 +21,7 @@ const container: any = createContainer({
 }) // .setMode('create')
 // containerMap.setDefault('development')
 
-@delegate({
+@delegateTarget({
   container,
   key: 'Configuration'
 })
@@ -33,7 +33,7 @@ class MyConfiguration implements IConfiguration {
 interface IExecuter {
 }
 
-@delegate({
+@delegateTarget({
   container,
   key: 'Executer' // override implicit class name key
 })
@@ -47,7 +47,7 @@ class MyExecuter implements IExecuter {
 // you can change this behavior, so that the main container
 // will create the environment container if not found using setMode('create')
 
-@delegate({
+@delegateTarget({
   container,
   scope: 'prod' // production scope only
   // key: 'Executer' // use implicit key via class name
@@ -58,7 +58,7 @@ class Executer implements IExecuter {
 }
 
 
-@delegates({
+@delegator({
   container,
   map: {
     configuration: 'Configuration',

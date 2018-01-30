@@ -14,6 +14,9 @@ export interface I18nWidget extends JQElem {
   i18n: Function
 }
 
+export interface ITabSelect extends I18nWidget {
+}
+
 interface IDialog {
   remove()
 }

@@ -50,10 +50,6 @@ import {
 import { LabelBuilder } from './label-builder';
 import { EditorUtils } from './editor-utils';
 
-interface ITabSelect extends JQuery<HTMLElement> {
-  i18n: Function
-}
-
 @delegator({
   container,
   map: {

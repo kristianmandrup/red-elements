@@ -5,8 +5,9 @@ import {
   $,
   Context,
   container,
-  delegate,
-  LibrariesApi
+  delegateTarget,
+  LibrariesApi,
+  delegator
 } from './_base'
 
 import { dirname } from 'path';
@@ -14,12 +15,17 @@ import { dirname } from 'path';
 /**
  * Build File List of libraries from server via API call
  */
-@delegate({
+@delegateTarget({
   container,
 })
-
+@delegator({
+  container,
+  map: {
+    librariesApi: LibrariesApi
+  }
+})
 export class FileListBuilder extends Context {
-  protected libraryApi: LibrariesApi
+  protected librariesApi: LibrariesApi
 
   constructor(public ui: LibraryUI) {
     super()
@@ -125,14 +131,24 @@ export class FileListBuilder extends Context {
 
   async loadLibraryFileItem(item, url) {
     const {
-      libraryApi,
+      librariesApi,
+      rebind
+    } = this
+    const {
       onLibraryItemLoadSuccess,
       onLibraryItemLoadError,
-    } = this
+    } = rebind([
+        'onLibraryItemLoadSuccess',
+        'onLibraryItemLoadError',
+      ])
+
+
     try {
-      const result = await libraryApi.load({
+      librariesApi.configure({
         url
       })
+      const result = await librariesApi.read.one(item)
+
       onLibraryItemLoadSuccess(result, item)
     } catch (error) {
       onLibraryItemLoadError(error)
@@ -177,16 +193,26 @@ export class FileListBuilder extends Context {
   }
 
   async loadDirectoryItem(options, root, dirName) {
-    const url = 'library/' + options.url + root + dirName
+    const url = 'library/' + options.url + root // + dirName
     const {
-      libraryApi,
+      librariesApi,
+      rebind
+    } = this
+    const {
       onDirectoryItemLoadSuccess,
       onDirectoryItemLoadError,
-    } = this
+    } = rebind([
+        'onDirectoryItemLoadSuccess',
+        'onDirectoryItemLoadError',
+      ])
+
+
+    librariesApi.configure({
+      url
+    })
+
     try {
-      const result = await libraryApi.load({
-        url
-      })
+      const result = await librariesApi.read.one(dirName)
       onDirectoryItemLoadSuccess(result, root, dirname)
     } catch (error) {
       onDirectoryItemLoadError(error)

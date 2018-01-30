@@ -3,16 +3,15 @@ import {
   $,
   Context,
   container,
-  delegate,
+  delegateTarget,
   LibrariesApi
 } from './_base'
 
 import { LibraryUI } from './';
 
-@delegate({
+@delegateTarget({
   container,
 })
-
 export class LibraryPoster extends Context {
   protected librariesApi: LibrariesApi
   constructor(public ui: LibraryUI) {

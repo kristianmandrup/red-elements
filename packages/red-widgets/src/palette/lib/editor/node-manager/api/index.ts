@@ -1,8 +1,4 @@
 import {
-  Context
-} from '../../../../../context'
-
-import {
   NodeDeleter
 } from './node-deleter'
 
@@ -18,11 +14,16 @@ import { PaletteEditorNodeManager } from '../node-manager';
 import { NodesApi } from '@tecla5/red-runtime';
 
 import {
+  Context,
   container,
-  delegates
-} from '../../container'
+  delegator,
+  delegateTarget
+} from './_base'
 
-@delegates({
+@delegateTarget({
+  container,
+})
+@delegator({
   container,
   map: {
     creator: NodeCreater,
@@ -30,7 +31,6 @@ import {
     updater: NodeUpdater
   }
 })
-
 export class NodeApi extends Context {
   // shared api
   nodesApi: NodesApi = new NodesApi()

@@ -35,6 +35,7 @@ import {
 import {
   delegator
 } from './container'
+import { clipboard } from '../index';
 
 const { log } = console
 
@@ -86,8 +87,8 @@ export class Clipboard extends Context {
   /**
    * export Nodes
    */
-  exportNodes() {
-    return this.nodesExporter.exportNodes()
+  exportNodes(clipboard) {
+    return this.nodesExporter.exportNodes(clipboard)
   }
 
   /**

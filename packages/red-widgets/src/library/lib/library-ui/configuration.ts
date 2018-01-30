@@ -6,19 +6,18 @@ import {
   log,
   Context,
   container,
-  delegate,
-  callDelegate
+  delegateTarget,
 } from './_base'
 
 import {
   ace
-} from '../../../_libs/ace'
+} from '../../../_libs'
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
-@delegate({
+@delegateTarget({
   container,
 })
 export class LibraryConfiguration extends Context {

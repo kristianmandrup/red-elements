@@ -15,17 +15,10 @@
  **/
 import {
   Context,
-  $
-} from '../../context'
-
-import * as $d3 from '../lib/d3'
-import * as d3Select from '../lib/d3-selection'
-
-const {
-  log
-} = console
-
-const d3 = Object.assign({}, $d3, d3Select)
+  $,
+  log,
+  d3
+} from './_base'
 
 import { CanvasConfiguration } from './configuration';
 import { CanvasZoomer } from './zoomer';
@@ -291,11 +284,11 @@ export interface ICanvas {
 }
 
 import {
-  delegates,
+  delegator,
   container
 } from './container'
 
-@delegates({
+@delegator({
   container,
   map: {
     canvasMouse: CanvasMouse,

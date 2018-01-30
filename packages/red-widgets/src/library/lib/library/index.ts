@@ -16,7 +16,9 @@
 import {
   Context,
   $,
-  delegateTo
+  delegateTo,
+  delegator,
+  container
 } from './_base'
 
 import { LibraryUI } from '../library-ui'
@@ -27,6 +29,14 @@ import { LibraryFlowsLoader } from './flows-loader';
 
 const { log } = console
 
+@delegator({
+  container,
+  map: {
+    libraryConfiguration: LibraryConfiguration,
+    flowsPoster: LibraryFlowsPoster,
+    flowsLoader: LibraryFlowsLoader
+  }
+})
 export class Library extends Context {
   exportToLibraryDialog: any;
   flowName: any;
@@ -43,7 +53,7 @@ export class Library extends Context {
   }
 
   @delegateTo('configuration')
-  configure(options: any = {}) {
+  configure() {
     //this.libraryConfiguration.configure()
   }
 
@@ -56,6 +66,7 @@ export class Library extends Context {
   }
 
   /**
+   * TODO: use delegate class
    * Create Library UI
    * @param options
    */

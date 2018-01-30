@@ -3,7 +3,7 @@ import {
   $,
   Context,
   container,
-  delegate
+  delegateTarget
 } from './_base'
 
 import { LibraryUI } from '../'
@@ -14,10 +14,9 @@ export interface ILibrarySaver {
   postLibrary(data: any, options: any): Promise<any>
 }
 
-@delegate({
+@delegateTarget({
   container,
 })
-
 export class LibrarySaver extends Context implements ILibrarySaver {
   protected libraryPoster: LibraryPoster
 

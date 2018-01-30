@@ -7,7 +7,8 @@ import {
   log,
   Context,
   container,
-  delegate,
+  delegateTarget,
+  delegator,
   LibrariesApi
 } from './_base'
 
@@ -15,12 +16,17 @@ interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
-@delegate({
+@delegateTarget({
   container,
 })
-
+@delegator({
+  container,
+  map: {
+    librariesApi: LibrariesApi
+  }
+})
 export class LibraryFlowsLoader extends Context {
-  protected libraryApi: LibrariesApi
+  protected librariesApi: LibrariesApi
 
   constructor(public library: Library) {
     super()
@@ -33,17 +39,17 @@ export class LibraryFlowsLoader extends Context {
     const url = 'library/flows'
 
     const {
-      libraryApi,
+      librariesApi,
       onLoadFlowsSuccess,
       // onLoadError
     } = this
 
-    this.libraryApi = new LibraryApi().configure({
+    librariesApi.configure({
       url
     })
 
     try {
-      const result = await libraryApi.load()
+      const result = await librariesApi.read.all()
       onLoadFlowsSuccess(result)
     } catch (error) {
       // onLoadError(error)
@@ -51,19 +57,27 @@ export class LibraryFlowsLoader extends Context {
   }
 
   async loadFlowByName(flowName: string) {
+    const {
+      librariesApi,
+      rebind
+    } = this
+
+    const {
+      onLoadFlowSuccess,
+      // onLoadError
+    } = rebind([
+      'onLoadFlowSuccess',
+      'onLoadError'
+    ])
+
     const url = 'library/flows/' + flowName
-    this.libraryApi = new LibraryApi().configure({
+    this.librariesApi.configure({
       url
     })
 
-    const {
-      libraryApi,
-      onLoadFlowSuccess
-    } = this
-
     try {
       flowName
-      const result = await libraryApi.load()
+      const result = await librariesApi.read.one(flowName)
       onLoadFlowSuccess(result)
     } catch (error) {
       // onLoadFlowError(error)

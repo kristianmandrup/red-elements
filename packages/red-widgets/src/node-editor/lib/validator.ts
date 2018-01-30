@@ -4,16 +4,15 @@ import { INode } from '../../_interfaces';
 
 import {
   container,
-  delegate
+  delegateTarget
 } from './container'
-
-@delegate({
-  container,
-})
 
 /**
  * Node Validator for NodeEditor
  */
+@delegateTarget({
+  container,
+})
 export class NodeValidator extends Context {
   constructor(public editor: NodeEditor) {
     super()

@@ -1,17 +1,14 @@
-import {
-  Context
-} from '../../context'
-import { Canvas } from '../../'
+import { Canvas } from '.'
 
 import {
+  Context,
   container,
-  delegate
-} from './container'
+  delegateTarget
+} from './_base'
 
-@delegate({
+@delegateTarget({
   container,
 })
-
 export class CanvasKeyboard extends Context {
   constructor(protected canvas: Canvas) {
     super()

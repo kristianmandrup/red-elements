@@ -16,8 +16,18 @@ export class DiffGenerator extends Context {
   }
 
   generateDiff(currentNodes, newNodes) {
-    var currentConfig = this.parseNodes(currentNodes);
-    var newConfig = this.parseNodes(newNodes);
+    const {
+      rebind,
+      diff
+    } = this
+    const {
+      parseNodes
+    } = rebind([
+        'parseNodes'
+      ], diff)
+
+    var currentConfig = parseNodes(currentNodes);
+    var newConfig = parseNodes(newNodes);
     var added = {};
     var deleted = {};
     var changed = {};

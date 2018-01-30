@@ -1,9 +1,10 @@
-export { LibrariesApi } from '../../../api';
-export { Context, $ } from '../../../context';
-export const { log } = console
-
 export {
+  LibrariesApi,
+  Context,
+  $,
+  log,
   container,
   delegateTarget,
+  delegator,
   delegateTo
-} from './container'
+} from '../_base'

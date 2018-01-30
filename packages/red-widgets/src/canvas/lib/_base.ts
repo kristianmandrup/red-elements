@@ -1,4 +1,4 @@
-export { Context } from '../../context';
+export { Context, $ } from '../../context';
 export const { log } = console
 
 export {
@@ -7,3 +7,7 @@ export {
   delegator,
   delegateTo
 } from './container'
+
+export {
+  d3
+} from '../../_libs'

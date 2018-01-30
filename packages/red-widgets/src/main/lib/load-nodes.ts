@@ -86,7 +86,7 @@ export class LoadNodes extends Context {
     this.nodesApi = new NodesApi()
 
     try {
-      const result = await nodesApi.load()
+      const result = await nodesApi.read.all()
       onLoadNodesSuccess(result)
     } catch (error) {
       onLoadNodesError(error)
@@ -99,7 +99,7 @@ export class LoadNodes extends Context {
     $('#palette > .palette-spinner').hide();
     $('.palette-scroll').removeClass('hide');
     $('#palette-search').removeClass('hide');
-    this.loadFlows();
+    this.loadNodes();
     this.loaded.nodes = {
       time: new Date()
     }

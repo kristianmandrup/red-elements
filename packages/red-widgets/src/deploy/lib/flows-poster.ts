@@ -5,12 +5,12 @@ import {
 import {
   Context,
   log,
-  delegate,
+  delegateTarget,
   container,
   FlowsApi
 } from './_base'
 
-@delegate({
+@delegateTarget({
   container,
 })
 
@@ -42,7 +42,7 @@ export class FlowsPoster extends Context {
     })
 
     try {
-      const result = await flowsApi.post(data)
+      const result = await flowsApi.create.one(data)
       onFlowsPostSuccess(result, {
         nns,
         hasUnusedConfig

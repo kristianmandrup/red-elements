@@ -1,21 +1,15 @@
-import {
-  Context
-} from '../../context'
-import { Canvas } from '../../'
+import { Canvas } from './'
 
 import {
-  d3
-} from './d3'
-
-import {
+  d3,
+  Context,
   container,
-  delegate
-} from './container'
+  delegateTarget
+} from './_base'
 
-@delegate({
+@delegateTarget({
   container,
 })
-
 export class CanvasNodeManager extends Context {
   constructor(protected canvas: Canvas) {
     super()

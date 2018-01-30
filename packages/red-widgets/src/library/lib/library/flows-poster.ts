@@ -6,6 +6,8 @@ import {
 import {
   log,
   Context,
+  container,
+  delegateTarget,
   LibrariesApi
 } from './_base'
 
@@ -13,15 +15,9 @@ interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
-import {
-  container,
-  delegate
-} from './container'
-
-@delegate({
+@delegateTarget({
   container,
 })
-
 export class LibraryFlowsPoster extends Context {
   protected librariesApi: LibrariesApi
 

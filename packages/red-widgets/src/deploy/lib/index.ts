@@ -14,17 +14,12 @@
  * limitations under the License.
  **/
 
-import {
-  Context,
-  $
-} from '../../context'
-
-const { log } = console
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
 import * as path from 'path'
+
 import { DeployConfiguration } from './configuration';
 import {
   FlowsSaver
@@ -40,12 +35,14 @@ const icons = {
 }
 
 import {
-  delegates,
+  Context,
+  $,
+  delegator,
   container,
-  callDelegate
-} from './container'
+  delegateTo
+} from './_base'
 
-@delegates({
+@delegator({
   container,
   map: {
     configuration: DeployConfiguration,
