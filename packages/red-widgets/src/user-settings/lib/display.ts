@@ -2,6 +2,16 @@ import { UserSettings } from './';
 import { Context } from '../../context';
 import { IViewSetting, UserSettingsConfiguration } from './configuration';
 
+
+import {
+  delegates,
+  container
+} from './container'
+
+@delegates({
+  container,
+})
+
 export class UserSettingsDisplay extends Context {
   allSettings = {}
 
