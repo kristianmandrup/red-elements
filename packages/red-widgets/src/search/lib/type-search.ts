@@ -12,6 +12,15 @@ interface ISearchResultsWidget extends JQuery<HTMLElement> {
   editableList: Function
 }
 
+import {
+  container,
+  delegates
+} from './container'
+
+@delegates({
+  container,
+})
+
 export class TypeSearch extends Context {
   public disabled: Boolean = false
   public dialog: any = null

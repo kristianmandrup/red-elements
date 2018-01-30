@@ -33,6 +33,15 @@ import {
   SearchConfiguration
 } from './configuration'
 
+import {
+  container,
+  delegates
+} from '../container'
+
+@delegates({
+  container
+})
+
 export class Search extends Context {
   public disabled: Boolean = false
   public dialog: any = null

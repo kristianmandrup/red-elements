@@ -19,6 +19,15 @@ export interface ISearchInput extends JQuery<HTMLElement> {
   searchBox: Function
 }
 
+import {
+  container,
+  delegates
+} from '../../container'
+
+@delegates({
+  container
+})
+
 export class SearchInputBuilder extends Context {
   constructor(public search: Search) {
     super()

@@ -10,6 +10,15 @@ export interface ISearchResults extends JQuery<HTMLElement> {
   editableList: Function
 }
 
+import {
+  container,
+  delegates
+} from '../../container'
+
+@delegates({
+  container
+})
+
 export class SearchResultsBuilder extends Context {
   constructor(public search: Search) {
     super()

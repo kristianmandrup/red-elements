@@ -4,6 +4,15 @@ import {
   Search
 } from './'
 
+import {
+  container,
+  delegates
+} from '../container'
+
+@delegates({
+  container
+})
+
 /**
  * Takes care of search configuration, such as setting up event/action handlers
  */
