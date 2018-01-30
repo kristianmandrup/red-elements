@@ -1,12 +1,18 @@
 import {
-  Context
-} from '../../context'
-import { Clipboard } from '../../';
+  Context,
+  container,
+  delegate
+} from './_base'
 
+import { Clipboard } from '../'
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
+
+@delegate({
+  container,
+})
 
 export class ClipboardDialogs extends Context {
   disabled: boolean

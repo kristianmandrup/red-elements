@@ -2,17 +2,28 @@
 import {
   Library
 } from './'
-import { Context } from '../../../context';
-import { LibraryApi } from '@tecla5/red-runtime/src';
 
-const { log } = console
+import {
+  log,
+  Context,
+  LibrariesApi
+} from './_base'
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
+import {
+  container,
+  delegate
+} from './container'
+
+@delegate({
+  container,
+})
+
 export class LibraryFlowsPoster extends Context {
-  protected libraryApi: LibraryApi
+  protected librariesApi: LibrariesApi
 
   constructor(public library: Library) {
     super()
@@ -27,17 +38,17 @@ export class LibraryFlowsPoster extends Context {
     const data = $("#node-input-library-filename").attr('nodes')
 
     const {
-      libraryApi,
+      librariesApi,
       onPostSuccess,
       onPostError
     } = this
 
-    this.libraryApi = new LibraryApi().configure({
+    this.librariesApi = new LibrariesApi().configure({
       url
     })
 
     try {
-      const result = await libraryApi.post(data)
+      const result = await librariesApi.create.one(data)
       onPostSuccess(result)
     } catch (error) {
       onPostError(error)

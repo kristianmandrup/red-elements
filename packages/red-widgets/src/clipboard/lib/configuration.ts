@@ -1,7 +1,14 @@
 import {
-  Context
-} from '../../context'
-import { Clipboard } from '../../';
+  Context,
+  container,
+  delegate
+} from './_base'
+
+import { Clipboard } from '../'
+
+@delegate({
+  container,
+})
 
 export class ClipboardConfiguration extends Context {
   disabled: boolean

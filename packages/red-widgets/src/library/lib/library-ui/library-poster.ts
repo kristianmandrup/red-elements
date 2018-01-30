@@ -1,13 +1,20 @@
 import {
+  log,
+  $,
   Context,
-  $
-} from '../../../context'
+  container,
+  delegate,
+  LibrariesApi
+} from './_base'
 
-import { LibraryApi } from '@tecla5/red-runtime/src'
 import { LibraryUI } from './';
 
+@delegate({
+  container,
+})
+
 export class LibraryPoster extends Context {
-  protected libraryApi: LibraryApi
+  protected librariesApi: LibrariesApi
   constructor(public ui: LibraryUI) {
     super()
   }
@@ -16,17 +23,17 @@ export class LibraryPoster extends Context {
     const url = 'library/' + options.url + '/' + options.fullpath
 
     const {
-      libraryApi,
+      librariesApi,
       onPostSuccess,
       onPostError
     } = this
 
-    this.libraryApi = new LibraryApi().configure({
+    this.librariesApi = new LibrariesApi().configure({
       url
     })
 
     try {
-      const result = await libraryApi.post(data)
+      const result = await librariesApi.create.one(data)
       onPostSuccess(result, options)
     } catch (error) {
       onPostError(error)

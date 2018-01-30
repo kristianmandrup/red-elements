@@ -1,13 +1,19 @@
 import {
   Deploy
 } from './'
-import { Context } from '../../context';
 
-const { log } = console
+import {
+  Context,
+  log
+} from './_base'
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
+
+@delegate({
+  container,
+})
 
 export class DeployConfiguration extends Context {
   constructor(public deploy: Deploy) {

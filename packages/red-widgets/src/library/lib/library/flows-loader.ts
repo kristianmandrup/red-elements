@@ -2,17 +2,25 @@
 import {
   Library
 } from './'
-import { Context } from '../../../context';
-import { LibraryApi } from '@tecla5/red-runtime/src';
 
-const { log } = console
+import {
+  log,
+  Context,
+  container,
+  delegate,
+  LibrariesApi
+} from './_base'
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
+@delegate({
+  container,
+})
+
 export class LibraryFlowsLoader extends Context {
-  protected libraryApi: LibraryApi
+  protected libraryApi: LibrariesApi
 
   constructor(public library: Library) {
     super()

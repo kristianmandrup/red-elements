@@ -1,16 +1,23 @@
 import {
+  Context,
+  log,
+  delegate,
+  container,
+} from './_base'
+
+import {
   Deploy
 } from './'
-import { Context } from '../../context';
 
-const { log } = console
+import { FlowsPoster } from './flows-poster';
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
-import { FlowsPoster } from './flows-poster';
-
+@delegate({
+  container,
+})
 
 export class FlowsSaver extends Context {
   protected flowsPoster: FlowsPoster

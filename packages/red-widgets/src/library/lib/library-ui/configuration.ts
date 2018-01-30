@@ -1,18 +1,25 @@
 import {
   LibraryUI
 } from './'
-import { Context } from '../../../context';
 
-const ace = require('brace');
-require('brace/mode/javascript');
-require('brace/theme/monokai');
+import {
+  log,
+  Context,
+  container,
+  delegate
+} from './_base'
 
-const { log } = console
+import {
+  ace
+} from '../../../_libs/ace'
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
+@delegate({
+  container,
+})
 export class LibraryConfiguration extends Context {
   constructor(public ui: LibraryUI) {
     super()

@@ -1,17 +1,25 @@
-import {
-  Context,
-  $
-} from '../../../context'
-
 import { LibraryUI } from './';
-import { LibraryApi } from '@tecla5/red-runtime/src';
+
+import {
+  log,
+  $,
+  Context,
+  container,
+  delegate,
+  LibrariesApi
+} from './_base'
+
 import { dirname } from 'path';
 
 /**
  * Build File List of libraries from server via API call
  */
+@delegate({
+  container,
+})
+
 export class FileListBuilder extends Context {
-  protected libraryApi: LibraryApi
+  protected libraryApi: LibrariesApi
 
   constructor(public ui: LibraryUI) {
     super()

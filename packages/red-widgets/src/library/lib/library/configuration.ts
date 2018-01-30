@@ -1,13 +1,20 @@
 import {
   Library
 } from './'
-import { Context } from '../../../context';
 
-const { log } = console
+import {
+  Context,
+  container,
+  delegate
+} from './_base'
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
+
+@delegate({
+  container,
+})
 
 export class LibraryConfiguration extends Context {
   constructor(public library: Library) {

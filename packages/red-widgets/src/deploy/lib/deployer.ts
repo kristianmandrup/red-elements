@@ -1,16 +1,14 @@
 import {
-  Context
-} from '../../context'
-import {
   Deploy
 } from './'
 
-import { DeploymentsApi } from '../../api';
-
 import {
+  Context,
+  log,
   delegate,
-  container
-} from './container'
+  container,
+  DeploymentsApi
+} from './_base'
 
 @delegate({
   container,

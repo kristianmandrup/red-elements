@@ -5,3 +5,7 @@ export {
 export {
   marked
 } from './marked'
+
+export {
+  ace
+} from './ace'

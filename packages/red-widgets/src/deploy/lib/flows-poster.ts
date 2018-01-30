@@ -1,11 +1,18 @@
 import {
-  Context
-} from '../../context'
-import {
   Deploy
 } from './'
 
-import { FlowsApi } from '../../api'
+import {
+  Context,
+  log,
+  delegate,
+  container,
+  FlowsApi
+} from './_base'
+
+@delegate({
+  container,
+})
 
 export class FlowsPoster extends Context {
   protected flowsApi: FlowsApi

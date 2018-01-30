@@ -1,7 +1,10 @@
 import {
+  log,
+  $,
   Context,
-  $
-} from '../../../context'
+  container,
+  delegate
+} from './_base'
 
 import { LibraryUI } from '../'
 import { LibraryPoster } from './library-poster';
@@ -11,6 +14,9 @@ export interface ILibrarySaver {
   postLibrary(data: any, options: any): Promise<any>
 }
 
+@delegate({
+  container,
+})
 
 export class LibrarySaver extends Context implements ILibrarySaver {
   protected libraryPoster: LibraryPoster
