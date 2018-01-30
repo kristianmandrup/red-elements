@@ -2,13 +2,25 @@ import { User } from '../'
 import { Context } from '../../context'
 import { UserDisplay } from './display'
 
+import {
+  delegates,
+  container
+} from './container'
+
+@delegates({
+  container,
+  map:{
+    display: UserDisplay
+  }
+})
+
 export class UserConfiguration extends Context {
 
   constructor(public user: User) {
     super()
   }
 
-  protected display: UserDisplay = new UserDisplay(this.user)
+  protected display: UserDisplay //= new UserDisplay(this.user)
 
   configure() {
     const { RED } = this

@@ -1,19 +1,18 @@
-import { Diff } from './'
-import {
-  log,
-  $,
-  Context,
-  container,
-  delegate
-} from './_base'
-
 interface IDiffWidget extends JQuery<HTMLElement> {
   i18n: Function
 }
 
+import { Diff } from './index'
+
+import {
+  container,
+  delegate
+} from './container'
+
 @delegate({
   container,
 })
+
 export class DiffDisplayer {
   constructor(public diff: Diff) {
 

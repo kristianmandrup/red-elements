@@ -20,11 +20,26 @@ import {
 
 global.jQuery = $
 import 'jquery-ui-dist/jquery-ui'
-import { SessionApi } from '../../../../red-runtime/src/api/session-api';
+import { SessionApi } from '../../../../red-runtime';
 import { UserServer } from './server/index';
 import { UserConfiguration } from './configuration';
 import { UserDisplay } from './display';
 import { UserLogin } from './login';
+
+import {
+  delegates,
+  container
+} from './container'
+
+@delegates({
+  container,
+  map: {
+    configuration: UserConfiguration,
+    server: UserServer,
+    login: UserLogin,
+    display: UserDisplay
+  }
+})
 
 // Uses: jQuery UI Dialog
 // https://jqueryui.com/dialog/
@@ -33,11 +48,11 @@ export class User extends Context {
 
   // TODO: service injection
 
-  public server: UserServer = new UserServer(this)
-  public login: UserLogin = new UserLogin(this)
+  public server: UserServer // = new UserServer(this)
+  public login: UserLogin // = new UserLogin(this)
 
-  protected configuration: UserConfiguration = new UserConfiguration(this)
-  protected display: UserDisplay = new UserDisplay(this)
+  protected configuration: UserConfiguration // = new UserConfiguration(this)
+  protected display: UserDisplay // = new UserDisplay(this)
 
   constructor() {
     super()

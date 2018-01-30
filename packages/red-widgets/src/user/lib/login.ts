@@ -2,6 +2,11 @@ import { User } from '../'
 import { Context } from '../../context'
 import { ServerTokenPoster } from './server/token-poster';
 
+import {
+  delegates,
+  container
+} from './container'
+
 interface IDialogElem extends JQuery<HTMLElement> {
   dialog: Function
 }
@@ -9,6 +14,10 @@ interface IDialogElem extends JQuery<HTMLElement> {
 interface IButton extends JQuery<HTMLElement> {
   button: Function
 }
+
+@delegates({
+  container,
+})
 
 export class UserLogin extends Context {
   public tokenPoster: ServerTokenPoster = new ServerTokenPoster(this.user.server)

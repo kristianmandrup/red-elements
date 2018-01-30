@@ -2,6 +2,15 @@
 import { Tray } from './'
 import { Context } from '../../context'
 
+import {
+  delegates,
+  container
+} from './container'
+
+@delegates({
+  container,
+})
+
 export class TrayDisplayer extends Context {
   constructor(public tray: Tray) {
     super()

@@ -11,6 +11,15 @@ interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
+import {
+  container,
+  delegate
+} from './container'
+
+@delegate({
+  container,
+})
+
 export class FlowsLoader extends Context {
   protected flowsApi: FlowsApi
 

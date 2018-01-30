@@ -2,6 +2,15 @@ import { User } from '../'
 import { Context } from '../../../context'
 import { UserServer } from './index';
 
+import {
+  delegates,
+  container
+} from './container'
+
+@delegates({
+  container,
+})
+
 export class ServerLogin extends Context {
   constructor(public userServer: UserServer) {
     super()

@@ -2,6 +2,15 @@ import { NodeEditor } from '../'
 import { Context, $ } from '../../../common'
 import { INode } from '../../../../../red-runtime/src/interfaces/index';
 
+import {
+  container,
+  delegate
+} from '../../../node-editor/lib/container'
+
+@delegate({
+  container,
+})
+
 /**
  * Node Validator for NodeEditor
  */

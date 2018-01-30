@@ -1,33 +1,13 @@
-import { Diff } from './'
-import {
-  log,
-  $,
-  Context,
-  container,
-  delegate
-} from './_base'
+import { Diff } from './index'
 
-@delegate({
-  container,
-})
-export class DiffGenerator extends Context {
+export class DiffGenerator {
   constructor(public diff: Diff) {
-    super()
+
   }
 
   generateDiff(currentNodes, newNodes) {
-    const {
-      diff,
-      rebind
-    } = this
-    const {
-      parseNodes
-    } = rebind([
-        'parseNodes'
-      ])
-
-    var currentConfig = parseNodes(currentNodes);
-    var newConfig = parseNodes(newNodes);
+    var currentConfig = this.parseNodes(currentNodes);
+    var newConfig = this.parseNodes(newNodes);
     var added = {};
     var deleted = {};
     var changed = {};

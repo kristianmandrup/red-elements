@@ -49,6 +49,16 @@ interface ITabSelect extends JQuery<HTMLElement> {
   i18n: Function
 }
 
+import {
+  container,
+  delegate
+} from '../../../node-editor/lib/container'
+
+@delegate({
+  container,
+})
+
+
 export class NodeEditor extends Context {
   public editStack: any[] = []
   public expressionTestCache = {}
