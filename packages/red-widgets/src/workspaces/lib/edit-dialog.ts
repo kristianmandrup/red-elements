@@ -1,9 +1,17 @@
 import { Workspaces } from './'
 import { Context } from '../../context'
+import {
+  delegates,
+  container
+} from './container'
 
 interface IDialogForm extends JQuery<HTMLElement> {
   i18n: Function
 }
+
+@delegates({
+  container,
+})
 
 export class WorkspaceEditDialog extends Context {
   constructor(public workspaces: Workspaces) {

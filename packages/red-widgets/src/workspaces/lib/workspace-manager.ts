@@ -1,6 +1,11 @@
 import { Workspaces } from './'
 import { Context } from '../../context'
 
+import {
+  delegates,
+  container
+} from './container'
+
 export interface IWorkspaceDef {
   type: string
   id: string
@@ -8,6 +13,10 @@ export interface IWorkspaceDef {
   info: string
   label: string
 }
+
+@delegates({
+  container,
+})
 
 export class WorkspaceManager extends Context {
   constructor(public workspaces: Workspaces) {
