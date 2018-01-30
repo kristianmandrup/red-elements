@@ -8,6 +8,7 @@ export {
   createContainer,
   delegate,
   delegates,
+  callDelegate,
   INodeDef,
   INode,
   INodeSet,

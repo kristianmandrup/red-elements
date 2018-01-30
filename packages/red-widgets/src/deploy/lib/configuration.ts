@@ -4,7 +4,9 @@ import {
 
 import {
   Context,
-  log
+  log,
+  delegate,
+  container
 } from './_base'
 
 interface IDialog extends JQuery<HTMLElement> {

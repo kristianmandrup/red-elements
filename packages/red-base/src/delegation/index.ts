@@ -4,5 +4,6 @@ export {
 
 export {
   delegate,
-  delegates
+  delegates,
+  callDelegate
 } from './decorators'

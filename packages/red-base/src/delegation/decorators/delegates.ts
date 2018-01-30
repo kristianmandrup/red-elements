@@ -2,19 +2,6 @@ function isObject(obj) {
   return obj === Object(obj);
 }
 
-export function delegate(config: any) {
-  const {
-    container,
-    scope,
-    key
-  } = config
-
-  return (target: Object) => {
-    const className = key ? key : target['name']
-    container.getScopedEnv(scope).set(className, target)
-  }
-}
-
 function getClassName(containerItemId, map) {
   if (typeof containerItemId === 'string') return containerItemId
   if (isObject(containerItemId)) {
