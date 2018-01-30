@@ -1,18 +1,7 @@
-import { Diff } from './'
-import {
-  log,
-  $,
-  Context,
-  container,
-  delegate
-} from './_base'
+import { Diff } from './index'
 
-@delegate({
-  container,
-})
-export class DiffResolver extends Context {
+export class DiffResolver {
   constructor(public diff: Diff) {
-    super()
   }
 
   resolveDiffs(localDiff, remoteDiff) {

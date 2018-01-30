@@ -16,9 +16,23 @@ import { DiffMerger } from './diff-merger';
 import { NodesParser } from './nodes-parser';
 import { DiffDisplayer } from './diff-displayer';
 
-/**
- * Calculate and display Nodes difference
- */
+import {
+  container,
+  delegate
+} from './container'
+
+@delegate({
+  container,
+  map: {
+    flowsLoader: FlowsLoader,
+    diffPanel: DiffPanel,
+    diffResolver: DiffResolver,
+    diffGenerator: DiffGenerator,
+    diffMerger: DiffMerger,
+    nodesParser: NodesParser,
+    diffDisplayer: DiffDisplayer
+  }
+})
 
 export class Diff extends Context {
   public currentDiff: any = {};
@@ -26,13 +40,13 @@ export class Diff extends Context {
   public diffList: any
   public value: any
 
-  protected flowsLoader: FlowsLoader = new FlowsLoader(this)
-  protected diffPanel: DiffPanel = new DiffPanel(this)
-  protected diffResolver: DiffResolver = new DiffResolver(this)
-  protected diffGenerator: DiffGenerator = new DiffGenerator(this)
-  protected diffMerger: DiffMerger = new DiffMerger(this)
-  protected nodesParser: NodesParser = new NodesParser(this)
-  protected diffDisplayer: DiffDisplayer = new DiffDisplayer(this)
+  protected flowsLoader: FlowsLoader //= new FlowsLoader(this)
+  protected diffPanel: DiffPanel //= new DiffPanel(this)
+  protected diffResolver: DiffResolver //= new DiffResolver(this)
+  protected diffGenerator: DiffGenerator //= new DiffGenerator(this)
+  protected diffMerger: DiffMerger //= new DiffMerger(this)
+  protected nodesParser: NodesParser //= new NodesParser(this)
+  protected diffDisplayer: DiffDisplayer //= new DiffDisplayer(this)
 
   constructor() {
     super()
