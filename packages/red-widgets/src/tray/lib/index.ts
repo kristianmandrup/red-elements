@@ -21,18 +21,32 @@ import { TrayConfiguration } from './configuration';
 import { TrayResizer } from './resizer';
 import { TrayDisplayer } from './display';
 
+import {
+  delegates,
+  container
+} from './container'
+
+
 const { log } = console
 
+@delegates({
+  container,
+  map: {
+    configuration: TrayConfiguration,
+    resizer: TrayResizer,
+    display: TrayDisplayer
+  }
+})
 export class Tray extends Context {
   stack: any = []
   editorStack: any = $("#editor-stack")
   openingTray: boolean = false
 
-  resizer: TrayResizer = new TrayResizer(this)
-  display: TrayDisplayer = new TrayDisplayer(this)
+  resizer: TrayResizer // = new TrayResizer(this)
+  display: TrayDisplayer // = new TrayDisplayer(this)
 
-  protected configuration: TrayConfiguration = new TrayConfiguration(this)
-  
+  protected configuration: TrayConfiguration // = new TrayConfiguration(this)
+
   constructor() {
     super()
     this.configure()
