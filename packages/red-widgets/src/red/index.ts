@@ -21,7 +21,7 @@ import {
   Settings,
   History,
   Nodes,
-} from '@tecla5/red-runtime/src'
+} from '@tecla5/red-runtime'
 
 import {
   TextFormat,
@@ -53,12 +53,40 @@ import {
   RadialMenu
 } from '../'
 
+
+import {
+    IKeyboard,
+    Ihistory
+} from '@tecla5/red-runtime'
+
+
+
+import {
+  lazyInject,
+  $TYPES
+} from '../_container'
+
+const TYPES = $TYPES.runtime
+class Red 
+{
+  @lazyInject(TYPES.EVENTS) keyboard: IKeyboard
+  @lazyInject(TYPES.History) history: Ihistory
+  //@lazyInject(TYPES.view) history: Ihistory
+  // @lazyInject(TYPES.sidebar) history: Isidebar
+  // @lazyInject(TYPES.workspaces) history: Iworkspace
+  // @lazyInject(TYPES.search) history: Isearch
+  // @lazyInject(TYPES.editor) history: Ieditor
+  // @lazyInject(TYPES.diff) history: Idiff
+  // @lazyInject(TYPES.events) history: Ievents  
+}
+
 var RED: any = {};
 RED.text = {
   bidi: new Bidi(),
   format: new TextFormat()
 }
-RED.history = new History()
+
+//RED.history = new History()
 RED.nodes = new Nodes()
 
 // See legacy/main.js
@@ -66,7 +94,11 @@ RED.view = new Canvas()
 RED.user = new User()
 
 RED.library = new Library()
-RED.keyboard = new Keyboard()
+
+//const keyboard = new Keyboard()
+
+
+
 RED.palette = new Palette()
 if (RED.settings.theme('palette.editable') !== false) {
   RED.palette.editor = new PaletteEditor();
