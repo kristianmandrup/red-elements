@@ -81,9 +81,10 @@ export class Deploy extends Context {
   }
 
   // injected services via delegates container!
+  // TODO: use interfaces
   protected configuration: DeployConfiguration // = new DeployConfiguration(this)
-  protected flowsSaver // = new FlowsSaver(this)
-  protected deployer // = new Deployer(this)
+  protected flowsSaver: FlowsSaver
+  protected deployer: Deployer
 
   constructor(options: any = {}) {
     super()
