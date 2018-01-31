@@ -1,140 +1,6 @@
-export interface ContainerConfig {
-  name?: string
-  scope?: string
-  default?: boolean
-}
+import { EnvContainer } from "./env-container";
+import { BaseContainer } from "./base-container";
 
-/**
- *
- */
-export class BaseContainer {
-  protected _name: string
-  protected _scope: string
-
-  protected _map = new Map()
-
-  constructor(config: ContainerConfig = {}) {
-    this._name = config.name
-    this._scope = config.scope
-  }
-
-  /**
-   *
-   */
-  print() {
-    console.log({
-      name: this.name,
-      scope: this.scope,
-      keys: this.keys,
-      map: this._map
-    })
-  }
-
-  /**
-   *
-   * @param scope
-   */
-  setScope(scope: string): BaseContainer {
-    this._scope = scope
-    return this
-  }
-
-  mergeInto(container: BaseContainer) {
-    this._map.forEach((key, value) => {
-      container.set(key, value)
-    });
-    return this
-  }
-
-  /**
-   *
-   */
-  get keys() {
-    return Array.from(this._map.keys())
-  }
-
-  /**
-   *
-   */
-  get scope() {
-    return this._scope || 'dev'
-  }
-
-  /**
-   *
-   */
-  get name() {
-    return this._name || 'default'
-  }
-
-  /**
-   *
-   * @param key
-   * @param clazz
-   */
-  set(key: string, clazz) {
-    this._map.set(key, clazz)
-    return this
-  }
-
-  /**
-   *
-   * @param key
-   * @param clazz
-   */
-  delete(key: string, clazz) {
-    this._map.delete(key)
-    return this
-  }
-
-  /**
-   *
-   * @param key
-   */
-  get(key: string) {
-    return this._map.get(key)
-  }
-
-  /**
-   *
-   * @param id
-   */
-  find(id) {
-    const found = typeof id === 'string' ? this.get(id) : id
-    if (!found) {
-      console.error(`Container ${id} not found`, {
-        map: this._map
-      })
-      return this
-    }
-    return found
-  }
-
-  /**
-   *
-   */
-  clear() {
-    this._map = new Map()
-    return this
-  }
-}
-
-/**
- *
- */
-export class EnvContainer extends BaseContainer {
-  /**
-   *
-   * @param container
-   */
-  mergeInto(container: EnvContainer) {
-    return super.mergeInto(container)
-  }
-}
-
-/**
- *
- */
 export class ContainerMap extends BaseContainer {
   default: EnvContainer = null
   createMode: boolean = false
@@ -158,8 +24,8 @@ export class ContainerMap extends BaseContainer {
       console.error(errMsg, {
         containerName,
         containers: {
-          scoped: this.scopedContainer.keys,
-          default: this.default.keys
+          scoped: this.scopedContainer.scopeBindings,
+          default: this.default.scopeBindings
         }
       })
       throw new Error(errMsg)
@@ -179,7 +45,7 @@ export class ContainerMap extends BaseContainer {
    * @param scope
    */
   setScopedAsDefault(scope: string): BaseContainer {
-    super.setScope(scope)
+    this.setScope(scope)
     this.setDefault(this.scopedContainer)
     return this
   }

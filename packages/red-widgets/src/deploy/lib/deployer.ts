@@ -5,12 +5,12 @@ import {
 import {
   Context,
   log,
-  delegate,
+  delegateTarget,
   container,
   DeploymentsApi
 } from './_base'
 
-@delegate({
+@delegateTarget({
   container,
   // key: 'Deployer'
 })

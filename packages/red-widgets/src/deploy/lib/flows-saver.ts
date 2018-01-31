@@ -1,7 +1,7 @@
 import {
   Context,
   log,
-  delegate,
+  delegateTarget,
   container,
 } from './_base'
 
@@ -15,7 +15,7 @@ interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
-@delegate({
+@delegateTarget({
   container,
 })
 

@@ -7,7 +7,7 @@ function getClassName(containerItemId, map) {
   if (isObject(containerItemId)) {
     return containerItemId.constructor.name
   }
-  const errMsg = 'Invalid class name in @delegates map. Use a string or class reference'
+  const errMsg = 'Invalid class name in @delegator map. Use a string or class reference'
   console.error(errMsg, {
     id: containerItemId,
     map
@@ -27,6 +27,12 @@ export function delegator(config: any) {
     // will have access to the decorator arguments (filter)
     // because they are  stored in a closure
 
+    // console.log('resolving delegates in containers', {
+    //   target,
+    //   container,
+    //   scope: container.scope,
+    //   map
+    // })
 
     // save a reference to the original constructor
     var original: any = target;

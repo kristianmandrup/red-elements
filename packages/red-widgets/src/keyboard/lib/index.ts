@@ -80,11 +80,11 @@ import * as d3 from './d3'
 import { KeyboardConfiguration } from './configuration';
 
 import {
-  delegates,
+  delegator,
   container
 } from '../../deploy/lib/container'
 
-@delegates({
+@delegator({
   container,
   map: {
     configuration: KeyboardConfiguration
@@ -104,9 +104,9 @@ export class Keyboard extends Context {
     this.configure()
   }
 
-   /**
-   * Configure Keyboard
-   */
+  /**
+  * Configure Keyboard
+  */
   configure() {
     this.configuration.configure()
     return this

@@ -17,7 +17,7 @@ interface IConfiguration {
 const container: any = createContainer({
   dev: 'development', // first is implicit default
   test: 'testing',
-  prod: 'prouction'
+  prod: 'production'
 }) // .setMode('create')
 // containerMap.setDefault('development')
 
@@ -57,9 +57,9 @@ class Executer implements IExecuter {
   }
 }
 
-
 @delegator({
   container,
+  // implicit current scope (dev)
   map: {
     configuration: 'Configuration',
     executer: 'Executer',
@@ -95,7 +95,7 @@ test('delegates: use test scope', () => {
 
   const person = new MyPerson('mike')
 
-  // container.getScoped('test').print()
+  container.getScoped('test').print()
 
   // use from test scope
   expect(person.configuration.constructor).toBe(MyTestConfiguration)
@@ -103,3 +103,4 @@ test('delegates: use test scope', () => {
   // use default
   expect(person.executer.constructor).toBe(MyExecuter)
 })
+

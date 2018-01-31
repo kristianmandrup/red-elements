@@ -3,7 +3,7 @@ import { Context } from '../../context';
 import { UserSettingsDisplay } from './display';
 
 import {
-  delegates,
+  delegator,
   container
 } from './container'
 
@@ -22,7 +22,7 @@ export interface IViewSetting {
   options: IViewSettingOption[]
 }
 
-@delegates({
+@delegator({
   container,
 })
 export class UserSettingsConfiguration extends Context {

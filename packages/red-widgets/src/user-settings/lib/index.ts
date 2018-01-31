@@ -22,7 +22,7 @@ import {
 import { UserSettingsConfiguration } from './configuration';
 
 import {
-  delegates,
+  delegator,
   container
 } from './container'
 
@@ -31,7 +31,7 @@ const {
   log
 } = console
 
-@delegates({
+@delegator({
   container,
   map: {
     configuration: UserSettingsConfiguration,
