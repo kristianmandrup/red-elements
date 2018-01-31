@@ -6,6 +6,7 @@ import {
   Context,
   log,
   delegateTarget,
+  delegator,
   container,
   FlowsApi
 } from './_base'
@@ -13,7 +14,12 @@ import {
 @delegateTarget({
   container,
 })
-
+@delegator({
+  container,
+  map: {
+    flowsApi: FlowsApi,
+  }
+})
 export class FlowsPoster extends Context {
   protected flowsApi: FlowsApi
 
@@ -23,19 +29,25 @@ export class FlowsPoster extends Context {
 
   async postFlows(data, opts: any = {}) {
     const {
-    nns,
+      rebind,
+      nns,
       hasUnusedConfig
-  } = opts
-
-    this.flowsApi = new FlowsApi()
+    } = opts
 
     const {
-    flowsApi,
+      flowsApi,
       headers,
+    } = this
+
+    const {
       onFlowsPostSuccess,
       onFlowsPostError,
       onFlowsPostFinally
-  } = this
+    } = rebind([
+        'onFlowsPostSuccess',
+        'onFlowsPostError',
+        'onFlowsPostFinally'
+      ])
 
     flowsApi.configure({
       headers

@@ -2,6 +2,7 @@ import {
   Context,
   log,
   delegateTarget,
+  delegator,
   container,
 } from './_base'
 
@@ -18,7 +19,13 @@ interface IDialog extends JQuery<HTMLElement> {
 @delegateTarget({
   container,
 })
-
+@delegator({
+  container,
+  map: {
+    flowsPoster: FlowsPoster,
+    flowsSaver: FlowsSaver
+  }
+})
 export class FlowsSaver extends Context {
   protected flowsPoster: FlowsPoster
   protected flowsSaver: FlowsSaver
