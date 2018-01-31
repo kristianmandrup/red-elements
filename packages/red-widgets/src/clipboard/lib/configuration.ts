@@ -6,10 +6,23 @@ import {
 
 import { Clipboard } from '../'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import {
+  INodes
+} from '@tecla5/red-runtime'
+
+const TYPES = $TYPES.runtime
+
 @delegateTarget({
   container,
 })
 export class ClipboardConfiguration extends Context {
+  @lazyInject(TYPES.NODES) nodes: INodes
+
   disabled: boolean
 
   constructor(protected clipboard: Clipboard) {
