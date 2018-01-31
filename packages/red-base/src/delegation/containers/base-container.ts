@@ -85,6 +85,18 @@ export class BaseContainer {
 
   /**
    *
+   * @param map
+   */
+  setMap(map) {
+    Object.keys(map).map(key => {
+      const value = map[key]
+      this.set(key, value)
+    })
+    return this
+  }
+
+  /**
+   *
    * @param key
    * @param clazz
    */

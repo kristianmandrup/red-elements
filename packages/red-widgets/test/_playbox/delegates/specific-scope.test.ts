@@ -82,7 +82,13 @@ test('delegates: use test scope', () => {
   container
     .getScoped('test')
     .set('Configuration', MyTestConfiguration)
+    // can now also efficiently set multiple mappings like this:
+    .setMap({
+      Configuration: MyTestConfiguration,
+      IExecuter: MyExecuter
+    })
 
+  // switch to test scope
   container
     .setScope('test')
 
