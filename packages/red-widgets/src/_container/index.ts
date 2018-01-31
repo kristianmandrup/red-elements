@@ -56,6 +56,10 @@ const WIDGET_TYPES = {
   // .. TODO: more const to type name bindings, one for each class to be bound
 }
 
+function isClassy(clazz) {
+  return typeof clazz === 'function'
+}
+
 const $TYPES = {
   widgets: WIDGET_TYPES,
   runtime: RUNTIME_TYPES
@@ -63,17 +67,18 @@ const $TYPES = {
 
 // TODO: do all widget bindings to widget classes
 // naive, cumbersome appraoch
-widgetContainer.bind(WIDGET_TYPES.canvas).to(Canvas)
-widgetContainer.bind(WIDGET_TYPES.clipboard).to(Clipboard)
-widgetContainer.bind(WIDGET_TYPES.deploy).to(Deploy)
+// widgetContainer.bind(WIDGET_TYPES.canvas).to(Canvas)
+// widgetContainer.bind(WIDGET_TYPES.clipboard).to(Clipboard)
+// widgetContainer.bind(WIDGET_TYPES.deploy).to(Deploy)
 
 // we can also try to automatically build all bindings!!!
+// auto bind via conventions
 Object.keys(widgets).map(widgetName => {
   const widgetTypeName = widgetName.toLowerCase()
   const type = WIDGET_TYPES[widgetTypeName]
 
   const clazz = widgets[widgetName]
-  if (type) {
+  if (type && isClassy(clazz)) {
     widgetContainer.bind(type).to(clazz)
   }
 })
