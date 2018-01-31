@@ -10,7 +10,10 @@ import getDecorators from 'inversify-inject-decorators';
 const { lazyInject } = getDecorators(widgetContainer)
 
 import {
-  Deploy
+  Canvas,
+  Clipboard,
+  Deploy,
+  widgets
 } from '../'
 
 
@@ -59,7 +62,21 @@ const $TYPES = {
 }
 
 // TODO: do all widget bindings to widget classes
+// naive, cumbersome appraoch
+widgetContainer.bind(WIDGET_TYPES.canvas).to(Canvas)
+widgetContainer.bind(WIDGET_TYPES.clipboard).to(Clipboard)
 widgetContainer.bind(WIDGET_TYPES.deploy).to(Deploy)
+
+// we can also try to automatically build all bindings!!!
+Object.keys(widgets).map(widgetName => {
+  const widgetTypeName = widgetName.toLowerCase()
+  const type = WIDGET_TYPES[widgetTypeName]
+
+  const clazz = widgets[widgetName]
+  if (type) {
+    widgetContainer.bind(type).to(clazz)
+  }
+})
 
 // merge container with runtime container here?
 // see /docs on Service injection
