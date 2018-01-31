@@ -6,32 +6,44 @@ import {
 
 const widgetContainer = new Container()
 
+import getDecorators from 'inversify-inject-decorators';
+const { lazyInject } = getDecorators(widgetContainer)
+
 import {
   Deploy
 } from '../'
 
-const TYPES = {
-  DEPLOY: 'IDeploy',
+
+import {
+  runtimeContainer,
+  TYPES as RUNTIME_TYPES
+} from '@tecla5/red-runtime'
+
+const WIDGET_TYPES = {
+  deploy: 'IDeploy',
   // .. TODO: more const to type name bindings, one for each class to be bound
 }
 
-// TODO: do all widget bindings
-// TODO: do bindings to widget classes
-widgetContainer.bind(TYPES.DEPLOY).to(Deploy)
-// more bindings using same pattern
+const $TYPES = {
+  widgets: WIDGET_TYPES,
+  runtime: RUNTIME_TYPES
+}
 
-// TODO: perhaps merge container with runtime container here?
+// TODO: do all widget bindings to widget classes
+widgetContainer.bind(WIDGET_TYPES.deploy).to(Deploy)
+
+// merge container with runtime container here?
 // see /docs on Service injection
 // Container.merge(a: Container, b: Container)
 
-// import {
-//   container as runtimeContainer
-// } from '@tecla5/red-runtime'
-// const container = Container.merge(widgetContainer, runtimeContainer)
+const container = Container.merge(widgetContainer, runtimeContainer)
 
 // export both the app container (simply named container) from merge
 // and the widget only container named widgetContainer
 export {
-  // container,
+  lazyInject,
+  WIDGET_TYPES,
+  $TYPES,
+  container,
   widgetContainer
 }

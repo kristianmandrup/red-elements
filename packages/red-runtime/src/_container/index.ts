@@ -18,5 +18,6 @@ runtimeContainer.bind(TYPES.NODES).to(Nodes)
 // more bindings using same pattern
 
 export {
-  runtimeContainer
+  runtimeContainer,
+  TYPES
 }

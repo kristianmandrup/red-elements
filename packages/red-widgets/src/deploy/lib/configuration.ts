@@ -9,6 +9,15 @@ import {
   container
 } from './_base'
 
+import {
+  lazyInject,
+  TYPES
+} from '../../_container'
+
+import {
+  INodes
+} from '@tecla5/red-runtime'
+
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
@@ -16,8 +25,9 @@ interface IDialog extends JQuery<HTMLElement> {
 @delegateTarget({
   container,
 })
-
 export class DeployConfiguration extends Context {
+  @lazyInject(TYPES.NODES) nodes: INodes
+
   constructor(public deploy: Deploy) {
     super()
   }

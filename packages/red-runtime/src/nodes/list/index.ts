@@ -295,9 +295,14 @@ export interface INodes {
   dirty(d: boolean): INodes | boolean
 }
 
+import {
+  injectable
+} from 'inversify'
+
 /**
  * A set of Nodes that form a subflow or similar grouping
  */
+@injectable()
 export class Nodes extends Context implements INodes {
   public registry = new NodesRegistry()
   public configNodes = {

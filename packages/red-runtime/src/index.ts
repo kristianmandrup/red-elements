@@ -7,6 +7,12 @@ export {
 } from './history'
 
 export {
+  runtimeContainer,
+  TYPES
+} from './_container'
+
+
+export {
   INode,
   IEvents
 } from './interfaces'

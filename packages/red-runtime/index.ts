@@ -1,4 +1,7 @@
 export {
+  runtimeContainer,
+  TYPES,
+
   JQueryAjaxAdapter,
   IBaseAdapter,
   BaseAdapter,
