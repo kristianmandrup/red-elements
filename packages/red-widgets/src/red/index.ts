@@ -46,7 +46,7 @@ import {
   Utils,
   Workspaces,
   Sidebar,
-  SidebarTabConfig,
+  SidebarTab,
   SidebarTabInfo,
   Palette,
   PaletteEditor,
@@ -113,7 +113,7 @@ RED.workspaces = new Workspaces()
 RED.sidebar = new Sidebar()
 
 // // NOTE: created within sidebar constructor
-RED.sidebar.config = new SidebarTabConfig()
+RED.sidebar.config = new SidebarTab(RED.sidebar)
 RED.sidebar.info = new SidebarTabInfo()
 
 RED.palette = new Palette()

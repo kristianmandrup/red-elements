@@ -19,6 +19,8 @@ import {
   TYPES as RUNTIME_TYPES
 } from '@tecla5/red-runtime'
 
+// TODO: cleanup later.
+// We likely don't need all these types defined/usd with inversify
 const WIDGET_TYPES = {
   canvas: 'ICanvas',
   clipboard: 'IClipboard',
@@ -26,6 +28,12 @@ const WIDGET_TYPES = {
     checkboxSet: 'ICheckboxSet',
     editableList: 'IEditableList',
     menu: 'IMenu',
+    panel: 'IPanel',
+    popover: 'IPopover',
+    searchbox: 'ISearchbox',
+    stack: 'IStack',
+    tabs: 'ITabs',
+    typedInput: 'ITypedInput',
     // ...
   },
   deploy: 'IDeploy',
