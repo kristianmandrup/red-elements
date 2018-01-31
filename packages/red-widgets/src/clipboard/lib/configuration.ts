@@ -21,7 +21,16 @@ const TYPES = $TYPES.runtime
   container,
 })
 export class ClipboardConfiguration extends Context {
-  @lazyInject(TYPES.NODES) nodes: INodes
+  // TODO: injections
+  // menu
+  // actions
+  // events
+
+  // you need to define these types in red-runtime, src/_container just like for NODES,
+  // then export up the hierarchy (see index.ts files)
+  // @lazyInject(TYPES.MENU) menu: IMenu
+  // @lazyInject(TYPES.ACTIONS) actions: IActions
+  // @lazyInject(TYPES.EVENTS) events: IEvents
 
   disabled: boolean
 
