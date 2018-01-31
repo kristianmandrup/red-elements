@@ -17,7 +17,10 @@ import {
   Context,
   $,
   log,
-  d3
+  d3,
+  delegator,
+  container,
+  delegateTo
 } from './_base'
 
 import { CanvasConfiguration } from './configuration';
@@ -283,10 +286,11 @@ export interface ICanvas {
   getLinksAtPoint(x, y)
 }
 
-import {
-  delegator,
-  container
-} from './container'
+// import {
+//   delegator,
+//   container
+// } from './container'
+
 
 @delegator({
   container,
@@ -310,6 +314,9 @@ import {
     buttonManager: CanvasButtonManager
   }
 })
+
+
+
 export class Canvas extends Context {
   PORT_TYPE_INPUT = 1;
   PORT_TYPE_OUTPUT = 0;
@@ -408,23 +415,27 @@ export class Canvas extends Context {
   /**
    * Configure Canvas
    */
+  @delegateTo('configuration')
   configure() {
-    this.configuration.configure()
+    //this.configuration.configure()
   }
+
 
   /**
    * show Drag Lines
    * @param nodes
    */
+  @delegateTo('dragLineManager')
   showDragLines(nodes) {
-    this.dragLineManager.showDragLines(nodes)
+    //this.dragLineManager.showDragLines(nodes)
   }
 
   /**
    * hide Drag Lines
    */
+  @delegateTo('dragLineManager')
   hideDragLines() {
-    this.dragLineManager.hideDragLines()
+    //this.dragLineManager.hideDragLines()
   }
 
   /**
@@ -433,8 +444,9 @@ export class Canvas extends Context {
    * @param lasso
    * @param canvasMouseUp
    */
+  @delegateTo('touchEventHandler')
   handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp) {
-    return this.touchEventHandler.handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp)
+    //return this.touchEventHandler.handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp)
   }
 
   /**
@@ -457,14 +469,16 @@ export class Canvas extends Context {
       touchLongPressTimeout)
   }
 
+
   /**
    * portMouseDown
    * @param d
    * @param portType
    * @param portIndex
    */
+  @delegateTo('canvasPostMouse')
   portMouseDown(d, portType, portIndex) {
-    return this.canvasPostMouse.portMouseDown(d, portType, portIndex)
+    //return this.canvasPostMouse.portMouseDown(d, portType, portIndex)
   }
 
   /**
@@ -473,29 +487,34 @@ export class Canvas extends Context {
    * @param portType
    * @param portIndex
    */
+  @delegateTo('canvasPostMouse')
   portMouseUp(d, portType, portIndex) {
-    return this.canvasPostMouse.portMouseUp(d, portType, portIndex)
+    //return this.canvasPostMouse.portMouseUp(d, portType, portIndex)
   }
+
 
   /**
    * select All
    */
+  @delegateTo('selectionManager')
   selectAll() {
-    return this.selectionManager.selectAll()
+    //return this.selectionManager.selectAll()
   }
 
   /**
    * clear Selection
    */
+  @delegateTo('selectionManager')
   clearSelection() {
-    return this.selectionManager.clearSelection()
+    //return this.selectionManager.clearSelection()
   }
 
   /**
  * update Selection
  */
+  @delegateTo('selectionManager')
   updateSelection() {
-    return this.selectionManager.updateSelection()
+    //return this.selectionManager.updateSelection()
   }
 
   /**
@@ -506,54 +525,63 @@ export class Canvas extends Context {
     clearTimeout(timer)
   }
 
+
   /**
    * zoom In
    */
+  @delegateTo('zoomer')
   zoomIn() {
-    this.zoomer.zoomIn()
+    //this.zoomer.zoomIn()
   }
 
   /**
    * zoom Out
    */
+  @delegateTo('zoomer')
   zoomOut() {
-    this.zoomer.zoomOut()
+    //this.zoomer.zoomOut()
   }
 
   /**
    * zoom Zero
    */
+  @delegateTo('zoomer')
   zoomZero() {
-    this.zoomer.zoomZero()
+    //this.zoomer.zoomZero()
   }
+
 
   /**
    * canvas Mouse Move
    */
+  @delegateTo('canvasMouse')
   canvasMouseMove() {
-    this.canvasMouse.canvasMouseMove()
+    //this.canvasMouse.canvasMouseMove()
   }
 
   /**
    * canvas Mouse Down
    */
+  @delegateTo('canvasMouse')
   canvasMouseDown() {
-    this.canvasMouse.canvasMouseDown()
+    //this.canvasMouse.canvasMouseDown()
   }
 
   /**
    * canvas Mouse Up
    */
+  @delegateTo('canvasMouse')
   canvasMouseUp() {
-    this.canvasMouse.canvasMouseUp()
+    //this.canvasMouse.canvasMouseUp()
   }
 
   /**
    * handle D3 Mouse Down Event
    * @param evt
    */
+  @delegateTo('canvasMouse')
   handleD3MouseDownEvent(evt) {
-    this.canvasMouse.handleD3MouseDownEvent(evt)
+    //this.canvasMouse.handleD3MouseDownEvent(evt)
   }
 
   /**
@@ -586,46 +614,54 @@ export class Canvas extends Context {
   /**
    * reset Mouse Variables
    */
+  @delegateTo('canvasMouse')
   resetMouseVars() {
-    return this.canvasMouse.resetMouseVars()
+    //return this.canvasMouse.resetMouseVars()
   }
 
   /**
  * node Mouse Up handler
  * @param d
  */
+  @delegateTo('nodeMouse')
   nodeMouseUp(d) {
-    this.nodeMouse.nodeMouseUp(d)
+    //this.nodeMouse.nodeMouseUp(d)
   }
 
   /**
    * node Mouse Down handler
    * @param d
    */
+  @delegateTo('nodeMouse')
   nodeMouseDown(d) {
-    this.nodeMouse.nodeMouseDown(d)
+    //this.nodeMouse.nodeMouseDown(d)
   }
 
   // CanvasGridManager
   /**
    * update canvas Grid
    */
+  @delegateTo('gridManager')
   updateGrid() {
-    this.gridManager.updateGrid()
+    //this.gridManager.updateGrid()
   }
+
 
   /**
    * end Keyboard Move
    */
+  @delegateTo('keyboard')
   endKeyboardMove() {
-    return this.keyboard.endKeyboardMove()
+    //return this.keyboard.endKeyboardMove()
   }
+
 
   /**
    * update Active Nodes
    */
+  @delegateTo('nodeManager')
   updateActiveNodes() {
-    this.nodeManager.updateActiveNodes()
+    //this.nodeManager.updateActiveNodes()
   }
 
   /**
@@ -634,8 +670,9 @@ export class Canvas extends Context {
    * @param x
    * @param y
    */
+  @delegateTo('nodeManager')
   addNode(type: any, x: any, y: any) {
-    this.nodeManager.addNode(type, x, y)
+    //this.nodeManager.addNode(type, x, y)
   }
 
   /**
@@ -643,29 +680,33 @@ export class Canvas extends Context {
    * @param dx
    * @param dy
    */
+  @delegateTo('selectionManager')
   moveSelection(dx, dy) {
-    return this.selectionManager.moveSelection(dx, dy)
+    //return this.selectionManager.moveSelection(dx, dy)
   }
 
   /**
    * copy Selection
    */
+  @delegateTo('selectionManager')
   copySelection() {
-    return this.selectionManager.copySelection()
+    //return this.selectionManager.copySelection()
   }
 
   /**
    * edit Selection
    */
+  @delegateTo('selectionManager')
   editSelection() {
-    return this.selectionManager.editSelection()
+    //return this.selectionManager.editSelection()
   }
 
   /**
    * delete Selection
    */
+  @delegateTo('selectionManager')
   deleteSelection() {
-    return this.selectionManager.deleteSelection()
+    //return this.selectionManager.deleteSelection()
   }
 
   /**
@@ -674,16 +715,18 @@ export class Canvas extends Context {
    * @param className
    * @param offset
    */
+  @delegateTo('calculator')
   calculateTextWidth(str, className, offset) {
-    return this.calculator.calculateTextWidth(str, className, offset)
+    //return this.calculator.calculateTextWidth(str, className, offset)
   }
 
   /**
    * get element position of node
    * @param node
    */
+  @delegateTo('nodeManager')
   getNodeElementPosition(node) {
-    return this.nodeManager.getNodeElementPosition(node)
+    //return this.nodeManager.getNodeElementPosition(node)
   }
 
   /**
@@ -740,12 +783,14 @@ export class Canvas extends Context {
     this.canvasPostMouse.portMouseOver(port, d, portType, portIndex)
   }
 
+
   /**
    * disable Quick Join Event Handler
    * @param evt
    */
+  @delegateTo('eventManager')
   disableQuickJoinEventHandler(evt) {
-    return this.eventManager.disableQuickJoinEventHandler(evt)
+    //return this.eventManager.disableQuickJoinEventHandler(evt)
   }
 
   /**
@@ -753,9 +798,11 @@ export class Canvas extends Context {
    * @param event
    * @param workspaceScrollPositions
    */
+  @delegateTo('eventManager')
   handleWorkSpaceChangeEvent(event, workspaceScrollPositions) {
-    this.eventManager.handleWorkSpaceChangeEvent(event, workspaceScrollPositions)
+    //this.eventManager.handleWorkSpaceChangeEvent(event, workspaceScrollPositions)
   }
+
 
   /**
    * check if Button is Enabled
@@ -769,8 +816,9 @@ export class Canvas extends Context {
    * Node button click handler
    * @param d
    */
+  @delegateTo('buttonManager')
   nodeButtonClicked(d) {
-    return this.buttonManager.nodeButtonClicked(d)
+    //return this.buttonManager.nodeButtonClicked(d)
   }
 
   /**
@@ -778,8 +826,9 @@ export class Canvas extends Context {
    * @param obj
    * @param pos
    */
+  @delegateTo('touchMenuManager')
   showTouchMenu(obj, pos) {
-    this.touchMenuManager.showTouchMenu(obj, pos)
+    //this.touchMenuManager.showTouchMenu(obj, pos)
   }
 
   /**
@@ -816,8 +865,9 @@ export class Canvas extends Context {
    *  - all 'selected'
    *  - attached to mouse for placing - 'IMPORT_DRAGGING'
    */
+  @delegateTo('nodesImporter')
   importNodes(newNodesStr, addNewFlow?, touchImport?) {
-    return this.nodesImporter.importNodes(newNodesStr, addNewFlow, touchImport)
+    //return this.nodesImporter.importNodes(newNodesStr, addNewFlow, touchImport)
   }
 
   /**
@@ -850,16 +900,18 @@ export class Canvas extends Context {
   /**
    * make a selection
    */
+  @delegateTo('selectionManager')
   selection() {
-    return this.selectionManager.selection()
+    //return this.selectionManager.selection()
   }
 
   /**
    * Select a selection
    * @param selection
    */
+  @delegateTo('selectionManager')
   select(selection) {
-    return this.selectionManager.select(selection)
+    //return this.selectionManager.select(selection)
   }
 
   /**
