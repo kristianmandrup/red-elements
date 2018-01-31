@@ -27,7 +27,6 @@ class MyExecuter implements IExecuter {
   }
 }
 
-
 @delegateTarget({
   container,
   bind: {
@@ -41,13 +40,18 @@ class BoundExecuter implements IExecuter {
   }
 }
 
-
 @delegator({
   container,
-  scope: 'test',
-  map: {
-    // should lookup the test entry made by BoundExecuter, ie. test: 'IExecuter'
-    executer: 'IExecuter'
+  scopedMap: {
+    default: {
+      executer: 'Executer',
+      // will be used as fallback for any scope where not defined
+      // configuration: 'IConfiguration'
+    },
+    test: {
+      // should lookup the test entry made by BoundExecuter, ie. test: 'IExecuter'
+      executer: 'IExecuter'
+    }
   }
 })
 class MyPerson {
@@ -62,6 +66,8 @@ class MyPerson {
 test('delegates: use bound/mapped test scope to IExecuter', () => {
   container
     .setScope('test')
+
+  // container.print()
 
   const person = new MyPerson('mike')
 

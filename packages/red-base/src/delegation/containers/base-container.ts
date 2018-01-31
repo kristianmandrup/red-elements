@@ -21,8 +21,9 @@ export class BaseContainer {
   /**
    *
    */
-  print() {
-    console.log({
+  print(msg?) {
+    msg = msg || this.constructor.name
+    console.log(msg, {
       name: this.name,
       scope: this.scope,
       keys: this.keys,

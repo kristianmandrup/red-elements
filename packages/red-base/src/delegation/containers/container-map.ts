@@ -17,14 +17,16 @@ export class ContainerMap extends BaseContainer {
    *
    * @param containerName
    */
-  resolve(containerName) {
-    const resolved = this.scopedContainer.get(containerName) || this.default.get(containerName)
+  resolve(containerName, scope?) {
+    const scopedContainer = scope ? this.getScoped(scope) : this.scopedContainer
+
+    const resolved = scopedContainer.get(containerName) || this.default.get(containerName)
     if (!resolved) {
       const errMsg = `Unable to resolve ${containerName} in either scoped (${this.scope}) or default container`
       console.error(errMsg, {
         containerName,
         containers: {
-          scoped: this.scopedContainer.scopeBindings,
+          scoped: scopedContainer.scopeBindings,
           default: this.default.scopeBindings
         }
       })

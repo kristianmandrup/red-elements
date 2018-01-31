@@ -15,24 +15,32 @@ function getClassName(containerItemId, map) {
   throw new Error(errMsg)
 }
 
+function createScopedMap(map = {}, container) {
+  const { scope } = container
+  console.log('createScopedMap', {
+    scope,
+    map
+  })
+  return {
+    [scope]: map
+  }
+}
 
 export function delegator(config: any) {
   const {
     container,
-    map
+    map,
+    scopedMap
   } = config
 
+  const $scopedMap = scopedMap || createScopedMap(map, container)
+  const $defaultMap = $scopedMap['default']
+
   return (target: Object) => {
+
     // implement class decorator here, the class decorator
     // will have access to the decorator arguments (filter)
     // because they are  stored in a closure
-
-    // console.log('resolving delegates in containers', {
-    //   target,
-    //   container,
-    //   scope: container.scope,
-    //   map
-    // })
 
     // save a reference to the original constructor
     var original: any = target;
@@ -50,9 +58,26 @@ export function delegator(config: any) {
     var f: any = function (...args) {
       const constructed = construct(original, args);
 
-      Object.keys(map).map(key => {
-        const containerItemId = map[key]
-        const clazzName = getClassName(containerItemId, map)
+      const $map = $scopedMap[container.scope] || $defaultMap
+
+      // console.log('resolve delegator', {
+      //   scopedContainer: container.scopedContainer,
+      //   scope: container.scope,
+      //   $scopedMap,
+      //   $defaultMap,
+      //   $map
+      // })
+
+      Object.keys($map).map(key => {
+        const containerItemId = $map[key] || $defaultMap[key]
+        const clazzName = getClassName(containerItemId, $map)
+
+        // console.log({
+        //   key,
+        //   containerItemId,
+        //   clazzName
+        // })
+
         const clazz = container.resolve(clazzName)
         constructed[key] = new clazz(constructed)
       })
