@@ -20,7 +20,28 @@ import {
 } from '@tecla5/red-runtime'
 
 const WIDGET_TYPES = {
+  canvas: 'ICanvas',
+  clipboard: 'IClipboard',
+  common: {
+    checkboxSet: 'ICheckboxSet',
+    editableList: 'IEditableList',
+    menu: 'IMenu',
+    // ...
+  },
   deploy: 'IDeploy',
+  keyboard: 'IKeyboard',
+  library: 'ILibrary',
+  main: 'IMain',
+  nodeDiff: 'INodeDiff',
+  nodeEditor: 'INodeEditor',
+  notifications: 'INotifications',
+  palette: 'IPalette',
+  paletteEditor: 'IPaletteEditor',
+  search: 'ISearch',
+  tray: 'ITray',
+  user: 'IUser',
+  userSettings: 'IUserSettings',
+  workspaces: 'IWorkspaces',
   // .. TODO: more const to type name bindings, one for each class to be bound
 }
 

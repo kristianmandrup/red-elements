@@ -28,7 +28,7 @@ interface IDialog extends JQuery<HTMLElement> {
   container,
 })
 export class DeployConfiguration extends Context {
-  @lazyInject(TYPES.NODES) nodes: INodes
+  @lazyInject(TYPES.nodes) nodes: INodes
 
   constructor(public deploy: Deploy) {
     super()
@@ -37,18 +37,20 @@ export class DeployConfiguration extends Context {
   configure(options: any = {}) {
     // the reference to injected Nodes service instance (singleton)
     const {
-      nodes
+      nodes,
+      rebind,
+      deploy
     } = this
 
     const {
       changeDeploymentType,
       save,
       resolveConflict
-  } = this.rebind([
+  } = rebind([
         'changeDeploymentType',
         'save',
         'resolveConflict'
-      ])
+      ], deploy)
 
     let {
       type,
