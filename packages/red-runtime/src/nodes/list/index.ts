@@ -58,6 +58,7 @@ export interface INodes {
   initialLoad: any
   loadedFlowVersion: string
   defaultWorkspace: any // IWorkspace
+  version: number
 
   setNodeList(list: INode[])
   getNodeSet(id: string)
@@ -82,7 +83,7 @@ export interface INodes {
    * Create a complete node set for export
    * @param exportCredentials { boolean } whether credentials should also be exported
    */
-  createCompleteNodeSet(exportCredentials: boolean)
+  createCompleteNodeSet(exportCredentials?: boolean)
 
   /**
    * Import nodes from a string (JSON serialization) reprepresentation
@@ -308,6 +309,8 @@ export class Nodes extends Context implements INodes {
   public configNodes = {
     users: {}
   }
+  // or number?
+  protected _version: number = 0
   protected _dirty: boolean = false
   public nodes: INode[] = []
   public links: ILink[] = []
@@ -423,6 +426,10 @@ export class Nodes extends Context implements INodes {
       }
     });
     RED.view.redraw(true);
+  }
+
+  get version() {
+    return this._version
   }
 
   // delegate to registry

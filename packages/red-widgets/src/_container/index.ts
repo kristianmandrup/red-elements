@@ -38,12 +38,19 @@ widgetContainer.bind(WIDGET_TYPES.deploy).to(Deploy)
 
 const container = Container.merge(widgetContainer, runtimeContainer)
 
+// might be easier to use
+const containers = {
+  widget: widgetContainer,
+  runtime: runtimeContainer
+}
+
 // export both the app container (simply named container) from merge
 // and the widget only container named widgetContainer
 export {
   lazyInject,
   WIDGET_TYPES,
   $TYPES,
+  containers,
   container,
   widgetContainer
 }

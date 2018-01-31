@@ -11,12 +11,14 @@ import {
 
 import {
   lazyInject,
-  TYPES
+  $TYPES
 } from '../../_container'
 
 import {
   INodes
 } from '@tecla5/red-runtime'
+
+const TYPES = $TYPES.runtime
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
@@ -33,8 +35,13 @@ export class DeployConfiguration extends Context {
   }
 
   configure(options: any = {}) {
+    // the reference to injected Nodes service instance (singleton)
     const {
-    changeDeploymentType,
+      nodes
+    } = this
+
+    const {
+      changeDeploymentType,
       save,
       resolveConflict
   } = this.rebind([
@@ -160,7 +167,7 @@ export class DeployConfiguration extends Context {
     var activeNotifyMessage;
     RED.comms.subscribe("notification/runtime-deploy", function (topic, msg) {
       if (!activeNotifyMessage) {
-        var currentRev = RED.nodes.version();
+        var currentRev = nodes.version
         if (currentRev === null || deployInflight || currentRev === msg.revision) {
           return;
         }
@@ -177,7 +184,7 @@ export class DeployConfiguration extends Context {
         $(message.find('button')[1]).click(function (evt) {
           evt.preventDefault();
           activeNotifyMessage.close();
-          var nns = RED.nodes.createCompleteNodeSet();
+          var nns = nodes.createCompleteNodeSet();
           resolveConflict(nns, false);
           activeNotifyMessage = null;
         })
