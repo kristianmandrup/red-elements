@@ -69,5 +69,9 @@ export {
 
   IFlowUtils,
   FlowUtils,
+
+  IUtil,
+  Util
+
 } from './src'
 

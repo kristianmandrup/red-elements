@@ -45,7 +45,11 @@ import {
 } from '../container'
 
 export interface IPalette {
+  configure()
 
+  marked(content)
+
+  filterChange(val)
 }
 
 @delegator({
@@ -80,16 +84,27 @@ export class Palette extends Context {
     this.configure()
   }
 
+  /**
+   * Configure
+   */
   @delegateTo('configuration')
   configure() {
     // this.configuration.configure()
   }
 
-  marked(content) {
+  /**
+   * translate Markdown content
+   * @param content
+   */
+  marked(content: string) {
     return marked(content)
   }
 
-  filterChange(val) {
+  /**
+   * filter Change
+   * @param val
+   */
+  filterChange(val: string) {
     const {
       categoryContainers
     } = this

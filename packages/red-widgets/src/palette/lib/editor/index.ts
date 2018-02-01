@@ -35,7 +35,60 @@ import {
 } from './_base'
 
 export interface IPaletteEditor {
+  configure()
 
+  /**
+   * semantic Version Compare
+   * @param A
+   * @param B
+   */
+  semVerCompare(A, B)
+
+  /**
+   * change Node State
+   */
+  changeNodeState(id, state, shade, callback): Promise<any>
+
+  /**
+   * get ContrastingBorder
+   * @param rgbColor
+   *
+   */
+  getContrastingBorder(rgbColor)
+
+  /**
+   * filter Change
+   * @param val
+   */
+  filterChange(val)
+
+  /**
+   * handle Catalog Response
+   * @param err
+   * @param catalog
+   * @param index
+   * @param v
+   */
+  handleCatalogResponse(err, catalog, index, v)
+
+  /**
+   * refresh filtered Items
+   */
+  refreshFilteredItems()
+
+  /**
+   * sort modules A-Z
+   * @param A
+   * @param B
+   */
+  sortModulesAZ(A, B)
+
+  /**
+   * sort modules recent
+   * @param A
+   * @param B
+   */
+  sortModulesRecent(A, B)
 }
 
 

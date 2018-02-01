@@ -60,13 +60,13 @@ export interface IUserSetting {
   show(name: string)
 }
 
-export interface IView{
+export interface IView {
   focus()
 }
 
 export interface I18n {
   t(key: string): string,
-  init : Function
+  init: Function
 }
 
 export interface I18nWidget extends JQElem {

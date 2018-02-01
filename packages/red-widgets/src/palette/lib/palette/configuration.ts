@@ -25,7 +25,7 @@ const TYPES = $TYPES.all
   container
 })
 
-export class PaletteEditorConfiguration extends Context {
+export class PaletteConfiguration extends Context {
 
   @lazyInject(TYPES.userSettings) userSettings: IUserSetting;
   @lazyInject(TYPES.actions) actions: IActions

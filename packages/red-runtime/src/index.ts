@@ -7,6 +7,11 @@ import {
 } from './history'
 
 export {
+  IUtil,
+  Util
+} from './util'
+
+export {
   runtimeContainer,
   TYPES
 } from './_container'
