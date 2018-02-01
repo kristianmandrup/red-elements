@@ -25,7 +25,9 @@ import {
   container
 } from './_base'
 
-const { log } = console
+export interface ITray {
+
+}
 
 @delegator({
   container,

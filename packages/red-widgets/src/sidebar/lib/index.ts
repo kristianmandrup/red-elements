@@ -1,5 +1,7 @@
 import {
   Sidebar,
+  ISidebar,
+
   SidebarTab,
   SidebarTabInfo,
   TabInfoTips
@@ -17,6 +19,8 @@ export default lib
 
 export {
   Sidebar,
+  ISidebar,
+
   SidebarTab,
   SidebarTabInfo,
   TabInfoTips

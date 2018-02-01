@@ -1,5 +1,7 @@
 import {
   Search,
+  ISearch,
+
   TypeSearch
 }
   from './lib'
@@ -13,5 +15,7 @@ export default search
 
 export {
   Search,
+  ISearch,
+
   TypeSearch
 }

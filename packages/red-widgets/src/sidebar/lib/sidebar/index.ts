@@ -44,15 +44,16 @@ export {
 
 // import 'jquery-ui-dist/jquery-ui'
 
-const log = console.log
-
 import {
   Actions
 } from '../../..'
 
 import { SidebarConfiguration } from './configuration';
 
-// Note: Ensure Jquery UI has been initialized so .draggable widget is available
+export interface ISidebar {
+
+}
+
 @delegator({
   container,
   map: {

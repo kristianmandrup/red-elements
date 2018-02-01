@@ -12,10 +12,6 @@ export {
 } from '../actions'
 
 export {
-  IKeyboard
-} from '../keyboard'
-
-export {
   ICanvas
 } from '../canvas'
 
@@ -24,8 +20,33 @@ export {
 } from '../clipboard'
 
 export {
+  IDeploy
+} from '../deploy'
+
+export {
+  IKeyboard
+} from '../keyboard'
+
+export {
   INodeDiff
 } from '../node-diff'
+
+export {
+  INodeEditor
+} from '../node-editor'
+
+export {
+  INotifications
+} from '../notifications'
+
+export {
+  IPalette,
+  IPaletteEditor,
+} from '../palette'
+
+export {
+  ITray
+} from '../tray'
 
 export interface I18n {
   t(key: string): string

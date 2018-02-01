@@ -1,7 +1,9 @@
 import {
   Palette,
-  PaletteEditor
+  PaletteEditor,
 
+  IPalette,
+  IPaletteEditor
 } from './lib'
 
 export const palette = {
@@ -14,5 +16,8 @@ export default palette
 
 export {
   Palette,
-  PaletteEditor
+  PaletteEditor,
+
+  IPalette,
+  IPaletteEditor
 }

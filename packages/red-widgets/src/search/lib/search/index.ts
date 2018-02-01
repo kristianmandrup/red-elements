@@ -33,6 +33,10 @@ import {
   delegator
 } from './_base'
 
+export interface ISearch {
+
+}
+
 @delegator({
   container,
   map: {

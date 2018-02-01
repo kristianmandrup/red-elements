@@ -1,5 +1,6 @@
 import {
   Deploy,
+  IDeploy
 } from './lib'
 
 export const deploy = {
@@ -9,5 +10,6 @@ export const deploy = {
 export default deploy
 
 export {
-  Deploy
+  Deploy,
+  IDeploy
 }

@@ -1,5 +1,6 @@
 import {
   Notifications,
+  INotifications
 } from './lib'
 
 export const notifications = {
@@ -9,5 +10,6 @@ export const notifications = {
 export default notifications
 
 export {
-  Notifications
+  Notifications,
+  INotifications
 }

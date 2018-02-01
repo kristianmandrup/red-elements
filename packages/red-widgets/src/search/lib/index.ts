@@ -1,5 +1,6 @@
 export {
-  Search
+  Search,
+  ISearch
 } from './search'
 
 export {

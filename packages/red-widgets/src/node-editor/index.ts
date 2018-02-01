@@ -1,5 +1,6 @@
 import {
-  NodeEditor
+  NodeEditor,
+  INodeEditor
 }
   from './lib'
 
@@ -10,5 +11,6 @@ export const editor = {
 export default editor
 
 export {
-  NodeEditor
+  NodeEditor,
+  INodeEditor
 }

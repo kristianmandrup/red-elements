@@ -2,7 +2,9 @@ import {
   Sidebar,
   SidebarTab,
   SidebarTabInfo,
-  TabInfoTips
+  TabInfoTips,
+
+  ISidebar
 } from './lib'
 
 export const sidebar = {
@@ -18,5 +20,7 @@ export {
   Sidebar,
   SidebarTab,
   SidebarTabInfo,
-  TabInfoTips
+  TabInfoTips,
+
+  ISidebar
 }

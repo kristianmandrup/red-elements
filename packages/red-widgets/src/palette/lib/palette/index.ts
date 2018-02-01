@@ -44,6 +44,10 @@ import {
   delegateTo
 } from '../container'
 
+export interface IPalette {
+
+}
+
 @delegator({
   container,
   map: {

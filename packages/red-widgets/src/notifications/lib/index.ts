@@ -18,6 +18,19 @@ import {
   $
 } from '../../context'
 
+export interface INotifications {
+  /**
+   * Notify with message
+   * @param msg
+   * @param type
+   * @param fixed
+   * @param timeout
+   */
+  notify(msg, type: string, fixed, timeout: number)
+  update?()
+  close?()
+}
+
 
 export class Notifications extends Context {
   public currentNotifications = [];
@@ -27,7 +40,14 @@ export class Notifications extends Context {
     super()
   }
 
-  notify(msg, type, fixed, timeout) {
+  /**
+   * Notify with message
+   * @param msg
+   * @param type
+   * @param fixed
+   * @param timeout
+   */
+  notify(msg, type: string, fixed, timeout: number) {
     const {
       c
     } = this

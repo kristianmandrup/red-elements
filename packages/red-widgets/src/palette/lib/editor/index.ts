@@ -34,6 +34,11 @@ import {
   delegateTo
 } from './_base'
 
+export interface IPaletteEditor {
+
+}
+
+
 @delegator({
   container,
   map: {

@@ -1,7 +1,7 @@
 import {
-  Tray
-}
-  from './lib'
+  Tray,
+  ITray
+} from './lib'
 
 export const tray = {
   Tray
@@ -10,5 +10,6 @@ export const tray = {
 export default tray
 
 export {
-  Tray
+  Tray,
+  ITray
 }
