@@ -12,8 +12,11 @@ export {
 } from '../context'
 
 export {
+  IMenu,
   IPanel,
-  IMenu
+  IPopover,
+  IStack,
+  ITabs
 } from './lib'
 
 export const common = {

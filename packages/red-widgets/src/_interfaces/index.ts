@@ -89,5 +89,8 @@ export interface IDialogElem extends JQElem {
 
 export {
   IMenu,
-  IPanel
+  IPanel,
+  IPopover,
+  IStack,
+  ITabs
 } from '../common'

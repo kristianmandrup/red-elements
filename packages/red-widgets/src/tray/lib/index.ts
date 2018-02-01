@@ -26,7 +26,17 @@ import {
 } from './_base'
 
 export interface ITray {
+  /**
+   * Configure Tray
+   */
 
+  configure()
+
+  show(options)
+
+  handleWindowResize()
+
+  close(): Promise<any>
 }
 
 @delegator({
@@ -61,7 +71,7 @@ export class Tray extends Context {
     // return this
   }
 
-  @delegateTo('diaplay')
+  @delegateTo('display')
   show(options) {
     // this.display.show(options)
   }

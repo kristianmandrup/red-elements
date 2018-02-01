@@ -7,13 +7,16 @@ import {
   IPanel
 } from './panel'
 import {
-  Popover
+  Popover,
+  IPopover
 } from './pop-over'
 import {
-  Stack
+  Stack,
+  IStack
 } from './stack'
 import {
-  Tabs
+  Tabs,
+  ITabs
 } from './tabs'
 import {
   CheckboxSet
@@ -36,7 +39,10 @@ import {
 
 export {
   IMenu,
-  IPanel
+  IPanel,
+  IPopover,
+  IStack,
+  ITabs
 }
 
 export const widgets = {
