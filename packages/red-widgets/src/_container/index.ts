@@ -60,9 +60,12 @@ function isClassy(clazz) {
   return typeof clazz === 'function'
 }
 
+const all = Object.assign({}, WIDGET_TYPES, RUNTIME_TYPES)
+
 const $TYPES = {
   widgets: WIDGET_TYPES,
-  runtime: RUNTIME_TYPES
+  runtime: RUNTIME_TYPES,
+  all
 }
 
 // TODO: do all widget bindings to widget classes

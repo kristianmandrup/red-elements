@@ -12,25 +12,31 @@ import {
 } from '../../_container'
 
 import {
-  INodes
+  INodes,
 } from '@tecla5/red-runtime'
 
-const TYPES = $TYPES.runtime
+import {
+  IMenu,
+  IActions,
+  IEvents,
+  IKeyboard,
+  ICanvas
+} from '../../_interfaces'
+
+
+const TYPES = $TYPES.all
 
 @delegateTarget({
   container,
 })
 export class ClipboardConfiguration extends Context {
-  // TODO: injections
-  // menu
-  // actions
-  // events
-
   // you need to define these types in red-runtime, src/_container just like for NODES,
   // then export up the hierarchy (see index.ts files)
-  // @lazyInject(TYPES.MENU) menu: IMenu
-  // @lazyInject(TYPES.ACTIONS) actions: IActions
-  // @lazyInject(TYPES.EVENTS) events: IEvents
+  @lazyInject(TYPES.common.menu) menu: IMenu
+  @lazyInject(TYPES.actions) actions: IActions
+  @lazyInject(TYPES.events) events: IEvents
+  @lazyInject(TYPES.keyboard) keyboard: IKeyboard
+  @lazyInject(TYPES.canvas) view: ICanvas
 
   disabled: boolean
 
@@ -42,7 +48,11 @@ export class ClipboardConfiguration extends Context {
     const {
       RED,
       rebind,
-      clipboard
+      clipboard,
+      // services injected - no longer use RED :)
+      menu,
+      actions,
+      events
     } = this
 
     let {
@@ -67,38 +77,38 @@ export class ClipboardConfiguration extends Context {
 
     $('<input type="text" id="clipboard-hidden">').appendTo("body");
 
-    RED.events.on("view:selection-changed", function (selection) {
+    events.on("view:selection-changed", function (selection) {
       if (!selection.nodes) {
-        RED.menu.setDisabled("menu-item-export", true);
-        RED.menu.setDisabled("menu-item-export-clipboard", true);
-        RED.menu.setDisabled("menu-item-export-library", true);
+        menu.setDisabled("menu-item-export", true);
+        menu.setDisabled("menu-item-export-clipboard", true);
+        menu.setDisabled("menu-item-export-library", true);
       } else {
-        RED.menu.setDisabled("menu-item-export", false);
-        RED.menu.setDisabled("menu-item-export-clipboard", false);
-        RED.menu.setDisabled("menu-item-export-library", false);
+        menu.setDisabled("menu-item-export", false);
+        menu.setDisabled("menu-item-export-clipboard", false);
+        menu.setDisabled("menu-item-export-library", false);
       }
     });
 
-    RED.actions.add("core:show-export-dialog", exportNodes);
-    RED.actions.add("core:show-import-dialog", importNodes);
+    actions.add("core:show-export-dialog", exportNodes);
+    actions.add("core:show-import-dialog", importNodes);
 
 
-    RED.events.on("editor:open", () => {
+    events.on("editor:open", () => {
       disabled = true;
     });
-    RED.events.on("editor:close", () => {
+    events.on("editor:close", () => {
       disabled = false;
     });
-    RED.events.on("search:open", () => {
+    events.on("search:open", () => {
       disabled = true;
     });
-    RED.events.on("search:close", () => {
+    events.on("search:close", () => {
       disabled = false;
     });
-    RED.events.on("type-search:open", () => {
+    events.on("type-search:open", () => {
       disabled = true;
     });
-    RED.events.on("type-search:close", () => {
+    events.on("type-search:close", () => {
       disabled = false;
     });
 
@@ -111,7 +121,7 @@ export class ClipboardConfiguration extends Context {
         $("#dropTarget").css({
           display: 'table'
         });
-        RED.keyboard.add("*", "escape", hideDropTarget);
+        keyboard.add("*", "escape", hideDropTarget);
       }
     });
 
@@ -130,7 +140,7 @@ export class ClipboardConfiguration extends Context {
         if ($.inArray("text/plain", originalEvent.dataTransfer.types) != -1) {
           var data = originalEvent.dataTransfer.getData("text/plain");
           data = data.substring(data.indexOf('['), data.lastIndexOf(']') + 1);
-          RED.view.importNodes(data);
+          view.importNodes(data);
         } else if ($.inArray("Files", originalEvent.dataTransfer.types) != -1) {
           var files = originalEvent.dataTransfer.files;
           if (files.length === 1) {
@@ -138,7 +148,7 @@ export class ClipboardConfiguration extends Context {
             var reader = new FileReader();
             reader.onload = (function (theFile) {
               return function (e) {
-                RED.view.importNodes(e.target.result);
+                view.importNodes(e.target.result);
               };
             })(file);
             reader.readAsText(file);

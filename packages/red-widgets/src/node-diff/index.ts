@@ -1,5 +1,6 @@
 import {
-  Diff as NodeDiff
+  Diff as NodeDiff,
+  INodeDiff
 }
   from './lib'
 
@@ -10,5 +11,6 @@ export const diff = {
 export default diff
 
 export {
-  NodeDiff
+  NodeDiff,
+  INodeDiff
 }

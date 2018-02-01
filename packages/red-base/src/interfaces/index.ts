@@ -10,8 +10,6 @@ export {
   INodeSet
 }
 
-export type JQElem = JQuery<HTMLElement>
-
 export interface IFlow {
 }
 

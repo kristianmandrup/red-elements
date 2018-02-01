@@ -1,5 +1,6 @@
 import {
-  Actions
+  Actions,
+  IActions
 } from './lib'
 
 export const actions = {
@@ -9,5 +10,6 @@ export const actions = {
 export default actions
 
 export {
-  Actions
+  Actions,
+  IActions
 }

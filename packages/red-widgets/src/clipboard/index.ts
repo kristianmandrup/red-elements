@@ -1,5 +1,6 @@
 import {
   Clipboard,
+  IClipboard
 } from './lib'
 
 export const clipboard = {
@@ -9,5 +10,6 @@ export const clipboard = {
 export default clipboard
 
 export {
-  Clipboard
+  Clipboard,
+  IClipboard
 }

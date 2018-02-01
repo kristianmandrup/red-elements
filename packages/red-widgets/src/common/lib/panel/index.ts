@@ -15,24 +15,42 @@
  **/
 import { Context, $ } from '../context';
 
+export interface IPanel {
+  resize(height: number)
+}
+
 export class Panel extends Context {
-  modifiedHeights: any;
-  resize: any;
-  constructor(options) {
+  protected children: any
+  protected container: any
+  protected panelRatio: any
+  protected modifiedHeights: boolean = false
+  protected startPosition: any
+  protected panelHeights = []
+
+  constructor(protected options) {
     super()
-    var container = options.container || $("#" + options.id);
-    var children = container.children();
+
+    let {
+      container,
+      children,
+      panelRatio,
+      modifiedHeights,
+      startPosition,
+      panelHeights
+    } = this
+
+    container = options.container || $("#" + options.id);
+    children = container.children();
 
     if (children.length !== 2) {
       throw new Error("Container must have exactly two children");
     }
 
     container.addClass("red-ui-panels");
+
+    // make into instance vars
     var separator: any = $('<div class="red-ui-panels-separator"></div>').insertAfter(children[0]);
-    var startPosition;
-    var panelHeights = [];
-    this.modifiedHeights = false;
-    var panelRatio;
+    modifiedHeights = false;
 
     separator.draggable({
       axis: 'y',
@@ -59,20 +77,27 @@ export class Panel extends Context {
         return this.modifiedHeights = true;
       }
     });
+  }
 
-    this.resize = function (height) {
-      var panelHeights = [$(children[0]).height(), $(children[1]).height()];
-      container.height(height);
-      if (this.modifiedHeights) {
-        var topPanelHeight = panelRatio * height;
-        var bottomPanelHeight = height - topPanelHeight - 48;
-        panelHeights = [topPanelHeight, bottomPanelHeight];
-        $(children[0]).height(panelHeights[0]);
-        $(children[1]).height(panelHeights[1]);
-      }
-      if (options.resize) {
-        options.resize(panelHeights[0], panelHeights[1]);
-      }
+  resize(height: number) {
+    const {
+      children,
+      container,
+      panelRatio,
+      options
+    } = this
+
+    var panelHeights = [$(children[0]).height(), $(children[1]).height()];
+    container.height(height);
+    if (this.modifiedHeights) {
+      var topPanelHeight = panelRatio * height;
+      var bottomPanelHeight = height - topPanelHeight - 48;
+      panelHeights = [topPanelHeight, bottomPanelHeight];
+      $(children[0]).height(panelHeights[0]);
+      $(children[1]).height(panelHeights[1]);
+    }
+    if (options.resize) {
+      options.resize(panelHeights[0], panelHeights[1]);
     }
   }
 }

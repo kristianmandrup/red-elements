@@ -2,6 +2,15 @@ import {
   Context
 } from '../../context'
 
+export interface IActions {
+  count: number
+  add(name, handler)
+  remove(name)
+  get(name)
+  invoke(name)
+  list()
+}
+
 export class Actions extends Context {
   public actions: any = {}
 

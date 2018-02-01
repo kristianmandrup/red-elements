@@ -84,6 +84,10 @@ import {
   container
 } from '../../deploy/lib/container'
 
+export interface IKeyboard {
+  configure()
+}
+
 @delegator({
   container,
   map: {

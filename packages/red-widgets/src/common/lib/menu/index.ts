@@ -15,6 +15,20 @@
  **/
 import { Context, $ } from '../context';
 
+export interface IMenu {
+  menuItems: any
+  createMenuItem(opt)
+  setInitialState(opt, link)
+  triggerAction(id, args?)
+  isSelected(id)
+  setSelected(id, state)
+  toggleSelected(id)
+  setDisabled(id, state)
+  addItem(id, opt)
+  removeItem(id)
+  setAction(id, action)
+}
+
 export class Menu extends Context {
   menuItems: any;
   constructor(options) {
@@ -50,6 +64,10 @@ export class Menu extends Context {
     return this;
   }
 
+  /**
+   * create Menu Item
+   * @param opt
+   */
   createMenuItem(opt) {
     const {
       menuItems,
@@ -162,6 +180,11 @@ export class Menu extends Context {
 
   }
 
+  /**
+   * set Initial State
+   * @param opt
+   * @param link
+   */
   setInitialState(opt, link) {
     const {
       RED,

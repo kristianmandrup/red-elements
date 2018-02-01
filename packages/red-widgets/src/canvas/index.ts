@@ -1,5 +1,6 @@
 import {
-  Canvas
+  Canvas,
+  ICanvas
 } from './lib'
 
 export const canvas = {
@@ -9,5 +10,6 @@ export const canvas = {
 export default canvas
 
 export {
-  Canvas
+  Canvas,
+  ICanvas
 }

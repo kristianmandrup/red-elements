@@ -12,7 +12,6 @@ export {
   INodeDef,
   INode,
   INodeSet,
-  JQElem,
   IFlow,
   ILink,
   IWorkspace,

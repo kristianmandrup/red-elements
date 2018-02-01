@@ -1,8 +1,10 @@
 import {
+  IMenu,
   Menu
 } from './menu'
 import {
-  Panel
+  Panel,
+  IPanel
 } from './panel'
 import {
   Popover
@@ -31,6 +33,11 @@ import {
 import {
   Validators
 } from './utils/validators'
+
+export {
+  IMenu,
+  IPanel
+}
 
 export const widgets = {
   Menu,

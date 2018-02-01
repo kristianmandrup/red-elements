@@ -1,5 +1,6 @@
 import {
   Keyboard,
+  IKeyboard
 } from './lib'
 
 export const keyboard = {
@@ -9,5 +10,6 @@ export const keyboard = {
 export default keyboard
 
 export {
-  Keyboard
+  Keyboard,
+  IKeyboard
 }

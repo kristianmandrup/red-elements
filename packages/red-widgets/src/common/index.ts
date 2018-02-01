@@ -11,6 +11,10 @@ export {
   $
 } from '../context'
 
+export {
+  IPanel,
+  IMenu
+} from './lib'
 
 export const common = {
   widgets
