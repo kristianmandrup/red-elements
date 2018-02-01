@@ -31,10 +31,12 @@ import {
 
 import {
   Main,
+  IMain
 } from './main'
 
 import {
   User,
+  IUser
 } from './user'
 
 import {
@@ -43,23 +45,28 @@ import {
 } from './text'
 
 import {
-  Actions
+  Actions,
+  IActions
 } from './actions'
 
 import {
-  Clipboard
+  Clipboard,
+  IClipboard
 } from './clipboard'
 
 import {
-  Deploy
+  Deploy,
+  IDeploy
 } from './deploy'
 
 import {
-  Keyboard
+  Keyboard,
+  IKeyboard
 } from './keyboard'
 
 import {
-  Notifications
+  Notifications,
+  INotifications
 } from './notifications'
 
 import {
@@ -67,29 +74,35 @@ import {
 } from './state'
 
 import {
+  IUtils,
   Utils
 } from './utils'
 
 import {
   diff,
-  NodeDiff
+  NodeDiff,
+  INodeDiff
 } from './node-diff'
 
 import {
   editor,
-  NodeEditor
+  NodeEditor,
+  INodeEditor
 }
   from './node-editor'
 
 import {
   Workspaces,
-  workspaces
+  workspaces,
+  IWorkspaces
 } from './workspaces'
 
 import {
   palette,
   Palette,
-  PaletteEditor
+  PaletteEditor,
+  IPalette,
+  IPaletteEditor
 } from './palette'
 
 import {
@@ -98,11 +111,13 @@ import {
   SidebarTab,
   SidebarTabInfo,
   TabInfoTips,
+  ISidebar,
 } from './sidebar'
 
 import {
   settings,
-  UserSettings
+  UserSettings,
+  IUserSettings
 } from './user-settings'
 
 import {
@@ -111,13 +126,15 @@ import {
 
 import {
   tray,
-  Tray
+  Tray,
+  ITray
 } from './tray'
 
 import {
   search,
   Search,
-  TypeSearch
+  TypeSearch,
+  ISearch
 } from './search'
 
 export const libs = {

@@ -55,6 +55,10 @@ export {
 } from '../tray'
 
 export {
+  IMain
+} from '../main'
+
+export {
   IUser
 } from '../user'
 

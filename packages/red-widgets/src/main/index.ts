@@ -1,7 +1,7 @@
 import {
-  Main
-}
-  from './lib'
+  Main,
+  IMain
+} from './lib'
 
 export const diff = {
   Main
@@ -10,5 +10,6 @@ export const diff = {
 export default diff
 
 export {
-  Main
+  Main,
+  IMain
 }

@@ -49,9 +49,11 @@ const WIDGET_TYPES = {
   palette: 'IPalette',
   paletteEditor: 'IPaletteEditor',
   search: 'ISearch',
+  sidebar: 'ISidebar',
   tray: 'ITray',
   user: 'IUser',
   userSettings: 'IUserSettings',
+  utils: 'IUtils',
   workspaces: 'IWorkspaces',
   // .. TODO: more const to type name bindings, one for each class to be bound
 }

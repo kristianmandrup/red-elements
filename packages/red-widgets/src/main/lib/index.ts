@@ -54,7 +54,6 @@ import * as ace from 'brace'
 import marked from 'marked'
 
 // TODO: perhaps just use generic redApi for each?
-import { RedApi } from '@tecla5/red-runtime';
 import { LoadNodes } from './load-nodes';
 import { LoadFlows } from './load-flows';
 import { MainConfiguration } from './configuration';
@@ -86,8 +85,10 @@ import {
   IActions,
   IEvents,
   ISidebar,
-  IComms
+  // ICommunications
 } from '../../_interfaces'
+
+import { ICommunications } from '@tecla5/red-runtime'
 
 const TYPES = $TYPES.all
 
@@ -102,7 +103,6 @@ export interface IMain {
 }
 
 @delegator({
-  container,
   map: {
     loadNodesList: LoadNodes,
     loadFlowsList: LoadFlows,
@@ -112,13 +112,13 @@ export interface IMain {
 export class Main extends Context implements IMain {
 
   @lazyInject(TYPES.settings) settings: ISettings
-  @lazyInject(TYPES.sidebar.info) sidebar: ISidebar
+  @lazyInject(TYPES.sidebar) sidebar: ISidebar
   @lazyInject(TYPES.actions) actions: IActions
-  @lazyInject(TYPES.comms) comms: IComms
+  @lazyInject(TYPES.communications) comms: ICommunications
 
   loaded: any = {}
   // TODO: perhaps just use generic redApi for each?
-  protected api: RedApi
+  // protected api: RedApi
 
   protected loadNodesList: LoadNodes //= new LoadNodes(this)
   protected loadFlowsList: LoadFlows //= new LoadFlows(this)

@@ -30,14 +30,12 @@ import {
 
 const TYPES = $TYPES.all
 
-@delegator({
-  container,
-})
+@delegator()
 export class TypeSearch extends Context {
   @lazyInject(TYPES.utils) utils: IUtil
   @lazyInject(TYPES.keyboard) keyboard: IKeyboard
   @lazyInject(TYPES.events) events: IEvents
-  @lazyInject(TYPES.view) view: IView
+  @lazyInject(TYPES.canvas) view: IView
   @lazyInject(TYPES.nodes) nodes: INodes
 
   public disabled: Boolean = false
