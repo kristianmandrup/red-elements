@@ -36,11 +36,8 @@ export interface IFlowsSaver {
   sortNodeInfo(A, B) // TODO: make protected
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 @delegator({
-  container,
   map: {
     flowsPoster: 'IFlowsPoster',
     flowsSaver: 'IFlowsSaver'

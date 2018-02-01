@@ -8,11 +8,8 @@ import {
   delegator
 } from './_base'
 
-@delegateTarget({
-  container
-})
+@delegateTarget()
 @delegator({
-  container,
   map: {
     api: NodeApi
   }

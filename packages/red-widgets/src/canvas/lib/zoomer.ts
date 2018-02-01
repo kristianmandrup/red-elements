@@ -25,10 +25,7 @@ export interface ICanvasZoomer {
   zoomZero()
 }
 
-@delegateTarget({
-  container,
-})
-
+@delegateTarget()
 export class CanvasZoomer extends Context implements ICanvasZoomer {
   constructor(protected canvas: Canvas) {
     super()

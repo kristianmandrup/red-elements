@@ -11,9 +11,7 @@ export interface ICanvasDragLineManager {
   hideDragLines()
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasDragLineManager extends Context implements ICanvasDragLineManager {
   constructor(protected canvas: Canvas) {
     super()

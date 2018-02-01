@@ -7,31 +7,29 @@ import {
 } from './_base'
 
 export interface ICanvasGridManager {
-   /**
-   * Grid Size
-   * @param v
-   */
+  /**
+  * Grid Size
+  * @param v
+  */
   gridSize(v)
-   /**
-   * Toggle Show Grid
-   * @param state
-   */
+  /**
+  * Toggle Show Grid
+  * @param state
+  */
   toggleShowGrid(state)
 
-   /**
-   * Toggle Snap Grid
-   * @param state
-   */
+  /**
+  * Toggle Snap Grid
+  * @param state
+  */
   toggleSnapGrid(state)
-   /**
-   * Update Grid
-   */
+  /**
+  * Update Grid
+  */
   updateGrid()
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasGridManager extends Context implements ICanvasGridManager {
   constructor(protected canvas: Canvas) {
     super()

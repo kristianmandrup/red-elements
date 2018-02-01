@@ -14,9 +14,7 @@ import {
 /**
  * Takes care of search configuration, such as setting up event/action handlers
  */
-@delegateTarget({
-  container
-})
+@delegateTarget()
 export class SearchConfiguration extends Context {
   constructor(public search: Search) {
     super()

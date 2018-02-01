@@ -10,9 +10,7 @@ export interface IDiffGenerator {
   generateDiff(currentNodes, newNodes)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class DiffGenerator extends Context implements IDiffGenerator {
   constructor(public diff: Diff) {
     super()

@@ -6,9 +6,7 @@ import {
   container
 } from './container'
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class UserDisplay extends Context {
   constructor(public user: User) {
     super()

@@ -6,10 +6,7 @@ import {
   delegator
 } from './_base'
 
-@delegator({
-  container
-})
-
+@delegateTarget()
 export class InstallTab extends Context {
   constructor(public editor: PaletteEditor) {
     super()

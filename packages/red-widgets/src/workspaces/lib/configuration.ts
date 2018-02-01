@@ -21,14 +21,11 @@ import {
 
 const TYPES = $TYPES.all
 
-delegateTarget({
-  container,
-})
+@delegateTarget()
 export class WorkspacesConfiguration extends Context {
-
   @lazyInject(TYPES.actions) actions: IActions
   @lazyInject(TYPES.events) events: IEvents
-  @lazyInject(TYPES.menu) menu: IMenu
+  @lazyInject(TYPES.common.menu) menu: IMenu
   @lazyInject(TYPES.nodes) nodes: INode
 
   protected allSettings = {}

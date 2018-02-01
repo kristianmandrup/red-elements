@@ -11,9 +11,7 @@ export interface IDiffResolver {
   resolveDiffs(localDiff, remoteDiff)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class DiffResolver extends Context implements IDiffResolver {
   constructor(public diff: Diff) {
     super()

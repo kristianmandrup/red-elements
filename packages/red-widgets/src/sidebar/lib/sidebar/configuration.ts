@@ -20,9 +20,7 @@ interface ISidebar extends JQuery<HTMLElement> {
   tabs: Function
 }
 
-@delegateTarget({
-  container
-})
+@delegateTarget()
 export class SidebarConfiguration extends Context {
   constructor(public sidebar: Sidebar) {
     super()

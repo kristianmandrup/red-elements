@@ -6,9 +6,7 @@ import {
   container
 } from './_base'
 
-delegateTarget({
-  container,
-})
+@delegateTarget()
 export class WorkspacesDisplay extends Context {
   constructor(public workspaces: Workspaces) {
     super()

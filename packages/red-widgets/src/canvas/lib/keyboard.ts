@@ -10,9 +10,7 @@ export interface ICanvasKeyboard {
   endKeyboardMove()
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasKeyboard extends Context implements ICanvasKeyboard {
   constructor(protected canvas: Canvas) {
     super()

@@ -13,9 +13,7 @@ export interface IWorkspaceDef {
   label: string
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class WorkspaceManager extends Context {
   constructor(public workspaces: Workspaces) {
     super()

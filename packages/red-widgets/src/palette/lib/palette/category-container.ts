@@ -4,12 +4,10 @@ import {
   Context,
   $,
   container,
-  delegator
+  delegateTarget
 } from './_base'
 
-@delegator({
-  container
-})
+@delegateTarget()
 export class PaletteCategoryContainer extends Context {
   constructor(public palette: Palette) {
     super()

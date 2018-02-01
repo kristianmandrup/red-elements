@@ -21,9 +21,7 @@ import {
   delegateTarget
 } from './_base'
 
-@delegateTarget({
-  container
-})
+@delegateTarget()
 export class SearchInputBuilder extends Context {
   constructor(public search: Search) {
     super()

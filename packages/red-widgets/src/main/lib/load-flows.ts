@@ -22,9 +22,7 @@ export interface ILoadFlows {
 /**
  * Load flows via Api
  */
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class LoadFlows extends Context implements ILoadFlows {
   loaded: any = {}
 

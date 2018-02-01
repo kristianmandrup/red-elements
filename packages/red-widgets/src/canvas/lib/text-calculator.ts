@@ -16,9 +16,7 @@ export interface ICanvasTextCalculator {
   calculateTextWidth(str, className, offset)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasTextCalculator extends Context implements ICanvasTextCalculator {
   constructor(protected canvas: Canvas) {
     super()

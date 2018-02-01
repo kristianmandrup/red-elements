@@ -14,9 +14,7 @@ export interface IClipboardDialogs {
   setupDialogs()
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class ClipboardDialogs extends Context implements IClipboardDialogs {
   disabled: boolean
 

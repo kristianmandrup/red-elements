@@ -15,9 +15,7 @@ export interface ICanvasConfiguration {
   configureActions()
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasConfiguration extends Context implements ICanvasConfiguration {
   disabled: boolean
 

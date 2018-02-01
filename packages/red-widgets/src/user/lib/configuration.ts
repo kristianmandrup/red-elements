@@ -24,14 +24,11 @@ import {
 
 const TYPES = $TYPES.all
 
+@delegateTarget()
 @delegator({
-  container,
   map: {
     display: UserDisplay
   }
-})
-@delegateTarget({
-  container
 })
 export class UserConfiguration extends Context {
 

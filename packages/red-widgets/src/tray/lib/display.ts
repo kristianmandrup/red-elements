@@ -7,9 +7,7 @@ import {
   container
 } from './_base'
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class TrayDisplayer extends Context {
   constructor(public tray: Tray) {
     super()

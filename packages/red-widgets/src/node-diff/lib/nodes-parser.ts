@@ -10,9 +10,7 @@ export interface INodesParser {
   parseNodes(nodeList)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class NodesParser extends Context implements INodesParser {
   constructor(public diff: Diff) {
     super()

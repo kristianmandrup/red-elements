@@ -3,7 +3,7 @@ import { PaletteEditor } from './';
 import {
   Context, $, EditableList, Searchbox,
   container,
-  delegator
+  delegateTarget
 } from './_base'
 
 import {
@@ -21,10 +21,7 @@ import {
 
 const TYPES = $TYPES.all
 
-@delegator({
-  container
-})
-
+@delegateTarget()
 export class PaletteConfiguration extends Context {
 
   @lazyInject(TYPES.userSettings) userSettings: IUserSetting;

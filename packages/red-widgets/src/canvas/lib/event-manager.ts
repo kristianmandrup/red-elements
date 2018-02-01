@@ -21,9 +21,7 @@ export interface ICanvasEventManager {
   handleWorkSpaceChangeEvent(event, workspaceScrollPositions)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasEventManager extends Context implements ICanvasEventManager {
   constructor(protected canvas: Canvas) {
     super()

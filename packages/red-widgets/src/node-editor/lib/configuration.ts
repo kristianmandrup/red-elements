@@ -29,9 +29,7 @@ export interface INodeEditorConfiguration {
 /**
  * NodeEditor configuration
  */
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class NodeEditorConfiguration extends Context {
   @lazyInject(TYPES.actions) actions: IActions
 

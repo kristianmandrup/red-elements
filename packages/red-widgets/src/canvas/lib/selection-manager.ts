@@ -56,9 +56,7 @@ export interface ICanvasSelectionManager {
   selection()
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasSelectionManager extends Context implements ICanvasSelectionManager {
   constructor(protected canvas: Canvas) {
     super()

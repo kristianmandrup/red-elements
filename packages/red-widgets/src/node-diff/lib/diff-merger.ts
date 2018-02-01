@@ -10,9 +10,7 @@ export interface IDiffMerger {
   mergeDiff(diff: any)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class DiffMerger extends Context implements IDiffMerger {
   constructor(public diff: Diff) {
     super()

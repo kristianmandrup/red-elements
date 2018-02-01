@@ -32,9 +32,7 @@ export interface IMainConfiguration {
 /**
  * Main widget configuration
  */
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class MainConfiguration extends Context implements IMainConfiguration {
   @lazyInject(TYPES.i18n) i18n: I18n
   @lazyInject(TYPES.settings) settings: ISettings

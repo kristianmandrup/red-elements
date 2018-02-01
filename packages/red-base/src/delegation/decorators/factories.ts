@@ -10,11 +10,11 @@ import {
 export function createDecorators(container) {
   return {
     delegator(options = {}) {
-      const opts = Object.assign(options, { container })
+      const opts = Object.assign({ container }, options)
       return delegateTarget(opts)
     },
     delegateTarget(options = {}) {
-      const opts = Object.assign(options, { container })
+      const opts = Object.assign({ container }, options)
       return delegateTarget(opts)
     }
   }

@@ -12,9 +12,7 @@ export interface ICanvasButtonManager {
   nodeButtonClicked(d)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasButtonManager extends Context implements ICanvasButtonManager {
   constructor(protected canvas: Canvas) {
     super()

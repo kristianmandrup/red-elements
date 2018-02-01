@@ -51,7 +51,7 @@ export interface ISettings {
    * @param property { string } theme property
    * @param defaultValue { object } default value to use if property not set in user settings
    */
-  theme(property: string, defaultValue: any)
+  theme(property: string, defaultValue?: any)
 }
 
 import {
@@ -174,7 +174,7 @@ export class Settings extends Context implements ISettings {
    * @param property { string } theme property
    * @param defaultValue { object } default value to use if property not set in user settings
    */
-  theme(property: string, defaultValue: any) {
+  theme(property: string, defaultValue?: any) {
     const ctx = this.ctx;
     if (!ctx.settings.editorTheme) {
       return defaultValue;

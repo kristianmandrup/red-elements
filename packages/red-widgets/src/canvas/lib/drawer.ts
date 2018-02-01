@@ -12,9 +12,7 @@ export interface ICanvasDrawer {
   redraw(updateActive?: boolean)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasDrawer extends Context implements ICanvasDrawer {
   constructor(protected canvas: Canvas) {
     super()

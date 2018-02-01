@@ -34,9 +34,7 @@ export interface ILibraryConfiguration {
   configure(options: any)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class LibraryConfiguration extends Context implements ILibraryConfiguration {
 
   @lazyInject(TYPES.actions) actions: IActions

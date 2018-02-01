@@ -7,9 +7,7 @@ import {
   delegateTarget
 } from './_base'
 
-@delegateTarget({
-  container
-})
+@delegateTarget()
 export class NodeModuleRefresher extends Context {
   constructor(public manager: NodeModuleManager) {
     super()

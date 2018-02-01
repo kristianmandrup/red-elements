@@ -27,9 +27,7 @@ export interface ILabelBuilder {
 /**
  * Label Builder for NodeEditor
  */
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class LabelBuilder extends Context implements ILabelBuilder {
   constructor(public editor: NodeEditor) {
     super()

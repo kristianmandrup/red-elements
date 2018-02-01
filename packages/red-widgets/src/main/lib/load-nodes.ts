@@ -25,9 +25,7 @@ export interface ILoadNodes {
 /**
  * Load nodes via Api
  */
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class LoadNodes extends Context implements ILoadNodes {
   loaded: any = {}
 

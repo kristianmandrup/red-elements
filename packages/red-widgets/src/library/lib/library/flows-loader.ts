@@ -19,8 +19,11 @@ import {
 
 import {
   ISettings,
-  ILibraryFlowsPoster
 } from '@tecla5/red-runtime'
+
+import {
+  ILibraryFlowsPoster
+} from './flows-poster'
 
 import {
   ICanvas
@@ -40,13 +43,12 @@ export interface ILibraryFlowsLoader {
 }
 
 @delegator({
-  container,
   map: {
     librariesApi: LibrariesApi
   }
 })
 export class LibraryFlowsLoader extends Context implements ILibraryFlowsLoader {
-  @lazyInject(TYPES.view) view: ICanvas
+  @lazyInject(TYPES.canvas) view: ICanvas
 
   protected librariesApi: LibrariesApi
   constructor(public library: Library) {

@@ -33,9 +33,7 @@ export interface IDeployConfiguration {
   configure(options: any)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class DeployConfiguration extends Context implements IDeployConfiguration {
   @lazyInject(TYPES.nodes) nodes: INodes
   @lazyInject(TYPES.actions) actions: IActions

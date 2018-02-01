@@ -12,9 +12,7 @@ import {
   delegateTarget
 } from '../_base'
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class SidebarTabConfiguration extends Context {
   sidebar_tabs: any
 

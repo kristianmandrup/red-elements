@@ -5,9 +5,7 @@ import {
   delegateTarget
 } from './_base'
 
-@delegateTarget({
-  container
-})
+@delegateTarget()
 export class PaletteUtils extends Context {
   formatUpdatedAt(dateString) {
     const {

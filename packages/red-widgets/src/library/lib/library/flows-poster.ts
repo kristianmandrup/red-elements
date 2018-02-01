@@ -18,7 +18,6 @@ import {
 
 import {
   ISettings,
-  ILibraryFlowsPoster
 } from '@tecla5/red-runtime'
 
 import {
@@ -44,7 +43,7 @@ export interface ILibraryFlowsPoster {
 export class LibraryFlowsPoster extends Context implements ILibraryFlowsPoster {
 
   @lazyInject(TYPES.library) library: ILibraryFlowsPoster
-  @lazyInject(TYPES.notify) notify: INotifications
+  @lazyInject(TYPES.notifications) notify: INotifications
 
   protected librariesApi: LibrariesApi
 

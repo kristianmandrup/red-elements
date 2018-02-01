@@ -20,11 +20,8 @@ export interface IFlowsPoster {
 
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 @delegator({
-  container,
   map: {
     flowsApi: 'IFlowsApi',
   }

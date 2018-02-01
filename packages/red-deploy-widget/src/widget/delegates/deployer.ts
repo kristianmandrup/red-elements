@@ -19,12 +19,8 @@ export interface IDeployer {
   deployNodes(nodes): Promise<any>
 }
 
-@delegateTarget({
-  container,
-  // key: 'Deployer'
-})
+@delegateTarget()
 @delegator({
-  container,
   bind: {
     deployApi: 'IDeploymentsApi'
   }

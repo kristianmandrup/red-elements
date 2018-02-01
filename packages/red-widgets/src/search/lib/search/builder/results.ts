@@ -12,9 +12,7 @@ import {
   delegateTarget
 } from './_base'
 
-@delegateTarget({
-  container
-})
+@delegateTarget()
 export class SearchResultsBuilder extends Context {
   constructor(public search: Search) {
     super()

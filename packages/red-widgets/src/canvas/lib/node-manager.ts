@@ -28,9 +28,7 @@ export interface ICanvasNodeManager {
   addNode(type: any, x: any, y: any)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasNodeManager extends Context implements ICanvasNodeManager {
   constructor(protected canvas: Canvas) {
     super()

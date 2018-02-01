@@ -4,6 +4,7 @@ import { UserSettingsDisplay } from './display';
 
 import {
   delegator,
+  delegateTarget,
   container
 } from './container'
 
@@ -37,8 +38,8 @@ export interface IViewSetting {
   options: IViewSettingOption[]
 }
 
+@delegateTarget()
 @delegator({
-  container,
   map: {
     display: UserSettingsDisplay
   }
@@ -46,7 +47,7 @@ export interface IViewSetting {
 export class UserSettingsConfiguration extends Context {
 
   @lazyInject(TYPES.actions) actions: IActions
-  @lazyInject(TYPES.view) view: ICanvas
+  @lazyInject(TYPES.canvas) view: ICanvas
   @lazyInject(TYPES.settings) settings: ISettings
 
   allSettings = {}

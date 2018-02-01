@@ -12,9 +12,7 @@ export interface ISearchResults extends JQuery<HTMLElement> {
   editableList: Function
 }
 
-@delegateTarget({
-  container
-})
+@delegateTarget()
 export class SearchContainerBuilder extends Context {
   constructor(public search: Search) {
     super()

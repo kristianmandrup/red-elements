@@ -4,6 +4,7 @@ import {
 
 const { log } = console
 
+// TODO: add lazyInject and get rid of RED
 export class TabInfoTips extends Context {
   public enabled: Boolean = true
   public startDelay: number = 1000

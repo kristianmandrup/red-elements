@@ -1,13 +1,10 @@
-import {
-  Context,
-
-} from '../../context'
 import { Keyboard, Searchbox } from '../../';
 
 import {
-  d3
-} from './d3'
-
+  d3,
+  Context,
+  delegateTarget
+} from './_base'
 
 const isMacLike = navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i) ? true : false;
 const isIOS = navigator.platform.match(/(iPhone|iPod|iPad)/i) ? true : false;
@@ -85,6 +82,7 @@ export interface IKeyboardConfiguration {
   getShortcut(actionName): object
 }
 
+@delegateTarget()
 export class KeyboardConfiguration extends Context implements IKeyboardConfiguration {
   disabled: boolean
 

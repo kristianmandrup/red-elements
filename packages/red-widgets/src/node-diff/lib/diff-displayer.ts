@@ -14,9 +14,7 @@ export interface IDiffDisplayer {
   showDiff(diff)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class DiffDisplayer extends Context implements IDiffDisplayer {
   constructor(public diff: Diff) {
     super()

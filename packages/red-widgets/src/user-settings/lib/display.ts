@@ -4,14 +4,11 @@ import { IViewSetting, UserSettingsConfiguration } from './configuration';
 
 
 import {
-  delegator,
+  delegateTarget,
   container
 } from './container'
 
-@delegator({
-  container,
-})
-
+@delegateTarget()
 export class UserSettingsDisplay extends Context {
   allSettings = {}
 

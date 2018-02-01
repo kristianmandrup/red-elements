@@ -16,11 +16,8 @@ interface IButton extends JQuery<HTMLElement> {
   button: Function
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 @delegator({
-  container,
   map: {
     tokenPoster: ServerTokenPoster
   }

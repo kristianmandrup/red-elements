@@ -10,9 +10,7 @@ export interface ICanvasNodeImporter {
   importNodes(newNodesStr, addNewFlow?, touchImport?)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
   constructor(protected canvas: Canvas) {
     super()

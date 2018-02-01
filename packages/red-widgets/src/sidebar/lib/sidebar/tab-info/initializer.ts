@@ -15,9 +15,7 @@ import {
   delegateTarget
 } from '../_base'
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class TabInfoInitializer extends Context {
   constructor(public sidebarTabInfo: SidebarTabInfo) {
     super()

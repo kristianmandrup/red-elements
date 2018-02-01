@@ -1,15 +1,15 @@
 import { PaletteEditor } from './';
 
 import {
-  Context, $, EditableList, Searchbox,
+  Context,
+  $,
+  EditableList,
+  Searchbox,
   container,
-  delegator
+  delegateTarget
 } from './_base'
 
-@delegator({
-  container
-})
-
+@delegateTarget()
 export class PaletteEditorConfiguration extends Context {
   constructor(public editor: PaletteEditor) {
     super()

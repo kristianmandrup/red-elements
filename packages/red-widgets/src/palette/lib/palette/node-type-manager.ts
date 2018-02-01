@@ -17,9 +17,7 @@ import {
   delegateTarget
 } from './_base'
 
-@delegateTarget({
-  container
-})
+@delegateTarget()
 export class PaletteNodeTypeManager extends Context {
   constructor(public palette: Palette) {
     super()

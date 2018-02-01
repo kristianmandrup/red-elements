@@ -6,9 +6,7 @@ import {
   container
 } from './_base'
 
-@delegateTarget({
-  container
-})
+@delegateTarget()
 export class SidebarTabManager extends Context {
   constructor(public sidebar: Sidebar) {
     super()

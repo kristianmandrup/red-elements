@@ -14,9 +14,7 @@ export interface IEditorUtils {
 /**
  * Editor Utils for NodeEditor
  */
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class EditorUtils extends Context implements IEditorUtils {
   constructor(public editor: NodeEditor) {
     super()

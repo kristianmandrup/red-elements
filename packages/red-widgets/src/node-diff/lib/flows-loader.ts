@@ -22,9 +22,7 @@ export interface IFlowsLoader {
   onLoadSuccess(nodes)
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class FlowsLoader extends Context implements IFlowsLoader {
   protected flowsApi: FlowsApi
 

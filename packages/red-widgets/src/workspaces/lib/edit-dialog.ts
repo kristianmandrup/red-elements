@@ -9,9 +9,7 @@ interface IDialogForm extends JQuery<HTMLElement> {
   i18n: Function
 }
 
-delegateTarget({
-  container,
-})
+@delegateTarget()
 export class WorkspaceEditDialog extends Context {
   constructor(public workspaces: Workspaces) {
     super()

@@ -29,9 +29,7 @@ export interface IClipboardConfiguration {
   configure()
 }
 
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class ClipboardConfiguration extends Context implements IClipboardConfiguration {
   // you need to define these types in red-runtime, src/_container just like for NODES,
   // then export up the hierarchy (see index.ts files)

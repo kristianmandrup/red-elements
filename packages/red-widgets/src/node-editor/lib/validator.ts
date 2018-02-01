@@ -8,11 +8,11 @@ import {
 } from './container'
 
 export interface INodeValidator {
-/**
-   * Validate a node
-   * @param node - the node being validated
-   * @returns {boolean} whether the node is valid. Sets node.dirty if needed
-   */
+  /**
+     * Validate a node
+     * @param node - the node being validated
+     * @returns {boolean} whether the node is valid. Sets node.dirty if needed
+     */
   validateNode(node)
 
   /**
@@ -55,9 +55,7 @@ export interface INodeValidator {
 /**
  * Node Validator for NodeEditor
  */
-@delegateTarget({
-  container,
-})
+@delegateTarget()
 export class NodeValidator extends Context implements INodeValidator {
   constructor(public editor: NodeEditor) {
     super()
