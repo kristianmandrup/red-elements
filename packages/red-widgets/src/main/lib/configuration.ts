@@ -9,6 +9,22 @@ import {
   log
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import {
+  INodes,
+  ISettings
+} from '@tecla5/red-runtime'
+
+import {
+  I18n
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 /**
  * Main widget configuration
  */
@@ -16,6 +32,9 @@ import {
   container,
 })
 export class MainConfiguration extends Context {
+  @lazyInject(TYPES.i18n) i18n: I18n
+  @lazyInject(TYPES.settings) settings: ISettings
+
   constructor(public main: Main) {
     super()
   }
@@ -34,6 +53,11 @@ export class MainConfiguration extends Context {
         'loadEditor'
       ])
 
+    const {
+      i18n,
+      settings
+    } = this
+
     // TODO: use configuration delegatate class pattern
 
     $(() => {
@@ -45,8 +69,8 @@ export class MainConfiguration extends Context {
       // ace.require
       require('brace/ext/language_tools');
 
-      RED.i18n.init(function () {
-        RED.settings.init(loadEditor);
+      i18n.init(function () {
+        settings.init(loadEditor);
       })
     });
 

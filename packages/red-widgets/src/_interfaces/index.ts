@@ -8,10 +8,6 @@ export {
 } from '@tecla5/red-base'
 
 export {
-  INodes,
-} from '@tecla5/red-runtime'
-
-export {
   IActions
 } from '../actions'
 
@@ -53,7 +49,8 @@ export {
 } from '../tray'
 
 export interface I18n {
-  t(key: string): string
+  t(key: string): string,
+  init : Function
 }
 
 export interface I18nWidget extends JQElem {
