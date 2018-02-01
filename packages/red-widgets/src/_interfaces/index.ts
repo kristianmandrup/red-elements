@@ -54,6 +54,19 @@ export {
   ITray
 } from '../tray'
 
+export {
+  IUser
+} from '../user'
+
+export {
+  IUserSettings
+} from '../user-settings'
+
+export {
+  IWorkspaces
+} from '../workspaces'
+
+
 export interface IUserSetting {
   t(key: string): string,
   add: Function,

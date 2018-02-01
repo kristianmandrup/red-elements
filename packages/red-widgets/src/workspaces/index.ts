@@ -1,5 +1,6 @@
 import {
-  Workspaces
+  Workspaces,
+  IWorkspaces
 } from './lib'
 
 export const workspaces = {
@@ -9,5 +10,6 @@ export const workspaces = {
 export default workspaces
 
 export {
-  Workspaces
+  Workspaces,
+  IWorkspaces
 }
