@@ -26,6 +26,37 @@ interface ICollapsible extends JQuery<HTMLElement> {
   clearPinned: Function
 }
 
+export interface IUtils {
+  formatString(str)
+
+  sanitize(m)
+
+  buildMessageSummaryValue(value)
+
+  makeExpandable(el, onbuild, ontoggle, expand)
+
+  addMessageControls(obj: JQuery<HTMLElement>, sourceId: string, key: string, msg: string, rootPath: string, strippedKey: string)
+
+  checkExpanded(strippedKey, expandPaths, minRange, maxRange)
+
+  formatNumber(element, obj, sourceId, path, cycle, initialFormat)
+
+  formatBuffer(element, button, sourceId, path, cycle)
+
+  buildMessageElement(obj, options)
+
+  normalisePropertyExpression(str)
+
+  validatePropertyExpression(str)
+
+  getMessageProperty(msg, expr)
+
+  getNodeIcon(def, node)
+
+  getNodeLabel(node, defaultLabel)
+}
+
+
 // API
 // createObjectElement: buildMessageElement,
 // getMessageProperty: getMessageProperty,
@@ -35,7 +66,7 @@ interface ICollapsible extends JQuery<HTMLElement> {
 // getNodeLabel: getNodeLabel,
 
 // TODO: Use to populate RED.utils
-export const Utils = class Utils extends Context {
+export class Utils extends Context {
   public pinnedPaths = {};
   public formattedPaths = {};
 
@@ -852,5 +883,4 @@ export const Utils = class Utils extends Context {
     }
     return RED.text.bidi.enforceTextDirectionWithUCC(l);
   }
-
 }

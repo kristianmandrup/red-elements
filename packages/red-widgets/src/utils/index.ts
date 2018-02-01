@@ -1,5 +1,6 @@
 import {
-  Utils
+  Utils,
+  IUtils
 } from './lib'
 
 export const utils = {
@@ -9,5 +10,6 @@ export const utils = {
 export default utils
 
 export {
-  Utils
+  Utils,
+  IUtils
 }

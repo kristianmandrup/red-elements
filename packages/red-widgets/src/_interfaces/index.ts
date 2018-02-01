@@ -66,6 +66,14 @@ export {
   IWorkspaces
 } from '../workspaces'
 
+export {
+  IValidators
+} from '../validators'
+
+// TODO: maybe rename as IWidgetUtils and WidgetUtils ??
+export {
+  IUtils
+} from '../utils'
 
 export interface IUserSetting {
   t(key: string): string,
