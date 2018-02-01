@@ -3,6 +3,10 @@ import {
 } from '../../context'
 
 import {
+  todo
+} from '../../_decorators'
+
+import {
   INodesRegistry,
   NodesRegistry
 } from '../registry'
@@ -60,6 +64,19 @@ export interface INodes {
   defaultWorkspace: any // IWorkspace
   version: number
 
+  // TODO: alias method?
+  subflow(id: string)
+  // TODO: alias method?
+  import(config: Object)
+  setVersion(revision: number)
+
+  // TODO: alias method?
+  node(id: string)
+  // TODO: alias method?
+  remove(id: string)
+  // TODO: alias method?
+  add(node: INode)
+
   setNodeList(list: INode[])
   getNodeSet(id: string)
   addNodeSet(ns: INodeSet)
@@ -116,13 +133,13 @@ export interface INodes {
    * Filter nodes based on a filter criteria
    * @param filter { object } filter criteria (Node) all filtered nodes must match
    */
-  filterNodes(filter: INode): INode[]
+  filterNodes(filter: any): INode[]
 
   /**
    * Filter links based on a filter criteria
-   * @param filter { object } filter criteria (Link) all filtered links must match
+   * @param filter { any object } filter criteria (Link props) all filtered links must match
    */
-  filterLinks(filter: ILink): ILink[]
+  filterLinks(filter: any): ILink[]
 
   /**
    * Add a Subflow of nodes
@@ -353,6 +370,38 @@ export class Nodes extends Context implements INodes {
     this._configureNodeTypeAddedHandler()
   }
 
+  setVersion(revision: number) {
+    this._version = revision
+  }
+
+  // alias
+  subflow(id: string) {
+    return this.getSubflow(id)
+  }
+
+  // alias
+  import(config: any) {
+    return this.importNodes(config)
+  }
+
+  // alias
+  node(id: string) {
+    return this.getNode(id)
+  }
+
+  // alias
+  remove(id: string) {
+    return this.removeNode(id)
+  }
+
+  // alias
+  add(node: INode) {
+    return this.addNode(node)
+  }
+
+  /**
+   * configure Node Type Added Handler
+   */
   _configureNodeTypeAddedHandler() {
     const {
       RED,
@@ -386,6 +435,10 @@ export class Nodes extends Context implements INodes {
     });
   }
 
+  /**
+   * replace Nodes
+   * @param replaceNodes
+   */
   _replaceNodes(replaceNodes: INode[]) {
     const {
       RED,
@@ -432,11 +485,19 @@ export class Nodes extends Context implements INodes {
     return this._version
   }
 
-  // delegate to registry
+  /**
+   * set Node List
+   * TODO: use @delegateTo('registry')
+   * @param list
+   */
   setNodeList(list: INode[]) {
     this.registry.setNodeList(list)
   }
 
+  /**
+   * get Node Set
+   * @param id
+   */
   getNodeSet(id: string) {
     this.registry.getNodeSet(id)
   }
@@ -527,17 +588,17 @@ export class Nodes extends Context implements INodes {
 
   /**
    * Filter nodes based on a filter criteria
-   * @param filter { object } filter criteria (Node) all filtered nodes must match
+   * @param filter { any object } filter criteria (props of Node) all filtered nodes must match
    */
-  filterNodes(filter: INode): INode[] {
+  filterNodes(filter: any): INode[] {
     return this.filter.filterNodes(filter)
   }
 
   /**
    * Filter links based on a filter criteria
-   * @param filter { object } filter criteria (Link) all filtered links must match
+   * @param filter { any object } filter criteria (Link props) all filtered links must match
    */
-  filterLinks(filter: ILink): ILink[] {
+  filterLinks(filter: any): ILink[] {
     return this.filter.filterLinks(filter)
   }
 

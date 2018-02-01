@@ -17,17 +17,28 @@ import { log } from 'util';
  * - remove event from event history
  */
 
+import {
+  IEvent,
+  INodes
+} from '../interfaces'
+
+import { lazyInject, TYPES } from '../_container';
+
 export interface IUndo {
   undoEvent(ev: IEvent): IUndo
 }
 
+/**
+ * Undo events
+ *
+ * Services:
+ * - nodes: INodes
+ */
 export class Undo extends Context implements IUndo {
-  public nodes: any
+  @lazyInject(TYPES.nodes) nodes: INodes
 
   constructor() {
     super()
-    const { RED } = this
-    this.nodes = RED.nodes
   }
 
   /**
@@ -67,7 +78,7 @@ export class Undo extends Context implements IUndo {
     let modifiedTabs = {};
 
     Object.keys(modifiedTabs).forEach(function (id) {
-      var subflow = nodes.subflow(id);
+      var subflow = nodes.subflow(id)
       if (subflow) {
         ctx.editor.validateNode(subflow);
       }
@@ -131,7 +142,7 @@ export class Undo extends Context implements IUndo {
         n.changed = true;
       }
     })
-    nodes.version(ev.rev);
+    nodes.setVersion(ev.rev);
     return this
   }
 

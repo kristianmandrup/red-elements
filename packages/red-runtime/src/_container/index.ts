@@ -19,6 +19,9 @@ const TYPES = {
 
 const runtimeContainer = new Container()
 
+import getDecorators from 'inversify-inject-decorators';
+export const { lazyInject } = getDecorators(runtimeContainer)
+
 import {
   Nodes,
   clazzes
