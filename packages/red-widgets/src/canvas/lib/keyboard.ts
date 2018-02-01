@@ -6,10 +6,14 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasKeyboard {
+  endKeyboardMove()
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasKeyboard extends Context {
+export class CanvasKeyboard extends Context implements ICanvasKeyboard {
   constructor(protected canvas: Canvas) {
     super()
   }

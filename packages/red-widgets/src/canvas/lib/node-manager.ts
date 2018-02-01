@@ -7,10 +7,31 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasNodeManager {
+  /**
+   * get element position of node
+   * @param node
+   */
+  getNodeElementPosition(node)
+
+  /**
+   * update Active Nodes
+   */
+  updateActiveNodes()
+
+  /**
+   * Add node
+   * @param type
+   * @param x
+   * @param y
+   */
+  addNode(type: any, x: any, y: any)
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasNodeManager extends Context {
+export class CanvasNodeManager extends Context implements ICanvasNodeManager {
   constructor(protected canvas: Canvas) {
     super()
   }

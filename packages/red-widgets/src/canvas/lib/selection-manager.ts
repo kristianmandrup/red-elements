@@ -6,10 +6,60 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasSelectionManager {
+  /**
+     * select All
+     */
+  selectAll()
+
+  /**
+   * clear Selection
+   */
+  clearSelection()
+
+  /**
+   * update Selection
+   */
+  updateSelection()
+
+  /**
+   * move Selection
+   * @param dx
+   * @param dy
+   */
+  moveSelection(dx, dy)
+
+  /**
+     * edit Selection
+     */
+  editSelection()
+
+  /**
+   * delete Selection
+   */
+  deleteSelection()
+
+  /**
+   * copy Selection
+   */
+  copySelection()
+
+  /**
+   * Select a selection
+   * @param selection
+   */
+  select(selection)
+
+  /**
+   * make a selection
+   */
+  selection()
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasSelectionManager extends Context {
+export class CanvasSelectionManager extends Context implements ICanvasSelectionManager {
   constructor(protected canvas: Canvas) {
     super()
   }

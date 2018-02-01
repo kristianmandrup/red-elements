@@ -7,10 +7,18 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasConfiguration {
+  configure()
+  configureD3()
+  configureEvents()
+  configureHandlers()
+  configureActions()
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasConfiguration extends Context {
+export class CanvasConfiguration extends Context implements ICanvasConfiguration {
   disabled: boolean
 
   constructor(protected canvas: Canvas) {

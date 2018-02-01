@@ -8,11 +8,28 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasZoomer {
+  /**
+   * zoom In
+   */
+  zoomIn()
+
+  /**
+   * zoom Out
+   */
+  zoomOut()
+
+  /**
+   * zoom Zero
+   */
+  zoomZero()
+}
+
 @delegateTarget({
   container,
 })
 
-export class CanvasZoomer extends Context {
+export class CanvasZoomer extends Context implements ICanvasZoomer {
   constructor(protected canvas: Canvas) {
     super()
   }

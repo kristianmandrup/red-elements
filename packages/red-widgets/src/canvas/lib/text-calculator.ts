@@ -6,10 +6,20 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasTextCalculator {
+  /**
+   * calculate Text Width
+   * @param str
+   * @param className
+   * @param offset
+   */
+  calculateTextWidth(str, className, offset)
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasTextCalculator extends Context {
+export class CanvasTextCalculator extends Context implements ICanvasTextCalculator {
   constructor(protected canvas: Canvas) {
     super()
   }

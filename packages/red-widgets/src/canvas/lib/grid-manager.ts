@@ -6,10 +6,33 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasGridManager {
+   /**
+   * Grid Size
+   * @param v
+   */
+  gridSize(v)
+   /**
+   * Toggle Show Grid
+   * @param state
+   */
+  toggleShowGrid(state)
+
+   /**
+   * Toggle Snap Grid
+   * @param state
+   */
+  toggleSnapGrid(state)
+   /**
+   * Update Grid
+   */
+  updateGrid()
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasGridManager extends Context {
+export class CanvasGridManager extends Context implements ICanvasGridManager {
   constructor(protected canvas: Canvas) {
     super()
   }
