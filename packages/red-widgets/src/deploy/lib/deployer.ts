@@ -1,13 +1,13 @@
 import {
-  Deploy
-} from './'
-
-import {
+  Deploy,
+  IDeploy,
   autobind,
   Context,
   log,
+  delegator,
   delegateTarget,
   container,
+  IDeploymentsApi,
   DeploymentsApi
 } from './_base'
 
@@ -23,10 +23,16 @@ export interface IDeployer {
   container,
   // key: 'Deployer'
 })
+@delegator({
+  container,
+  bind: {
+    deployApi: 'IDeploymentsApi'
+  }
+})
 export class Deployer extends Context implements IDeployer {
-  protected deployApi: DeploymentsApi
+  protected deployApi: IDeploymentsApi // TODO: replace with interface!
 
-  constructor(public deploy: Deploy) {
+  constructor(public deploy: IDeploy) {
     super()
   }
 

@@ -1,8 +1,5 @@
 import {
-  Deploy
-} from './'
-
-import {
+  Deploy,
   Context,
   log,
   delegateTarget,

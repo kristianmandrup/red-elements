@@ -7,8 +7,13 @@ export {
 
 export {
   IBaseApi,
+
+  IDeploymentsApi,
   DeploymentsApi,
+
+  IFlowsApi,
   FlowsApi,
+
   I18nCatalogApi,
   LibrariesApi,
   NodesApi,

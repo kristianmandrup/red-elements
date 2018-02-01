@@ -3,8 +3,14 @@ import {
 } from '../base'
 
 import {
-  CreateDeployments
+  CreateDeployments,
+  ICreateDeployments
 } from './create';
+
+export interface IDeploymentsApi {
+  create: ICreateDeployments
+
+}
 
 export class DeploymentsApi extends BaseApi {
   basePath = 'deployments'

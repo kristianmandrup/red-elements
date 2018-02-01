@@ -1,4 +1,6 @@
 import {
+  Deploy,
+  IDeploy,
   autobind,
   Context,
   log,
@@ -8,10 +10,9 @@ import {
 } from './_base'
 
 import {
-  Deploy
-} from './'
-
-import { IFlowsPoster } from './flows-poster';
+  IFlowsPoster,
+  FlowsPoster
+} from './flows-poster';
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
@@ -43,7 +44,7 @@ export class FlowsSaver extends Context implements IFlowsSaver {
   protected flowsPoster: IFlowsPoster
   protected flowsSaver: IFlowsSaver
 
-  constructor(public deploy: Deploy) {
+  constructor(public deploy: IDeploy) {
     super()
   }
 

@@ -3,6 +3,11 @@ import { BaseApiData, IApiData } from './_data';
 export interface IApiCreate extends IApiData {
 }
 
+export interface IBaseApiCreate {
+  one(data: any): Promise<any>
+  many(data: any[]): Promise<any>
+}
+
 export class BaseApiCreate extends BaseApiData {
   public httpMethod = 'post'
 

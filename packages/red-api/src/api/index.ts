@@ -10,10 +10,12 @@ export {
 } from './base'
 
 export {
+  IDeploymentsApi,
   DeploymentsApi,
 } from './deployments'
 
 export {
+  IFlowsApi,
   FlowsApi,
 } from './flows'
 

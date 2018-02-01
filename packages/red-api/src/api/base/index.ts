@@ -4,9 +4,16 @@ export {
 } from './api'
 
 export {
+  IBaseApiCreate,
   BaseApiCreate,
+
+  IBaseApiUpdate,
   BaseApiUpdate,
+
+  IBaseApiDelete,
   BaseApiDelete,
+
+  IBaseApiRead,
   BaseApiRead,
   BaseApiMethod,
   BaseApiData,

@@ -3,25 +3,36 @@ import {
 } from '../base'
 
 import {
-  ReadFlows
+  ReadFlows,
+  IReadFlows
 } from './read';
 import {
-  UpdateFlows
+  UpdateFlows,
+  IUpdateFlows
 } from './update';
 import {
-  CreateFlows
+  CreateFlows,
+  ICreateFlows,
 } from './create';
 import {
-  DeleteFlows
+  DeleteFlows,
+  IDeleteFlows
 } from './delete';
+
+export interface IFlowsApi {
+  read: IReadFlows
+  update: IUpdateFlows
+  create: ICreateFlows
+  delete: IDeleteFlows
+}
 
 export class FlowsApi extends BaseApi {
   basePath = 'flows'
 
-  public read: ReadFlows
-  public update: UpdateFlows
-  public create: CreateFlows
-  public delete: DeleteFlows
+  read: ReadFlows
+  update: UpdateFlows
+  create: CreateFlows
+  delete: DeleteFlows
 
   constructor(config?: any) {
     super(config)

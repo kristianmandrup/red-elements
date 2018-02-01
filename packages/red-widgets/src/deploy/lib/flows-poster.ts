@@ -1,13 +1,12 @@
 import {
-  Deploy
-} from './'
-
-import {
+  Deploy,
+  IDeploy,
   Context,
   log,
   delegateTarget,
   delegator,
   container,
+  IFlowsApi,
   FlowsApi
 } from './_base'
 
@@ -27,13 +26,13 @@ export interface IFlowsPoster {
 @delegator({
   container,
   map: {
-    flowsApi: FlowsApi,
+    flowsApi: 'IFlowsApi',
   }
 })
 export class FlowsPoster extends Context implements IFlowsPoster {
-  protected flowsApi: FlowsApi
+  protected flowsApi: IFlowsApi
 
-  constructor(public deploy: Deploy) {
+  constructor(public deploy: IDeploy) {
     super()
   }
 
