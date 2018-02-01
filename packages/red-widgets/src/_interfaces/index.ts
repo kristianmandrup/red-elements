@@ -50,7 +50,13 @@ export {
 
 export interface I18n {
   t(key: string): string,
-  init : Function
+  init: Function
+}
+
+export interface IUserSetting {
+  t(key: string): string,
+  add: Function,
+  show(name: string)
 }
 
 export interface I18nWidget extends JQElem {

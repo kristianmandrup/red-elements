@@ -8,6 +8,23 @@ import {
   delegateTarget
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  ISettings
+} from '@tecla5/red-runtime'
+
+import {
+  IMenu,
+  IActions,
+  IEvents,
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
@@ -16,6 +33,12 @@ interface IDialog extends JQuery<HTMLElement> {
   container,
 })
 export class LibraryConfiguration extends Context {
+
+  @lazyInject(TYPES.actions) actions: IActions
+  @lazyInject(TYPES.events) events: IEvents
+  @lazyInject(TYPES.common.menu) menu: IMenu
+  @lazyInject(TYPES.settings) settings: ISettings
+
   constructor(public library: Library) {
     super()
   }
@@ -28,6 +51,7 @@ export class LibraryConfiguration extends Context {
     const {
       RED
     } = this.library
+    
     let {
       exportFlow,
       postLibraryFlow,
@@ -38,21 +62,28 @@ export class LibraryConfiguration extends Context {
         'loadFlowLibrary'
       ], this.library)
 
-    RED.actions.add("core:library-export", exportFlow);
+    const {
+      actions,
+      events,
+      menu,
+      settings
+    } = this
 
-    RED.events.on("view:selection-changed", (selection) => {
+    actions.add("core:library-export", exportFlow);
+
+    events.on("view:selection-changed", (selection) => {
       if (!selection.nodes) {
-        RED.menu.setDisabled("menu-item-export", true);
-        RED.menu.setDisabled("menu-item-export-clipboard", true);
-        RED.menu.setDisabled("menu-item-export-library", true);
+        menu.setDisabled("menu-item-export", true);
+        menu.setDisabled("menu-item-export-clipboard", true);
+        menu.setDisabled("menu-item-export-library", true);
       } else {
-        RED.menu.setDisabled("menu-item-export", false);
-        RED.menu.setDisabled("menu-item-export-clipboard", false);
-        RED.menu.setDisabled("menu-item-export-library", false);
+        menu.setDisabled("menu-item-export", false);
+        menu.setDisabled("menu-item-export-clipboard", false);
+        menu.setDisabled("menu-item-export-library", false);
       }
     });
 
-    if (RED.settings.theme("menu.menu-item-import-library") !== false) {
+    if (settings.theme("menu.menu-item-import-library") !== false) {
       loadFlowLibrary(true);
     }
 
