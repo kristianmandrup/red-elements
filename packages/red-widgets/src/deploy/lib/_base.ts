@@ -2,6 +2,10 @@ export { Context, $ } from '../../context';
 export const { log } = console
 
 export {
+  autobind
+} from '../../_decorators'
+
+export {
   container,
   delegateTarget,
   delegator,

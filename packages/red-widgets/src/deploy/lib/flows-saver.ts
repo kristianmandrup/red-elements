@@ -1,4 +1,5 @@
 import {
+  autobind,
   Context,
   log,
   delegateTarget,
@@ -10,10 +11,22 @@ import {
   Deploy
 } from './'
 
-import { FlowsPoster } from './flows-poster';
+import { IFlowsPoster } from './flows-poster';
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
+}
+
+export interface IFlowsSaver {
+  /**
+   * Save flows
+   * @param skipValidation
+   * @param force
+   */
+  saveFlows(skipValidation, force): Promise<any>
+  postFlows(data, opts) // TODO: which method needs to be public?
+
+  sortNodeInfo(A, B) // TODO: make protected
 }
 
 @delegateTarget({
@@ -22,18 +35,23 @@ interface IDialog extends JQuery<HTMLElement> {
 @delegator({
   container,
   map: {
-    flowsPoster: FlowsPoster,
-    flowsSaver: FlowsSaver
+    flowsPoster: 'IFlowsPoster',
+    flowsSaver: 'IFlowsSaver'
   }
 })
-export class FlowsSaver extends Context {
-  protected flowsPoster: FlowsPoster
-  protected flowsSaver: FlowsSaver
+export class FlowsSaver extends Context implements IFlowsSaver {
+  protected flowsPoster: IFlowsPoster
+  protected flowsSaver: IFlowsSaver
 
   constructor(public deploy: Deploy) {
     super()
   }
 
+  /**
+   *
+   * @param skipValidation
+   * @param force
+   */
   async saveFlows(skipValidation, force) {
     let {
       RED,
@@ -190,6 +208,7 @@ export class FlowsSaver extends Context {
     return await this.flowsPoster.postFlows(data, opts)
   }
 
+  @autobind
   sortNodeInfo(A, B) {
     if (A.tab < B.tab) {
       return -1;

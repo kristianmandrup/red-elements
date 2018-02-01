@@ -3,6 +3,7 @@ import {
 } from './'
 
 import {
+  autobind,
   Context,
   log,
   delegateTarget,
@@ -10,23 +11,35 @@ import {
   DeploymentsApi
 } from './_base'
 
+export interface IDeployer {
+  /**
+   * Deploy nodes
+   * @param nodes
+   */
+  deployNodes(nodes): Promise<any>
+}
+
 @delegateTarget({
   container,
   // key: 'Deployer'
 })
-export class Deployer extends Context {
+export class Deployer extends Context implements IDeployer {
   protected deployApi: DeploymentsApi
 
   constructor(public deploy: Deploy) {
     super()
   }
 
+  /**
+   *
+   * @param nodes
+   */
   async deployNodes(nodes) {
     const {
-    onDeployError,
-      onDeploySuccess,
-      onDeployFinally
-  } = this
+      _onDeployError,
+      _onDeploySuccess,
+      _onDeployFinally
+    } = this
 
     const data = {
       project: 'my-project',
@@ -39,11 +52,11 @@ export class Deployer extends Context {
 
     try {
       const result = await this.deployApi.create.one(data)
-      this.onDeploySuccess(result)
+      _onDeploySuccess(result)
     } catch (error) {
-      onDeployError(error)
+      _onDeployError(error)
     } finally {
-      onDeployFinally()
+      _onDeployFinally()
     }
   }
 
@@ -51,20 +64,23 @@ export class Deployer extends Context {
    *
    * @param data
    */
-  onDeploySuccess(data) {
+  @autobind
+  protected _onDeploySuccess(data) {
   }
 
   /**
    *
    * @param error
    */
-  onDeployError(error) {
+  @autobind
+  protected _onDeployError(error) {
   }
 
   /**
    *
    */
-  onDeployFinally() {
+  @autobind
+  protected _onDeployFinally() {
 
   }
 }

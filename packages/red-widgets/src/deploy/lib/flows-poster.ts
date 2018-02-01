@@ -11,6 +11,16 @@ import {
   FlowsApi
 } from './_base'
 
+export interface IFlowsPoster {
+  /**
+   *
+   * @param data
+   * @param opts
+   */
+  postFlows(data, opts): Promise<any>
+
+}
+
 @delegateTarget({
   container,
 })
@@ -20,13 +30,18 @@ import {
     flowsApi: FlowsApi,
   }
 })
-export class FlowsPoster extends Context {
+export class FlowsPoster extends Context implements IFlowsPoster {
   protected flowsApi: FlowsApi
 
   constructor(public deploy: Deploy) {
     super()
   }
 
+  /**
+   *
+   * @param data
+   * @param opts
+   */
   async postFlows(data, opts: any = {}) {
     const {
       rebind,

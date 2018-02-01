@@ -20,11 +20,11 @@ interface IDialog extends JQuery<HTMLElement> {
 
 import * as path from 'path'
 
-import { DeployConfiguration } from './configuration';
+import { IDeployConfiguration } from './configuration';
 import {
-  FlowsSaver
+  IFlowsSaver
 } from './flows-saver'
-import { Deployer } from './deployer';
+import { IDeployer } from './deployer';
 
 const iconsPath = 'red/images/'
 
@@ -81,9 +81,9 @@ export interface IDeploy {
 @delegator({
   container,
   map: {
-    configuration: DeployConfiguration,
-    flowsSaver: FlowsSaver,
-    deployer: Deployer
+    configuration: 'IDeployConfiguration',
+    flowsSaver: 'IFlowsSaver',
+    deployer: 'IDeployer'
   }
 })
 export class Deploy extends Context {
@@ -118,9 +118,9 @@ export class Deploy extends Context {
 
   // injected services via delegates container!
   // TODO: use interfaces
-  protected configuration: DeployConfiguration // = new DeployConfiguration(this)
-  protected flowsSaver: FlowsSaver
-  protected deployer: Deployer
+  protected configuration: IDeployConfiguration // = new DeployConfiguration(this)
+  protected flowsSaver: IFlowsSaver
+  protected deployer: IDeployer
 
   constructor(options: any = {}) {
     super()
@@ -136,13 +136,14 @@ export class Deploy extends Context {
   changeDeploymentType(type) {
     let {
       deploymentType,
-      deploymentTypes
+      deploymentTypes,
+      rebind
     } = this
 
     const {
       setInstanceVars,
       handleError
-    } = this.rebind([
+    } = rebind([
         'setInstanceVars',
         'handleError'
       ], this)
@@ -172,20 +173,20 @@ export class Deploy extends Context {
 
   getNodeInfo(node) {
     const {
-      ctx
+      RED
     } = this
 
     var tabLabel = "";
     if (node.z) {
-      var tab = ctx.nodes.workspace(node.z);
+      var tab = RED.nodes.workspace(node.z);
       if (!tab) {
-        tab = ctx.nodes.subflow(node.z);
+        tab = RED.nodes.subflow(node.z);
         tabLabel = tab.name;
       } else {
         tabLabel = tab.label;
       }
     }
-    var label = ctx.utils.getNodeLabel(node, node.id);
+    var label = RED.utils.getNodeLabel(node, node.id);
     return {
       tab: tabLabel,
       type: node.type,

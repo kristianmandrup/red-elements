@@ -28,19 +28,23 @@ import {
   INodes
 } from '@tecla5/red-runtime'
 
-const TYPES = $TYPES.runtime
+const TYPES = $TYPES.all
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
+export interface IDeployConfiguration {
+  configure(options: any)
+}
+
 @delegateTarget({
   container,
 })
-export class DeployConfiguration extends Context {
+export class DeployConfiguration extends Context implements IDeployConfiguration {
   @lazyInject(TYPES.nodes) nodes: INodes
   @lazyInject(TYPES.actions) actions: IActions
-  // @lazyInject(TYPES.nodeDiff) diff: INodeDiff
+  @lazyInject(TYPES.nodeDiff) diff: INodeDiff
   @lazyInject(TYPES.i18n) i18n: I18n
 
   constructor(public deploy: Deploy) {
