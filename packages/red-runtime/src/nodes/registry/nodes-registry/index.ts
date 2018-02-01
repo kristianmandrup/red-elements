@@ -10,17 +10,15 @@ import {
 } from './node-set-manager'
 
 import {
-  INodeSet
-} from '../../interfaces'
+  INodeSet,
+  INode
+} from '../../../interfaces'
 
 import {
   INodeTypeManager,
   NodeTypeManager
 } from './node-type-manager'
 
-import {
-  INode
-} from '../../../interfaces'
 
 export interface INodesRegistry {
   // delegating to NodeSetManager
