@@ -1,10 +1,13 @@
 export {
   Context,
   IRED,
-  TYPES,
   IValidator,
   Validator
 } from './context'
+
+export {
+  TYPES
+} from './types'
 
 export {
   todo,
