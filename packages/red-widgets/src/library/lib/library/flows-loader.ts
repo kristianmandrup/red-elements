@@ -16,16 +16,20 @@ interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
-@delegateTarget({
-  container,
-})
+export interface ILibraryFlowsLoader {
+  loadFlowsLibrary()
+  loadFlowByName(flowName: string)
+  onLoadFlowSuccess(data)
+  onLoadFlowsSuccess(data)
+}
+
 @delegator({
   container,
   map: {
     librariesApi: LibrariesApi
   }
 })
-export class LibraryFlowsLoader extends Context {
+export class LibraryFlowsLoader extends Context implements ILibraryFlowsLoader {
   protected librariesApi: LibrariesApi
 
   constructor(public library: Library) {

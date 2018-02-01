@@ -82,7 +82,7 @@ export interface IClipboard {
     nodesImporter: ClipboardNodesImporter
   }
 })
-export class Clipboard extends Context {
+export class Clipboard extends Context implements IClipboard {
   public disabled: Boolean
   public dialog: any // JQuery<HTMLElement>
   public dialogContainer: any

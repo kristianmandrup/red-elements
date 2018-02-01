@@ -10,10 +10,14 @@ interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
+export interface IClipboardDialogs {
+  setupDialogs()
+}
+
 @delegateTarget({
   container,
 })
-export class ClipboardDialogs extends Context {
+export class ClipboardDialogs extends Context implements IClipboardDialogs {
   disabled: boolean
 
   constructor(protected clipboard: Clipboard) {

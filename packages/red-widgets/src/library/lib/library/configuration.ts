@@ -29,10 +29,15 @@ interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
+export interface ILibraryConfiguration {
+  exportToLibraryDialog(value)
+  configure(options: any)
+}
+
 @delegateTarget({
   container,
 })
-export class LibraryConfiguration extends Context {
+export class LibraryConfiguration extends Context implements ILibraryConfiguration {
 
   @lazyInject(TYPES.actions) actions: IActions
   @lazyInject(TYPES.events) events: IEvents
@@ -51,7 +56,7 @@ export class LibraryConfiguration extends Context {
     const {
       RED
     } = this.library
-    
+
     let {
       exportFlow,
       postLibraryFlow,

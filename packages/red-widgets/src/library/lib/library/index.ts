@@ -29,6 +29,14 @@ import { LibraryFlowsLoader } from './flows-loader';
 
 const { log } = console
 
+export interface ILibrary {
+  configure()
+  postLibraryFlow(flowName)
+  loadFlowsLibrary()
+  createUI(options)
+  exportFlow()
+}
+
 @delegator({
   container,
   map: {
@@ -37,7 +45,7 @@ const { log } = console
     flowsLoader: LibraryFlowsLoader
   }
 })
-export class Library extends Context {
+export class Library extends Context implements ILibrary {
   exportToLibraryDialog: any;
   flowName: any;
   ui: any;

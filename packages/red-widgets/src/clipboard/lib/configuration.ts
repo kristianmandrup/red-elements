@@ -23,13 +23,16 @@ import {
   ICanvas
 } from '../../_interfaces'
 
-
 const TYPES = $TYPES.all
+
+export interface IClipboardConfiguration {
+  configure()
+}
 
 @delegateTarget({
   container,
 })
-export class ClipboardConfiguration extends Context {
+export class ClipboardConfiguration extends Context implements IClipboardConfiguration {
   // you need to define these types in red-runtime, src/_container just like for NODES,
   // then export up the hierarchy (see index.ts files)
   @lazyInject(TYPES.common.menu) menu: IMenu
