@@ -3,13 +3,11 @@ import {
   Context,
   log,
   delegateTarget,
-  container
-} from './_base'
+  container,
 
-import {
   lazyInject,
   $TYPES
-} from '../../_container'
+} from '../_base'
 
 import {
   IActions,

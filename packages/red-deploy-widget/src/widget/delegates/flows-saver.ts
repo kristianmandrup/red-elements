@@ -7,7 +7,13 @@ import {
   delegateTarget,
   delegator,
   container,
-} from './_base'
+  lazyInject,
+  $TYPES
+} from '../_base'
+
+import {
+  INodes
+} from '../../_interfaces'
 
 import {
   IFlowsPoster,
@@ -41,6 +47,8 @@ export interface IFlowsSaver {
   }
 })
 export class FlowsSaver extends Context implements IFlowsSaver {
+  @lazyInject($TYPES.all.nodes) nodes: INodes
+
   protected flowsPoster: IFlowsPoster
   protected flowsSaver: IFlowsSaver
 
@@ -54,23 +62,28 @@ export class FlowsSaver extends Context implements IFlowsSaver {
    * @param force
    */
   async saveFlows(skipValidation, force) {
+    const {
+      nodes,
+      rebind,
+      deploy
+    } = this
+
     let {
-      RED,
       deployInflight,
       lastDeployAttemptTime,
       deploymentType,
       ignoreDeployWarnings,
-    } = this.deploy
+    } = deploy
 
     const {
       getNodeInfo,
       sortNodeInfo,
       resolveConflict
-    } = this.rebind([
+    } = rebind([
         'getNodeInfo',
         'sortNodeInfo',
         'resolveConflict'
-      ])
+      ], deploy)
 
     if (!$("#btn-deploy").hasClass("disabled")) {
       log({
@@ -93,7 +106,7 @@ export class FlowsSaver extends Context implements IFlowsSaver {
         var unknownNodes = [];
         var invalidNodes = [];
 
-        RED.nodes.eachNode(function (node) {
+        nodes.eachNode(function (node) {
           hasInvalid = hasInvalid || !node.valid;
           if (!node.valid) {
             invalidNodes.push(getNodeInfo(node));
@@ -109,7 +122,7 @@ export class FlowsSaver extends Context implements IFlowsSaver {
         hasUnknown = unknownNodes.length > 0;
 
         var unusedConfigNodes = [];
-        RED.nodes.eachConfig(function (node) {
+        nodes.eachConfig(function (node) {
           if (!node.users || node.users.length === 0 && (node._def.hasUsers !== false)) {
             unusedConfigNodes.push(getNodeInfo(node));
             hasUnusedConfig = true;
@@ -169,7 +182,7 @@ export class FlowsSaver extends Context implements IFlowsSaver {
         log('deploy validation DONE')
       }
 
-      var nns = RED.nodes.createCompleteNodeSet();
+      var nns = nodes.createCompleteNodeSet();
 
       var startTime = Date.now();
       $(".deploy-button-content").css('opacity', 0);
@@ -183,7 +196,7 @@ export class FlowsSaver extends Context implements IFlowsSaver {
 
       if (!force) {
         log('not forced: use current version as revision number')
-        data.rev = RED.nodes.version();
+        data.rev = nodes.version
       }
 
       const deployer = this

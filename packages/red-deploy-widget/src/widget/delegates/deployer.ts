@@ -9,7 +9,7 @@ import {
   container,
   IDeploymentsApi,
   DeploymentsApi
-} from './_base'
+} from '../_base'
 
 export interface IDeployer {
   /**

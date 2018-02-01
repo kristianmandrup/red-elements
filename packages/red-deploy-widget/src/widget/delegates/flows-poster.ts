@@ -8,7 +8,7 @@ import {
   container,
   IFlowsApi,
   FlowsApi
-} from './_base'
+} from '../_base'
 
 export interface IFlowsPoster {
   /**

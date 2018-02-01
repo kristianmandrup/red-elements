@@ -10,7 +10,8 @@ export {
 
 // TODO: use widget container or merge widget level containers into higher lv widget container
 export const container = createContainer({
-  dev: 'development'
+  dev: 'development',
+  test: 'testing',
 })
 
 

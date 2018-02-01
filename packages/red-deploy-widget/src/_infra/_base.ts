@@ -14,7 +14,7 @@ export {
 export {
   Deploy,
   IDeploy
-} from './'
+} from '../widget'
 
 export {
   container,
