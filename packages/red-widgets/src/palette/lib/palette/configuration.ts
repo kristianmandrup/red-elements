@@ -1,242 +1,167 @@
-import { Palette } from './';
-
-export interface IPaletteConfiguration {
-  configure()
-}
+import { PaletteEditor } from './';
 
 import {
-  EditableList,
-  Searchbox,
-  Context,
-  $,
+  Context, $, EditableList, Searchbox,
   container,
   delegator
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  I18n,
+  IUserSetting,
+  IActions,
+  IEvents,
+  INodes
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 @delegator({
   container
 })
-export class PaletteConfiguration extends Context {
-  // TODO: inject service Events
 
-  constructor(public palette: Palette) {
+export class PaletteEditorConfiguration extends Context {
+
+  @lazyInject(TYPES.userSettings) userSettings: IUserSetting;
+  @lazyInject(TYPES.actions) actions: IActions
+  @lazyInject(TYPES.events) events: IEvents
+  @lazyInject(TYPES.nodes) nodes: INodes
+
+  constructor(public editor: PaletteEditor) {
     super()
   }
 
-  /**
-   * make Widget Factories Available
-   * - Searchbox
-   * - EditableList
-   */
-  makeWidgetFactoriesAvailable() {
+  configure() {
+    const {
+      RED,
+      userSettings,
+      actions,
+      events,
+      nodes
+    } = this
+
     // make jquery Widget factories available for jQuery elements
     new Searchbox()
     new EditableList()
-  }
 
-  /**
-   *
-   */
-  configure() {
-    const { RED, rebind, palette } = this
+    if (RED.settings.theme('palette.editable') === false) {
+      return;
+    }
+    let {
+      createSettingsPane,
+      getSettingsPane
+    } = this.rebind([
+        'createSettingsPane',
+        'getSettingsPane'
+      ])
 
-    this.makeWidgetFactoriesAvailable()
+    let {
+      settingsPane,
+      editorTabs,
+      filterInput,
+      filteredList,
+      refreshNodeModule,
+      nodeEntries,
+      nodeList,
+      typesInUse,
+    } = this.rebind([
+        'refreshNodeModule',
+      ])
 
-    const {
-      coreCategories
-    } = palette
+    createSettingsPane();
 
-    const {
-      addNodeType,
-      removeNodeType,
-      showNodeType,
-      hideNodeType,
-      filterChange,
-      createCategoryContainer,
-    } = rebind([
-        'addNodeType',
-        'removeNodeType',
-        'showNodeType',
-        'hideNodeType',
-        'filterChange',
-        'categoryContainers',
-        'createCategoryContainer',
-      ], palette)
-
-    this.addEventHandlers()
-
-    $("#palette > .palette-spinner").show();
-
-    // create searchBox widget
-    const widget = $("#palette-search input")
-    widget['searchBox']({
-      delay: 100,
-      change: function () {
-        filterChange($(this).val());
+    userSettings.add({
+      id: 'palette',
+      title: RED._("palette.editor.palette"),
+      get: getSettingsPane,
+      close: function () {
+        settingsPane.detach();
+      },
+      focus: function () {
+        editorTabs.resize();
+        setTimeout(function () {
+          filterInput.focus();
+        }, 200);
       }
     })
 
-    var categoryList = coreCategories;
-    if (RED.settings.paletteCategories) {
-      categoryList = RED.settings.paletteCategories;
-    } else if (RED.settings.theme('palette.categories')) {
-      categoryList = RED.settings.theme('palette.categories');
-    }
-    if (!Array.isArray(categoryList)) {
-      categoryList = coreCategories
-    }
-    categoryList.forEach((category) => {
-      createCategoryContainer(category, RED._("palette.label." + category, {
-        defaultValue: category
-      }));
+    actions.add("core:manage-palette", function () {
+      userSettings.show('palette');
     });
 
-    this.addElementEventHandlers()
-  }
-
-  /**
-   * add Element Event Handlers
-   */
-  addElementEventHandlers() {
-    const {
-      categoryContainers,
-    } = this.palette
-
-    $("#palette-collapse-all").on("click", function (e) {
-      e.preventDefault();
-      for (var cat in categoryContainers) {
-        if (categoryContainers.hasOwnProperty(cat)) {
-          categoryContainers[cat].close();
+    events.on('registry:module-updated', function (ns) {
+      refreshNodeModule(ns.module);
+    });
+    events.on('registry:node-set-enabled', function (ns) {
+      refreshNodeModule(ns.module);
+    });
+    events.on('registry:node-set-disabled', function (ns) {
+      refreshNodeModule(ns.module);
+    });
+    events.on('registry:node-type-added', function (nodeType) {
+      if (!/^subflow:/.test(nodeType)) {
+        var ns = nodes.registry.getNodeSetForType(nodeType);
+        refreshNodeModule(ns.module);
+      }
+    });
+    events.on('registry:node-type-removed', function (nodeType) {
+      if (!/^subflow:/.test(nodeType)) {
+        var ns = nodes.registry.getNodeSetForType(nodeType);
+        refreshNodeModule(ns.module);
+      }
+    });
+    events.on('registry:node-set-added', function (ns) {
+      refreshNodeModule(ns.module);
+      for (var i = 0; i < filteredList.length; i++) {
+        if (filteredList[i].info.id === ns.module) {
+          var installButton = filteredList[i].elements.installButton;
+          installButton.addClass('disabled');
+          installButton.html(RED._('palette.editor.installed'));
+          break;
         }
       }
     });
-    $("#palette-expand-all").on("click", function (e) {
-      e.preventDefault();
-      for (var cat in categoryContainers) {
-        if (categoryContainers.hasOwnProperty(cat)) {
-          categoryContainers[cat].open();
+    events.on('registry:node-set-removed', function (ns) {
+      var module = nodes.registry.getModule(ns.module);
+      if (!module) {
+        var entry = nodeEntries[ns.module];
+        if (entry) {
+          nodeList.editableList('removeItem', entry);
+          delete nodeEntries[ns.module];
+          for (var i = 0; i < filteredList.length; i++) {
+            if (filteredList[i].info.id === ns.module) {
+              var installButton = filteredList[i].elements.installButton;
+              installButton.removeClass('disabled');
+              installButton.html(RED._('palette.editor.install'));
+              break;
+            }
+          }
         }
       }
     });
-  }
-
-  /**
-   * add Event Handlers
-   */
-  addEventHandlers() {
-    const {
-      addEventHandler,
-      onNodeSetRemoved,
-      onNodeSetDisabled,
-      onNodeSetEnabled,
-      onNodeTypeAdded,
-      onNodeTypeRemoved
-    } = this.rebind([
-        'addEventHandler',
-        'onNodeSetRemoved',
-        'onNodeSetDisabled',
-        'onNodeSetEnabled',
-        'onNodeTypeAdded',
-        'onNodeTypeRemoved',
-      ])
-
-    // NodeType events
-    addEventHandler('registry:node-type-added', onNodeTypeAdded)
-    addEventHandler('registry:node-type-removed', onNodeTypeRemoved);
-
-    // NodeSet events
-    addEventHandler('registry:node-set-enabled', onNodeSetEnabled)
-    addEventHandler('registry:node-set-disabled', onNodeSetDisabled);
-    addEventHandler('registry:node-set-removed', onNodeSetRemoved)
-  }
-
-  protected onNodeTypeRemoved(nodeType) {
-    const {
-      removeNodeType
-    } = this.rebind([
-        'removeNodeType'
-      ])
-    removeNodeType(nodeType);
-  }
-
-  protected onNodeTypeAdded(nodeType) {
-    const {
-      RED
-    } = this
-    const {
-      addNodeType
-    } = this.rebind([
-        'addNodeType'
-      ])
-    var def = RED.nodes.getType(nodeType);
-    addNodeType(nodeType, def);
-    if (def.onpaletteadd && typeof def.onpaletteadd === "function") {
-      def.onpaletteadd.call(def);
-    }
-  }
-
-  protected onNodeSetEnabled(nodeSet) {
-    const {
-      RED
-    } = this
-    const {
-      showNodeType
-    } = this.rebind([
-        'showNodeType'
-      ])
-    for (var j = 0; j < nodeSet.types.length; j++) {
-      showNodeType(nodeSet.types[j]);
-      var def = RED.nodes.getType(nodeSet.types[j]);
-      if (def.onpaletteadd && typeof def.onpaletteadd === "function") {
-        def.onpaletteadd.call(def);
-      }
-    }
-  }
-
-  protected onNodeSetDisabled(nodeSet) {
-    const {
-      RED
-    } = this
-    const {
-      hideNodeType
-    } = this.rebind([
-        'hideNodeType'
-      ])
-
-    for (var j = 0; j < nodeSet.types.length; j++) {
-      hideNodeType(nodeSet.types[j]);
-      var def = RED.nodes.getType(nodeSet.types[j]);
-      if (def.onpaletteremove && typeof def.onpaletteremove === "function") {
-        def.onpaletteremove.call(def);
-      }
-    }
-  }
-
-  protected onNodeSetRemoved(nodeSet) {
-    const {
-      RED
-    } = this
-    const {
-      removeNodeType
-    } = this.rebind([
-        'removeNodeType'
-      ])
-
-    if (nodeSet.added) {
-      for (var j = 0; j < nodeSet.types.length; j++) {
-        removeNodeType(nodeSet.types[j]);
-        var def = RED.nodes.getType(nodeSet.types[j]);
-        if (def.onpaletteremove && typeof def.onpaletteremove === "function") {
-          def.onpaletteremove.call(def);
+    events.on('nodes:add', function (n) {
+      if (!/^subflow:/.test(n.type)) {
+        typesInUse[n.type] = (typesInUse[n.type] || 0) + 1;
+        if (typesInUse[n.type] === 1) {
+          var ns = nodes.registry.getNodeSetForType(n.type);
+          refreshNodeModule(ns.module);
         }
       }
-    }
-  }
-
-  addEventHandler(eventName: string, eventHandler: Function) {
-    const {
-      RED
-    } = this
-    RED.events.on(eventName, eventHandler)
+    })
+    events.on('nodes:remove', function (n) {
+      if (typesInUse.hasOwnProperty(n.type)) {
+        typesInUse[n.type]--;
+        if (typesInUse[n.type] === 0) {
+          delete typesInUse[n.type];
+          var ns = nodes.registry.getNodeSetForType(n.type);
+          refreshNodeModule(ns.module);
+        }
+      }
+    })
   }
 }

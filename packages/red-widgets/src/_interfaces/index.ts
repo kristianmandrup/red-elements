@@ -8,6 +8,12 @@ export {
 } from '@tecla5/red-base'
 
 export {
+  IUtil,
+  INodes
+  // ...
+} from '@tecla5/red-runtime'
+
+export {
   IActions
 } from '../actions'
 
@@ -48,15 +54,19 @@ export {
   ITray
 } from '../tray'
 
-export interface I18n {
-  t(key: string): string,
-  init: Function
-}
-
 export interface IUserSetting {
   t(key: string): string,
   add: Function,
   show(name: string)
+}
+
+export interface IView{
+  focus()
+}
+
+export interface I18n {
+  t(key: string): string,
+  init : Function
 }
 
 export interface I18nWidget extends JQElem {
