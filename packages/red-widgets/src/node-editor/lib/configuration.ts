@@ -11,6 +11,17 @@ import {
   $
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import {
+  IActions
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 /**
  * NodeEditor configuration
  */
@@ -18,25 +29,30 @@ import {
   container,
 })
 export class NodeEditorConfiguration extends Context {
+  @lazyInject(TYPES.actions) actions: IActions
+
   constructor(public editor: NodeEditor) {
     super()
   }
 
   configure() {
-    const { RED } = this
+    const {
+      actions
+    } = this
 
     // fix: use class
-    RED.tray = new Tray();
+    tray = new Tray();
 
-    if (typeof RED.actions !== 'object') {
+    if (typeof actions !== 'object') {
       throw new Error('RED.actions must be an Actions object')
     }
 
-    RED.actions.add("core:confirm-edit-tray", () => {
+    actions.add("core:confirm-edit-tray", () => {
       $("#node-dialog-ok").click();
       $("#node-config-dialog-ok").click();
     });
-    RED.actions.add("core:cancel-edit-tray", () => {
+
+    actions.add("core:cancel-edit-tray", () => {
       $("#node-dialog-cancel").click();
       $("#node-config-dialog-cancel").click();
     });
