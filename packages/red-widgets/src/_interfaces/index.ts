@@ -8,6 +8,10 @@ export {
 } from '@tecla5/red-base'
 
 export {
+  INodes,
+} from '@tecla5/red-runtime'
+
+export {
   IActions
 } from '../actions'
 

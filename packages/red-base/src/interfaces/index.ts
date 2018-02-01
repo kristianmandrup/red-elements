@@ -1,7 +1,7 @@
 import {
   INodeDef,
   INode,
-  INodeSet
+  INodeSet,
 } from './nodes'
 
 export {

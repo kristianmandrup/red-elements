@@ -6,9 +6,6 @@ export {
   Validator,
   container,
   createContainer,
-  delegateTarget,
-  delegator,
-  delegateTo,
   INodeDef,
   INode,
   INodeSet,
@@ -19,6 +16,12 @@ export {
   IEvents,
   EventType,
   IEvent,
+
+  // decorators
+  todo,
+  delegateTarget,
+  delegator,
+  delegateTo,
 } from './src'
 
 

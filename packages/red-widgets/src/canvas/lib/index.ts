@@ -23,6 +23,14 @@ import {
   delegateTo
 } from './_base'
 
+import {
+  INodes
+} from '../../_interfaces'
+
+import {
+  todo
+} from '../../_decorators'
+
 import { CanvasConfiguration } from './configuration';
 import { CanvasZoomer } from './zoomer';
 import { CanvasSelectionManager } from './selection-manager';
