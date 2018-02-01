@@ -23,13 +23,13 @@ import {
 } from '../../context'
 
 export interface ILocalFilesystem {
-  getNodeFiles
-  getLocalFile
-  getModuleFiles
+  getLocalFile(file)
+  getNodeFiles(disableNodePathScan)
+  getModuleFiles(module)
 }
 
 
-export class LocalFilesystem extends Context {
+export class LocalFilesystem extends Context implements ILocalFilesystem {
   protected events: any
   protected log: any
   protected i18n: any

@@ -12,7 +12,16 @@ import {
 
 const { log } = console
 
-export class SubflowMatcher extends Context {
+export interface ISubflowMatcher {
+  configure(sfid: string, nodeid: string)
+  contains(): boolean
+  _checkSubflowContains(node: INode): boolean
+  _isSubflowNode(node: INode)
+  _matchingNodeZ(node: INode)
+  _matchNodeIsSubflow(match: string)
+}
+
+export class SubflowMatcher extends Context implements ISubflowMatcher {
   protected sfid: string
   protected nodeid: string
   protected nodeList: INode[]
@@ -75,9 +84,9 @@ export class SubflowMatcher extends Context {
    * Test if node .z matches subflow id - .z is the subflow (dimension) of the node
    * @param node { INode } node to test
    */
-  _matchingNodeZ(node : INode) {
+  _matchingNodeZ(node: INode) {
     const { sfid, nodeid, nodeList } = this
-    
+
     if (String(node.z) !== sfid) {
       return false
     }

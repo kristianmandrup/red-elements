@@ -33,13 +33,17 @@ import {
 } from './nodes-registry'
 
 export interface ILoader {
-
+  load(defaultNodesDir, disableNodePathScan)
+  addModule(module): Promise<any>
+  loadNodeSet(node)
+  getNodeHelp(node, lang)
+  loadNodeConfig(fileInfo)
 }
 
 /**
  * Loader to load Nodes
  */
-export class Loader extends Context {
+export class Loader extends Context implements ILoader {
 
   // TODO: FIX - use service injection for Settings,
   protected runtime: any // don't rely on runtime
