@@ -7,7 +7,17 @@
     "test": "test"
   },
   "scripts": {
-    "test": "ava"
+    "test": "jest --no-cache --config ./jest.config.js",
+    "test:watch": "jest --watch",
+    "lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-base",
+    "lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
+    "lerna:update:win": "npm run lerna:clean:win && npm run lerna:bootstrap",
+    "lerna:clean": "rm -f package.json.lock 2> /dev/null && echo y | lerna clean --scope @tecla5/red-base",
+    "lerna:clean:win": "npm run clean:lock | lerna clean --scope @tecla5/red-base",
+    "clean:win": "npm run clean:lock | clean:modules",
+    "clean:lock": "del /s /f /q package-lock.json.lock",
+    "clean:modules": "del /s /f /q node_modules/*",
+    "link:shared": "npm link @tecla5/red-base"
   },
   "keywords": [
     "node-red",
@@ -21,6 +31,7 @@
     "reflect-metadata": "^0.1.10"
   },
   "devDependencies": {
+    "javascript-decorators": "^1.0.2",
     "@types/jquery": "^3.2.16",
     "@types/jest": "^21.1.9",
     "babel-cli": "^6.24.1",

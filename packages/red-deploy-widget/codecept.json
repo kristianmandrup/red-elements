@@ -1,0 +1,27 @@
+{
+  "tests": "./test/e2e/*_test.js",
+  "timeout": 10000,
+  "output": "./test/_e2e/_output",
+  "helpers": {
+    "WebDriverIO": {
+      "url": "http://localhost",
+      "browser": "chrome"
+    },
+    "Puppeteer": {
+      "url": "http://localhost"
+    },
+    "Nightmare": {},
+    "Appium": {
+      "app": "http://localhost",
+      "platform": "iOS",
+      "device": "emulator"
+    },
+    "REST": {}
+  },
+  "include": {
+    "I": "./test/_e2e/_config/steps_file.js"
+  },
+  "bootstrap": false,
+  "mocha": {},
+  "name": "red-widgets"
+}

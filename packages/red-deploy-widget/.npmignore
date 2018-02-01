@@ -1,0 +1,6 @@
+src
+test
+node_modules
+coverage
+*.log
+*.lerna_backup

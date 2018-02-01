@@ -7,7 +7,8 @@ export {
 } from './context'
 
 export {
-  todo
+  todo,
+  autobind,
 } from './decorators'
 
 export {
