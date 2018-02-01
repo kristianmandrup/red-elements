@@ -12,7 +12,8 @@ import {
   Searchbox,
   EditableList,
   CheckboxSet,
-  TypedInput
+  TypedInput,
+  CommonUtils,
 } from './common'
 
 import {
@@ -187,7 +188,8 @@ export const widgets = {
   TypeSearch,
   UserSettings,
   Workspaces,
-  Validators
+  Validators,
+  CommonUtils,
 }
 
 export default libs
@@ -227,6 +229,7 @@ export {
   UserSettings,
   Workspaces,
   Validators,
-  RadialMenu
+  RadialMenu,
+  CommonUtils,
 }
 

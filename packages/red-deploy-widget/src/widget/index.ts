@@ -21,17 +21,24 @@ interface IDialog extends JQuery<HTMLElement> {
 import * as path from 'path'
 
 import {
+  INodes,
+  ICommonUtils
+} from '../_interfaces'
+
+import {
   IFlowsSaver,
   IDeployConfiguration,
   IDeployer
 } from './delegates'
 
 import {
+  $TYPES,
   Context,
   $,
   delegator,
   container,
-  delegateTo
+  delegateTo,
+  lazyInject
 } from './_base'
 
 
@@ -130,6 +137,9 @@ export class Deploy extends Context {
   protected flowsSaver: IFlowsSaver
   protected deployer: IDeployer
 
+  @lazyInject($TYPES.all.nodes) nodes: INodes
+  @lazyInject($TYPES.widgets.common.utils) utils: ICommonUtils
+
   constructor(options: any = {}) {
     super()
     this.configure(options)
@@ -181,20 +191,23 @@ export class Deploy extends Context {
 
   getNodeInfo(node) {
     const {
-      RED
+      nodes,
+      utils
     } = this
 
     var tabLabel = "";
     if (node.z) {
-      var tab = RED.nodes.workspace(node.z);
+      // TODO: add alias method to getWorkspace
+      var tab = nodes.workspace(node.z);
       if (!tab) {
-        tab = RED.nodes.subflow(node.z);
+        tab = nodes.subflow(node.z);
         tabLabel = tab.name;
       } else {
         tabLabel = tab.label;
       }
     }
-    var label = RED.utils.getNodeLabel(node, node.id);
+    // which utils?
+    var label = utils.getNodeLabel(node, node.id);
     return {
       tab: tabLabel,
       type: node.type,

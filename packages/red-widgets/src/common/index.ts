@@ -16,7 +16,9 @@ export {
   IPanel,
   IPopover,
   IStack,
-  ITabs
+  ITabs,
+
+  ICommonUtils,
 } from './lib'
 
 export const common = {
@@ -38,6 +40,7 @@ export const {
   TypedInput,
   EditableList,
   Searchbox,
+  CheckboxSet,
+  CommonUtils,
   Validators,
-  CheckboxSet
 } = widgets

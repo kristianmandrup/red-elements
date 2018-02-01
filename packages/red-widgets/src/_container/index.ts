@@ -37,6 +37,7 @@ const WIDGET_TYPES = {
     stack: 'IStack',
     tabs: 'ITabs',
     typedInput: 'ITypedInput',
+    utils: 'ICommonUtils'
     // ...
   },
   deploy: 'IDeploy',

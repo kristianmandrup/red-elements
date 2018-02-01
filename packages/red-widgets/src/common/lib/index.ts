@@ -34,8 +34,10 @@ import {
 } from './search-box'
 
 import {
+  ICommonUtils,
+  CommonUtils,
   Validators
-} from './utils/validators'
+} from './utils'
 
 export {
   IMenu,
@@ -54,8 +56,9 @@ export const widgets = {
   TypedInput,
   EditableList,
   Searchbox,
+  CheckboxSet,
   Validators,
-  CheckboxSet
+  CommonUtils
 }
 
 export default widgets
@@ -69,6 +72,8 @@ export {
   TypedInput,
   EditableList,
   Searchbox,
-  Validators,
-  CheckboxSet
+  CheckboxSet,
+  ICommonUtils,
+  CommonUtils,
+  Validators
 }

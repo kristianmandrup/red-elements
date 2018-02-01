@@ -1,5 +1,6 @@
 export {
-  Utils
+  CommonUtils,
+  ICommonUtils
 } from './utils'
 
 export {

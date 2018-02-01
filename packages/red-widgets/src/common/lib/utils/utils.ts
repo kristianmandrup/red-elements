@@ -15,18 +15,143 @@
  **/
 
 import { Context, $ } from '../context'
-export class Utils extends Context {
-  public Utils: any;
+import { JQElem } from '../../../_interfaces/index';
 
-  public formatString(str) {
+export interface ICommonUtils {
+  /**
+   *
+   * @param str
+   */
+  formatString(str)
+
+  /**
+   * sanitize string
+   * @param m
+   */
+  sanitize(str: string)
+
+  /**
+   * build Message Summary Value
+   * @param value
+   */
+  buildMessageSummaryValue(value: any)
+
+  /**
+   * make Expandable
+   * @param el
+   * @param onbuild
+   * @param ontoggle
+   * @param expand
+   */
+  makeExpandable(el: JQElem, onbuild: Function, ontoggle: Function, expand?: boolean)
+
+  /**
+   * add Message Controls
+   * @param obj
+   * @param sourceId
+   * @param key
+   * @param msg
+   * @param rootPath
+   * @param strippedKey
+   */
+  addMessageControls(obj, sourceId, key, msg, rootPath, strippedKey)
+
+  /**
+   * check Expanded
+   * @param strippedKey
+   * @param expandPaths
+   * @param minRange
+   * @param maxRange
+   */
+  checkExpanded(strippedKey, expandPaths, minRange?, maxRange?)
+
+  /**
+   * format Number
+   * @param element
+   * @param obj
+   * @param sourceId
+   * @param path
+   * @param cycle
+   * @param initialFormat
+   */
+  formatNumber(element, obj, sourceId, path, cycle, initialFormat?)
+
+  /**
+   * format Buffer
+   * @param element
+   * @param button
+   * @param sourceId
+   * @param path
+   * @param cycle
+   */
+  formatBuffer(element, button, sourceId, path, cycle)
+
+  /**
+   * create Object Element
+   * @param obj
+   * @param options
+   */
+  createObjectElement(obj, options)
+
+  /**
+   * normalise Property Expression
+   * @param str
+   */
+  normalisePropertyExpression(str)
+
+  /**
+   * validate Property Expression
+   * @param str
+   */
+  validatePropertyExpression(str)
+
+  /**
+   * get Message Property
+   * @param msg
+   * @param expr
+   */
+  getMessageProperty(msg, expr)
+
+  /**
+   * get Node Icon
+   * @param def
+   * @param node
+   */
+  getNodeIcon(def, node)
+
+  /**
+   * get Node Label
+   * @param node
+   * @param defaultLabel
+   */
+  getNodeLabel(node, defaultLabel)
+}
+
+export class CommonUtils extends Context implements ICommonUtils {
+  pinnedPaths: any = {};
+  formattedPaths: any = {};
+
+  /**
+   * format String
+   * @param str
+   */
+  formatString(str: string) {
     return str.replace(/\r?\n/g, "&crarr;").replace(/\t/g, "&rarr;");
   }
 
-  sanitize(m) {
-    return m.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  /**
+   * sanitize string
+   * @param m
+   */
+  sanitize(str: string) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
-  buildMessageSummaryValue(value) {
+  /**
+   * build Message Summary Value
+   * @param value
+   */
+  buildMessageSummaryValue(value: any) {
     var result;
     if (Array.isArray(value)) {
       result = $('<span class="debug-message-object-value debug-message-type-meta"></span>').html('array[' + value.length + ']');
@@ -54,7 +179,14 @@ export class Utils extends Context {
     return result;
   }
 
-  makeExpandable(el, onbuild, ontoggle, expand) {
+  /**
+   * make Expandable
+   * @param el
+   * @param onbuild
+   * @param ontoggle
+   * @param expand
+   */
+  makeExpandable(el: JQElem, onbuild: Function, ontoggle: Function, expand?: boolean) {
     el.addClass("debug-message-expandable");
     el.prop('toggle', () => {
       return (state) => {
@@ -108,9 +240,15 @@ export class Utils extends Context {
 
   }
 
-  pinnedPaths: any = {};
-  formattedPaths: any = {};
-
+  /**
+   * add Message Controls
+   * @param obj
+   * @param sourceId
+   * @param key
+   * @param msg
+   * @param rootPath
+   * @param strippedKey
+   */
   addMessageControls(obj, sourceId, key, msg, rootPath, strippedKey) {
     if (!this.pinnedPaths.hasOwnProperty(sourceId)) {
       this.pinnedPaths[sourceId] = {}
@@ -150,6 +288,13 @@ export class Utils extends Context {
     }
   }
 
+  /**
+   * check Expanded
+   * @param strippedKey
+   * @param expandPaths
+   * @param minRange
+   * @param maxRange
+   */
   checkExpanded(strippedKey, expandPaths, minRange?, maxRange?) {
     if (expandPaths && expandPaths.length > 0) {
       if (strippedKey === '' && minRange === undefined) {
@@ -175,6 +320,15 @@ export class Utils extends Context {
     return false;
   }
 
+  /**
+   * format Number
+   * @param element
+   * @param obj
+   * @param sourceId
+   * @param path
+   * @param cycle
+   * @param initialFormat
+   */
   formatNumber(element, obj, sourceId, path, cycle, initialFormat?) {
     var format = (this.formattedPaths[sourceId] && this.formattedPaths[sourceId][path]) || initialFormat || "dec";
     if (cycle) {
@@ -208,6 +362,14 @@ export class Utils extends Context {
     }
   }
 
+  /**
+   * format Buffer
+   * @param element
+   * @param button
+   * @param sourceId
+   * @param path
+   * @param cycle
+   */
   formatBuffer(element, button, sourceId, path, cycle) {
     var format = (this.formattedPaths[sourceId] && this.formattedPaths[sourceId][path]) || "raw";
     if (cycle) {
@@ -228,6 +390,11 @@ export class Utils extends Context {
     }
   }
 
+  /**
+   * create Object Element
+   * @param obj
+   * @param options
+   */
   createObjectElement(obj, options) {
     options = options || {};
     var key = options.key;
@@ -577,6 +744,10 @@ export class Utils extends Context {
     return element;
   }
 
+  /**
+   * normalise Property Expression
+   * @param str
+   */
   normalisePropertyExpression(str) {
     // This must be kept in sync with validatePropertyExpression
     // in editor/js/ui/utils.js
@@ -681,6 +852,10 @@ export class Utils extends Context {
     return parts;
   }
 
+  /**
+   * validate Property Expression
+   * @param str
+   */
   validatePropertyExpression(str) {
     try {
       var parts = this.normalisePropertyExpression(str);
@@ -690,6 +865,11 @@ export class Utils extends Context {
     }
   }
 
+  /**
+   * get Message Property
+   * @param msg
+   * @param expr
+   */
   getMessageProperty(msg, expr) {
     var result = null;
     var msgPropParts;
@@ -713,6 +893,11 @@ export class Utils extends Context {
     return result;
   }
 
+  /**
+   * get Node Icon
+   * @param def
+   * @param node
+   */
   getNodeIcon(def, node) {
     if (def.category === 'config') {
       return "icons/node-red/cog.png"
@@ -737,6 +922,11 @@ export class Utils extends Context {
     return "icons/" + def.set.module + "/" + icon_url;
   }
 
+  /**
+   * get Node Label
+   * @param node
+   * @param defaultLabel
+   */
   getNodeLabel(node, defaultLabel) {
     defaultLabel = defaultLabel || "";
     var l;

@@ -13,6 +13,12 @@ export {
   // ...
 } from '@tecla5/red-runtime'
 
+
+export interface ICommonUtils {
+
+}
+
+
 // TODO: re-export from red-interfaces
 export interface IActions {
 
