@@ -10,10 +10,14 @@ import {
   delegateTarget
 } from './_base'
 
+export interface IDiffDisplayer {
+  showDiff(diff)
+}
+
 @delegateTarget({
   container,
 })
-export class DiffDisplayer extends Context {
+export class DiffDisplayer extends Context implements IDiffDisplayer {
   constructor(public diff: Diff) {
     super()
   }

@@ -7,10 +7,14 @@ import {
   delegateTarget
 } from './_base'
 
+export interface IDiffResolver {
+  resolveDiffs(localDiff, remoteDiff)
+}
+
 @delegateTarget({
   container,
 })
-export class DiffResolver extends Context {
+export class DiffResolver extends Context implements IDiffResolver {
   constructor(public diff: Diff) {
     super()
   }

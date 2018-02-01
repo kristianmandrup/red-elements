@@ -4,10 +4,16 @@ import {
 
 import { DiffPanel } from './'
 
-/**
- *
- */
-export class NodeDiffRow extends Context {
+export interface INodeDiffRow {
+  /**
+   * create Node Diff Row
+   * @param node
+   * @param stats
+   */
+  createNodeDiffRow(node, stats)
+}
+
+export class NodeDiffRow extends Context implements INodeDiffRow {
   constructor(public diffPanel: DiffPanel) {
     super()
   }

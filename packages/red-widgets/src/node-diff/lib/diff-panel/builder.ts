@@ -4,10 +4,18 @@ import {
 
 import { DiffPanel } from './'
 
+export interface IPanelBuilder {
+  /**
+   * build Diff Panel
+   * @param container
+   */
+  buildDiffPanel(container)
+}
+
 /**
  *
  */
-export class PanelBuilder extends Context {
+export class PanelBuilder extends Context implements IPanelBuilder { 
   constructor(public diffPanel: DiffPanel) {
     super()
   }

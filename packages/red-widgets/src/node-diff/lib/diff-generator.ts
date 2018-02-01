@@ -6,13 +6,16 @@ import {
   delegateTarget
 } from './_base'
 
+export interface IDiffGenerator {
+  generateDiff(currentNodes, newNodes)
+}
+
 @delegateTarget({
   container,
 })
-export class DiffGenerator extends Context {
+export class DiffGenerator extends Context implements IDiffGenerator {
   constructor(public diff: Diff) {
     super()
-
   }
 
   generateDiff(currentNodes, newNodes) {

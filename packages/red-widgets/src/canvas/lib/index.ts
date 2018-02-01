@@ -292,6 +292,7 @@ export interface ICanvas {
   select(selection)
   scale()
   getLinksAtPoint(x, y)
+  gridSize : any
 }
 
 // import {

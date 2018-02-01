@@ -7,6 +7,17 @@ import {
   LibrariesApi
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  INotifications
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 import { LibraryUI } from './';
 
 export interface ILibraryPoster {
@@ -19,6 +30,9 @@ export interface ILibraryPoster {
   container,
 })
 export class LibraryPoster extends Context implements ILibraryPoster {
+
+  @lazyInject(TYPES.notify) notify: INotifications
+
   protected librariesApi: LibrariesApi
   constructor(public ui: LibraryUI) {
     super()
@@ -47,11 +61,12 @@ export class LibraryPoster extends Context implements ILibraryPoster {
 
   onPostSuccess(data, options: any = {}) {
     const {
-      RED
+      RED,
+      notify
     } = this
-    RED.notify(RED._("library.savedType", {
+    notify.notify(RED._("library.savedType", {
       type: options.type
-    }), "success");
+    }), "success", "", 0);
   }
 
   onPostError(error) {
@@ -61,15 +76,15 @@ export class LibraryPoster extends Context implements ILibraryPoster {
     const {
       jqXHR
     } = error
-
+    const { notify } = this
     if (jqXHR.status === 401) {
-      RED.notify(RED._("library.saveFailed", {
+      notify.notify(RED._("library.saveFailed", {
         message: RED._("user.notAuthorized")
-      }), "error");
+      }), "error", "", 0);
     } else {
-      RED.notify(RED._("library.saveFailed", {
+      notify.notify(RED._("library.saveFailed", {
         message: jqXHR.responseText
-      }), "error");
+      }), "error", "", 0);
     }
   }
 }

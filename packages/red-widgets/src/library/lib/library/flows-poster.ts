@@ -11,6 +11,23 @@ import {
   LibrariesApi
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  ISettings,
+  ILibraryFlowsPoster
+} from '@tecla5/red-runtime'
+
+import {
+  IMenu,
+  INotifications
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
@@ -25,9 +42,14 @@ export interface ILibraryFlowsPoster {
   container,
 })
 export class LibraryFlowsPoster extends Context implements ILibraryFlowsPoster {
+
+  @lazyInject(TYPES.library) library: ILibraryFlowsPoster
+  @lazyInject(TYPES.notify) notify: INotifications
+
   protected librariesApi: LibrariesApi
 
-  constructor(public library: Library) {
+  // constructor(public library: Library) {
+  constructor() {
     super()
   }
 
@@ -42,7 +64,7 @@ export class LibraryFlowsPoster extends Context implements ILibraryFlowsPoster {
     const {
       librariesApi,
       onPostSuccess,
-      onPostError
+      onPostError,
     } = this
 
     this.librariesApi = new LibrariesApi().configure({
@@ -59,16 +81,19 @@ export class LibraryFlowsPoster extends Context implements ILibraryFlowsPoster {
 
   onPostSuccess(data) {
     const {
-      RED
+      RED,
+      library,
+      notify
     } = this
 
-    RED.library.loadFlowLibrary();
-    RED.notify(RED._("library.savedNodes"), "success");
+    library.loadFlowLibrary();
+    notify.notify(RED._("library.savedNodes"), "success", "", 0);
   }
 
   onPostError(error) {
     const {
-      RED
+      RED,
+      notify
     } = this
 
     const {
@@ -76,13 +101,13 @@ export class LibraryFlowsPoster extends Context implements ILibraryFlowsPoster {
     } = error
 
     if (xhr.status === 401) {
-      RED.notify(RED._("library.saveFailed", {
+      notify.notify(RED._("library.saveFailed", {
         message: RED._("user.notAuthorized")
-      }), "error");
+      }), "error", "", 0);
     } else {
-      RED.notify(RED._("library.saveFailed", {
+      notify.notify(RED._("library.saveFailed", {
         message: xhr.responseText
-      }), "error");
+      }), "error", "", 0);
     }
   }
 }

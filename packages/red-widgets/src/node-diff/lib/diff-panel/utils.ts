@@ -4,10 +4,26 @@ import {
 
 import { DiffPanel } from './'
 
+export interface IDiffPanelUtils {
+  /**
+     * create Node Icon
+     * @param node
+     * @param def
+     */
+  createNodeIcon(node, def)
+
+  /**
+   * create Node
+   * @param node
+   * @param def
+   */
+  createNode(node, def)
+}
+
 /**
  *
  */
-export class DiffPanelUtils extends Context {
+export class DiffPanelUtils extends Context implements IDiffPanelUtils {
   constructor(public diffPanel: DiffPanel) {
     super()
   }

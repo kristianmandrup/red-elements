@@ -7,13 +7,17 @@ import {
   $
 } from './_base'
 
+export interface IEditorUtils {
+  stringToUTF8Array(str)
+}
+
 /**
  * Editor Utils for NodeEditor
  */
 @delegateTarget({
   container,
 })
-export class EditorUtils extends Context {
+export class EditorUtils extends Context implements IEditorUtils {
   constructor(public editor: NodeEditor) {
     super()
   }

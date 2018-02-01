@@ -7,6 +7,21 @@ import {
   container
 } from './container'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import {
+  IActions,
+  ICanvas,
+
+} from '../../_interfaces'
+
+import { ISettings } from '@tecla5/red-runtime'
+
+const TYPES = $TYPES.all
+
 export interface IViewSettingOption {
   setting: string
   oldSetting?: string
@@ -24,16 +39,24 @@ export interface IViewSetting {
 
 @delegator({
   container,
+  map: {
+    display: UserSettingsDisplay
+  }
 })
 export class UserSettingsConfiguration extends Context {
+
+  @lazyInject(TYPES.actions) actions: IActions
+  @lazyInject(TYPES.view) view: ICanvas
+  @lazyInject(TYPES.settings) settings: ISettings
+
   allSettings = {}
   trayWidth = 700;
   settingsVisible = false;
   panes = [];
 
-  protected display: UserSettingsDisplay = new UserSettingsDisplay(this.settings, this)
+  protected display: UserSettingsDisplay //= new UserSettingsDisplay(this.settings, this)
 
-  constructor(public settings: UserSettings) {
+  constructor() {
     super()
   }
 
@@ -41,7 +64,8 @@ export class UserSettingsConfiguration extends Context {
     const {
       RED,
       rebind,
-      settings
+      settings,
+      actions
   } = this
 
     let {
@@ -66,12 +90,12 @@ export class UserSettingsConfiguration extends Context {
         'setSelected'
       ], settings)
 
-    if (!RED.actions) {
+    if (!actions) {
       handleError('UserSettings: missing actions', RED);
     }
 
-    RED.actions.add("core:show-user-settings", show);
-    RED.actions.add("core:show-help", () => {
+    actions.add("core:show-user-settings", show);
+    actions.add("core:show-help", () => {
       show('keyboard')
     });
 
@@ -98,13 +122,13 @@ export class UserSettingsConfiguration extends Context {
         if (opt.oldSetting) {
           var oldValue = RED.settings.get(opt.oldSetting);
           if (oldValue !== undefined && oldValue !== null) {
-            RED.settings.set(opt.setting, oldValue);
-            RED.settings.remove(opt.oldSetting);
+            settings.set(opt.setting, oldValue);
+            settings.remove(opt.oldSetting);
           }
         }
         allSettings[opt.setting] = opt;
         if (opt.onchange) {
-          var value = RED.settings.get(opt.setting);
+          var value = settings.get(opt.setting);
           if (value === null && opt.hasOwnProperty('default')) {
             value = opt.default;
             RED.settings.set(opt.setting, value);
@@ -112,7 +136,7 @@ export class UserSettingsConfiguration extends Context {
 
           var callback = opt.onchange;
           if (typeof callback === 'string') {
-            callback = RED.actions.get(callback);
+            callback = actions.get(callback);
           }
           if (typeof callback === 'function') {
             callback.call(opt, value);
@@ -129,7 +153,7 @@ export class UserSettingsConfiguration extends Context {
 
   get viewSettings(): IViewSetting[] {
     const {
-      RED
+      view
     } = this
     return [{
       title: "menu.label.view.grid",
@@ -152,7 +176,7 @@ export class UserSettingsConfiguration extends Context {
         label: "menu.label.view.gridSize",
         type: "number",
         default: 20,
-        onchange: RED.view.gridSize
+        onchange: view.gridSize
       }
       ]
     },

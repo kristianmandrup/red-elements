@@ -13,13 +13,22 @@ interface IBody extends JQuery<HTMLElement> {
   i18n: Function
 }
 
+export interface ILoadNodes {
+  loadNodeList()
+  onLoadNodeListSuccess(data)
+  onLoadNodeListError(error)
+  loadNodes()
+  onLoadNodesSuccess(data)
+  onLoadNodesError(error)
+}
+
 /**
  * Load nodes via Api
  */
 @delegateTarget({
   container,
 })
-export class LoadNodes extends Context {
+export class LoadNodes extends Context implements ILoadNodes {
   loaded: any = {}
 
   // TODO: perhaps just use generic redApi for each?

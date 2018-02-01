@@ -4,10 +4,21 @@ import {
 
 import { DiffPanel } from './'
 
+export interface INodePropertiesTable {
+  /**
+   * create Node Properties Table
+   * @param def
+   * @param node
+   * @param localNodeObj
+   * @param remoteNodeObj
+   */
+  createNodePropertiesTable(def, node, localNodeObj, remoteNodeObj)
+}
+
 /**
  *
  */
-export class NodePropertiesTable extends Context {
+export class NodePropertiesTable extends Context implements INodePropertiesTable {
   constructor(public diffPanel: DiffPanel) {
     super()
   }
@@ -316,7 +327,6 @@ export class NodePropertiesTable extends Context {
     });
     return nodePropertiesDiv;
   }
-
 
   /**
    * Format wire property

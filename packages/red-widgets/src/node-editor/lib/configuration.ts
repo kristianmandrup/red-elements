@@ -22,6 +22,10 @@ import {
 
 const TYPES = $TYPES.all
 
+export interface INodeEditorConfiguration {
+  configure()
+}
+
 /**
  * NodeEditor configuration
  */
