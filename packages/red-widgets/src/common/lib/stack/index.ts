@@ -15,10 +15,17 @@
  **/
 import { Context, $ } from '../context'
 
+export interface IStack {
+  add(entry)
+  hide()
+  show()
+  handleHeaderClickedEvent(options, entry, entries)
+}
+
 export class Stack extends Context {
-  container: any;
-  entries: any;
-  visible: any;
+  container: any
+  entries: any = []
+  visible: any = true
   constructor(private options: any = {}) {
     super()
 
@@ -29,10 +36,6 @@ export class Stack extends Context {
     }
 
     this.container = options.container;
-
-    this.entries = [];
-
-    this.visible = true;
   }
 
   add(entry) {
@@ -103,7 +106,6 @@ export class Stack extends Context {
 
   }
 
-  // FIX: use instance vars
   hide() {
     this.visible = false;
     this.entries.forEach((entry) => {
@@ -112,7 +114,6 @@ export class Stack extends Context {
     return this;
   }
 
-  // FIX: use instance vars
   show() {
     this.visible = true;
     this.entries.forEach((entry) => {
