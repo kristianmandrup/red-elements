@@ -1,5 +1,6 @@
 import {
-  User
+  User,
+  IUser
 } from './lib'
 
 export const user = {
@@ -9,5 +10,6 @@ export const user = {
 export default user
 
 export {
-  User
+  User,
+  IUser
 }

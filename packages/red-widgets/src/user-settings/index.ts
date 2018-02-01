@@ -1,5 +1,6 @@
 import {
-  UserSettings
+  UserSettings,
+  IUserSettings
 } from './lib'
 
 export const settings = {
@@ -9,5 +10,6 @@ export const settings = {
 export default settings
 
 export {
-  UserSettings
+  UserSettings,
+  IUserSettings
 }

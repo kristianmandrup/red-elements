@@ -26,10 +26,11 @@ import {
   container
 } from './container'
 
-
-const {
-  log
-} = console
+export interface IUserSettings {
+  configure()
+  setSelected(id, value)
+  toggle(id)
+}
 
 @delegator({
   container,
@@ -37,7 +38,6 @@ const {
     configuration: UserSettingsConfiguration,
   }
 })
-
 export class UserSettings extends Context {
   allSettings: any;
   settingsVisible: any;

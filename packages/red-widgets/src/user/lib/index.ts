@@ -41,6 +41,12 @@ import {
   }
 })
 
+export interface IUser {
+  configure()
+  updateUserMenu()
+  loginDialog(opts): Promise<any>
+}
+
 // Uses: jQuery UI Dialog
 // https://jqueryui.com/dialog/
 export class User extends Context {

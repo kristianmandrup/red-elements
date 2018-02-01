@@ -108,7 +108,7 @@ export interface INodes {
    * @param createNewIds { boolean } create IDs of imported nodes if not in import definitions
    * @param createMissingWorkspace { boolean } create missing workspace if no such workspace exists
    */
-  importNodes(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean)
+  importNodes?(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean)
 
   /**
    * Convert a node to a workspace
@@ -152,7 +152,7 @@ export interface INodes {
    * Get a subflow by ID
    * @param id { string } ID of subflow to get
    */
-  getSubflow(id: string): ISubflow
+  getSubflow?(id: string): ISubflow
 
   /**
    * Remove a subflow
@@ -249,19 +249,19 @@ export interface INodes {
    * Add a node
    * @param n { Node } the node to add
    */
-  addNode(n: INode): INodes
+  addNode?(n: INode): INodes
 
   /**
    * Find and return a node by ID
    * @param id {string} id of node to find
    */
-  getNode(id: string): INode
+  getNode?(id: string): INode
 
   /**
    * Remove a node from the canvas by ID
    * @param id {string} id of node to remove
    */
-  removeNode(id: string): any
+  removeNode?(id: string): any
 
   /**
    * Add a workspace
