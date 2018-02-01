@@ -6,13 +6,31 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ILabelBuilder {
+  /**
+     * build Label Row
+     * @param type
+     * @param index
+     * @param value
+     * @param placeHolder
+     */
+  buildLabelRow(type, index, value, placeHolder)
+
+  /**
+   * build Label Form
+   * @param container
+   * @param node
+   */
+  buildLabelForm(container, node)
+}
+
 /**
  * Label Builder for NodeEditor
  */
 @delegateTarget({
   container,
 })
-export class LabelBuilder extends Context {
+export class LabelBuilder extends Context implements ILabelBuilder {
   constructor(public editor: NodeEditor) {
     super()
   }

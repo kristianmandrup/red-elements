@@ -7,13 +7,21 @@ import {
   delegateTarget
 } from './_base'
 
+export interface IEditDialog {
+  /**
+   * show Edit Dialog
+   * @param node
+   */
+  showEditDialog(node)
+}
+
 /**
  * Edit Dialog for NodeEditor
  */
 @delegateTarget({
   container,
 })
-export class EditDialog extends Context {
+export class EditDialog extends Context implements IEditDialog {
   constructor(public editor: NodeEditor) {
     super()
   }

@@ -6,6 +6,10 @@ import {
   delegateTarget
 } from '../_base'
 
+export interface ISubflowDialog {
+  showEditSubflowDialog(subflow)
+}
+
 /**
  * Subflow Dialog for NodeEditor
  */

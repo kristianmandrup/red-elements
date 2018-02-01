@@ -6,13 +6,17 @@ import {
   delegateTarget
 } from './_base'
 
+export interface IBufferEditor {
+  editBuffer(options)
+}
+
 /**
  * Node Validator for NodeEditor
  */
 @delegateTarget({
   container,
 })
-export class BufferEditor extends Context {
+export class BufferEditor extends Context implements IBufferEditor {
   constructor(public editor: NodeEditor) {
     super()
   }

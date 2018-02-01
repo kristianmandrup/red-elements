@@ -11,13 +11,23 @@ import {
   ITabSelect
 } from '../../../_interfaces'
 
+export interface IConfigNodeDialog {
+/**
+   * name - name of the property that holds this config node
+   * type - type of config node
+   * id - id of config node to edit. _ADD_ for a new one
+   * prefix - the input prefix of the parent property
+   */
+  showEditConfigNodeDialog(name, type, id, prefix)
+}
+
 /**
  * Config Node Dialog for NodeEditor
  */
 @delegateTarget({
   container,
 })
-export class ConfigNodeDialog extends Context {
+export class ConfigNodeDialog extends Context implements IConfigNodeDialog {
   constructor(public editor: NodeEditor) {
     super()
   }

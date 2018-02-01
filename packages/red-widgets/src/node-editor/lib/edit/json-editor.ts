@@ -6,13 +6,17 @@ import {
   delegateTarget
 } from './_base'
 
+export interface IJsonEditor {
+  editJSON(options)
+}
+
 /**
  * Node Validator for NodeEditor
  */
 @delegateTarget({
   container,
 })
-export class JsonEditor extends Context {
+export class JsonEditor extends Context implements IJsonEditor {
   constructor(public editor: NodeEditor) {
     super()
   }

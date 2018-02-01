@@ -8,13 +8,17 @@ import {
   delegateTarget
 } from './_base'
 
+export interface IExpressionEditor {
+  editExpression(options)
+}
+
 /**
  * Node Validator for NodeEditor
  */
 @delegateTarget({
   container,
 })
-export class ExpressionEditor extends Context {
+export class ExpressionEditor extends Context implements IExpressionEditor {
   constructor(public editor: NodeEditor) {
     super()
   }
@@ -373,5 +377,4 @@ export class ExpressionEditor extends Context {
     RED.tray.show(trayOptions);
     return this
   }
-
 }
