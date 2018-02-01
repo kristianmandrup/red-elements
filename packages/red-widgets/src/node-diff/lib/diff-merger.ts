@@ -6,10 +6,14 @@ import {
   delegateTarget
 } from './_base'
 
+export interface IDiffMerger {
+  mergeDiff(diff: any)
+}
+
 @delegateTarget({
   container,
 })
-export class DiffMerger extends Context {
+export class DiffMerger extends Context implements IDiffMerger {
   constructor(public diff: Diff) {
     super()
   }

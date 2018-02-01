@@ -16,10 +16,16 @@ import {
   FlowsApi
 } from './_base'
 
+export interface IFlowsLoader {
+  loadFlows()
+  onLoadError(error)
+  onLoadSuccess(nodes)
+}
+
 @delegateTarget({
   container,
 })
-export class FlowsLoader extends Context {
+export class FlowsLoader extends Context implements IFlowsLoader {
   protected flowsApi: FlowsApi
 
   constructor(public diff: Diff) {

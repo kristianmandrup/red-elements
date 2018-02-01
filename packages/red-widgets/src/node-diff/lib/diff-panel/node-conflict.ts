@@ -4,10 +4,29 @@ import {
 
 import { DiffPanel } from './'
 
+export interface INodeConflict {
+  /**
+     * create Node Conflict RadioBoxes
+     * @param node
+     * @param row
+     * @param localDiv
+     * @param remoteDiv
+     * @param propertiesTable
+     * @param hide
+     * @param state
+     */
+  createNodeConflictRadioBoxes(node, row, localDiv, remoteDiv, propertiesTable, hide, state)
+
+  /**
+   * refresh conflict header
+   */
+  refreshConflictHeader()
+}
+
 /**
  *
  */
-export class NodeConflict extends Context {
+export class NodeConflict extends Context implements INodeConflict {
   constructor(public diffPanel: DiffPanel) {
     super()
   }

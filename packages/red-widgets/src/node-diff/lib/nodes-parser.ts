@@ -6,10 +6,14 @@ import {
   delegateTarget
 } from './_base'
 
+export interface INodesParser {
+  parseNodes(nodeList)
+}
+
 @delegateTarget({
   container,
 })
-export class NodesParser extends Context {
+export class NodesParser extends Context implements INodesParser {
   constructor(public diff: Diff) {
     super()
   }
