@@ -64,37 +64,90 @@ interface IBody extends JQuery<HTMLElement> {
   i18n: Function
 }
 
-export class Main extends Context {
-  loaded: any = {}
 
+
+import {
+  container,
+  delegator,
+  delegateTo
+} from './container'
+
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import {
+  ISettings
+} from '@tecla5/red-runtime'
+
+import {
+  IMenu,
+  IActions,
+  IEvents,
+  ISidebar,
+  IComms
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
+export interface IMain {
+  configure()
+  loadNode()
+  loadFlows()
+  showAbout()
+  loadAbout()
+  onLoadAboutSuccess(data)
+  loadEditor()
+}
+
+@delegator({
+  container,
+  map: {
+    loadNodesList: LoadNodes,
+    loadFlowsList: LoadFlows,
+    configuration: MainConfiguration
+  }
+})
+export class Main extends Context implements IMain {
+
+  @lazyInject(TYPES.settings) settings: ISettings
+  @lazyInject(TYPES.sidebar.info) sidebar: ISidebar
+  @lazyInject(TYPES.actions) actions: IActions
+  @lazyInject(TYPES.comms) comms: IComms
+
+  loaded: any = {}
   // TODO: perhaps just use generic redApi for each?
   protected api: RedApi
 
-  protected loadNodesList: LoadNodes = new LoadNodes(this)
-  protected loadFlowsList: LoadFlows = new LoadFlows(this)
-  protected configuration: MainConfiguration = new MainConfiguration(this)
+  protected loadNodesList: LoadNodes //= new LoadNodes(this)
+  protected loadFlowsList: LoadFlows //= new LoadFlows(this)
+  protected configuration: MainConfiguration //= new MainConfiguration(this)
 
   constructor() {
     super();
     this.configure()
   }
 
+  @delegateTo('configuration')
   configure() {
-    this.configuration.configure()
+    //this.configuration.configure()
   }
 
   // /**
   //  * Load nodes list
   //  */
+  @delegateTo('loadNodesList')
   loadNode() {
-    this.loadNodesList.loadNodes()
+    //this.loadNodesList.loadNodes()
   }
 
   // /**
   //  * Load nodes list
   //  */
+  @delegateTo('loadFlowsList')
   loadFlows() {
-    this.loadFlowsList.loadFlows()
+    //this.loadFlowsList.loadFlows()
   }
 
   showAbout() {
@@ -110,22 +163,28 @@ export class Main extends Context {
   }
 
   onLoadAboutSuccess(data) {
-    const { RED } = this
+    const { sidebar } = this
     var aboutHeader = '<div style="text-align:center;">' +
       '<img width="50px" src="red/images/node-red-icon.svg" />' +
       '</div>';
 
-    RED.sidebar.info.set(aboutHeader + marked(data));
-    RED.sidebar.info.show();
+    sidebar.set(aboutHeader + marked(data));
+    sidebar.show();
   }
 
   loadEditor() {
     const {
-    RED,
+      RED,
       showAbout
   } = this.rebind([
-        'showAbout'
+        'showAbout',
       ])
+
+    const {
+      settings,
+      actions,
+      comms
+      } = this
 
     var menuOptions = [];
     menuOptions.push({
@@ -237,7 +296,7 @@ export class Main extends Context {
     });
     menuOptions.push(null);
 
-    if (RED.settings.theme('palette.editable') !== false) {
+    if (settings.theme('palette.editable') !== false) {
       menuOptions.push({
         id: 'menu-item-edit-palette',
         label: RED._('menu.label.editPalette'),
@@ -260,12 +319,12 @@ export class Main extends Context {
     });
     menuOptions.push({
       id: 'menu-item-help',
-      label: RED.settings.theme('menu.menu-item-help.label', RED._('menu.label.help')),
-      href: RED.settings.theme('menu.menu-item-help.url', 'http://nodered.org/docs')
+      label: settings.theme('menu.menu-item-help.label', RED._('menu.label.help')),
+      href: settings.theme('menu.menu-item-help.url', 'http://nodered.org/docs')
     });
     menuOptions.push({
       id: 'menu-item-node-red-version',
-      label: 'v' + RED.settings.version,
+      label: 'v' + settings.version,
       onselect: 'core:show-about'
     });
 
@@ -290,7 +349,7 @@ export class Main extends Context {
     RED.palette = new Palette()
 
     // see above or legacy/main
-    if (RED.settings.theme('palette.editable') !== false) {
+    if (settings.theme('palette.editable') !== false) {
       RED.palette.editor = new PaletteEditor()
     }
 
@@ -304,7 +363,7 @@ export class Main extends Context {
     RED.keyboard = new Keyboard()
     RED.palette = new Palette()
 
-    if (RED.settings.theme('palette.editable') !== false) {
+    if (settings.theme('palette.editable') !== false) {
       RED.palette.editor = new PaletteEditor();
     }
 
@@ -328,9 +387,9 @@ export class Main extends Context {
 
     RED.deploy = new Deploy(RED.settings.theme('deployButton', null));
 
-    RED.actions.add('core:show-about', showAbout);
+    actions.add('core:show-about', showAbout);
     RED.nodes = new Nodes()
-    RED.comms.connect();
+    comms.connect();
 
     $('#main-container').show();
     $('.header-toolbar').show();

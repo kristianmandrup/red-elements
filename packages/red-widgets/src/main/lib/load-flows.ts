@@ -12,13 +12,20 @@ interface IBody extends JQuery<HTMLElement> {
   i18n: Function
 }
 
+export interface ILoadFlows {
+  loadFlows()
+  onLoadFlowsError(error)
+  onLoadFlowsSuccess(nodes)
+  addSubscribtions()
+}
+
 /**
  * Load flows via Api
  */
 @delegateTarget({
   container,
 })
-export class LoadFlows extends Context {
+export class LoadFlows extends Context implements ILoadFlows {
   loaded: any = {}
 
   protected flowsApi: FlowsApi

@@ -25,13 +25,17 @@ import {
 
 const TYPES = $TYPES.all
 
+export interface IMainConfiguration {
+  configure()
+}
+
 /**
  * Main widget configuration
  */
 @delegateTarget({
   container,
 })
-export class MainConfiguration extends Context {
+export class MainConfiguration extends Context implements IMainConfiguration {
   @lazyInject(TYPES.i18n) i18n: I18n
   @lazyInject(TYPES.settings) settings: ISettings
 

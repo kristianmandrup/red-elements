@@ -75,6 +75,10 @@ export {
   IUtils
 } from '../utils'
 
+export {
+  ISidebar
+} from '../sidebar'
+
 export interface IUserSetting {
   t(key: string): string,
   add: Function,
