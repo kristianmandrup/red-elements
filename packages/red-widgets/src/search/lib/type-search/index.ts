@@ -15,10 +15,31 @@ import {
   Searchbox
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  IUtil,
+  IKeyboard,
+  IEvents,
+  IView,
+  INodes
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 @delegator({
   container,
 })
 export class TypeSearch extends Context {
+  @lazyInject(TYPES.utils) utils: IUtil
+  @lazyInject(TYPES.keyboard) keyboard: IKeyboard
+  @lazyInject(TYPES.events) events: IEvents
+  @lazyInject(TYPES.view) view: IView
+  @lazyInject(TYPES.nodes) nodes: INodes
+
   public disabled: Boolean = false
   public dialog: any = null
   public selected: any = -1
@@ -109,6 +130,8 @@ export class TypeSearch extends Context {
         'ensureSelectedIsVisible',
         'RED'
       ])
+
+    const { utils } = this
 
 
     // debugging
@@ -209,7 +232,7 @@ export class TypeSearch extends Context {
           class: "red-ui-search-result-node"
         }).appendTo(div);
         var colour = def.color;
-        var icon_url = RED.utils.getNodeIcon(def);
+        var icon_url = utils.getNodeIcon(def);
         nodeDiv.css('backgroundColor', colour);
 
         var iconContainer = $('<div/>', {
@@ -289,6 +312,7 @@ export class TypeSearch extends Context {
       createDialog,
       addCallback,
       handleMouseActivity,
+      events
       RED
     } = this.rebind([
         'visible',
@@ -300,9 +324,12 @@ export class TypeSearch extends Context {
         'handleMouseActivity',
         'RED'
       ])
+
+    const { keyboard } = this
+
     createDialog = createDialog.bind(this)
     if (!visible) {
-      RED.keyboard.add("*", "escape", () => {
+      keyboard.add("*", "escape", () => {
         this.hide()
       });
       if (dialog === null) {
@@ -320,7 +347,7 @@ export class TypeSearch extends Context {
     }
     this.refreshTypeList();
     addCallback = opts.add;
-    RED.events.emit("type-search:open");
+    events.emit("type-search:open");
     //shade.show();
     console.log(dialog)
     dialog.css({
@@ -339,6 +366,9 @@ export class TypeSearch extends Context {
       visible,
       searchResultsDiv,
       searchInput,
+      keyboard,
+      events,
+      view,
       RED
     } = this.rebind([
         'visible',
@@ -347,7 +377,7 @@ export class TypeSearch extends Context {
         'RED'
       ])
     if (visible) {
-      RED.keyboard.remove("escape");
+      keyboard.remove("escape");
       visible = false;
       if (this.dialog !== null) {
         searchResultsDiv.slideUp(fast ? 50 : 200, () => {
@@ -356,8 +386,8 @@ export class TypeSearch extends Context {
         });
         //shade.hide();
       }
-      RED.events.emit("type-search:close");
-      RED.view.focus();
+      events.emit("type-search:close");
+      view.focus();
       $(document).off('mousedown.type-search');
       $(document).off('mouseup.type-search');
       $(document).off('click.type-search');
@@ -396,6 +426,8 @@ export class TypeSearch extends Context {
         'RED'
       ])
 
+    const { nodes } = this
+
     var i;
     searchResults.editableList('empty');
     searchInput.searchBox('value', '');
@@ -413,8 +445,8 @@ export class TypeSearch extends Context {
     });
 
     var items = [];
-    RED.nodes.registry.getNodeTypes().forEach((t) => {
-      var def = RED.nodes.getType(t);
+    nodes.registry.getNodeTypes().forEach((t) => {
+      var def = nodes.getType(t);
       if (def.category !== 'config' && t !== 'unknown' && t !== 'tab') {
         items.push({
           type: t,
@@ -438,7 +470,7 @@ export class TypeSearch extends Context {
     var commonCount = 0;
     var item;
     for (i = 0; i < common.length; i++) {
-      var itemDef = RED.nodes.getType(common[i]);
+      var itemDef = nodes.getType(common[i]);
       if (itemDef) {
         item = {
           type: common[i],
@@ -455,7 +487,7 @@ export class TypeSearch extends Context {
     for (i = 0; i < Math.min(5, recentlyUsed.length); i++) {
       item = {
         type: recentlyUsed[i],
-        def: RED.nodes.getType(recentlyUsed[i]),
+        def: nodes.getType(recentlyUsed[i]),
         recent: true
       };
       item.label = getTypeLabel(item.type, item.def);
