@@ -10,7 +10,13 @@ import {
   deprecated
 } from '../registry/deprecated'
 
-export class FlowsExecuter extends Context {
+export interface IFlowsExecuter {
+  started: boolean
+  startFlows(type: string, diff: any, muteLog: boolean)
+  stopFlows(type: string, diff: any, muteLog: boolean)
+}
+
+export class FlowsExecuter extends Context implements IFlowsExecuter {
   protected _started: boolean
 
   constructor(protected flows: Flows) {

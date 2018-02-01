@@ -5,6 +5,10 @@ import { Flows } from './index';
 
 import clone from 'clone'
 
+export interface IFlowsConfiguration {
+  configure()
+}
+
 export class FlowsConfiguration extends Context {
   constructor(protected flows: Flows) {
     super()

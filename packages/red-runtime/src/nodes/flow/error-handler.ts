@@ -5,7 +5,11 @@ import {
 } from '../../context'
 import { Flow } from './index';
 
-export class FlowErrorHandler extends Context {
+export interface IFlowErrorHandler {
+  $handleError(node, logMessage: any, msg)
+}
+
+export class FlowErrorHandler extends Context implements IFlowErrorHandler {
   constructor(protected flow: Flow) {
     super()
   }

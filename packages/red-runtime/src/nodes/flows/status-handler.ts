@@ -9,7 +9,12 @@ import {
   INode
 } from '../../interfaces'
 
-export class FlowsStatusHandler extends Context {
+export interface IFlowsStatusHandler {
+  delegateStatus(node, statusMessage)
+  handleStatus(node: INode, statusMessage: string)
+}
+
+export class FlowsStatusHandler extends Context implements IFlowsStatusHandler {
   constructor(protected flows: Flows) {
     super()
   }

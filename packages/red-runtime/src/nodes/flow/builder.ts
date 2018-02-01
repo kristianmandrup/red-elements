@@ -5,7 +5,12 @@ import { Flow } from './index';
 
 import clone from 'clone'
 
-export class FlowBuilder extends Context {
+export interface IFlowBuilder {
+  createNode(type: string, config: any)
+  createSubflow(sf, sfn, subflows, globalSubflows, activeNodes)
+}
+
+export class FlowBuilder extends Context implements IFlowBuilder {
   constructor(protected flow: Flow) {
     super()
   }

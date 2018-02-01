@@ -3,7 +3,12 @@ import {
 } from '../../context'
 import { Flow } from './index';
 
-export class FlowExecuter extends Context {
+export interface IFlowExecuter {
+  start(diff)
+  stop(stopList)
+}
+
+export class FlowExecuter extends Context implements IFlowExecuter {
   constructor(protected flow: Flow) {
     super()
   }

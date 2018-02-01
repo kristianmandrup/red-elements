@@ -8,7 +8,12 @@ import {
   INode
 } from '../../interfaces'
 
-export class FlowsNodeManager extends Context {
+export interface FlowsNodeManager {
+  getNode(id: string)
+  eachNode(cb: Function)
+}
+
+export class FlowsNodeManager extends Context implements FlowsNodeManager {
   constructor(protected flows: Flows) {
     super()
   }

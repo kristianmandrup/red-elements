@@ -5,7 +5,11 @@ import {
 } from '../../context'
 import { Flow } from './index';
 
-export class FlowStatusHandler extends Context {
+export interface IFlowStatusHandler {
+  handleStatus(node, statusMessage: any)
+}
+
+export class FlowStatusHandler extends Context implements IFlowStatusHandler {
   constructor(protected flow: Flow) {
     super()
   }

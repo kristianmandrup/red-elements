@@ -9,6 +9,11 @@ import {
   INode
 } from '../../interfaces'
 
+export interface IFlowsErrorHandler {
+  delegateError(node: INode, logMessage: string, msg: any)
+  $handleError(node, logMessage, msg)
+}
+
 export class FlowsErrorHandler extends Context {
   constructor(protected flows: Flows) {
     super()

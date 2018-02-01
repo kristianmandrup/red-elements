@@ -10,6 +10,14 @@ import {
   clone
 } from '../../_libs'
 
+export interface IFlowManager {
+  getFlows: IFlow[]
+  addFlow(flow: IFlow)
+  getFlow(id: string)
+  updateFlow(id: string, newFlow: IFlow)
+  removeFlow(id: string)
+}
+
 export class FlowManager extends Context {
   constructor(protected flows: Flows) {
     super()

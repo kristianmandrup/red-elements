@@ -5,7 +5,12 @@ import {
 } from '../../context'
 import { Flows } from './index';
 
-export class FlowsTypeManager extends Context {
+export interface FlowsTypeManager {
+  checkTypeInUse(id: string)
+  updateMissingTypes()
+}
+
+export class FlowsTypeManager extends Context implements IFlowsTypeManager {
   constructor(protected flows: Flows) {
     super()
   }
