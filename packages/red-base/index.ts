@@ -23,6 +23,8 @@ export {
   delegateTarget,
   delegator,
   delegateTo,
+  createDecorators
 } from './src'
+
 
 

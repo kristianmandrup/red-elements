@@ -5,5 +5,6 @@ export {
 export {
   delegateTarget,
   delegator,
-  delegateTo
+  delegateTo,
+  createDecorators
 } from './decorators'

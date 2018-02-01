@@ -6,19 +6,16 @@ import {
   delegator
 } from './delegator'
 
-// we want to have container bound to each of the functions returned
-function createDecorators(container) {
-  return function () {
-    // very naive attempt
-    // SOLUTIONS
-    // http://clarkfeusier.com/2015/01/11/interview-question-function-bind.html
-    // https://benmccormick.org/2015/11/30/es6-patterns-clean-higher-order-functions/
-
-    const $delegator = delegator.bind(this)
-    const $delegateTarget = delegateTarget.bind(this)
-
-    return {
-      delegator: $delegator
+// we want to have container as default arg to each decorator
+export function createDecorators(container) {
+  return {
+    delegator(options = {}) {
+      const opts = Object.assign(options, { container })
+      return delegateTarget(opts)
+    },
+    delegateTarget(options = {}) {
+      const opts = Object.assign(options, { container })
+      return delegateTarget(opts)
     }
   }
 }

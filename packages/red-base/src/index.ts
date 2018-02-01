@@ -19,7 +19,8 @@ export {
   createContainer,
   delegateTarget,
   delegator,
-  delegateTo
+  delegateTo,
+  createDecorators
 } from './delegation'
 
 export {

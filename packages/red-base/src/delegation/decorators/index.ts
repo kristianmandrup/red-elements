@@ -9,3 +9,7 @@ export {
 export {
   delegateTo
 } from './delegate-to'
+
+export {
+  createDecorators
+} from './factories'
