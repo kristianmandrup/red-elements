@@ -6,10 +6,31 @@ import {
   container
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+
+import {
+  INode,
+  IEvents,
+  IActions,
+  IMenu
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 delegateTarget({
   container,
 })
 export class WorkspacesConfiguration extends Context {
+
+  @lazyInject(TYPES.actions) actions: IActions
+  @lazyInject(TYPES.events) events: IEvents
+  @lazyInject(TYPES.menu) menu: IMenu
+  @lazyInject(TYPES.nodes) nodes: INode
+
   protected allSettings = {}
 
   constructor(public workspaces: Workspaces) {
@@ -18,8 +39,12 @@ export class WorkspacesConfiguration extends Context {
 
   configure() {
     const {
-      RED
-    } = this.workspaces
+      actions,
+      events,
+      menu,
+      nodes
+    } = this
+
 
     let {
       workspace_tabs,
@@ -45,21 +70,21 @@ export class WorkspacesConfiguration extends Context {
       })
     }
 
-    RED.events.on("sidebar:resize", workspace_tabs.resize);
+    events.on("sidebar:resize", workspace_tabs.resize);
 
-    RED.actions.add("core:show-next-tab", workspace_tabs.nextTab);
-    RED.actions.add("core:show-previous-tab", workspace_tabs.previousTab);
+    actions.add("core:show-next-tab", workspace_tabs.nextTab);
+    actions.add("core:show-previous-tab", workspace_tabs.previousTab);
 
-    RED.menu.setAction('menu-item-workspace-delete', function () {
-      deleteWorkspace(RED.nodes.workspace(activeWorkspace));
+    menu.setAction('menu-item-workspace-delete', function () {
+      deleteWorkspace(nodes.workspace(activeWorkspace));
     });
 
     $(window).resize(() => {
       workspace_tabs.resize();
     });
 
-    RED.actions.add("core:add-flow", addWorkspace);
-    RED.actions.add("core:edit-flow", editWorkspace);
-    RED.actions.add("core:remove-flow", removeWorkspace);
+    actions.add("core:add-flow", addWorkspace);
+    actions.add("core:edit-flow", editWorkspace);
+    actions.add("core:remove-flow", removeWorkspace);
   }
 }

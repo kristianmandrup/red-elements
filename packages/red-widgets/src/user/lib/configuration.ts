@@ -9,6 +9,21 @@ import {
   container
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import {
+  ISettings
+} from '@tecla5/red-runtime'
+
+import {
+  IMenu
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 @delegator({
   container,
   map: {
@@ -20,6 +35,9 @@ import {
 })
 export class UserConfiguration extends Context {
 
+  @lazyInject(TYPES.settings) settings: ISettings
+  @lazyInject(TYPES.menu) menu: IMenu
+
   constructor(public user: User) {
     super()
   }
@@ -27,13 +45,13 @@ export class UserConfiguration extends Context {
   protected display: UserDisplay //= new UserDisplay(this.user)
 
   configure() {
-    const { RED } = this
+    const { settings, menu } = this
 
-    if (RED.settings.user) {
-      if (!RED.settings.editorTheme || !RED.settings.editorTheme.hasOwnProperty("userMenu")) {
+    if (settings.user) {
+      if (!settings.editorTheme || !settings.editorTheme.hasOwnProperty("userMenu")) {
         const userMenu = this.userMenu
-        RED.settings.user.image ? this.addUserProfile(userMenu) : this.addUserIcon(userMenu)
-        RED.menu.init({
+        settings.user.image ? this.addUserProfile(userMenu) : this.addUserIcon(userMenu)
+        menu.init({
           id: "btn-usermenu",
           options: []
         });
@@ -64,10 +82,10 @@ export class UserConfiguration extends Context {
 
   protected addUserProfile(userMenu) {
     const {
-      RED
+      settings
     } = this
     $('<span class="user-profile"></span>').css({
-      backgroundImage: "url(" + RED.settings.user.image + ")",
+      backgroundImage: "url(" + settings.user.image + ")",
     }).appendTo(userMenu.find("a"));
   }
 }
