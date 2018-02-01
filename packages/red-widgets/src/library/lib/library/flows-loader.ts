@@ -12,6 +12,22 @@ import {
   LibrariesApi
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  ISettings,
+  ILibraryFlowsPoster
+} from '@tecla5/red-runtime'
+
+import {
+  ICanvas
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
@@ -30,8 +46,9 @@ export interface ILibraryFlowsLoader {
   }
 })
 export class LibraryFlowsLoader extends Context implements ILibraryFlowsLoader {
-  protected librariesApi: LibrariesApi
+  @lazyInject(TYPES.view) view: ICanvas
 
+  protected librariesApi: LibrariesApi
   constructor(public library: Library) {
     super()
   }
@@ -90,9 +107,10 @@ export class LibraryFlowsLoader extends Context implements ILibraryFlowsLoader {
 
   onLoadFlowSuccess(data) {
     const {
-      RED
+      RED,
+      view
     } = this
-    RED.view.importNodes(data);
+    view.importNodes(data);
   }
 
   onLoadFlowsSuccess(data) {
