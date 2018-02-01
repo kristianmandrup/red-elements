@@ -17,10 +17,16 @@ interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
+export interface ILibraryConfiguration {
+  libraryEditor(editor)
+  libraryEditor()
+  configure(options: any)
+}
+
 @delegateTarget({
   container,
 })
-export class LibraryConfiguration extends Context {
+export class LibraryConfiguration extends Context implements ILibraryConfiguration {
   constructor(public ui: LibraryUI) {
     super()
   }

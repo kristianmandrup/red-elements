@@ -15,10 +15,16 @@ interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
+export interface ILibraryFlowsPoster {
+  postLibraryFlow(flowName)
+  onPostSuccess(data)
+  onPostError(error)
+}
+
 @delegateTarget({
   container,
 })
-export class LibraryFlowsPoster extends Context {
+export class LibraryFlowsPoster extends Context implements ILibraryFlowsPoster {
   protected librariesApi: LibrariesApi
 
   constructor(public library: Library) {

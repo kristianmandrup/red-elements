@@ -69,7 +69,23 @@ const firefoxKeyCodeMap = {
   173: 189
 }
 
-export class KeyboardConfiguration extends Context {
+export interface IKeyboardConfiguration {
+  configure()
+  revertToDefault(action: string)
+  parseKeySpecifier(key: string)
+  resolveKeyEvent(evt)
+  addHandler(scope: any, key: string, modifiers: Function | string, ondown: Function | string)
+  removeHandler(key: string, modifiers: any)
+  formatKey(key: string): string
+  validateKey(key: string): boolean
+  editShortcut(e, container?)
+  endEditShortcut(cancel: boolean)
+  buildShortcutRow(container: JQuery<HTMLElement>, object: any)
+  getSettingsPane(): JQuery<HTMLElement>
+  getShortcut(actionName): object
+}
+
+export class KeyboardConfiguration extends Context implements IKeyboardConfiguration {
   disabled: boolean
 
   public handlers = {};

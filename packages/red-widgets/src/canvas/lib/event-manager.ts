@@ -6,10 +6,25 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasEventManager {
+  /**
+   * Disable Quick Join Event Handler
+   * @param evt
+   */
+  disableQuickJoinEventHandler(evt)
+
+  /**
+   * Handle Work Space Change Event
+   * @param event
+   * @param workspaceScrollPositions
+   */
+  handleWorkSpaceChangeEvent(event, workspaceScrollPositions)
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasEventManager extends Context {
+export class CanvasEventManager extends Context implements ICanvasEventManager {
   constructor(protected canvas: Canvas) {
     super()
   }

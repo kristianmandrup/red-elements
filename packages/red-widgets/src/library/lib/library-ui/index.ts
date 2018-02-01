@@ -1,7 +1,7 @@
 import {
   Context,
   $,
-  callDelegate
+  delegateTo
 } from './_base'
 
 import { LibraryConfiguration } from './configuration';

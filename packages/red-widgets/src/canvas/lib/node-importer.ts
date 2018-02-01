@@ -6,10 +6,14 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasNodeImporter {
+  importNodes(newNodesStr, addNewFlow?, touchImport?)
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasNodeImporter extends Context {
+export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
   constructor(protected canvas: Canvas) {
     super()
   }

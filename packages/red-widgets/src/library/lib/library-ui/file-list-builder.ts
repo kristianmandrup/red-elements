@@ -12,6 +12,45 @@ import {
 
 import { dirname } from 'path';
 
+export interface IFileListBuilder {
+  /**
+     * Build a library file list item in the UI for the library file structure
+     * @param item
+     */
+  buildFileListItem(item)
+
+  isDirectory(v)
+  isFile(v)
+
+  /**
+   * Build file/directory structure of libraries available on server
+   *
+   * @param root { string } root folder
+   * @param data { Array<Object> } library structure
+   */
+  buildFileList(root: string, data: any[])
+
+  /**
+   * Create click handler to load file item from Api
+   * @param v
+   * @param root
+   * @param ul
+   */
+  createFileItemClickHandler(v, root, ul)
+
+  selectedLibraryItem(item)
+
+  libraryEditor()
+
+  loadLibraryFileItem(item, url)
+  onLibraryItemLoadSuccess(data, item)
+  onLibraryItemLoadError(error)
+  createDirectoryItemClickHandler(v, root)
+  loadDirectoryItem(options, root, dirName)
+  onDirectoryItemLoadSuccess(data, root, dirName)
+  onDirectoryItemLoadError(error)
+}
+
 /**
  * Build File List of libraries from server via API call
  */
@@ -24,7 +63,7 @@ import { dirname } from 'path';
     librariesApi: LibrariesApi
   }
 })
-export class FileListBuilder extends Context {
+export class FileListBuilder extends Context implements IFileListBuilder {
   protected librariesApi: LibrariesApi
 
   constructor(public ui: LibraryUI) {

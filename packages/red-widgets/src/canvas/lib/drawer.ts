@@ -7,10 +7,15 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasDrawer {
+  reveal(id)
+  redraw(updateActive?: boolean)
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasDrawer extends Context {
+export class CanvasDrawer extends Context implements ICanvasDrawer {
   constructor(protected canvas: Canvas) {
     super()
   }

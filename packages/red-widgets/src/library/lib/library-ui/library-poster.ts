@@ -9,10 +9,16 @@ import {
 
 import { LibraryUI } from './';
 
+export interface ILibraryPoster {
+  postLibrary(data: any, options: any)
+  onPostSuccess(data, options: any)
+  onPostError(error)
+}
+
 @delegateTarget({
   container,
 })
-export class LibraryPoster extends Context {
+export class LibraryPoster extends Context implements ILibraryPoster {
   protected librariesApi: LibrariesApi
   constructor(public ui: LibraryUI) {
     super()
@@ -38,7 +44,6 @@ export class LibraryPoster extends Context {
       onPostError(error)
     }
   }
-
 
   onPostSuccess(data, options: any = {}) {
     const {

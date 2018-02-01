@@ -7,10 +7,15 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasButtonManager {
+  isButtonEnabled(d): boolean
+  nodeButtonClicked(d)
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasButtonManager extends Context {
+export class CanvasButtonManager extends Context implements ICanvasButtonManager {
   constructor(protected canvas: Canvas) {
     super()
   }

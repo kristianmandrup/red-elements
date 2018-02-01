@@ -6,10 +6,15 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ICanvasDragLineManager {
+  showDragLines(nodes)
+  hideDragLines()
+}
+
 @delegateTarget({
   container,
 })
-export class CanvasDragLineManager extends Context {
+export class CanvasDragLineManager extends Context implements ICanvasDragLineManager {
   constructor(protected canvas: Canvas) {
     super()
   }
