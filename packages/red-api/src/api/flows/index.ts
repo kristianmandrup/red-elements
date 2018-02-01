@@ -1,5 +1,6 @@
 import {
-  BaseApi
+  BaseApi,
+  IBaseApi
 } from '../base'
 
 import {
@@ -19,7 +20,7 @@ import {
   IDeleteFlows
 } from './delete';
 
-export interface IFlowsApi {
+export interface IFlowsApi extends IBaseApi {
   read: IReadFlows
   update: IUpdateFlows
   create: ICreateFlows

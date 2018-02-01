@@ -1,5 +1,6 @@
 import {
-  BaseApi
+  BaseApi,
+  IBaseApi
 } from '../base'
 
 import {
@@ -7,9 +8,8 @@ import {
   ICreateDeployments
 } from './create';
 
-export interface IDeploymentsApi {
+export interface IDeploymentsApi extends IBaseApi {
   create: ICreateDeployments
-
 }
 
 export class DeploymentsApi extends BaseApi {

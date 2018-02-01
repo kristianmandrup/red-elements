@@ -19,6 +19,8 @@ export interface IBaseApi {
   errorCode(error: any)
   beforeSend(config?: any)
   setupApi(): void
+
+  configure(config?: any)
 }
 
 export class BaseApi extends Context implements IBaseApi {

@@ -43,6 +43,12 @@ import {
 } from './_base'
 
 export interface IDeploy {
+  deploymentType: string
+  deployInflight: boolean
+  currentDiff: any
+  lastDeployAttemptTime: Date
+
+
   /**
    * Configure Deploy
    */
@@ -94,8 +100,8 @@ export class Deploy extends Context {
    *      label: the text to display - default: "Deploy"
    *      icon : the icon to use. Null removes the icon. default: "red/images/deploy-full-o.png"
    */
-  public type = 'default'
-  public deploymentTypes = {
+  type = 'default'
+  deploymentTypes = {
     full: {
       img: path.join(iconsPath, icons.deployFull)
     },
@@ -106,11 +112,11 @@ export class Deploy extends Context {
       img: path.join(iconsPath, icons.deployFlows)
     }
   }
-  public deploymentType = 'full'
-  public deployInflight = false
-  public currentDiff = null
-  public lastDeployAttemptTime: Date = null
-  public ignoreDeployWarnings = {
+  deploymentType = 'full'
+  deployInflight = false
+  currentDiff = null
+  lastDeployAttemptTime: Date = null
+  ignoreDeployWarnings = {
     unknown: false,
     unusedConfig: false,
     invalid: false
