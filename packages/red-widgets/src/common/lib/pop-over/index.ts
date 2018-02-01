@@ -28,6 +28,27 @@ var deltaSizes = {
   }
 }
 
+import {
+  autobind
+} from '../../../_decorators'
+
+export interface IPopover {
+  /**
+   * Set content
+   */
+  setContent(_content)
+
+  /**
+   * open
+   */
+  open()
+
+  /**
+   * close
+   */
+  close()
+}
+
 export class Popover extends Context {
 
   public static create(ctx) {
@@ -79,7 +100,11 @@ export class Popover extends Context {
     this.timer = null;
   }
 
-  openPopup() {
+  /**
+   * Open popup
+   */
+  @autobind
+  _openPopup() {
     let {
       active,
       target,
@@ -128,15 +153,30 @@ export class Popover extends Context {
     return this
   }
 
-  closePopup() {
+  /**
+   * Close popup
+   */
+  @autobind
+  protected _closePopup() {
     let {
       trigger,
       active,
       timer,
       div,
       target,
-      delay
+      delay,
+      // rebind
+
+      _openPopup,
+      _closePopup
     } = this
+
+    // const {
+    // } = rebind([
+    //     '_openPopup',
+    //     '_closePopup'
+    //   ])
+
 
     const { } = this
 
@@ -153,14 +193,14 @@ export class Popover extends Context {
       target.on('mouseenter', (e) => {
         clearTimeout(timer);
         active = true;
-        timer = setTimeout(this.openPopup, this.delay.show);
+        timer = setTimeout(_openPopup, this.delay.show);
       });
       target.on('mouseleave', (e) => {
         if (timer) {
           clearTimeout(timer);
         }
         active = false;
-        setTimeout(this.closePopup, this.delay.hide);
+        setTimeout(_closePopup, this.delay.hide);
       });
     } else if (trigger === 'click') {
       target.click((e) => {
@@ -168,9 +208,9 @@ export class Popover extends Context {
         e.stopPropagation();
         active = !active;
         if (!active) {
-          this.closePopup();
+          _closePopup();
         } else {
-          this.openPopup();
+          _openPopup();
         }
       });
     }
@@ -183,16 +223,16 @@ export class Popover extends Context {
   }
 
   open() {
-    const { openPopup } = this
+    const { _openPopup } = this
     this.active = true;
-    openPopup();
+    _openPopup();
     return this
   }
 
   close() {
-    const { closePopup } = this
+    const { _closePopup } = this
     this.active = false;
-    closePopup();
+    _closePopup();
     return this
   }
 }

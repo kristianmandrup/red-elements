@@ -42,6 +42,7 @@
     "babel-runtime": "^6.26.0"
   },
   "devDependencies": {
+    "javascript-decorators": "^1.0.2",
     "@darkobits/class-decorator": "^3.1.0",
     "inversify": "^4.9.0",
     "inversify-inject-decorators": "^3.1.0",
