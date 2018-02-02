@@ -94,6 +94,22 @@ export interface ISearch {
   hide()
 }
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  IUtils,
+  INodes,
+  ICanvas,
+  IKeyboard,
+  IEvents
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
+
 @delegator({
   container,
   map: {
@@ -101,6 +117,12 @@ export interface ISearch {
   }
 })
 export class Search extends Context {
+  @lazyInject(TYPES.utils) utils: IUtils
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.view) view: ICanvas
+  @lazyInject(TYPES.keyboard) keyboard: IKeyboard
+  @lazyInject(TYPES.events) events: IEvents
+
   public disabled: Boolean = false
   public dialog: any = null
   public selected: any = -1
@@ -151,12 +173,13 @@ export class Search extends Context {
   indexNode(node) {
     const {
       RED,
-      index
+      index,
+      utils,
     } = this
 
-    this._validateObj(RED.utils, 'RED.utils', 'indexNode')
+    this._validateObj(utils, 'RED.utils', 'indexNode')
 
-    var label = RED.utils.getNodeLabel(node);
+    var label = utils.getNodeLabel(node, "");
 
     this._validateStr(label, 'label', 'indexNode')
     if (label) {
@@ -202,20 +225,22 @@ export class Search extends Context {
       RED,
       keys,
       index,
-      indexNode
+      indexNode,
+      nodes,
+      handleError
     } = this
 
     index = {};
-    if (!RED.nodes) {
-      this.handleError('indexWorkspace: RED missing nodes object', {
+    if (!nodes) {
+      handleError('indexWorkspace: RED missing nodes object', {
         RED
       })
     }
 
-    RED.nodes.eachWorkspace(indexNode);
-    RED.nodes.eachSubflow(indexNode);
-    RED.nodes.eachConfig(indexNode);
-    RED.nodes.eachNode(indexNode);
+    nodes.eachWorkspace(indexNode);
+    nodes.eachSubflow(indexNode);
+    nodes.eachConfig(indexNode);
+    nodes.eachNode(indexNode);
     keys = Object.keys(index);
     keys.sort();
     keys.forEach(function (key) {
@@ -239,11 +264,12 @@ export class Search extends Context {
       index,
       searchResults,
       selected,
-      results
+      results,
+      handleError
     } = this
 
     if (!searchResults.editableList) {
-      this.handleError('search: searchResults missing editableList. Call createDialog to init searchResults', {
+      handleError('search: searchResults missing editableList. Call createDialog to init searchResults', {
         searchResults
       })
     }
@@ -367,8 +393,10 @@ export class Search extends Context {
    * @param node
    */
   reveal(node) {
+    const { view } = this
+
     this.hide();
-    this.RED.view.reveal(node.id);
+    view.reveal(node.id);
     return this
   }
 
@@ -381,12 +409,13 @@ export class Search extends Context {
       RED,
       dialog,
       disabled,
-
       $headerShade,
       $editorShade,
       $paletteShade,
       $sidebarShade,
-      $sidebarSeparator
+      $sidebarSeparator,
+      keyboard,
+      events
     } = this
 
     let {
@@ -408,7 +437,7 @@ export class Search extends Context {
       return this;
     }
     if (!visible) {
-      RED.keyboard.add('*', 'escape', function () {
+      keyboard.add('*', 'escape', function () {
         hide()
       });
 
@@ -424,7 +453,7 @@ export class Search extends Context {
         createDialog();
       }
       dialog.slideDown(300);
-      RED.events.emit('search:open');
+      events.emit('search:open');
       visible = true;
     }
     if (!searchInput) {
@@ -453,19 +482,20 @@ export class Search extends Context {
       RED,
       dialog,
       searchInput,
-
       $headerShade,
       $editorShade,
       $paletteShade,
       $sidebarShade,
-      $sidebarSeparator
+      $sidebarSeparator,
+      keyboard,
+      events
     } = this
     let {
       visible
     } = this
 
     if (visible) {
-      RED.keyboard.remove('escape');
+      keyboard.remove('escape');
       visible = false;
 
       // toggle visibility
@@ -484,7 +514,7 @@ export class Search extends Context {
       this.setInstanceVars({
         visible
       })
-      RED.events.emit('search:close');
+      events.emit('search:close');
     }
   }
 }

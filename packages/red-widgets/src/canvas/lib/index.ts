@@ -300,6 +300,7 @@ export interface ICanvas {
   getLinksAtPoint(x, y)
   gridSize: any
   focus()
+  reveal(id : number)
 }
 
 const TYPES = $TYPES.all
