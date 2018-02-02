@@ -1,5 +1,6 @@
 import {
-  Nodes
+  Nodes,
+  INodes
 } from '../'
 
 import {
@@ -9,21 +10,26 @@ import {
 import {
   IWorkspace
 } from '../../../interfaces'
+import { lazyInject } from '../../../../../red-base/src/context/index';
+import { TYPES } from '../../../_container/index';
 
 export interface Subflow extends Node {
 }
 
 export interface IWorkspaceManager {
-  addWorkspace(ws: IWorkspace): Nodes
+  addWorkspace(ws: IWorkspace): INodes
   removeWorkspace(id: string): any
   getWorkspace(id: string): IWorkspace
   getWorkspaceOrder(): IWorkspace[]
-  setWorkspaceOrder(order: any[]): Nodes
+  setWorkspaceOrder(order: any[]): INodes
 }
 
+const { nodes } = TYPES.runtime
 
 export class WorkspaceManager extends Context implements IWorkspaceManager {
-  constructor(public nodes: Nodes) {
+  @lazyInject(nodes) $nodes: INodes
+
+  constructor(public nodes: INodes) {
     super()
   }
 
@@ -33,17 +39,17 @@ export class WorkspaceManager extends Context implements IWorkspaceManager {
    */
   addWorkspace(ws: IWorkspace) {
     const {
-      nodes
+      nodes,
+      $nodes
     } = this
 
     const {
-      RED,
       workspaces,
       workspacesOrder
     } = nodes
 
     workspaces[ws.id] = ws;
-    ws._def = RED.nodes.getType('tab');
+    ws._def = $nodes.getType('tab');
     workspacesOrder.push(ws.id);
     return nodes
   }
@@ -131,7 +137,7 @@ export class WorkspaceManager extends Context implements IWorkspaceManager {
    * Set the workspace order
    * @param order { Workspace[] } list of workspaces in a given order
    */
-  setWorkspaceOrder(order: any[]): Nodes {
+  setWorkspaceOrder(order: any[]): INodes {
     const {
       nodes
     } = this

@@ -2,25 +2,13 @@ import {
   Container
 } from 'inversify'
 
-const TYPES = {
-  actions: 'IActions',
-  events: 'IEvents',
-  communications: 'ICommunications',
-  history: 'IHistory',
-  i18n: 'II18n',
-  node: 'INode',
-  nodes: 'INodes',
-  flow: 'IFlow',
-  flows: 'IFlows',
-  settings: 'ISettings',
-
-  // .. TODO: more const to type name bindings, one for each class to be bound
-}
-
-const runtimeContainer = new Container()
+import {
+  TYPES,
+  containers
+} from '@tecla5/red-base'
 
 import getDecorators from 'inversify-inject-decorators';
-export const { lazyInject } = getDecorators(runtimeContainer)
+export const { lazyInject } = getDecorators(containers.runtime)
 
 import {
   Nodes,
@@ -39,11 +27,11 @@ function isClassy(clazz) {
 // auto bind via conventions
 Object.keys(clazzes).map(className => {
   const classTypeName = className.toLowerCase()
-  const type = TYPES[classTypeName]
+  const type = TYPES.runtime[classTypeName]
 
   const clazz = clazzes[className]
   if (type && isClassy(clazz)) {
-    runtimeContainer.bind(type).to(clazz)
+    containers.runtime.bind(type).to(clazz)
   }
 })
 

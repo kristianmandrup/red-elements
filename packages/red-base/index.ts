@@ -3,6 +3,7 @@ export {
   Context,
   IRED,
   TYPES,
+  containers,
   IValidator,
   Validator,
   container,

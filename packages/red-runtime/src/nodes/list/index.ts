@@ -50,7 +50,6 @@ import {
 } from '../../interfaces'
 
 export interface INodes {
-  RED: any
   registry: INodesRegistry
   configNodes: any
   nodes: INode[]

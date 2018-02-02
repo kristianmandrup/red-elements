@@ -10,6 +10,10 @@ export {
 } from './types'
 
 export {
+  containers
+} from './containers'
+
+export {
   todo,
   autobind,
 } from './decorators'
