@@ -5,7 +5,8 @@ import {
   Context,
   container,
   delegateTarget,
-  delegator
+  delegator,
+  delegateTo
 } from './_base'
 
 @delegateTarget()
@@ -21,14 +22,17 @@ export class PaletteEditorNodeManager extends Context {
     super()
   }
 
+  @delegateTo('api')
   async createNode(data, options: any = {}) {
     return await this.api.createNode(data, options)
   }
 
+  @delegateTo('api')
   async deleteNode(id: string) {
     return await this.api.deleteNode(id)
   }
 
+  @delegateTo('api')
   async updateNode(state: any, id: string) {
     return await this.api.updateNode(state, id)
   }

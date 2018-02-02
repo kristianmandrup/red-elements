@@ -1,9 +1,37 @@
+
+interface IDialogWidget extends JQuery<HTMLElement> {
+  dialog: Function
+}
+
+interface ISearchResults extends JQuery<HTMLElement> {
+  editableList: Function
+}
+
+interface ISearchTerm extends JQuery<HTMLElement> {
+}
+
 export interface ISettingsPaneManager {
   getSettingsPane()
   createSettingsPane()
 }
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../../_container'
+
+import {
+  IRegistry,
+  INotifications,
+  ITabs
+} from '../../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export class SettingsPaneManager implements ISettingsPaneManager {
+  @lazyInject(TYPES.nodes.registry) registry: IRegistry
+  @lazyInject(TYPES.notifications) notifications: INotifications
+  @lazyInject(TYPES.tabs) tabs: ITabs
 
   getSettingsPane() {
     let {
@@ -58,12 +86,18 @@ export class SettingsPaneManager implements ISettingsPaneManager {
         "nodeList"
       ])
 
+    const {
+      registry,
+      notifications,
+      tabs
+    } = this
+
     settingsPane = $('<div id="user-settings-tab-palette"></div>');
     var content = $('<div id="palette-editor">' +
       '<ul id="palette-editor-tabs"></ul>' +
       '</div>').appendTo(settingsPane);
 
-    this.settingsPane = settingsPane
+    //settingsPane = settingsPane
 
     let options = {
       element: settingsPane.find('#palette-editor-tabs'),
@@ -88,8 +122,8 @@ export class SettingsPaneManager implements ISettingsPaneManager {
       },
       minimumActiveTabWidth: 110
     }
-    editorTabs = this.RED.tabs.create(options, this.RED);
-    this.editorTabs = editorTabs
+    editorTabs = tabs.create(options, this.RED);
+    //editorTabs = editorTabs
 
     var modulesTab = $('<div>', {
       class: "palette-editor-tab"
@@ -113,7 +147,7 @@ export class SettingsPaneManager implements ISettingsPaneManager {
         filterChange($(this).val());
       }
     });
-    this.filterInput = filterInput
+    filterInput = filterInput
 
     nodeList = <ISearchResults>$('<ol>', {
       id: "palette-module-list",
@@ -259,16 +293,16 @@ export class SettingsPaneManager implements ISettingsPaneManager {
             enableButton.click((evt) => {
               evt.preventDefault();
               if (object.setUseCount[setName] === 0) {
-                var currentSet = this.RED.nodes.registry.getNodeSet(set.id);
+                var currentSet = registry.getNodeSet(set.id);
                 shade.show();
                 var newState = !currentSet.enabled
                 changeNodeState(set.id, newState, shade, function (xhr) {
                   if (xhr) {
                     if (xhr.responseJSON) {
-                      this.RED.notify(this.RED._('palette.editor.errors.' + (newState ? 'enable' : 'disable') + 'Failed', {
+                      notifications.notify(this.RED._('palette.editor.errors.' + (newState ? 'enable' : 'disable') + 'Failed', {
                         module: id,
                         message: xhr.responseJSON.message
-                      }));
+                      }), "Error", "", 0);
                     }
                   }
                 });
@@ -287,10 +321,10 @@ export class SettingsPaneManager implements ISettingsPaneManager {
               changeNodeState(entry.name, (container.hasClass('disabled')), shade, function (xhr) {
                 if (xhr) {
                   if (xhr.responseJSON) {
-                    this.RED.notify(this.RED._('palette.editor.errors.installFailed', {
+                    notifications.notify(this.RED._('palette.editor.errors.installFailed', {
                       module: id,
                       message: xhr.responseJSON.message
-                    }));
+                    }), "Error", "", 0);
                   }
                 }
               });
@@ -305,7 +339,7 @@ export class SettingsPaneManager implements ISettingsPaneManager {
       }
     });
 
-    this.nodeList = nodeList
+    //nodeList = nodeList
 
     var installTab = $('<div>', {
       class: "palette-editor-tab hide"
@@ -327,7 +361,7 @@ export class SettingsPaneManager implements ISettingsPaneManager {
     searchInput = $('<input type="text" data-i18n="[placeholder]palette.search"></input>')
       .appendTo(searchDiv)
 
-    this.searchInput = searchInput
+    //searchInput = searchInput
 
     searchInput.searchBox({
       delay: 300,
@@ -492,7 +526,7 @@ export class SettingsPaneManager implements ISettingsPaneManager {
       }
     });
 
-    this.packageList = packageList
+    //packageList = packageList
 
     $('<div id="palette-module-install-shade" class="palette-module-shade hide"><div class="palette-module-shade-status"></div><img src="red/images/spin.svg" class="palette-spinner"/></div>').appendTo(installTab);
 
@@ -529,10 +563,10 @@ export class SettingsPaneManager implements ISettingsPaneManager {
           installNodeModule(id, version, shade, function (xhr) {
             if (xhr) {
               if (xhr.responseJSON) {
-                this.RED.notify(this.RED._('palette.editor.errors.installFailed', {
+                notifications.notify(this.RED._('palette.editor.errors.installFailed', {
                   module: id,
                   message: xhr.responseJSON.message
-                }));
+                }), "Error", "", 0);
               }
             }
           });
@@ -551,10 +585,10 @@ export class SettingsPaneManager implements ISettingsPaneManager {
             shade.hide();
             if (xhr) {
               if (xhr.responseJSON) {
-                this.RED.notify(this.RED._('palette.editor.errors.removeFailed', {
+                notifications.notify(this.RED._('palette.editor.errors.removeFailed', {
                   module: id,
                   message: xhr.responseJSON.message
-                }));
+                }), "Error", "", 0);
               }
             }
           })
@@ -573,10 +607,10 @@ export class SettingsPaneManager implements ISettingsPaneManager {
           installNodeModule(id, version, shade, (xhr) => {
             if (xhr) {
               if (xhr.responseJSON) {
-                this.RED.notify(this.RED._('palette.editor.errors.updateFailed', {
+                notifications.notify(this.RED._('palette.editor.errors.updateFailed', {
                   module: id,
                   message: xhr.responseJSON.message
-                }));
+                }), "Error", "", 0);
               }
             }
           });

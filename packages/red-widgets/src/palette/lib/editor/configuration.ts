@@ -14,20 +14,48 @@ export interface IPaletteEditorConfiguration {
   configure()
 }
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  IRegistry,
+  ISettings,
+  IUserSettings,
+  IActions,
+  IEvents
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 @delegator(container)
 export class PaletteEditorConfiguration extends Context implements IPaletteEditorConfiguration {
+  @lazyInject(TYPES.nodes.registry) registry: IRegistry
+  @lazyInject(TYPES.settings) settings: ISettings
+  @lazyInject(TYPES.userSettings) userSettings: IUserSettings
+  @lazyInject(TYPES.actions) actions: IActions
+  @lazyInject(TYPES.events) events: IEvents
+
   constructor(public editor: PaletteEditor) {
     super()
   }
 
   configure() {
-    const { RED } = this
+    const {
+      RED,
+      settings,
+      userSettings,
+      actions,
+      events,
+      registry
+    } = this
 
     // make jquery Widget factories available for jQuery elements
     new Searchbox()
     new EditableList()
 
-    if (RED.settings.theme('palette.editable') === false) {
+    if (settings.theme('palette.editable') === false) {
       return;
     }
     let {
@@ -53,7 +81,7 @@ export class PaletteEditorConfiguration extends Context implements IPaletteEdito
 
     createSettingsPane();
 
-    RED.userSettings.add({
+    userSettings.add({
       id: 'palette',
       title: RED._("palette.editor.palette"),
       get: getSettingsPane,
@@ -68,32 +96,32 @@ export class PaletteEditorConfiguration extends Context implements IPaletteEdito
       }
     })
 
-    RED.actions.add("core:manage-palette", function () {
-      RED.userSettings.show('palette');
+    actions.add("core:manage-palette", function () {
+      userSettings.show('palette');
     });
 
-    RED.events.on('registry:module-updated', function (ns) {
+    events.on('registry:module-updated', function (ns) {
       refreshNodeModule(ns.module);
     });
-    RED.events.on('registry:node-set-enabled', function (ns) {
+    events.on('registry:node-set-enabled', function (ns) {
       refreshNodeModule(ns.module);
     });
-    RED.events.on('registry:node-set-disabled', function (ns) {
+    events.on('registry:node-set-disabled', function (ns) {
       refreshNodeModule(ns.module);
     });
-    RED.events.on('registry:node-type-added', function (nodeType) {
+    events.on('registry:node-type-added', function (nodeType) {
       if (!/^subflow:/.test(nodeType)) {
         var ns = RED.nodes.registry.getNodeSetForType(nodeType);
         refreshNodeModule(ns.module);
       }
     });
-    RED.events.on('registry:node-type-removed', function (nodeType) {
+    events.on('registry:node-type-removed', function (nodeType) {
       if (!/^subflow:/.test(nodeType)) {
         var ns = RED.nodes.registry.getNodeSetForType(nodeType);
         refreshNodeModule(ns.module);
       }
     });
-    RED.events.on('registry:node-set-added', function (ns) {
+    events.on('registry:node-set-added', function (ns) {
       refreshNodeModule(ns.module);
       for (var i = 0; i < filteredList.length; i++) {
         if (filteredList[i].info.id === ns.module) {
@@ -104,8 +132,8 @@ export class PaletteEditorConfiguration extends Context implements IPaletteEdito
         }
       }
     });
-    RED.events.on('registry:node-set-removed', function (ns) {
-      var module = RED.nodes.registry.getModule(ns.module);
+    events.on('registry:node-set-removed', function (ns) {
+      var module = registry.getModule(ns.module);
       if (!module) {
         var entry = nodeEntries[ns.module];
         if (entry) {
@@ -122,21 +150,21 @@ export class PaletteEditorConfiguration extends Context implements IPaletteEdito
         }
       }
     });
-    RED.events.on('nodes:add', function (n) {
+    events.on('nodes:add', function (n) {
       if (!/^subflow:/.test(n.type)) {
         typesInUse[n.type] = (typesInUse[n.type] || 0) + 1;
         if (typesInUse[n.type] === 1) {
-          var ns = RED.nodes.registry.getNodeSetForType(n.type);
+          var ns = registry.getNodeSetForType(n.type);
           refreshNodeModule(ns.module);
         }
       }
     })
-    RED.events.on('nodes:remove', function (n) {
+    events.on('nodes:remove', function (n) {
       if (typesInUse.hasOwnProperty(n.type)) {
         typesInUse[n.type]--;
         if (typesInUse[n.type] === 0) {
           delete typesInUse[n.type];
-          var ns = RED.nodes.registry.getNodeSetForType(n.type);
+          var ns = registry.getNodeSetForType(n.type);
           refreshNodeModule(ns.module);
         }
       }

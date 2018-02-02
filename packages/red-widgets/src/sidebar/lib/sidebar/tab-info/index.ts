@@ -41,6 +41,8 @@ export {
 
 import { TabInfoInitializer } from './initializer';
 
+import { ISidebarTabInfo } from '../../sidebar'
+
 @delegator({
   container,
   map: {
@@ -48,7 +50,7 @@ import { TabInfoInitializer } from './initializer';
     refresher: TabInfoRefresher
   }
 })
-export class SidebarTabInfo extends Context {
+export class SidebarTabInfo extends Context implements ISidebarTabInfo {
   createStack(options) {
     // legacy: ctx.stack.create
     return new Stack(options)
@@ -78,7 +80,6 @@ export class SidebarTabInfo extends Context {
   async init() {
     await this.initializer.init(this.i18n)
   }
-
 
   get sidebar() {
     return this.RED.sidebar

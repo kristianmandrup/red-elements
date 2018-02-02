@@ -30,6 +30,8 @@ export interface IUserSettings {
   configure()
   setSelected(id, value)
   toggle(id)
+  add : Function
+  show(name : string)
 }
 
 @delegator({

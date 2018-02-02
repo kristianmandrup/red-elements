@@ -5,16 +5,30 @@ import {
   Context,
   container,
   delegateTarget,
-  delegateTo
+  delegateTo,
+  delegator
 } from './_base'
+
+import {
+  lazyInject,
+  $TYPES
+} from '../../../../_container'
+
+import {
+  IRegistry
+} from '../../../../_interfaces'
+
+const TYPES = $TYPES.all
 
 export interface INodeModuleRefresher {
   refreshNodeModule(module)
   _refreshNodeModule(module)
 }
 
-@delegateTo(container)
+@delegator(container)
 export class NodeModuleRefresher extends Context implements INodeModuleRefresher {
+  @lazyInject(TYPES.nodes.registry) registry: IRegistry
+
   constructor(public manager: NodeModuleManager) {
     super()
   }
@@ -45,9 +59,11 @@ export class NodeModuleRefresher extends Context implements INodeModuleRefresher
       semVerCompare,
   } = this.editor
 
+    const { registry } = this
+
     if (!nodeEntries.hasOwnProperty(module)) {
       nodeEntries[module] = {
-        info: this.RED.nodes.registry.getModule(module)
+        info: registry.getModule(module)
       };
       var index = [module];
       for (var s in nodeEntries[module].info.sets) {
@@ -82,7 +98,7 @@ export class NodeModuleRefresher extends Context implements INodeModuleRefresher
               inUseCount += (typesInUse[t] || 0);
               var swatch = setElements.swatches[t];
               if (set.enabled) {
-                var def = this.RED.nodes.getType(t);
+                var def = registry.getType(t);
                 if (def && def.color) {
                   swatch.css({
                     background: def.color

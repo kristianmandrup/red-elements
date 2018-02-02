@@ -4,14 +4,15 @@ import {
   Context,
   $,
   container,
-  delegateTarget
+  delegateTarget,
+  delegator
 } from './_base'
 
 export interface IPaletteCategoryContainer {
   createCategoryContainer(category, label)
 }
 
-@delegateTarget()
+@delegator(container)
 export class PaletteCategoryContainer extends Context implements IPaletteCategoryContainer {
   constructor(public palette: Palette) {
     super()

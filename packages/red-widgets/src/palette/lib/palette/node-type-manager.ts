@@ -14,8 +14,26 @@ import {
   Context,
   $,
   container,
-  delegateTarget
+  delegateTarget,
+  delegator
 } from './_base'
+
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  IUtils,
+  ICanvas,
+  INodes,
+  IWorkspaces,
+  IBidi,
+  SidebarTabInfo
+} from '../../../_interfaces'
+
+
+const TYPES = $TYPES.all
 
 export interface IPaletteNodeTypeManager {
   /**
@@ -42,8 +60,15 @@ export interface IPaletteNodeTypeManager {
   setLabel(type, el, label, info)
 }
 
-@delegateTarget()
+@delegator(container)
 export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeManager {
+  @lazyInject(TYPES.utils) utils: IUtils
+  @lazyInject(TYPES.view) view: ICanvas
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.sidebar.info) info: ISidebarTabInfo
+  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
+  @lazyInject(TYPES.text.bidi) bidi: IBidi
+
   constructor(public palette: Palette) {
     super()
   }
@@ -78,6 +103,14 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
         'createCategoryContainer'
       ])
 
+    const {
+      utils,
+      view,
+      nodes,
+      workspaces,
+      info
+    } = this
+
     var nodeTypeId = escapeNodeType(nt);
     if ($("#palette_node_" + nodeTypeId).length) {
       return;
@@ -106,9 +139,8 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
 
       d.className = "palette_node";
 
-
       if (def.icon) {
-        var icon_url = RED.utils.getNodeIcon(def);
+        var icon_url = utils.getNodeIcon(def, def.node);
         var iconContainer = $('<div/>', {
           class: "palette_icon_container" + (def.align == "right" ? " palette_icon_container_right" : "")
         }).appendTo(d);
@@ -155,7 +187,7 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
         e.preventDefault();
       };
 
-      var popover = RED.popover.create({
+      var popover = popover.create({
         target: $(d),
         trigger: "hover",
         width: "300px",
@@ -176,14 +208,14 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
       //     container:'body'
       // });
       $(d).click(function () {
-        RED.view.focus();
+        view.focus();
         var helpText;
         if (nt.indexOf("subflow:") === 0) {
-          helpText = marked(RED.nodes.subflow(nt.substring(8)).info || "");
+          helpText = marked(nodes.subflow(nt.substring(8)).info || "");
         } else {
           helpText = $("script[data-help-name='" + d['type'] + "']").html() || "";
         }
-        RED.sidebar.info.set(helpText);
+        info.set(helpText);
       });
       var chart = $("#chart");
       var chartOffset = chart.offset();
@@ -204,7 +236,7 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
         revertDuration: 50,
         containment: '#main-container',
         start: function () {
-          RED.view.focus();
+          view.focus();
         },
         stop: function () {
           d3.select('.link_splice').classed('link_splice', false);
@@ -238,14 +270,14 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
                   svgRect.width = 1;
                   svgRect.height = 1;
                   nodes = getIntersectionList(svgRect, chartSVG);
-                  mouseX /= RED.view.scale();
-                  mouseY /= RED.view.scale();
+                  mouseX /= view.scale();
+                  mouseY /= view.scale();
                 } else {
                   // Firefox doesn't do getIntersectionList and that
                   // makes us sad
-                  mouseX /= RED.view.scale();
-                  mouseY /= RED.view.scale();
-                  nodes = RED.view.getLinksAtPoint(mouseX, mouseY);
+                  mouseX /= view.scale();
+                  mouseY /= view.scale();
+                  nodes = view.getLinksAtPoint(mouseX, mouseY);
                 }
                 for (var i = 0; i < nodes.length; i++) {
                   if (d3.select(nodes[i]).classed('link_background')) {
@@ -286,7 +318,7 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
       var nodeInfo = null;
       if (def.category == "subflows") {
         $(d).dblclick(function (e) {
-          RED.workspaces.show(nt.substring(8));
+          workspaces.show(nt.substring(8));
           e.preventDefault();
         });
         nodeInfo = marked(def.info || "");
@@ -330,14 +362,16 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
 
   refreshNodeTypes() {
     const {
-      RED
+      RED,
+      nodes,
+      handleError
     } = this
 
-    RED.nodes.eachSubflow((sf) => {
+    nodes.eachSubflow((sf) => {
       var paletteNode = $("#palette_node_subflow_" + sf.id.replace(".", "_"));
 
       if (!paletteNode) {
-        this.handleError('refreshNodeTypes: No palette node for subflow ${sf.id} could be found on page', {
+        handleError('refreshNodeTypes: No palette node for subflow ${sf.id} could be found on page', {
           sf
         })
       }
@@ -346,12 +380,12 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
       var portOutput = paletteNode.find(".palette_port_output");
 
       if (!portInput) {
-        this.handleError('refreshNodeTypes: no port input element could be found .palette_port_input', {
+        handleError('refreshNodeTypes: no port input element could be found .palette_port_input', {
           paletteNode
         })
       }
       if (!portOutput) {
-        this.handleError('refreshNodeTypes: no port output element could be found .palette_port_output', {
+        handleError('refreshNodeTypes: no port output element could be found .palette_port_output', {
           paletteNode
         })
       }
@@ -381,7 +415,9 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
 
   setLabel(type, el, label, info) {
     const {
-      RED
+      RED,
+      view,
+      bidi
     } = this
 
     var nodeWidth = 82;
@@ -397,14 +433,14 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
     var currentLineWidth = RED.view.calculateTextWidth(currentLine, "palette_label", 0);
 
     for (var i = 1; i < words.length; i++) {
-      var newWidth = RED.view.calculateTextWidth(currentLine + " " + words[i], "palette_label", 0);
+      var newWidth = view.calculateTextWidth(currentLine + " " + words[i], "palette_label", 0);
       if (newWidth < nodeWidth) {
         currentLine += " " + words[i];
         currentLineWidth = newWidth;
       } else {
         displayLines.push(currentLine);
         currentLine = words[i];
-        currentLineWidth = RED.view.calculateTextWidth(currentLine, "palette_label", 0);
+        currentLineWidth = view.calculateTextWidth(currentLine, "palette_label", 0);
       }
     }
     displayLines.push(currentLine);
@@ -416,7 +452,7 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
     });
 
     var labelElement = el.find(".palette_label");
-    labelElement.html(lines).attr('dir', RED.text.bidi.resolveBaseTextDir(lines));
+    labelElement.html(lines).attr('dir', bidi.resolveBaseTextDir(lines));
 
     el.find(".palette_port").css({
       top: (multiLineNodeHeight / 2 - 5) + "px"
@@ -424,9 +460,9 @@ export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeM
 
     var popOverContent;
     try {
-      var l = "<p><b>" + RED.text.bidi.enforceTextDirectionWithUCC(label) + "</b></p>";
+      var l = "<p><b>" + bidi.enforceTextDirectionWithUCC(label) + "</b></p>";
       if (label != type) {
-        l = "<p><b>" + RED.text.bidi.enforceTextDirectionWithUCC(label) + "</b><br/><i>" + type + "</i></p>";
+        l = "<p><b>" + bidi.enforceTextDirectionWithUCC(label) + "</b><br/><i>" + type + "</i></p>";
       }
       popOverContent = $(l + (info ? info : $("script[data-help-name='" + type + "']").html() || "<p>" + RED._("palette.noInfo") + "</p>").trim())
         .filter(function (n) {

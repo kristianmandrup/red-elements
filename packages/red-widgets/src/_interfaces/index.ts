@@ -11,7 +11,9 @@ export {
 export {
   IUtil,
   INodes,
-  ISettings
+  ISettings,
+  IRegistry,
+  IBidi
   // ...
 } from '@tecla5/red-runtime'
 
@@ -82,7 +84,8 @@ export {
 } from '../utils'
 
 export {
-  ISidebar
+  ISidebar,
+  ISidebarTabInfo
 } from '../sidebar'
 
 export interface IUserSetting {
