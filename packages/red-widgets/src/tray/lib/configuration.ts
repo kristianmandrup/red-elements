@@ -6,8 +6,12 @@ import {
   container
 } from './_base'
 
+export interface ITrayConfiguration {
+  configure()
+}
+
 @delegateTarget()
-export class TrayConfiguration extends Context {
+export class TrayConfiguration extends Context implements ITrayConfiguration {
   constructor(public tray: Tray) {
     super()
   }

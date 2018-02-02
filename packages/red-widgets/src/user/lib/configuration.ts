@@ -24,14 +24,18 @@ import {
 
 const TYPES = $TYPES.all
 
+export interface IUserConfiguration {
+  updateUserMenu()
+  configure()
+}
+
 @delegateTarget()
 @delegator({
   map: {
     display: UserDisplay
   }
 })
-export class UserConfiguration extends Context {
-
+export class UserConfiguration extends Context implements IUserConfiguration {
   @lazyInject(TYPES.settings) settings: ISettings
   @lazyInject(TYPES.menu) menu: IMenu
 
@@ -63,7 +67,6 @@ export class UserConfiguration extends Context {
   updateUserMenu() {
     // this.display.updateUserMenu();
   }
-
 
   // protected
 

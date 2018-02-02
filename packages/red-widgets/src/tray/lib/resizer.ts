@@ -7,6 +7,18 @@ import {
   container
 } from './_base'
 
+export interface ITrayResizer {
+  /**
+     * Resize
+     */
+  resize()
+
+  /**
+   * handle Window Resize
+   */
+  handleWindowResize()
+}
+
 @delegateTarget()
 export class TrayResizer extends Context {
   constructor(public tray: Tray) {

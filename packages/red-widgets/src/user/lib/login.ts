@@ -16,13 +16,30 @@ interface IButton extends JQuery<HTMLElement> {
   button: Function
 }
 
+export interface IUserLogin {
+  loginDialog(opts)
+
+  /**
+   *
+   * Also posts auth token to server
+   * @param param
+   */
+  onLoginSuccess({ data, opts })
+
+  /**
+   * Perform user login on server
+   * @param param0
+   */
+  serverUserLogin: Function
+}
+
 @delegateTarget()
 @delegator({
   map: {
     tokenPoster: ServerTokenPoster
   }
 })
-export class UserLogin extends Context {
+export class UserLogin extends Context implements IUserLogin {
   public tokenPoster: ServerTokenPoster // = new ServerTokenPoster(this.user.server)
 
   constructor(public user: User) {

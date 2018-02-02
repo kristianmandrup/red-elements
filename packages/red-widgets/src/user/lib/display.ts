@@ -6,8 +6,12 @@ import {
   container
 } from './container'
 
+export interface IUserDisplay {
+  updateUserMenu()
+}
+
 @delegateTarget()
-export class UserDisplay extends Context {
+export class UserDisplay extends Context implements IUserDisplay {
   constructor(public user: User) {
     super()
   }

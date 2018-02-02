@@ -7,8 +7,19 @@ import {
   container
 } from './_base'
 
+export interface ITrayDisplayer {
+  show(options)
+  addHeader(el)
+  addBodyWrapper(el)
+  addBody(el)
+  addFooter(el)
+  addResizeHandle(el)
+  addTrayTitle(title, header)
+  addTrayToolbar(header)
+}
+
 @delegateTarget()
-export class TrayDisplayer extends Context {
+export class TrayDisplayer extends Context implements ITrayDisplayer {
   constructor(public tray: Tray) {
     super()
   }
