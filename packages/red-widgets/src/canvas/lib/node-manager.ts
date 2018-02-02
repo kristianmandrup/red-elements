@@ -7,6 +7,18 @@ import {
   delegateTarget
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import {
+} from '@tecla5/red-runtime'
+
+import { INodes, INotifications, IWorkspaces, ISubflow } from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export interface ICanvasNodeManager {
   /**
    * get element position of node
@@ -30,6 +42,11 @@ export interface ICanvasNodeManager {
 
 @delegateTarget()
 export class CanvasNodeManager extends Context implements ICanvasNodeManager {
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.notify) notify: INotifications
+  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
+  @lazyInject(TYPES.subflow) subflow: ISubflow
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -41,7 +58,8 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
   getNodeElementPosition(node) {
     const {
       rebind,
-      canvas
+      canvas,
+      nodes
     } = this
     const {
       getNodeElementPosition
@@ -77,21 +95,23 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
    */
   updateActiveNodes() {
     const {
-      RED,
-      canvas
+      //RED,
+      canvas,
+      nodes,
+      workspaces
     } = this
     let {
       activeNodes,
       activeLinks
     } = canvas
 
-    var activeWorkspace = RED.workspaces.active();
+    var activeWorkspace = workspaces.active();
 
-    activeNodes = RED.nodes.filterNodes({
+    activeNodes = nodes.filterNodes({
       z: activeWorkspace
     });
 
-    activeLinks = RED.nodes.filterLinks({
+    activeLinks = nodes.filterLinks({
       source: {
         z: activeWorkspace
       },
@@ -109,8 +129,12 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
    */
   addNode(type: any, x: any, y: any) {
     const {
-      RED,
-      canvas
+      //RED,
+      canvas,
+      nodes,
+      notify,
+      workspaces,
+      subflow
     } = this
     const {
       activeSubflow,
@@ -123,26 +147,26 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
     if (activeSubflow && m) {
       var subflowId = m[1];
       if (subflowId === activeSubflow.id) {
-        RED.notify(RED._('notification.error', {
+        notify.notify(RED._('notification.error', {
           message: RED._('notification.errors.cannotAddSubflowToItself')
-        }), 'error');
+        }), 'error', "", 0);
         return;
       }
-      if (RED.nodes.subflowContains(m[1], activeSubflow.id)) {
-        RED.notify(RED._('notification.error', {
+      if (nodes.subflowContains(m[1], activeSubflow.id)) {
+        notify.notify(RED._('notification.error', {
           message: RED._('notification.errors.cannotAddCircularReference')
-        }), 'error');
+        }), 'error', "", 0);
         return;
       }
     }
 
     var nn: any = {
-      id: RED.nodes.id(),
-      z: RED.workspaces.active()
+      id: nodes.id(),
+      z: workspaces.active()
     };
 
     nn.type = type;
-    nn._def = RED.nodes.getType(nn.type);
+    nn._def = nodes.getType(nn.type);
 
     if (!m) {
       nn.inputs = nn._def.inputs || 0;
@@ -164,7 +188,7 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
         }
       }
     } else {
-      var subflow = RED.nodes.subflow(m[1]);
+      var subflow = nodes.subflow(m[1]);
       nn.inputs = subflow.in.length;
       nn.outputs = subflow.out.length;
     }
@@ -178,10 +202,10 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
     var historyEvent: any = {
       t: 'add',
       nodes: [nn.id],
-      dirty: RED.nodes.dirty()
+      dirty: nodes.dirty()
     }
     if (activeSubflow) {
-      var subflowRefresh = RED.subflow.refresh(true);
+      var subflowRefresh = subflow.refresh(true);
       if (subflowRefresh) {
         historyEvent.subflow = {
           id: activeSubflow.id,
@@ -194,6 +218,5 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
       node: nn,
       historyEvent: historyEvent
     }
-
   }
 }

@@ -6,6 +6,24 @@ import {
   delegateTarget
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import { Ihistory } from '@tecla5/red-runtime'
+
+import {
+  INodes,
+  IWorkspaces,
+  IEvents,
+  IEditor,
+  ISubflow,
+  INotifications
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export interface ICanvasSelectionManager {
   /**
      * select All
@@ -58,6 +76,14 @@ export interface ICanvasSelectionManager {
 
 @delegateTarget()
 export class CanvasSelectionManager extends Context implements ICanvasSelectionManager {
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
+  @lazyInject(TYPES.events) events: IEvents
+  @lazyInject(TYPES.editor) editor: IEditor
+  @lazyInject(TYPES.subflow) subflow: ISubflow
+  @lazyInject(TYPES.history) history: Ihistory
+  @lazyInject(TYPES.notify) notify: INotifications
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -67,9 +93,12 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
    */
   selectAll() {
     const {
-      RED,
+      //RED,
       canvas,
-      rebind
+      rebind,
+      nodes,
+      workspaces,
+      events
     } = this
     const {
       moving_set,
@@ -86,8 +115,8 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
         'redraw',
       ])
 
-    RED.nodes.eachNode(function (n) {
-      if (n.z == RED.workspaces.active()) {
+    nodes.eachNode(function (n) {
+      if (n.z == workspaces.active()) {
         if (!n.selected) {
           n.selected = true;
           n.dirty = true;
@@ -150,12 +179,17 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
   updateSelection() {
     const {
       canvas,
-      RED
+      //RED,
+      workspaces,
+      events,
+      nodes
     } = this
+
     const {
       moving_set,
       selected_link
     } = canvas
+
     let {
       activeLinks,
       activeFlowLinks,
@@ -172,8 +206,8 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
     if (selected_link != null) {
       selection.link = selected_link;
     }
-    var activeWorkspace = RED.workspaces.active();
-    activeLinks = RED.nodes.filterLinks({
+    var activeWorkspace = workspaces.active();
+    activeLinks = nodes.filterLinks({
       source: {
         z: activeWorkspace
       },
@@ -181,7 +215,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
         z: activeWorkspace
       }
     });
-    var tabOrder = RED.nodes.getWorkspaceOrder();
+    var tabOrder = nodes.getWorkspaceOrder();
     var currentLinks = activeLinks;
     var addedLinkLinks = {};
     activeFlowLinks = [];
@@ -190,7 +224,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
         var linkNode = moving_set[i].n;
         var offFlowLinks = {};
         linkNode.links.forEach(function (id) {
-          var target = RED.nodes.node(id);
+          var target = nodes.node(id);
           if (target) {
             if (linkNode.type === 'link out') {
               if (target.z === linkNode.z) {
@@ -251,7 +285,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
     });
     if (selectionJSON !== lastSelection) {
       lastSelection = selectionJSON;
-      RED.events.emit('view:selection-changed', selection);
+      events.emit('view:selection-changed', selection);
     }
   }
 
@@ -321,8 +355,9 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
    */
   editSelection() {
     const {
-      RED,
-      canvas
+      //RED,
+      canvas,
+      editor
     } = this
     const {
       moving_set,
@@ -332,9 +367,9 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
     if (moving_set.length > 0) {
       var node = moving_set[0].n;
       if (node.type === 'subflow') {
-        RED.editor.editSubflow(activeSubflow);
+        editor.editSubflow(activeSubflow);
       } else {
-        RED.editor.edit(node);
+        editor.edit(node);
       }
     }
   }
@@ -346,11 +381,15 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
     const {
       RED,
       canvas,
-      rebind
+      rebind,
+      subflow,
+      history,
+      nodes
     } = this
     const {
       activeSubflow,
     } = canvas
+
     let {
       moving_set,
       selected_link
@@ -373,7 +412,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
       var removedSubflowInputs = [];
       var subflowInstances = [];
 
-      var startDirty = RED.nodes.dirty();
+      var startDirty = nodes.dirty();
       var startChanged = false;
       if (moving_set.length > 0) {
         for (var i = 0; i < moving_set.length; i++) {
@@ -383,7 +422,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
             if (node.x < 0) {
               node.x = 25
             }
-            var removedEntities = RED.nodes.remove(node.id);
+            var removedEntities = nodes.remove(node.id);
             removedNodes.push(node);
             removedNodes = removedNodes.concat(removedEntities.nodes);
             removedLinks = removedLinks.concat(removedEntities.links);
@@ -397,31 +436,31 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
           }
         }
         if (removedSubflowOutputs.length > 0) {
-          result = RED.subflow.removeOutput(removedSubflowOutputs);
+          result = subflow.removeOutput(removedSubflowOutputs);
           if (result) {
             removedLinks = removedLinks.concat(result.links);
           }
         }
         // Assume 0/1 inputs
         if (removedSubflowInputs.length == 1) {
-          result = RED.subflow.removeInput();
+          result = subflow.removeInput();
           if (result) {
             removedLinks = removedLinks.concat(result.links);
           }
         }
-        var instances = RED.subflow.refresh(true);
+        var instances = subflow.refresh(true);
         if (instances) {
           subflowInstances = instances.instances;
         }
         moving_set = [];
         if (removedNodes.length > 0 || removedSubflowOutputs.length > 0 || removedSubflowInputs.length > 0) {
-          RED.nodes.dirty(true);
+          nodes.dirty(true);
         }
       }
       if (selected_link) {
-        RED.nodes.removeLink(selected_link);
+        nodes.removeLink(selected_link);
         removedLinks.push(selected_link);
-        RED.nodes.dirty(true);
+        nodes.dirty(true);
       }
       var historyEvent = {
         t: 'delete',
@@ -434,7 +473,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
         },
         dirty: startDirty
       };
-      RED.history.push(historyEvent);
+      history.push(historyEvent);
 
       selected_link = null;
       updateActiveNodes();
@@ -448,8 +487,10 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
    */
   copySelection() {
     const {
-      RED,
-      canvas
+      //RED,
+      canvas,
+      notify,
+      nodes
     } = this
     const {
       activeSubflow,
@@ -470,21 +511,21 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
           for (var d in node._def.defaults) {
             if (node._def.defaults.hasOwnProperty(d)) {
               if (node._def.defaults[d].type) {
-                var configNode = RED.nodes.node(node[d]);
+                var configNode = nodes.node(node[d]);
                 if (configNode && configNode._def.exclusive) {
-                  nns.push(RED.nodes.convertNode(configNode));
+                  nns.push(nodes.convertNode(configNode));
                 }
               }
             }
           }
-          nns.push(RED.nodes.convertNode(node));
+          nns.push(nodes.convertNode(node));
           //TODO: if the node has an exclusive config node, it should also be copied, to ensure it remains exclusive...
         }
       }
       clipboard = JSON.stringify(nns);
-      RED.notify(RED._('clipboard.nodeCopied', {
+      notify.notify(RED._('clipboard.nodeCopied', {
         count: nns.length
-      }), null);
+      }), null, "", 0);
     }
   }
 
@@ -494,9 +535,10 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
    */
   select(selection) {
     const {
-      RED,
+      // RED,
       canvas,
-      rebind
+      rebind,
+      nodes
     } = this
     const {
       clearSelection,
@@ -514,7 +556,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
     if (typeof selection !== 'undefined') {
       clearSelection();
       if (typeof selection == 'string') {
-        var selectedNode = RED.nodes.node(selection);
+        var selectedNode = nodes.node(selection);
         if (selectedNode) {
           selectedNode.selected = true;
           selectedNode.dirty = true;

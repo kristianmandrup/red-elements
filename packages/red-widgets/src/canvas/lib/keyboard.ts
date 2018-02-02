@@ -6,12 +6,28 @@ import {
   delegateTarget
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import { Ihistory } from '@tecla5/red-runtime'
+
+
+import { INodes } from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export interface ICanvasKeyboard {
   endKeyboardMove()
 }
 
 @delegateTarget()
 export class CanvasKeyboard extends Context implements ICanvasKeyboard {
+
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.history) history: Ihistory
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -21,7 +37,9 @@ export class CanvasKeyboard extends Context implements ICanvasKeyboard {
    */
   endKeyboardMove() {
     const {
-      canvas
+      canvas,
+      nodes,
+      history
     } = this
     const {
       moving_set
@@ -55,12 +73,12 @@ export class CanvasKeyboard extends Context implements ICanvasKeyboard {
         delete moving_set[i].oy;
       }
       redraw();
-      this.RED.history.push({
+      history.push({
         t: 'move',
         nodes: ns,
-        dirty: this.RED.nodes.dirty()
+        dirty: nodes.dirty()
       });
-      this.RED.nodes.dirty(true);
+      nodes.dirty(true);
     }
 
     setInstanceVars({
