@@ -4,12 +4,45 @@ import { NodeModuleRefresher } from './refresher';
 import {
   Context,
   container,
-  delegateTarget
+  delegateTarget,
+  delegateTo,
+  delegator
 } from './_base'
 
-@delegateTarget()
-export class NodeModuleManager extends Context {
-  refresher: NodeModuleRefresher = new NodeModuleRefresher(this)
+export interface INodeModuleManager {
+  /**
+     * Refresh Node module
+     * @param module
+     */
+  refreshNodeModule(module)
+
+  /**
+   * install a NodeModule
+   * @param id
+   * @param callback
+   * @param version
+   * @param shade
+   */
+  installNodeModule(id: string, callback: Function, version?: any, shade?: any)
+
+  /**
+   * remove Node Module
+   * @param id
+   */
+  removeNodeModule(id: string)
+
+  refreshNodeModuleList()
+}
+
+@delegator({
+  container,
+  map: {
+    refresher: NodeModuleRefresher
+  }
+})
+export class NodeModuleManager extends Context implements INodeModuleManager {
+
+  refresher: NodeModuleRefresher //= new NodeModuleRefresher(this)
 
   constructor(public editor: PaletteEditor) {
     super()
@@ -23,8 +56,9 @@ export class NodeModuleManager extends Context {
    * Refresh Node module
    * @param module
    */
+  @delegateTo('refresher')
   refreshNodeModule(module) {
-    this.refresher.refreshNodeModule(module)
+    //this.refresher.refreshNodeModule(module)
   }
 
   /**

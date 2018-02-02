@@ -6,10 +6,14 @@ import {
   delegateTarget
 } from './_base'
 
+export interface INodeUpdater {
+  updateNode(state: any, id: string)
+}
+
 @delegateTarget({
   container
 })
-export class NodeUpdater extends Context {
+export class NodeUpdater extends Context implements INodeUpdater {
   constructor(public api: NodeApi) {
     super()
   }

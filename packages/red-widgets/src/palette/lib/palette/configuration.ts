@@ -3,7 +3,9 @@ import { PaletteEditor } from './';
 import {
   Context, $, EditableList, Searchbox,
   container,
-  delegateTarget
+  delegateTarget,
+  delegateTo,
+  delegator
 } from './_base'
 
 import {
@@ -12,22 +14,28 @@ import {
 } from '../../../_container'
 
 import {
-  I18n,
   IUserSetting,
   IActions,
   IEvents,
-  INodes
+  INodes,
+  ISettings
 } from '../../../_interfaces'
+
+import { isTemplateMiddleOrTemplateTail } from 'typescript';
 
 const TYPES = $TYPES.all
 
-@delegateTarget()
-export class PaletteConfiguration extends Context {
+export interface IPaletteConfiguration {
+  configure()
+}
 
+@delegator(container)
+export class PaletteConfiguration extends Context implements IPaletteConfiguration {
   @lazyInject(TYPES.userSettings) userSettings: IUserSetting;
   @lazyInject(TYPES.actions) actions: IActions
   @lazyInject(TYPES.events) events: IEvents
   @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.settings) settings: ISettings
 
   constructor(public editor: PaletteEditor) {
     super()
@@ -39,14 +47,15 @@ export class PaletteConfiguration extends Context {
       userSettings,
       actions,
       events,
-      nodes
+      nodes,
+      settings
     } = this
 
     // make jquery Widget factories available for jQuery elements
     new Searchbox()
     new EditableList()
 
-    if (RED.settings.theme('palette.editable') === false) {
+    if (settings.theme('palette.editable') === false) {
       return;
     }
     let {

@@ -1,4 +1,10 @@
-export class SettingsPaneManager {
+export interface ISettingsPaneManager {
+  getSettingsPane()
+  createSettingsPane()
+}
+
+export class SettingsPaneManager implements ISettingsPaneManager {
+
   getSettingsPane() {
     let {
       settingsPane,

@@ -17,8 +17,33 @@ import {
   delegateTarget
 } from './_base'
 
+export interface IPaletteNodeTypeManager {
+  /**
+     * escape Node Type
+     * @param nt
+     */
+  escapeNodeType(nt)
+
+  /**
+   * add Node Type
+   * @param nt
+   * @param def
+   */
+  addNodeType(nt, def)
+
+  removeNodeType(nt)
+
+  hideNodeType(nt)
+
+  showNodeType(nt)
+
+  refreshNodeTypes()
+
+  setLabel(type, el, label, info)
+}
+
 @delegateTarget()
-export class PaletteNodeTypeManager extends Context {
+export class PaletteNodeTypeManager extends Context implements IPaletteNodeTypeManager {
   constructor(public palette: Palette) {
     super()
   }

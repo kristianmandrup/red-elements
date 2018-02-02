@@ -6,8 +6,12 @@ import {
   delegator
 } from './_base'
 
-@delegateTarget()
-export class InstallTab extends Context {
+export interface IInstallTab {
+  initInstallTab()
+}
+
+@delegator(container)
+export class InstallTab extends Context implements IInstallTab {
   constructor(public editor: PaletteEditor) {
     super()
   }

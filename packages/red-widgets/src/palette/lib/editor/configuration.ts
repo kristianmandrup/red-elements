@@ -6,11 +6,16 @@ import {
   EditableList,
   Searchbox,
   container,
-  delegateTarget
+  delegateTarget,
+  delegator
 } from './_base'
 
-@delegateTarget()
-export class PaletteEditorConfiguration extends Context {
+export interface IPaletteEditorConfiguration {
+  configure()
+}
+
+@delegator(container)
+export class PaletteEditorConfiguration extends Context implements IPaletteEditorConfiguration {
   constructor(public editor: PaletteEditor) {
     super()
   }

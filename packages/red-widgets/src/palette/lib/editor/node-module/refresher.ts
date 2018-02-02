@@ -4,11 +4,17 @@ import { NodeModuleManager } from './manager';
 import {
   Context,
   container,
-  delegateTarget
+  delegateTarget,
+  delegateTo
 } from './_base'
 
-@delegateTarget()
-export class NodeModuleRefresher extends Context {
+export interface INodeModuleRefresher {
+  refreshNodeModule(module)
+  _refreshNodeModule(module)
+}
+
+@delegateTo(container)
+export class NodeModuleRefresher extends Context implements INodeModuleRefresher {
   constructor(public manager: NodeModuleManager) {
     super()
   }

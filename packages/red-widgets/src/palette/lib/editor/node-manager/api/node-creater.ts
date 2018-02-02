@@ -6,10 +6,14 @@ import {
   delegateTarget
 } from './_base'
 
+export interface INodeCreater {
+  createNode(data, options: any)
+}
+
 @delegateTarget({
   container
 })
-export class NodeCreater extends Context {
+export class NodeCreater extends Context implements INodeCreater {
   constructor(public api: NodeApi) {
     super()
   }

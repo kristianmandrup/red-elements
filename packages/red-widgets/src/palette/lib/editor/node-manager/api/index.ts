@@ -17,12 +17,16 @@ import {
   Context,
   container,
   delegator,
-  delegateTarget
+  delegateTarget,
+  delegateTo
 } from './_base'
 
-@delegateTarget({
-  container,
-})
+export interface INodeApi {
+  createNode(data, options: any)
+  deleteNode(id: string)
+  updateNode(state: any, id: string)
+}
+
 @delegator({
   container,
   map: {
@@ -31,7 +35,7 @@ import {
     updater: NodeUpdater
   }
 })
-export class NodeApi extends Context {
+export class NodeApi extends Context implements INodeApi {
   // shared api
   nodesApi: NodesApi = new NodesApi()
 
@@ -43,14 +47,17 @@ export class NodeApi extends Context {
     super()
   }
 
+  @delegateTo('creator')
   async createNode(data, options: any = {}) {
     return await this.creator.createNode(data, options)
   }
 
+  @delegateTo('deleter')
   async deleteNode(id: string) {
     return await this.deleter.deleteNode(id)
   }
 
+  @delegateTo('updater')
   async updateNode(state: any, id: string) {
     return await this.updater.updateNode(state, id)
   }

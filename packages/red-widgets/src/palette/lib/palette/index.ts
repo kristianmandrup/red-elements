@@ -58,7 +58,7 @@ export interface IPalette {
     configuration: PaletteConfiguration
   }
 })
-export class Palette extends Context {
+export class Palette extends Context implements IPalette {
   public categoryContainers = {}
   exclusion = [
     'config',

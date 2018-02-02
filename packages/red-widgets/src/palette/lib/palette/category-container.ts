@@ -7,8 +7,12 @@ import {
   delegateTarget
 } from './_base'
 
+export interface IPaletteCategoryContainer {
+  createCategoryContainer(category, label)
+}
+
 @delegateTarget()
-export class PaletteCategoryContainer extends Context {
+export class PaletteCategoryContainer extends Context implements IPaletteCategoryContainer {
   constructor(public palette: Palette) {
     super()
   }

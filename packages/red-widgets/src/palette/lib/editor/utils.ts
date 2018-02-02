@@ -2,11 +2,16 @@ import { Context } from "../../../context";
 
 import {
   container,
-  delegateTarget
+  delegateTarget,
+  delegateTo
 } from './_base'
 
-@delegateTarget()
-export class PaletteUtils extends Context {
+export interface IPaletteUtils {
+  formatUpdatedAt(dateString)
+}
+
+@delegateTo(container)
+export class PaletteUtils extends Context implements IPaletteUtils {
   formatUpdatedAt(dateString) {
     const {
       RED
@@ -75,4 +80,3 @@ export class PaletteUtils extends Context {
     }
   }
 }
-

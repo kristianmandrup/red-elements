@@ -6,10 +6,14 @@ import {
   delegateTarget
 } from './_base'
 
+export interface INodeDeleter {
+  deleteNode(id: string)
+}
+
 @delegateTarget({
   container
 })
-export class NodeDeleter extends Context {
+export class NodeDeleter extends Context implements INodeDeleter {
   constructor(public api: NodeApi) {
     super()
   }
