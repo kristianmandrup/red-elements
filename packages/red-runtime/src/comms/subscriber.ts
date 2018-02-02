@@ -13,7 +13,7 @@ export interface ISubscriber {
 
 const { log } = console
 
-export class Subscriber extends Context {
+export class Subscriber extends Context implements ISubscriber {
   constructor(public communications: Communications) {
     super()
   }

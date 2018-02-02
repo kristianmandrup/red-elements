@@ -40,7 +40,7 @@ export interface ICommunications {
   unsubscribe(topic, callback)
 }
 
-export class Communications extends Context {
+export class Communications extends Context implements ICommunications {
 
   // TODO: perhaps make most/all protected?
   public errornotification: any

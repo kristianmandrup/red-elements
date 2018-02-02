@@ -23,6 +23,9 @@ export interface IWorkspace extends INode {
 }
 
 export interface ISubflow extends INode {
+  refresh(bool: boolean)
+  removeOutput(removedSubflowOutputs: any[])
+  removeInput()
 }
 
 /**

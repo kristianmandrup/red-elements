@@ -6,6 +6,18 @@ import {
   Context
 } from '../context'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../_container'
+
+import {
+  INotifications,
+  IUser
+} from '../interfaces'
+
+const TYPES = $TYPES.all
+
 interface AuthTokens {
   access_token: string
 }
@@ -24,6 +36,10 @@ export interface IConnector {
  * - receive message on socket channel
  */
 export class Connector extends Context implements IConnector {
+  @lazyInject(TYPES.notify) notify: INotifications
+  @lazyInject(TYPES.user) user: IUser
+
+  
   protected auth_tokens: AuthTokens
   protected pending_auth: boolean
   protected active: boolean
@@ -36,8 +52,7 @@ export class Connector extends Context implements IConnector {
   /**
    * Connect to WebSocket and set up socket event handlers
    */
-  pathOf(location)
-  {
+  pathOf(location) {
     return this._pathOf(location);
   }
 
@@ -51,10 +66,10 @@ export class Connector extends Context implements IConnector {
     let {
       connectWS,
       setInstanceVars,
-      _pathOf,      
+      _pathOf,
       _onOpen,
       _onClose,
-      _onMessage      
+      _onMessage
     } = this.rebind([
         'connectWS',
         'setInstanceVars',
@@ -69,12 +84,12 @@ export class Connector extends Context implements IConnector {
     const active = true
     const location = window.location
     const path = this.pathOf(location);
-    
+
     const auth_tokens = RED.settings.get("auth-tokens");
     const pendingAuth = (auth_tokens != null);
 
     //const ws = new WebSocket(path);
-    
+
 
     this.setInstanceVars({
       active,
@@ -87,12 +102,12 @@ export class Connector extends Context implements IConnector {
     _onOpen
     _onClose
     _onMessage
-   // _pathOf(location)
+    // _pathOf(location)
     // this._pathOf(location)
     // {
     //   return _pathOf(location);
     // }
-    
+
     return this
   }
 
@@ -183,6 +198,8 @@ export class Connector extends Context implements IConnector {
       connectCountdownTimer,
     } = this.communications
 
+    const { notify } = this
+
     const {
       connectWS
     } = this.rebind([
@@ -204,7 +221,7 @@ export class Connector extends Context implements IConnector {
       if (reconnectAttempts < 10) {
         setTimeout(connectWS, 1000);
         if (reconnectAttempts > 5 && errornotification == null) {
-          errornotification = RED.notify(RED._("notification.errors.lostConnection"), "error", true);
+          errornotification = notify.notify(RED._("notification.errors.lostConnection"), "error", true);
         }
       } else if (reconnectAttempts < 20) {
         setTimeout(connectWS, 2000);
@@ -242,6 +259,8 @@ export class Connector extends Context implements IConnector {
       subscriptions
     } = this.communications
 
+    const { user } = this
+
     const {
       completeConnection,
       connectWS
@@ -263,7 +282,7 @@ export class Connector extends Context implements IConnector {
         } else if (msg.auth === "fail") {
           // anything else is an error...
           active = false;
-          RED.user.login({
+          user.login({
             updateMenu: true
           }, () => {
             connectWS();
