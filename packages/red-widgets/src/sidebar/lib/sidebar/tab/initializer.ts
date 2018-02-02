@@ -16,13 +16,28 @@ import {
   delegateTarget
 } from '../_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../../_container'
+
+import {
+  ISidebar,
+  IActions
+} from '../../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 @delegateTarget()
 export class SidebarTabInitializer extends Context {
+  @lazyInject(TYPES.sidebar) sidebar: ISidebar
+  @lazyInject(TYPES.actions) actions: IActions
+
+  
   constructor(public sidebarTab: SidebarTab) {
     super()
 
   }
-
 
   public content: HTMLElement;
   public toolbar: JQuery<HTMLElement>
@@ -38,6 +53,8 @@ export class SidebarTabInitializer extends Context {
     const {
       RED,
       categories,
+      sidebar,
+      actions
     } = this
 
     let {
@@ -53,7 +70,7 @@ export class SidebarTabInitializer extends Context {
     // FIX: when i18n is initialized (translation map loaded), we can continue constructor in init
     await this.i18n.init()
 
-    RED.sidebar.addTab({
+    sidebar.addTab({
       id: "config",
       label: RED._("sidebar.config.label"),
       name: RED._("sidebar.config.name"),
@@ -65,8 +82,8 @@ export class SidebarTabInitializer extends Context {
         refreshConfigNodeList();
       }
     });
-    RED.actions.add("core:show-config-tab", () => {
-      RED.sidebar.show('config')
+    actions.add("core:show-config-tab", () => {
+      sidebar.show('config')
     });
 
     this.collapseAll.on("click", (e) => {

@@ -15,8 +15,30 @@ import {
   delegateTarget
 } from '../_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../../_container'
+
+import {
+  ISidebar,
+  IActions,
+  INotifications,
+  IEvents,
+  IWorkspaces,
+  INodes
+} from '../../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 @delegateTarget()
 export class TabInfoInitializer extends Context {
+  @lazyInject(TYPES.actions) actions: IActions
+  @lazyInject(TYPES.events) events: IEvents
+  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
+  @lazyInject(TYPES.nodes) nodes: INodes
+
+
   constructor(public sidebarTabInfo: SidebarTabInfo) {
     super()
   }
@@ -25,6 +47,11 @@ export class TabInfoInitializer extends Context {
     const {
       RED,
     } = this.sidebarTabInfo
+
+    const {
+      actions,
+      events
+     } = this
 
     let {
       content,
@@ -61,6 +88,8 @@ export class TabInfoInitializer extends Context {
       smartypants: false
     });
 
+
+
     // TODO: make into properties (ie. instance vars)
 
     var expandedSections = {
@@ -79,7 +108,7 @@ export class TabInfoInitializer extends Context {
       }
     })
 
-    RED.actions.add("core:show-info-tab", show);
+    actions.add("core:show-info-tab", show);
 
     const stackContainer = this.buildStackContainer(content)
 
@@ -112,11 +141,11 @@ export class TabInfoInitializer extends Context {
     var tipClose = this.addTipClose(tipButtons)
     tipClose.click(function (e) {
       e.preventDefault();
-      RED.actions.invoke("core:toggle-show-tips");
+      actions.invoke("core:toggle-show-tips");
       RED.notify(RED._("sidebar.info.showTips"));
     });
 
-    RED.sidebar.addTab({
+    sidebar.addTab({
       id: "info",
       label: RED._("sidebar.info.label"),
       name: RED._("sidebar.info.name"),
@@ -129,24 +158,26 @@ export class TabInfoInitializer extends Context {
       tips.stop();
     }
 
-    RED.events.on("view:selection-changed", function (selection) {
+    events.on("view:selection-changed", function (selection) {
+      const { workspaces, nodes } = this
+
       if (selection.nodes) {
         if (selection.nodes.length == 1) {
           var node = selection.nodes[0];
           if (node.type === "subflow" && node.direction) {
-            refresh(RED.nodes.subflow(node.z));
+            refresh(nodes.subflow(node.z));
           } else {
             refresh(node);
           }
         }
       } else {
-        var activeWS = RED.workspaces.active();
+        var activeWS = workspaces.active();
 
-        var flow = RED.nodes.workspace(activeWS) || RED.nodes.subflow(activeWS);
+        var flow = nodes.workspace(activeWS) || nodes.subflow(activeWS);
         if (flow) {
           refresh(flow);
         } else {
-          var workspace = RED.nodes.workspace(RED.workspaces.active());
+          var workspace = nodes.workspace(workspaces.active());
           if (workspace && workspace.info) {
             refresh(workspace);
           } else {

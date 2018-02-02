@@ -1,12 +1,7 @@
-import { Sidebar } from '../'
+import { Sidebar, ISidebarTabInfo } from '../'
 import {
   SidebarTab
 } from '.'
-
-// TODO: use from /_interfaces
-import {
-  I18nWidget
-} from '../../../../_interfaces'
 
 import {
   I18n,
@@ -17,8 +12,28 @@ import {
   delegateTarget
 } from '../_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../../_container'
+
+import {
+  IUtils,
+  IEditor,
+  INodes,
+  ISidebarTabInfo,
+  I18nWidget
+} from '../../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 @delegateTarget()
 export class SidebarTabInitializer extends Context {
+  @lazyInject(TYPES.utils) utils: IUtils
+  @lazyInject(TYPES.editor) editor: IEditor
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.sidebar.info) info: ISidebarTabInfo
+
   constructor(public sidebarTab: SidebarTab) {
     super()
   }
@@ -28,6 +43,8 @@ export class SidebarTabInitializer extends Context {
   public subflowCategories: JQuery<HTMLElement>
 
   createConfigNodeList(id, nodes) {
+    const { utils, editor, info } = this
+
     let {
       RED,
       showUnusedOnly
@@ -75,7 +92,7 @@ export class SidebarTabInitializer extends Context {
     } else {
       var currentType = "";
       nodes.forEach(function (node) {
-        var label = RED.utils.getNodeLabel(node, node.id);
+        var label = utils.getNodeLabel(node, node.id);
         if (node.type != currentType) {
           $('<li class="config_node_type">' + node.type + '</li>').appendTo(list);
           currentType = node.type;
@@ -92,32 +109,32 @@ export class SidebarTabInitializer extends Context {
           }
         }
         entry.on('click', function (e) {
-          RED.sidebar.info.refresh(node);
+          info.refresh(node);
         });
         entry.on('dblclick', function (e) {
-          RED.editor.editConfig("", node.type, node.id);
+          editor.editConfig("", node.type, node.id);
         });
         var userArray = node.users.map(function (n) {
           return n.id
         });
         entry.on('mouseover', function (e) {
-          RED.nodes.eachNode(function (node) {
+          nodes.eachNode(function (node) {
             if (userArray.indexOf(node.id) != -1) {
               node.highlighted = true;
               node.dirty = true;
             }
           });
-          RED.view.redraw();
+          view.redraw();
         });
 
         entry.on('mouseout', function (e) {
-          RED.nodes.eachNode(function (node) {
+          nodes.eachNode(function (node) {
             if (node.highlighted) {
               node.highlighted = false;
               node.dirty = true;
             }
           });
-          RED.view.redraw();
+          view.redraw();
         });
       });
       category.open(true);
@@ -130,7 +147,8 @@ export class SidebarTabInitializer extends Context {
       globalCategories,
       flowCategories,
       subflowCategories,
-      RED
+      RED,
+      nodes
   } = this
 
     var validList = {
@@ -139,11 +157,11 @@ export class SidebarTabInitializer extends Context {
 
     this.sidebarTab.getOrCreateCategory("global", globalCategories);
 
-    RED.nodes.eachWorkspace((ws) => {
+    nodes.eachWorkspace((ws) => {
       validList[ws.id.replace(/\./g, "-")] = true;
       this.sidebarTab.getOrCreateCategory(ws.id, flowCategories, ws.label);
     })
-    RED.nodes.eachSubflow((sf) => {
+    nodes.eachSubflow((sf) => {
       validList[sf.id.replace(/\./g, "-")] = true;
       this.sidebarTab.getOrCreateCategory(sf.id, subflowCategories, sf.name);
     })
@@ -156,7 +174,7 @@ export class SidebarTabInitializer extends Context {
     })
     var globalConfigNodes = [];
     var configList = {};
-    RED.nodes.eachConfig((cn) => {
+    nodes.eachConfig((cn) => {
       if (cn.z) { //} == RED.workspaces.active()) {
         configList[cn.z.replace(/\./g, "-")] = configList[cn.z.replace(/\./g, "-")] || [];
         configList[cn.z.replace(/\./g, "-")].push(cn);

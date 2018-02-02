@@ -4,8 +4,26 @@ import {
 
 const { log } = console
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../../_container'
+
+import {
+  IActions,
+  IUserSettings,
+  IKeyboard
+} from '../../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 // TODO: add lazyInject and get rid of RED
 export class TabInfoTips extends Context {
+  @lazyInject(TYPES.actions) actions: IActions
+  @lazyInject(TYPES.userSettings) userSettings: IUserSettings
+  @lazyInject(TYPES.keyboard) keyboard: IKeyboard
+
+
   public enabled: Boolean = true
   public startDelay: number = 1000
   public cycleDelay: number = 15000
@@ -30,13 +48,18 @@ export class TabInfoTips extends Context {
         'stopTips'
       ])
 
-    RED.actions.add("core:toggle-show-tips", (state) => {
+    const {
+        actions,
+      userSettings
+      } = this
+
+    actions.add("core:toggle-show-tips", (state) => {
       log('configure tips', {
         state
       })
 
       if (state === undefined) {
-        RED.userSettings.toggle("view-show-tips");
+        userSettings.toggle("view-show-tips");
       } else {
         enabled = state;
         if (enabled) {
@@ -65,21 +88,23 @@ export class TabInfoTips extends Context {
         'cycleDelay'
       ])
 
+    const { keyboard } = this
 
     var r = Math.floor(Math.random() * tipCount);
     var tip = RED._("infotips:info.tip" + r);
 
     var m;
     while ((m = /({{(.*?)}})/.exec(tip))) {
-      var shortcut = RED.keyboard.getShortcut(m[2]);
+
+      var shortcut = keyboard.getShortcut(m[2]);
       if (shortcut) {
-        tip = tip.replace(m[1], RED.keyboard.formatKey(shortcut.key));
+        tip = tip.replace(m[1], keyboard.formatKey(shortcut.key));
       } else {
         return;
       }
     }
     while ((m = /(\[(.*?)\])/.exec(tip))) {
-      tip = tip.replace(m[1], RED.keyboard.formatKey(m[2]));
+      tip = tip.replace(m[1], keyboard.formatKey(m[2]));
     }
     tipBox.html(tip).fadeIn(200);
     if (startTimeout) {

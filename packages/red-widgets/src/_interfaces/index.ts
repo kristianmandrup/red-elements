@@ -103,6 +103,7 @@ export interface IEditor {
   t(key: string): string,
   editSubflow(activeSubflow),
   edit(node)
+  editConfig(name: string, type: any, id: number)
 }
 
 export interface IState {

@@ -88,6 +88,8 @@ export interface IKeyboard {
   configure()
   add: Function
   remove(name: string)
+  getShortcut(Array: any[])
+  formatKey(key: string)
 }
 
 @delegator({

@@ -43,6 +43,7 @@ import { TabInfoInitializer } from './initializer';
 
 import { ISidebarTabInfo } from '../../sidebar'
 
+
 @delegator({
   container,
   map: {
@@ -51,6 +52,7 @@ import { ISidebarTabInfo } from '../../sidebar'
   }
 })
 export class SidebarTabInfo extends Context implements ISidebarTabInfo {
+
   createStack(options) {
     // legacy: ctx.stack.create
     return new Stack(options)
@@ -90,7 +92,7 @@ export class SidebarTabInfo extends Context implements ISidebarTabInfo {
   }
 
   show() {
-    this.sidebar.show("info");
+   this.sidebar.show("info");
   }
 
   jsonFilter(key, value) {
@@ -133,7 +135,7 @@ export class SidebarTabInfo extends Context implements ISidebarTabInfo {
       ])
     var info = addTargetToExternalLinks(
       $('<div class="node-help"><span class="bidiAware" dir=\"'
-        + RED.text.bidi.resolveBaseTextDir(infoText)
+        + text.bidi.resolveBaseTextDir(infoText)
         + '">' + infoText + '</span></div>')
     ).appendTo(infoSection.content);
 

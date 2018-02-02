@@ -37,6 +37,16 @@ export interface ISidebarTab {
   show(id: string): ISidebarTab
 }
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../../_container'
+
+import {
+  ISidebar
+} from '../../../../_interfaces'
+
+const TYPES = $TYPES.all
 
 @delegator({
   container,
@@ -46,6 +56,8 @@ export interface ISidebarTab {
   }
 })
 export class SidebarTab extends Context {
+  @lazyInject(TYPES.sidebar) sidebar: ISidebar
+
   public content: HTMLElement
   public toolbar: JQElem
   public globalCategories: JQElem
@@ -60,7 +72,7 @@ export class SidebarTab extends Context {
   protected initializer: SidebarTabInitializer
   protected configuration: SidebarTabConfiguration
 
-  constructor(public sidebar: Sidebar) {
+  constructor() {
     super()
     this.configure()
   }
@@ -154,6 +166,8 @@ export class SidebarTab extends Context {
    * @param id
    */
   show(id: string): ISidebarTab {
+    const { sidebar } = this
+
     let RED = this.ctx
     if (typeof id === 'boolean') {
       if (id) {
@@ -194,7 +208,7 @@ export class SidebarTab extends Context {
         flashFunc();
       }, 100);
     }
-    RED.sidebar.show("config");
+    sidebar.show("config");
     return this
   }
 

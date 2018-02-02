@@ -57,7 +57,7 @@ import { SidebarConfiguration } from './configuration';
 
 export interface ISidebarTabInfo {
   init()
-  refresh()
+  refresh(node: any)
   show()
   jsonFilter(key, value)
   addTargetToExternalLinks(el)
@@ -101,6 +101,10 @@ export interface ISidebar {
    * @param id { string} Tab id
    */
   containsTab(id: string)
+
+  show(name: string)
+
+  addTab : Function
 }
 
 @delegator({
