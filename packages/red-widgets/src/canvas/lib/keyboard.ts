@@ -11,7 +11,7 @@ import {
   $TYPES
 } from '../../_container'
 
-import { Ihistory } from '@tecla5/red-runtime'
+import { IHistory } from '@tecla5/red-runtime'
 
 
 import { INodes } from '../../_interfaces'
@@ -26,7 +26,7 @@ export interface ICanvasKeyboard {
 export class CanvasKeyboard extends Context implements ICanvasKeyboard {
 
   @lazyInject(TYPES.nodes) nodes: INodes
-  @lazyInject(TYPES.history) history: Ihistory
+  @lazyInject(TYPES.history) history: IHistory
 
   constructor(protected canvas: Canvas) {
     super()

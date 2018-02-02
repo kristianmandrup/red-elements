@@ -11,7 +11,7 @@ import {
   $TYPES
 } from '../../_container'
 
-import { Ihistory } from '@tecla5/red-runtime'
+import { IHistory } from '@tecla5/red-runtime'
 
 
 import {
@@ -33,7 +33,7 @@ export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
 
   @lazyInject(TYPES.nodes) nodes: INodes
   @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
-  @lazyInject(TYPES.history) history: Ihistory
+  @lazyInject(TYPES.history) history: IHistory
   @lazyInject(TYPES.subflow) subflow: ISubflow
   @lazyInject(TYPES.keyboard) keyboard: IKeyboard
   @lazyInject(TYPES.state) state: IState

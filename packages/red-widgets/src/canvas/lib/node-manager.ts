@@ -15,7 +15,11 @@ import {
 import {
 } from '@tecla5/red-runtime'
 
-import { INodes, INotifications, IWorkspaces, ISubflow } from '../../_interfaces'
+import { 
+  INodes, 
+  INotifications, 
+  IWorkspaces, 
+  ISubflow } from '../../_interfaces'
 
 const TYPES = $TYPES.all
 
@@ -43,7 +47,7 @@ export interface ICanvasNodeManager {
 @delegateTarget()
 export class CanvasNodeManager extends Context implements ICanvasNodeManager {
   @lazyInject(TYPES.nodes) nodes: INodes
-  @lazyInject(TYPES.notify) notify: INotifications
+  @lazyInject(TYPES.notification) notification: INotifications
   @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
   @lazyInject(TYPES.subflow) subflow: ISubflow
 
@@ -132,7 +136,7 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
       //RED,
       canvas,
       nodes,
-      notify,
+      notification,
       workspaces,
       subflow
     } = this
@@ -147,13 +151,13 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
     if (activeSubflow && m) {
       var subflowId = m[1];
       if (subflowId === activeSubflow.id) {
-        notify.notify(RED._('notification.error', {
+        notification.notify(RED._('notification.error', {
           message: RED._('notification.errors.cannotAddSubflowToItself')
         }), 'error', "", 0);
         return;
       }
       if (nodes.subflowContains(m[1], activeSubflow.id)) {
-        notify.notify(RED._('notification.error', {
+        notification.notify(RED._('notification.error', {
           message: RED._('notification.errors.cannotAddCircularReference')
         }), 'error', "", 0);
         return;

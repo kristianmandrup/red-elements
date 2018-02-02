@@ -11,7 +11,7 @@ import {
   $TYPES
 } from '../../_container'
 
-import { Ihistory } from '@tecla5/red-runtime'
+import { IHistory } from '@tecla5/red-runtime'
 
 import {
   INodes,
@@ -81,8 +81,8 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
   @lazyInject(TYPES.events) events: IEvents
   @lazyInject(TYPES.editor) editor: IEditor
   @lazyInject(TYPES.subflow) subflow: ISubflow
-  @lazyInject(TYPES.history) history: Ihistory
-  @lazyInject(TYPES.notify) notify: INotifications
+  @lazyInject(TYPES.history) history: IHistory
+  @lazyInject(TYPES.notifications) notifications: INotifications
 
   constructor(protected canvas: Canvas) {
     super()
@@ -489,7 +489,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
     const {
       //RED,
       canvas,
-      notify,
+      notifications,
       nodes
     } = this
     const {
@@ -523,7 +523,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
         }
       }
       clipboard = JSON.stringify(nns);
-      notify.notify(RED._('clipboard.nodeCopied', {
+      notifications.notify(RED._('clipboard.nodeCopied', {
         count: nns.length
       }), null, "", 0);
     }
