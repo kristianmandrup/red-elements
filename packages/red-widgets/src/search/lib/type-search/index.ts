@@ -30,6 +30,23 @@ import {
 
 const TYPES = $TYPES.all
 
+export interface ITypeSearch {
+  configure()
+  /**
+   *
+   * @param val
+   */
+  search(val: string)
+  ensureSelectedIsVisible()
+  createDialog()
+  confirm(def)
+  handleMouseActivity(evt)
+  show(opts)
+  hide(fast?: Boolean)
+  getTypeLabel(type, def: any)
+  refreshTypeList()
+}
+
 @delegator()
 export class TypeSearch extends Context {
   @lazyInject(TYPES.utils) utils: IUtil

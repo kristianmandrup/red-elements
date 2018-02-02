@@ -12,8 +12,17 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ISearchResultsBuilder {
+  /**
+   * Configure Search results element
+   * - turns element into an editableList
+   * - adds addItem event handler
+   */
+  buildSearchResultsElement()
+}
+
 @delegateTarget()
-export class SearchResultsBuilder extends Context {
+export class SearchResultsBuilder extends Context implements ISearchResultsBuilder {
   constructor(public search: Search) {
     super()
   }

@@ -6,8 +6,27 @@ import {
   container
 } from './_base'
 
+export interface ISidebarTabManager {
+  /**
+     * Add tab to sidebar
+     * @param title
+     * @param content
+     * @param closeable
+     * @param visible
+     */
+  addTab(title, content, closeable, visible)
+
+  /**
+   * Remove tab from sidebar
+   * @param id
+   */
+  removeTab(id: string)
+
+  appendToolbar(toolbar)
+}
+
 @delegateTarget()
-export class SidebarTabManager extends Context {
+export class SidebarTabManager extends Context implements ISidebarTabManager {
   constructor(public sidebar: Sidebar) {
     super()
   }

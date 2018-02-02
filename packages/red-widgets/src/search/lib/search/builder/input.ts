@@ -21,8 +21,19 @@ import {
   delegateTarget
 } from './_base'
 
+export interface ISearchInputBuilder {
+/**
+   * Build and configure Search input element
+   * - builds input element
+   * - on keydown event handler
+   */
+  buildSearchInputElement()
+
+  _createSearchContainer(): JQuery<HTMLElement>
+}
+
 @delegateTarget()
-export class SearchInputBuilder extends Context {
+export class SearchInputBuilder extends Context implements ISearchInputBuilder {
   constructor(public search: Search) {
     super()
   }

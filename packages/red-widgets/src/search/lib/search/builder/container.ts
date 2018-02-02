@@ -12,8 +12,15 @@ export interface ISearchResults extends JQuery<HTMLElement> {
   editableList: Function
 }
 
+export interface ISearchContainerBuilder {
+  /**
+     * Create a search container element
+     */
+  createSearchContainer()
+}
+
 @delegateTarget()
-export class SearchContainerBuilder extends Context {
+export class SearchContainerBuilder extends Context implements ISearchContainerBuilder {
   constructor(public search: Search) {
     super()
   }
