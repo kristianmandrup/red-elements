@@ -3,13 +3,15 @@ export type JQElem = JQuery<HTMLElement>
 export {
   INode,
   INodeDef,
-  IEvents
+  IEvents,
+  ISubflow
   // ...
 } from '@tecla5/red-base'
 
 export {
   IUtil,
-  INodes
+  INodes,
+  ISettings
   // ...
 } from '@tecla5/red-runtime'
 
@@ -87,6 +89,16 @@ export interface IUserSetting {
   t(key: string): string,
   add: Function,
   show(name: string)
+}
+
+export interface IEditor {
+  t(key: string): string,
+  editSubflow(activeSubflow),
+  edit(node)
+}
+
+export interface IState {
+  IMPORT_DRAGGING
 }
 
 export interface IView {

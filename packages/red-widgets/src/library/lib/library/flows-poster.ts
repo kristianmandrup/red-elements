@@ -43,7 +43,7 @@ export interface ILibraryFlowsPoster {
 export class LibraryFlowsPoster extends Context implements ILibraryFlowsPoster {
 
   @lazyInject(TYPES.library) library: ILibraryFlowsPoster
-  @lazyInject(TYPES.notifications) notify: INotifications
+  @lazyInject(TYPES.notifications) notifications: INotifications
 
   protected librariesApi: LibrariesApi
 
@@ -82,17 +82,17 @@ export class LibraryFlowsPoster extends Context implements ILibraryFlowsPoster {
     const {
       RED,
       library,
-      notify
+      notifications
     } = this
 
     library.loadFlowLibrary();
-    notify.notify(RED._("library.savedNodes"), "success", "", 0);
+    notifications.notify(RED._("library.savedNodes"), "success", "", 0);
   }
 
   onPostError(error) {
     const {
       RED,
-      notify
+      notifications
     } = this
 
     const {
@@ -100,11 +100,11 @@ export class LibraryFlowsPoster extends Context implements ILibraryFlowsPoster {
     } = error
 
     if (xhr.status === 401) {
-      notify.notify(RED._("library.saveFailed", {
+      notifications.notify(RED._("library.saveFailed", {
         message: RED._("user.notAuthorized")
       }), "error", "", 0);
     } else {
-      notify.notify(RED._("library.saveFailed", {
+      notifications.notify(RED._("library.saveFailed", {
         message: xhr.responseText
       }), "error", "", 0);
     }

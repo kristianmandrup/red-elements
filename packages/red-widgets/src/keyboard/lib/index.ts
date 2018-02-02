@@ -86,6 +86,8 @@ import {
 
 export interface IKeyboard {
   configure()
+  add: Function
+  remove(name: string)
 }
 
 @delegator({

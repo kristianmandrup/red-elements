@@ -29,7 +29,7 @@ export interface ILibrarySaver {
   container,
 })
 export class LibrarySaver extends Context implements ILibrarySaver {
-  @lazyInject(TYPES.notify) notify: INotifications
+  @lazyInject(TYPES.notifications) notifications: INotifications
 
   protected libraryPoster: LibraryPoster
 
@@ -48,7 +48,7 @@ export class LibrarySaver extends Context implements ILibrarySaver {
   }
 
   async saveToLibrary(overwrite, options) {
-    const { notify } = this
+    const { notifications } = this
     var name = $("#node-input-name").val().toString().replace(/(^\s*)|(\s*$)/g, "");
     var RED = options.RED;
     if (name === "") {
@@ -57,11 +57,10 @@ export class LibrarySaver extends Context implements ILibrarySaver {
       });
     }
 
-
     var filename = $("#node-dialog-library-save-filename").val().toString().replace(/(^\s*)|(\s*$)/g, "");
     var pathname = $("#node-dialog-library-save-folder").val().toString().replace(/(^\s*)|(\s*$)/g, "");
     if (filename === "" || !/.+\.js$/.test(filename)) {
-      notify.notify(RED._("library.invalidFilename"), "warning", "", 0);
+      notifications.notify(RED._("library.invalidFilename"), "warning", "", 0);
       return;
     }
     var fullpath = pathname + (pathname === "" ? "" : "/") + filename;
