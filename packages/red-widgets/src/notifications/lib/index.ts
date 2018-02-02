@@ -29,6 +29,7 @@ export interface INotifications {
   notify(msg, type: string, fixed, timeout: number)
   update?()
   close?()
+  call : Function
 }
 
 

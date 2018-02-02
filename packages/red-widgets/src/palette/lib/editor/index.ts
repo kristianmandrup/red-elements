@@ -34,6 +34,17 @@ import {
   delegateTo
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  INotifications
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export interface IPaletteEditor {
   configure()
 
@@ -99,7 +110,9 @@ export interface IPaletteEditor {
     nodeManager: PaletteEditorNodeManager
   }
 })
-export class PaletteEditor extends Context {
+export class PaletteEditor extends Context implements IPaletteEditor {
+  @lazyInject(TYPES.notifications) notifications: INotifications
+
   public disabled: Boolean = false
   public loadedList: Array<any> = [];
   public filteredList: Array<any> = [];
@@ -233,6 +246,8 @@ export class PaletteEditor extends Context {
       searchInput
     } = this
 
+    const { notifications } = this
+
     const {
       createSettingsPane
     } = this.rebind([
@@ -283,7 +298,7 @@ export class PaletteEditor extends Context {
     }
     if (catalogueLoadStatus.length === catalogueCount) {
       if (catalogueLoadErrors) {
-        this.RED.notify.call(this.RED._('palette.editor.errors.catalogLoadFailed', {
+        notifications.call(this.RED._('palette.editor.errors.catalogLoadFailed', {
           url: catalog
         }), "error", false, 8000);
       }
@@ -291,7 +306,6 @@ export class PaletteEditor extends Context {
       setTimeout(() => {
         $("#palette-module-install-shade").hide();
       }, Math.max(delta, 0));
-
     }
   }
 
