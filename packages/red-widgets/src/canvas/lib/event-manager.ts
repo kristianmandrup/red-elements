@@ -6,6 +6,21 @@ import {
   delegateTarget
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import { IHistory } from '@tecla5/red-runtime'
+
+import {
+  INodes,
+  IWorkspaces,
+  IMenu
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export interface ICanvasEventManager {
   /**
    * Disable Quick Join Event Handler
@@ -23,6 +38,10 @@ export interface ICanvasEventManager {
 
 @delegateTarget()
 export class CanvasEventManager extends Context implements ICanvasEventManager {
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
+  @lazyInject(TYPES.menu) menu: IMenu
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -68,7 +87,10 @@ export class CanvasEventManager extends Context implements ICanvasEventManager {
     const {
       RED,
       canvas,
-      rebind
+      rebind,
+      nodes,
+      menu,
+      workspaces
     } = this
     const {
       mouse_position
@@ -99,10 +121,10 @@ export class CanvasEventManager extends Context implements ICanvasEventManager {
     var scrollStartLeft = chart.scrollLeft();
     var scrollStartTop = chart.scrollTop();
 
-    activeSubflow = RED.nodes.subflow(event.workspace);
+    activeSubflow = nodes.subflow(event.workspace);
 
-    RED.menu.setDisabled('menu-item-workspace-edit', activeSubflow);
-    RED.menu.setDisabled('menu-item-workspace-delete', RED.workspaces.count() == 1 || activeSubflow);
+    menu.setDisabled('menu-item-workspace-edit', activeSubflow);
+    menu.setDisabled('menu-item-workspace-delete', workspaces.count == 1 || activeSubflow);
 
     if (workspaceScrollPositions[event.workspace]) {
       chart.scrollLeft(workspaceScrollPositions[event.workspace].left);
@@ -118,7 +140,7 @@ export class CanvasEventManager extends Context implements ICanvasEventManager {
       mouse_position[1] += scrollDeltaTop;
     }
     clearSelection();
-    RED.nodes.eachNode(function (n) {
+    nodes.eachNode(function (n) {
       n.dirty = true;
     });
     updateSelection();

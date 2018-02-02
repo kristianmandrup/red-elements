@@ -24,8 +24,14 @@ import {
 } from './_base'
 
 import {
-  INodes
+  INodes,
+  IHistory
 } from '../../_interfaces'
+
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
 
 import {
   todo
@@ -292,14 +298,11 @@ export interface ICanvas {
   select(selection)
   scale()
   getLinksAtPoint(x, y)
-  gridSize : any
+  gridSize: any
+  focus()
 }
 
-// import {
-//   delegator,
-//   container
-// } from './container'
-
+const TYPES = $TYPES.all
 
 @delegator({
   container,
@@ -324,9 +327,9 @@ export interface ICanvas {
   }
 })
 
-
-
 export class Canvas extends Context {
+  @lazyInject(TYPES.nodes) nodes: INodes
+
   PORT_TYPE_INPUT = 1;
   PORT_TYPE_OUTPUT = 0;
 
@@ -746,7 +749,8 @@ export class Canvas extends Context {
    */
   getPortLabel(node, portType, portIndex) {
     const {
-      PORT_TYPE_INPUT
+      PORT_TYPE_INPUT,
+      nodes
     } = this
 
     var result;
@@ -884,8 +888,9 @@ export class Canvas extends Context {
    * @param s
    */
   toggleStatus(s) {
+    const { nodes } = this
     this.showStatus = s;
-    this.RED.nodes.eachNode(function (n) {
+    nodes.eachNode(function (n) {
       n.dirty = true;
     });
     //TODO: subscribe/unsubscribe here

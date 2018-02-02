@@ -20,6 +20,8 @@ const {
 } = console
 
 export interface ITabs {
+  create(options, red : any)
+
   nextTab()
 
   previousTab()

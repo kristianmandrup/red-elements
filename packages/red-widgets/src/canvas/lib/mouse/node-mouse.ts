@@ -7,7 +7,31 @@ import {
   d3
 } from '../d3'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  IState,
+  INodes,
+  IWorkspaces,
+  ISubflow,
+  IEditor,
+  IKeyboard,
+  IHistory
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export class CanvasNodeMouse extends Context {
+
+  @lazyInject(TYPES.state) state: IState
+  @lazyInject(TYPES.editor) editor: IEditor
+  @lazyInject(TYPES.keyboard) keyboard: IKeyboard
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.history) history: IHistory
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -18,9 +42,12 @@ export class CanvasNodeMouse extends Context {
    */
   nodeMouseUp(d) {
     const {
-      RED,
+      // RED,
       rebind,
-      canvas
+      canvas,
+      state,
+      editor,
+      keyboard
     } = this
     const {
       dblClickPrimed,
@@ -38,11 +65,11 @@ export class CanvasNodeMouse extends Context {
     } = canvas
 
     if (dblClickPrimed && mousedown_node == d && clickElapsed > 0 && clickElapsed < 750) {
-      mouse_mode = RED.state.DEFAULT;
+      mouse_mode = state.DEFAULT;
       if (d.type != 'subflow') {
-        RED.editor.edit(d);
+        editor.edit(d);
       } else {
-        RED.editor.editSubflow(activeSubflow);
+        editor.editSubflow(activeSubflow);
       }
       clickElapsed = 0;
       d3.event.stopPropagation();
@@ -60,7 +87,11 @@ export class CanvasNodeMouse extends Context {
     const {
       RED,
       rebind,
-      canvas
+      canvas,
+      state,
+      keyboard,
+      nodes,
+      history
     } = this
     const {
       activeSpliceLink,
@@ -99,13 +130,13 @@ export class CanvasNodeMouse extends Context {
     //var touch0 = d3.event;
     //var pos = [touch0.pageX,touch0.pageY];
     //RED.touch.radialMenu.show(d3.select(this),pos);
-    if (mouse_mode == RED.state.IMPORT_DRAGGING) {
-      RED.keyboard.remove('escape');
+    if (mouse_mode == state.IMPORT_DRAGGING) {
+      keyboard.remove('escape');
 
       if (activeSpliceLink) {
         // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
         const spliceLink: any = d3.select(activeSpliceLink).data()[0];
-        RED.nodes.removeLink(spliceLink);
+        nodes.removeLink(spliceLink);
         const link1 = {
           source: spliceLink.source,
           sourcePort: spliceLink.sourcePort,
@@ -116,21 +147,21 @@ export class CanvasNodeMouse extends Context {
           sourcePort: 0,
           target: spliceLink.target
         };
-        RED.nodes.addLink(link1);
-        RED.nodes.addLink(link2);
-        var historyEvent = RED.history.peek();
+        nodes.addLink(link1);
+        nodes.addLink(link2);
+        var historyEvent = history.peek();
         historyEvent.links = [link1, link2];
         historyEvent.removedLinks = [spliceLink];
         updateActiveNodes();
       }
 
       updateSelection();
-      RED.nodes.dirty(true);
+      nodes.dirty(true);
       redraw();
       resetMouseVars();
       d3.event.stopPropagation();
       return;
-    } else if (mouse_mode == RED.state.QUICK_JOINING) {
+    } else if (mouse_mode == state.QUICK_JOINING) {
       d3.event.stopPropagation();
       return;
     }
@@ -155,7 +186,7 @@ export class CanvasNodeMouse extends Context {
     } else {
       if (d3.event.shiftKey) {
         clearSelection();
-        var cnodes = RED.nodes.getAllFlowNodes(mousedown_node);
+        var cnodes = nodes.getAllFlowNodes(mousedown_node);
         for (var n = 0; n < cnodes.length; n++) {
           cnodes[n].selected = true;
           cnodes[n].dirty = true;
@@ -174,7 +205,7 @@ export class CanvasNodeMouse extends Context {
       }
       selected_link = null;
       if (d3.event.button != 2) {
-        mouse_mode = RED.state.MOVING;
+        mouse_mode = state.MOVING;
         // TODO: Fixes?
         const svgElem = vis
 

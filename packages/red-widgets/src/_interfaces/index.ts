@@ -13,7 +13,8 @@ export {
   INodes,
   ISettings,
   IRegistry,
-  IBidi
+  IBidi,
+  IHistory
   // ...
 } from '@tecla5/red-runtime'
 
@@ -78,6 +79,10 @@ export {
   IValidators
 } from '../validators'
 
+export {
+  IRadialMenu
+} from '../touch'
+
 // TODO: maybe rename as IWidgetUtils and WidgetUtils ??
 export {
   IUtils
@@ -112,6 +117,35 @@ export interface I18n {
   t(key: string): string,
   init: Function
 }
+
+export interface IState {
+  JOINING,
+  MOVING_ACTIVE,
+  QUICK_JOINING,
+  DEFAULT,
+  IMPORT_DRAGGING,
+  MOVING
+}
+
+export interface IText {
+  bidi: {
+    enforceTextDirectionWithUCC(l: any)
+  }
+}
+
+export interface ITouch {
+  radialMenu: {
+    active()
+  }
+}
+
+export interface IEditor {
+  validateNode(nn: any)
+  edit(nn: any)
+  editSubflow(activeSubflow: any)
+}
+
+export { ITypeSearch } from '../search/lib/type-search';
 
 export interface I18nWidget extends JQElem {
   i18n: Function

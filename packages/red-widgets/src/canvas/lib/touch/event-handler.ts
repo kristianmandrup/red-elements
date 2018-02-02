@@ -7,7 +7,21 @@ import {
   d3
 } from '../d3'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  IRadialMenu
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export class CanvasTouchEventHandler extends Context {
+
+  @lazyInject(TYPES.touch.radialMenu) radialMenu: IRadialMenu
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -21,7 +35,8 @@ export class CanvasTouchEventHandler extends Context {
   handleOuterTouchEndEvent(touchStartTime, lasso, canvasMouseUp) {
     const {
       RED,
-      handleError
+      handleError,
+      radialMenu
     } = this
     const {
       outer_background
@@ -29,11 +44,11 @@ export class CanvasTouchEventHandler extends Context {
 
     clearTimeout(touchStartTime);
     touchStartTime = null;
-    if (!RED.touch) {
+    if (!radialMenu) {
       handleError('handleOuterTouchEndEvent: RED missing touch object', RED);
     }
 
-    if (RED.touch.radialMenu.active()) {
+    if (radialMenu.active()) {
       return;
     }
     if (lasso) {
@@ -146,9 +161,10 @@ export class CanvasTouchEventHandler extends Context {
     startTouchDistance: any) {
 
     const {
-      RED,
+      //RED,
       logWarning,
-      canvas
+      canvas,
+      radialMenu
     } = this
     const {
       clearTimeout
@@ -170,7 +186,7 @@ export class CanvasTouchEventHandler extends Context {
       return this
     }
 
-    if (RED.touch.radialMenu.active()) {
+    if (radialMenu.active()) {
       d3.event.preventDefault();
       return;
     }

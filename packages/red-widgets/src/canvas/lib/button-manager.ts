@@ -7,6 +7,17 @@ import {
   delegateTarget
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import {
+  INotifications
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export interface ICanvasButtonManager {
   isButtonEnabled(d): boolean
   nodeButtonClicked(d)
@@ -14,6 +25,8 @@ export interface ICanvasButtonManager {
 
 @delegateTarget()
 export class CanvasButtonManager extends Context implements ICanvasButtonManager {
+  @lazyInject(TYPES.notifications) notifications: INotifications
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -39,6 +52,7 @@ export class CanvasButtonManager extends Context implements ICanvasButtonManager
    * @param d
    */
   nodeButtonClicked(d) {
+    const { notifications } = this
     const {
       activeSubflow,
       redraw
@@ -60,9 +74,9 @@ export class CanvasButtonManager extends Context implements ICanvasButtonManager
         redraw();
       }
     } else {
-      this.RED.notify(this.RED._('notification.warning', {
+      notifications.notify(this.RED._('notification.warning', {
         message: this.RED._('notification.warnings.nodeActionDisabled')
-      }), 'warning');
+      }), 'warning', "", 0);
     }
     d3.event.preventDefault();
   }

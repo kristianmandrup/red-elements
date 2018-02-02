@@ -3,7 +3,24 @@ import {
 } from '../../../context'
 import { Canvas } from '../../';
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  IRadialMenu,
+  IEditor,
+  IHistory
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export class CanvasTouchMenuManager extends Context {
+  @lazyInject(TYPES.touch.radialMenu) radialMenu: IRadialMenu
+  @lazyInject(TYPES.editor) editor: IEditor
+  @lazyInject(TYPES.history) history: IHistory
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -27,6 +44,11 @@ export class CanvasTouchMenuManager extends Context {
       selectAll,
       resetMouseVars,
   } = this.canvas
+
+    const { history,
+      editor,
+      radialMenu
+     } = this
 
     var mdn = mousedown_node;
     var options = [];
@@ -63,7 +85,7 @@ export class CanvasTouchMenuManager extends Context {
       name: 'edit',
       disabled: (moving_set.length != 1),
       onselect: () => {
-        this.RED.editor.edit(mdn);
+        editor.edit(mdn);
       }
     });
     options.push({
@@ -74,13 +96,13 @@ export class CanvasTouchMenuManager extends Context {
     });
     options.push({
       name: 'undo',
-      disabled: (this.RED.history.depth() === 0),
+      disabled: (history.depth() === 0),
       onselect: () => {
-        this.RED.history.pop();
+        history.pop();
       }
     });
 
-    this.RED.touch.radialMenu.show(obj, pos, options);
+    radialMenu.show(obj, pos, options);
     resetMouseVars();
     return this
   }

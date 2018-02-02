@@ -7,6 +7,26 @@ import {
   delegateTarget
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import {
+  INodes,
+  IWorkspaces,
+  ICanvas,
+  ISidebar,
+  IState,
+  IText,
+  IUtil,
+  ITouch,
+  IHistory,
+  IBidi
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export interface ICanvasDrawer {
   reveal(id)
   redraw(updateActive?: boolean)
@@ -14,6 +34,18 @@ export interface ICanvasDrawer {
 
 @delegateTarget()
 export class CanvasDrawer extends Context implements ICanvasDrawer {
+
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
+  @lazyInject(TYPES.view) view: ICanvas
+  @lazyInject(TYPES.sidebar) sidebar: ISidebar
+  @lazyInject(TYPES.state) state: IState
+  @lazyInject(TYPES.text) text: IText
+  @lazyInject(TYPES.utils) utils: IUtil
+  @lazyInject(TYPES.touch) touch: ITouch
+  @lazyInject(TYPES.text.bidi) bidi: IBidi
+
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -24,16 +56,23 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
    */
   reveal(id) {
     const {
-      RED
+      //RED
+      nodes,
+      workspaces,
+      view,
+      sidebar,
+      state,
+      utils,
+      touch
     } = this
-    if (RED.nodes.workspace(id) || RED.nodes.subflow(id)) {
-      RED.workspaces.show(id);
+    if (nodes.workspace(id) || nodes.subflow(id)) {
+      workspaces.show(id);
     } else {
-      var node = RED.nodes.node(id);
+      var node = nodes.node(id);
       if (node._def.category !== 'config' && node.z) {
         node.highlighted = true;
         node.dirty = true;
-        RED.workspaces.show(node.z);
+        workspaces.show(node.z);
 
         var screenSize = [$('#chart').width(), $('#chart').height()];
         var scrollPos = [$('#chart').scrollLeft(), $('#chart').scrollTop()];
@@ -60,12 +99,12 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
               node.highlighted = false;
               delete node._flashing;
             }
-            RED.view.redraw();
+            view.redraw();
           }
           flashFunc();
         }
       } else if (node._def.category === 'config') {
-        RED.sidebar.config.show(id);
+        sidebar.config.show(id);
       }
     }
   }
@@ -79,7 +118,10 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
       canvas,
       rebind,
       handleError,
-      RED
+      state,
+      text,
+      bidi
+      //RED
     } = this
     const {
       updateActiveNodes,
@@ -180,7 +222,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
       .attr('height', space_height * scaleFactor);
 
     // Don't bother redrawing nodes if we're drawing links
-    if (mouse_mode != RED.state.JOINING) {
+    if (mouse_mode != state.JOINING) {
 
       var dirtyNodes = {};
 
@@ -214,9 +256,10 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
             nodeMouseDown.call(this, d)
           })
           .on('touchend', (d) => {
+            const { touch } = this
             clearTimeout(touchStartTime);
             touchStartTime = null;
-            if (RED.touch.radialMenu.active()) {
+            if (touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
             }
@@ -275,9 +318,10 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
             nodeMouseDown.call(this, d)
           })
           .on('touchend', function (d) {
+            const { touch } = this
             clearTimeout(touchStartTime);
             touchStartTime = null;
-            if (RED.touch.radialMenu.active()) {
+            if (touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
             }
@@ -356,10 +400,11 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
         });
 
       nodeEnter.each(function (d, i) {
+        const { utils } = this
         var node = d3.select(this);
         var isLink = d.type === 'link in' || d.type === 'link out';
         node.attr('id', d.id);
-        var l = RED.utils.getNodeLabel(d);
+        var l = utils.getNodeLabel(d);
         if (isLink) {
           d.w = node_height;
         } else {
@@ -465,9 +510,10 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
             nodeMouseDown.call(this, d)
           })
           .on('touchend', (d: any) => {
+            const { touch } = this
             clearTimeout(touchStartTime);
             touchStartTime = null;
-            if (RED.touch.radialMenu.active()) {
+            if (touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
             }
@@ -488,7 +534,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
         //node.append('rect').attr('class', 'node-gradient-bottom').attr('rx', 6).attr('ry', 6).attr('height',30).attr('stroke','none').attr('fill','url(#gradient-bottom)').style('pointer-events','none');
 
         if (d._def.icon) {
-          let icon_url = RED.utils.getNodeIcon(d._def, d);
+          let icon_url = utils.getNodeIcon(d._def, d);
           let icon_group = node.append('g')
             .attr('class', 'node_icon_group')
             .attr('x', 0).attr('y', 0);
@@ -584,12 +630,13 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
       });
 
       node.each(function (d, i) {
+        const { utils } = this
         if (d.dirty) {
           var isLink = d.type === 'link in' || d.type === 'link out';
           dirtyNodes[d.id] = d;
           //if (d.x < -50) deleteSelection();  // Delete nodes if dragged back to palette
           if (!isLink && d.resize) {
-            var l = RED.utils.getNodeLabel(d);
+            var l = utils.getNodeLabel(d);
             var ow = d.w;
             d.w = Math.max(node_width, 20 * (Math.ceil((calculateTextWidth(l, 'node_label', 50) + (d._def.inputs > 0 ? 7 : 0)) / 20)));
             d.h = Math.max(node_height, (d.outputs || 0) * 15);
@@ -602,7 +649,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
             return 'translate(' + (d.x - d.w / 2) + ',' + (d.y - d.h / 2) + ')';
           });
 
-          if (mouse_mode != RED.state.MOVING_ACTIVE) {
+          if (mouse_mode != state.MOVING_ACTIVE) {
             thisNode.selectAll('.node')
               .attr('width', function (d: any) {
                 return d.w
@@ -719,7 +766,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
                 l = d._def.label;
                 try {
                   l = (typeof l === 'function' ? l.call(d) : l) || '';
-                  l = RED.text.bidi.enforceTextDirectionWithUCC(l);
+                  l = bidi.enforceTextDirectionWithUCC(l);
                 } catch (err) {
                   console.log('Definition error: ' + d.type + '.label', err);
                   l = d.type;
@@ -749,7 +796,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
             if (d._def.icon) {
               icon = thisNode.select('.node_icon');
               var current_url = icon.attr('xlink:href');
-              var new_url = RED.utils.getNodeIcon(d._def, d);
+              var new_url = utils.getNodeIcon(d._def, d);
               if (new_url !== current_url) {
                 icon.attr('xlink:href', new_url);
                 var img = new Image();
@@ -987,6 +1034,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
 
       var offLinksEnter = offLinks.enter().insert('g', '.node').attr('class', 'link_flow_link_g');
       offLinksEnter.each(function (d, i) {
+        const { nodes } = this
         var g = d3.select(this);
         var s = 1;
         var labelAnchor = 'start';
@@ -1000,7 +1048,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
           .attr('class', 'link_link').attr('d', 'M 0 0 h ' + stemLength);
         var links = d.links;
         var flows = Object.keys(links);
-        var tabOrder = RED.nodes.getWorkspaceOrder();
+        var tabOrder = nodes.getWorkspaceOrder();
         flows.sort(function (A, B) {
           return tabOrder.indexOf(A) - tabOrder.indexOf(B);
         });
@@ -1020,9 +1068,10 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
             d3.event.stopPropagation();
           })
           .on('mouseup', (f) => {
+            const { workspaces } = this
             d3.event.stopPropagation();
             var targets = d.links[f];
-            RED.workspaces.show(f);
+            workspaces.show(f);
             targets.forEach(function (n) {
               n.selected = true;
               n.dirty = true;
@@ -1075,7 +1124,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
             .attr('height', 24)
             .style('stroke', 'none')
             .style('fill', 'transparent')
-          var tab = RED.nodes.workspace(f);
+          var tab = nodes.workspace(f);
           var label;
           if (tab) {
             label = tab.label || tab.id;

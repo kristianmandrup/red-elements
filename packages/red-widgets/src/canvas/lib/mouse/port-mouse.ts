@@ -7,7 +7,31 @@ import {
   d3
 } from '../d3'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  IState,
+  INodes,
+  IWorkspaces,
+  ISubflow,
+  IHistory
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export class CanvasPortMouse extends Context {
+
+  @lazyInject(TYPES.state) state: IState
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
+  @lazyInject(TYPES.subflow) subflow: ISubflow
+  @lazyInject(TYPES.history) history: IHistory
+  
+
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -22,7 +46,10 @@ export class CanvasPortMouse extends Context {
     const {
       canvas,
       RED,
-      rebind
+      rebind,
+      state,
+      workspaces,
+      subflow
     } = this
     const {
       // methods
@@ -46,11 +73,11 @@ export class CanvasPortMouse extends Context {
     mousedown_node = d;
     mousedown_port_type = portType;
     mousedown_port_index = portIndex || 0;
-    if (mouse_mode !== RED.state.QUICK_JOINING) {
-      mouse_mode = RED.state.JOINING;
+    if (mouse_mode !== state.QUICK_JOINING) {
+      mouse_mode = state.JOINING;
       document.body.style.cursor = 'crosshair';
       if (d3.event.ctrlKey || d3.event.metaKey) {
-        mouse_mode = RED.state.QUICK_JOINING;
+        mouse_mode = state.QUICK_JOINING;
         showDragLines([{
           node: mousedown_node,
           port: mousedown_port_index,
@@ -73,7 +100,12 @@ export class CanvasPortMouse extends Context {
     const {
       canvas,
       RED,
-      rebind
+      rebind,
+      state,
+      nodes,
+      workspaces,
+      subflow,
+      history
     } = this
     const {
       mouse_mode,
@@ -102,16 +134,16 @@ export class CanvasPortMouse extends Context {
       selected_link
     } = canvas
 
-    if (mouse_mode === RED.state.QUICK_JOINING) {
+    if (mouse_mode === state.QUICK_JOINING) {
       if (drag_lines[0].node === d) {
         return
       }
     }
     document.body.style.cursor = '';
-    if (mouse_mode == RED.state.JOINING || mouse_mode == RED.state.QUICK_JOINING) {
+    if (mouse_mode == state.JOINING || mouse_mode == state.QUICK_JOINING) {
       if (typeof TouchEvent != 'undefined' && d3.event instanceof TouchEvent) {
-        RED.nodes.eachNode(function (n) {
-          if (n.z == RED.workspaces.active()) {
+        nodes.eachNode(function (n) {
+          if (n.z == workspaces.active()) {
             var hw = n.w / 2;
             var hh = n.h / 2;
             if (n.x - hw < mouse_position[0] && n.x + hw > mouse_position[0] &&
@@ -146,7 +178,7 @@ export class CanvasPortMouse extends Context {
             dst = drag_line.node;
             src_port = portIndex;
           }
-          var existingLink = RED.nodes.filterLinks({
+          var existingLink = nodes.filterLinks({
             source: src,
             target: dst,
             sourcePort: src_port
@@ -157,7 +189,7 @@ export class CanvasPortMouse extends Context {
               sourcePort: src_port,
               target: dst
             };
-            RED.nodes.addLink(link);
+            nodes.addLink(link);
             addedLinks.push(link);
           }
         }
@@ -167,10 +199,10 @@ export class CanvasPortMouse extends Context {
           t: 'add',
           links: addedLinks,
           removedLinks: removedLinks,
-          dirty: RED.nodes.dirty()
+          dirty: nodes.dirty()
         };
         if (activeSubflow) {
-          var subflowRefresh = RED.subflow.refresh(true);
+          var subflowRefresh = subflow.refresh(true);
           if (subflowRefresh) {
             historyEvent.subflow = {
               id: activeSubflow.id,
@@ -179,11 +211,11 @@ export class CanvasPortMouse extends Context {
             }
           }
         }
-        RED.history.push(historyEvent);
+        history.push(historyEvent);
         updateActiveNodes();
-        RED.nodes.dirty(true);
+        nodes.dirty(true);
       }
-      if (mouse_mode === RED.state.QUICK_JOINING) {
+      if (mouse_mode === state.QUICK_JOINING) {
         if (addedLinks.length > 0) {
           hideDragLines();
           if (portType === PORT_TYPE_INPUT && d.outputs > 0) {
@@ -224,7 +256,8 @@ export class CanvasPortMouse extends Context {
     const {
       RED,
       canvas,
-      rebind
+      rebind,
+      state
     } = this
     const {
       PORT_TYPE_OUTPUT,
@@ -253,7 +286,7 @@ export class CanvasPortMouse extends Context {
       ])
 
     clearTimeout(portLabelHoverTimeout);
-    var active = (mouse_mode != RED.state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== portType));
+    var active = (mouse_mode != state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== portType));
     if (active && ((portType === PORT_TYPE_INPUT && ((d._def && d._def.inputLabels) || d.inputLabels)) || (portType === PORT_TYPE_OUTPUT && ((d._def && d._def.outputLabels) || d.outputLabels)))) {
       portLabelHoverTimeout = setTimeout(function () {
         var tooltip = getPortLabel(d, portType, portIndex);

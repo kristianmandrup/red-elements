@@ -32,8 +32,6 @@ import {
 } from './_base'
 
 export interface IWorkspaces {
-  active()
-
   configure()
   /**
    * activate Last Workspace

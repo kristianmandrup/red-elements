@@ -7,7 +7,35 @@ import {
   d3
 } from '../d3'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  IState,
+  INodes,
+  ICanvas,
+  IWorkspaces,
+  IKeyboard,
+  ITypeSearch,
+  IEditor,
+  IHistory
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export class CanvasMouse extends Context {
+
+  @lazyInject(TYPES.state) state: IState
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.history) history: IHistory
+  @lazyInject(TYPES.view) view: ICanvas
+  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
+  @lazyInject(TYPES.keyboard) keyboard: IKeyboard
+  @lazyInject(TYPES.typeSearch) typeSearch: ITypeSearch
+  @lazyInject(TYPES.editor) editor: IEditor
+
   constructor(protected canvas: Canvas) {
     super()
   }
@@ -59,6 +87,13 @@ export class CanvasMouse extends Context {
       PORT_TYPE_OUTPUT,
       PORT_TYPE_INPUT,
     } = this.canvas
+
+    const {
+      state,
+      nodes,
+      view,
+      editor
+    } = this
 
     let {
       clickElapsed,
@@ -113,12 +148,12 @@ export class CanvasMouse extends Context {
       return;
     }
 
-    if (mouse_mode != RED.state.QUICK_JOINING && mouse_mode != RED.state.IMPORT_DRAGGING && !mousedown_node && selected_link == null) {
+    if (mouse_mode != state.QUICK_JOINING && mouse_mode != state.IMPORT_DRAGGING && !mousedown_node && selected_link == null) {
       return;
     }
 
     var mousePos;
-    if (mouse_mode == RED.state.JOINING || mouse_mode === RED.state.QUICK_JOINING) {
+    if (mouse_mode == state.JOINING || mouse_mode === state.QUICK_JOINING) {
       // update drag line
       if (drag_lines.length === 0) {
         if (d3.event.shiftKey) {
@@ -147,11 +182,11 @@ export class CanvasMouse extends Context {
                 target: mousedown_node
               }
             }
-            existingLinks = RED.nodes.filterLinks(filter);
+            existingLinks = nodes.filterLinks(filter);
           }
           for (i = 0; i < existingLinks.length; i++) {
             var link = existingLinks[i];
-            RED.nodes.removeLink(link);
+            nodes.removeLink(link);
             links.push({
               link: link,
               node: (mousedown_port_type === PORT_TYPE_OUTPUT) ? link.target : link.source,
@@ -167,7 +202,7 @@ export class CanvasMouse extends Context {
             mouse_mode = 0;
             updateActiveNodes();
             redraw();
-            mouse_mode = RED.state.JOINING;
+            mouse_mode = state.JOINING;
           }
         } else if (mousedown_node) {
           showDragLines([{
@@ -211,14 +246,14 @@ export class CanvasMouse extends Context {
         );
       }
       d3.event.preventDefault();
-    } else if (mouse_mode == RED.state.MOVING) {
+    } else if (mouse_mode == state.MOVING) {
       mousePos = d3.mouse(document.body);
       if (isNaN(mousePos[0])) {
         mousePos = d3.touches(document.body)[0];
       }
       var d = (mouse_offset[0] - mousePos[0]) * (mouse_offset[0] - mousePos[0]) + (mouse_offset[1] - mousePos[1]) * (mouse_offset[1] - mousePos[1]);
       if (d > 3) {
-        mouse_mode = RED.state.MOVING_ACTIVE;
+        mouse_mode = state.MOVING_ACTIVE;
         clickElapsed = 0;
         spliceActive = false;
         if (moving_set.length === 1) {
@@ -226,15 +261,15 @@ export class CanvasMouse extends Context {
           spliceActive = node.n.hasOwnProperty('_def') &&
             node.n._def.inputs > 0 &&
             node.n._def.outputs > 0 &&
-            RED.nodes.filterLinks({
+            nodes.filterLinks({
               source: node.n
             }).length === 0 &&
-            RED.nodes.filterLinks({
+            nodes.filterLinks({
               target: node.n
             }).length === 0;
         }
       }
-    } else if (mouse_mode == RED.state.MOVING_ACTIVE || mouse_mode == RED.state.IMPORT_DRAGGING) {
+    } else if (mouse_mode == state.MOVING_ACTIVE || mouse_mode == state.IMPORT_DRAGGING) {
       mousePos = mouse_position;
       var minX = 0;
       var minY = 0;
@@ -284,7 +319,7 @@ export class CanvasMouse extends Context {
           }
         }
       }
-      if ((mouse_mode == RED.state.MOVING_ACTIVE || mouse_mode == RED.state.IMPORT_DRAGGING) && moving_set.length === 1) {
+      if ((mouse_mode == state.MOVING_ACTIVE || mouse_mode == state.IMPORT_DRAGGING) && moving_set.length === 1) {
         node = moving_set[0];
         if (spliceActive) {
           if (!spliceTimer) {
@@ -304,7 +339,7 @@ export class CanvasMouse extends Context {
               } else {
                 // Firefox doesn't do getIntersectionList and that
                 // makes us sad
-                nodes = RED.view.getLinksAtPoint(mouseX, mouseY);
+                nodes = view.getLinksAtPoint(mouseX, mouseY);
               }
               for (var i = 0; i < nodes.length; i++) {
                 if (d3.select(nodes[i]).classed('link_background')) {
@@ -347,7 +382,12 @@ export class CanvasMouse extends Context {
   canvasMouseUp() {
     const {
       RED,
-      canvas
+      canvas,
+      state,
+      nodes,
+      history,
+      workspaces,
+      keyboard
     } = this
 
     const {
@@ -379,10 +419,10 @@ export class CanvasMouse extends Context {
       ])
 
     var historyEvent;
-    if (mouse_mode === RED.state.QUICK_JOINING) {
+    if (mouse_mode === state.QUICK_JOINING) {
       return;
     }
-    if (mousedown_node && mouse_mode == RED.state.JOINING) {
+    if (mousedown_node && mouse_mode == state.JOINING) {
       var removedLinks = [];
       for (let i = 0; i < drag_lines.length; i++) {
         if (drag_lines[i].link) {
@@ -392,9 +432,9 @@ export class CanvasMouse extends Context {
       historyEvent = {
         t: 'delete',
         links: removedLinks,
-        dirty: RED.nodes.dirty()
+        dirty: nodes.dirty()
       };
-      RED.history.push(historyEvent);
+      history.push(historyEvent);
       hideDragLines();
     }
     if (lasso) {
@@ -405,8 +445,9 @@ export class CanvasMouse extends Context {
       if (!d3.event.ctrlKey) {
         clearSelection();
       }
-      RED.nodes.eachNode(function (n) {
-        if (n.z == RED.workspaces.active() && !n.selected) {
+      nodes.eachNode(function (n) {
+        const { workspaces } = this
+        if (n.z == workspaces.active() && !n.selected) {
           n.selected = (n.x > x && n.x < x2 && n.y > y && n.y < y2);
           if (n.selected) {
             n.dirty = true;
@@ -439,11 +480,11 @@ export class CanvasMouse extends Context {
       updateSelection();
       lasso.remove();
       lasso = null;
-    } else if (mouse_mode == RED.state.DEFAULT && mousedown_link == null && !d3.event.ctrlKey && !d3.event.metaKey) {
+    } else if (mouse_mode == state.DEFAULT && mousedown_link == null && !d3.event.ctrlKey && !d3.event.metaKey) {
       clearSelection();
       updateSelection();
     }
-    if (mouse_mode == RED.state.MOVING_ACTIVE) {
+    if (mouse_mode == state.MOVING_ACTIVE) {
       if (moving_set.length > 0) {
         var ns = [];
         for (var j = 0; j < moving_set.length; j++) {
@@ -463,12 +504,12 @@ export class CanvasMouse extends Context {
           historyEvent = {
             t: 'move',
             nodes: ns,
-            dirty: RED.nodes.dirty()
+            dirty: nodes.dirty()
           };
           if (activeSpliceLink) {
             // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
             var spliceLink: any = d3.select(activeSpliceLink).data()[0];
-            RED.nodes.removeLink(spliceLink);
+            nodes.removeLink(spliceLink);
             var link1 = {
               source: spliceLink.source,
               sourcePort: spliceLink.sourcePort,
@@ -479,27 +520,27 @@ export class CanvasMouse extends Context {
               sourcePort: 0,
               target: spliceLink.target
             };
-            RED.nodes.addLink(link1);
-            RED.nodes.addLink(link2);
+            nodes.addLink(link1);
+            nodes.addLink(link2);
             historyEvent.links = [link1, link2];
             historyEvent.removedLinks = [spliceLink];
             updateActiveNodes();
           }
-          RED.nodes.dirty(true);
-          RED.history.push(historyEvent);
+          nodes.dirty(true);
+          history.push(historyEvent);
         }
       }
     }
-    if (mouse_mode == RED.state.MOVING || mouse_mode == RED.state.MOVING_ACTIVE) {
+    if (mouse_mode == state.MOVING || mouse_mode == state.MOVING_ACTIVE) {
       for (let i = 0; i < moving_set.length; i++) {
         delete moving_set[i].ox;
         delete moving_set[i].oy;
       }
     }
-    if (mouse_mode == RED.state.IMPORT_DRAGGING) {
-      RED.keyboard.remove('escape');
+    if (mouse_mode == state.IMPORT_DRAGGING) {
+      keyboard.remove('escape');
       updateActiveNodes();
-      RED.nodes.dirty(true);
+      nodes.dirty(true);
     }
     resetMouseVars();
     redraw();
@@ -508,7 +549,12 @@ export class CanvasMouse extends Context {
   canvasMouseDown() {
     const {
       RED,
-      canvas
+      canvas,
+      state,
+      nodes,
+      history,
+      typeSearch,
+      editor
     } = this
     const {
       mousedown_node,
@@ -560,7 +606,7 @@ export class CanvasMouse extends Context {
       return this
     }
 
-    if (mouse_mode === 0 || mouse_mode === RED.state.QUICK_JOINING) {
+    if (mouse_mode === 0 || mouse_mode === state.QUICK_JOINING) {
       if (d3.event.metaKey || d3.event.ctrlKey) {
         // TODO: Fixed?
         const svgElem = vis
@@ -568,12 +614,12 @@ export class CanvasMouse extends Context {
         d3.event.stopPropagation();
         var mainPos = $('#main-container').position();
 
-        if (mouse_mode !== RED.state.QUICK_JOINING) {
-          mouse_mode = RED.state.QUICK_JOINING;
+        if (mouse_mode !== state.QUICK_JOINING) {
+          mouse_mode = state.QUICK_JOINING;
           $(window).on('keyup', disableQuickJoinEventHandler);
         }
 
-        RED.typeSearch.show({
+        typeSearch.show({
           x: d3.event.clientX - mainPos.left - node_width / 2,
           y: d3.event.clientY - mainPos.top - node_height / 2,
           add: function (type) {
@@ -585,7 +631,7 @@ export class CanvasMouse extends Context {
             var historyEvent = result.historyEvent;
             nn.x = point[0];
             nn.y = point[1];
-            if (mouse_mode === RED.state.QUICK_JOINING) {
+            if (mouse_mode === state.QUICK_JOINING) {
               if (drag_lines.length > 0) {
                 var drag_line = drag_lines[0];
                 var src = null,
@@ -606,7 +652,7 @@ export class CanvasMouse extends Context {
                     sourcePort: src_port,
                     target: dst
                   };
-                  RED.nodes.addLink(link);
+                  nodes.addLink(link);
                   historyEvent.links = [link];
                   this.hideDragLines();
                   if (drag_line.portType === PORT_TYPE_OUTPUT && nn.outputs > 0) {
@@ -648,10 +694,10 @@ export class CanvasMouse extends Context {
             }
 
 
-            RED.history.push(historyEvent);
-            RED.nodes.add(nn);
-            RED.editor.validateNode(nn);
-            RED.nodes.dirty(true);
+            history.push(historyEvent);
+            nodes.add(nn);
+            editor.validateNode(nn);
+            nodes.dirty(true);
             // auto select dropped node - so info shows (if visible)
             this.clearSelection();
             nn.selected = true;

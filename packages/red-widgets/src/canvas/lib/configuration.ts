@@ -7,6 +7,23 @@ import {
   delegateTarget
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../_container'
+
+import {
+  INodes,
+  IWorkspaces,
+  IEvents,
+  IEditor,
+  IActions,
+  IUserSettings,
+  IHistory
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export interface ICanvasConfiguration {
   configure()
   configureD3()
@@ -17,6 +34,14 @@ export interface ICanvasConfiguration {
 
 @delegateTarget()
 export class CanvasConfiguration extends Context implements ICanvasConfiguration {
+
+  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.events) events: IEvents
+  @lazyInject(TYPES.history) history: IHistory
+  @lazyInject(TYPES.editor) editor: IEditor
+  @lazyInject(TYPES.actions) actions: IActions
+  @lazyInject(TYPES.userSettings) userSettings: IUserSettings
+
   disabled: boolean
 
   constructor(protected canvas: Canvas) {
@@ -26,7 +51,12 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
   configure() {
     const {
       rebind,
-      canvas
+      canvas,
+      nodes,
+      history,
+      editor,
+      actions,
+      userSettings
     } = this
 
     const {
@@ -50,12 +80,11 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
 
   configureD3() {
     const {
-      RED,
+      //  RED,
       canvas,
       logInfo,
       setInstanceVars,
       rebind
-
     } = this
     let {
       space_width,
@@ -175,9 +204,10 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
 
   configureEvents() {
     const {
-      RED,
+      //RED,
       rebind,
-      canvas
+      canvas,
+      events
     } = this
 
     const {
@@ -189,14 +219,15 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
         'handleWorkSpaceChangeEvent'
       ], canvas)
 
-    RED.events.on('workspace:change', (evt) => handleWorkSpaceChangeEvent(evt, workspaceScrollPositions));
+    events.on('workspace:change', (evt) => handleWorkSpaceChangeEvent(evt, workspaceScrollPositions));
   }
 
   configureHandlers() {
     const {
-      RED,
+      //  RED,
       canvas,
-      rebind
+      rebind,
+      nodes
     } = this
     const {
       snapGrid,
@@ -254,6 +285,7 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
     chart.droppable({
       accept: '.palette_node',
       drop: (event: any, ui: any) => {
+        const { history, editor } = this
         // TODO: Fix
         // d3.event = event;
         var selected_tool = ui.draggable[0].type;
@@ -285,7 +317,7 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
         var spliceLink = $(ui.helper).data('splice');
         if (spliceLink) {
           // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
-          RED.nodes.removeLink(spliceLink);
+          nodes.removeLink(spliceLink);
           var link1 = {
             source: spliceLink.source,
             sourcePort: spliceLink.sourcePort,
@@ -296,16 +328,17 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
             sourcePort: 0,
             target: spliceLink.target
           };
-          RED.nodes.addLink(link1);
-          RED.nodes.addLink(link2);
+          nodes.addLink(link1);
+          nodes.addLink(link2);
           historyEvent.links = [link1, link2];
           historyEvent.removedLinks = [spliceLink];
         }
 
-        RED.history.push(historyEvent);
-        RED.nodes.add(nn);
-        RED.editor.validateNode(nn);
-        RED.nodes.dirty(true);
+
+        history.push(historyEvent);
+        nodes.add(nn);
+        editor.validateNode(nn);
+        nodes.dirty(true);
         // auto select dropped node - so info shows (if visible)
         clearSelection();
         nn.selected = true;
@@ -317,7 +350,7 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
         redraw();
 
         if (nn._def.autoedit) {
-          RED.editor.edit(nn);
+          editor.edit(nn);
         }
       }
     });
@@ -332,9 +365,12 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
 
   configureActions() {
     const {
-      RED,
+      //RED,
       canvas,
-      rebind
+      rebind,
+      history,
+      actions,
+      userSettings
     } = this
 
     const {
@@ -362,66 +398,67 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
       ], canvas)
 
 
-    RED.actions.add('core:copy-selection-to-internal-clipboard', copySelection);
-    RED.actions.add('core:cut-selection-to-internal-clipboard', () => {
+    actions.add('core:copy-selection-to-internal-clipboard', copySelection);
+    actions.add('core:cut-selection-to-internal-clipboard', () => {
       copySelection();
       deleteSelection();
     });
-    RED.actions.add('core:paste-from-internal-clipboard', () => {
+    actions.add('core:paste-from-internal-clipboard', () => {
       importNodes(clipboard);
     });
-    RED.actions.add('core:delete-selection', deleteSelection);
-    RED.actions.add('core:edit-selected-node', editSelection);
-    RED.actions.add('core:undo', RED.history.pop);
-    RED.actions.add('core:select-all-nodes', selectAll);
-    RED.actions.add('core:zoom-in', zoomIn);
-    RED.actions.add('core:zoom-out', zoomOut);
-    RED.actions.add('core:zoom-reset', zoomZero);
 
-    RED.actions.add('core:toggle-show-grid', (state) => {
+    actions.add('core:delete-selection', deleteSelection);
+    actions.add('core:edit-selected-node', editSelection);
+    actions.add('core:undo', history.pop);
+    actions.add('core:select-all-nodes', selectAll);
+    actions.add('core:zoom-in', zoomIn);
+    actions.add('core:zoom-out', zoomOut);
+    actions.add('core:zoom-reset', zoomZero);
+
+    actions.add('core:toggle-show-grid', (state) => {
       if (state === undefined) {
-        RED.userSettings.toggle('view-show-grid');
+        userSettings.toggle('view-show-grid');
       } else {
         toggleShowGrid(state);
       }
     });
-    RED.actions.add('core:toggle-snap-grid', (state) => {
+    actions.add('core:toggle-snap-grid', (state) => {
       if (state === undefined) {
-        RED.userSettings.toggle('view-snap-grid');
+        userSettings.toggle('view-snap-grid');
       } else {
         toggleSnapGrid(state);
       }
     });
-    RED.actions.add('core:toggle-status', (state) => {
+    actions.add('core:toggle-status', (state) => {
       if (state === undefined) {
-        RED.userSettings.toggle('view-node-status');
+        userSettings.toggle('view-node-status');
       } else {
         toggleStatus(state);
       }
     });
 
-    RED.actions.add('core:move-selection-up', () => {
+    actions.add('core:move-selection-up', () => {
       moveSelection(0, -1);
     });
-    RED.actions.add('core:step-selection-up', () => {
+    actions.add('core:step-selection-up', () => {
       moveSelection(0, -20);
     });
-    RED.actions.add('core:move-selection-right', () => {
+    actions.add('core:move-selection-right', () => {
       moveSelection(1, 0);
     });
-    RED.actions.add('core:step-selection-right', () => {
+    actions.add('core:step-selection-right', () => {
       moveSelection(20, 0);
     });
-    RED.actions.add('core:move-selection-down', () => {
+    actions.add('core:move-selection-down', () => {
       moveSelection(0, 1);
     });
-    RED.actions.add('core:step-selection-down', () => {
+    actions.add('core:step-selection-down', () => {
       moveSelection(0, 20);
     });
-    RED.actions.add('core:move-selection-left', () => {
+    actions.add('core:move-selection-left', () => {
       moveSelection(-1, 0);
     });
-    RED.actions.add('core:step-selection-left', () => {
+    actions.add('core:step-selection-left', () => {
       moveSelection(-20, 0);
     });
     return this
