@@ -21,8 +21,12 @@ import {
 
 const TYPES = $TYPES.all
 
+export interface IWorkspacesConfiguration {
+  configure()
+}
+
 @delegateTarget()
-export class WorkspacesConfiguration extends Context {
+export class WorkspacesConfiguration extends Context implements IWorkspacesConfiguration {
   @lazyInject(TYPES.actions) actions: IActions
   @lazyInject(TYPES.events) events: IEvents
   @lazyInject(TYPES.common.menu) menu: IMenu

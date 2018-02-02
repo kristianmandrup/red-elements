@@ -8,14 +8,18 @@ import {
   container
 } from './container'
 
+export interface IUserSettingsDisplay {
+  show(initialTab)
+  addPane(options)
+}
+
 @delegateTarget()
-export class UserSettingsDisplay extends Context {
+export class UserSettingsDisplay extends Context implements IUserSettingsDisplay {
   allSettings = {}
 
   constructor(public settings: UserSettings, public configuration: UserSettingsConfiguration) {
     super()
   }
-
 
   get panes() {
     return this.panes

@@ -13,8 +13,16 @@ export interface IWorkspaceDef {
   label: string
 }
 
+export interface IWorkspaceManager {
+  activateLastWorkspace()
+  addWorkspace(ws: IWorkspaceDef, skipHistoryEntry?): IWorkspaceDef
+  deleteWorkspace(ws: IWorkspaceDef)
+  removeWorkspace(ws: IWorkspaceDef)
+  setWorkspaceOrder(order: any[])
+}
+
 @delegateTarget()
-export class WorkspaceManager extends Context {
+export class WorkspaceManager extends Context implements IWorkspaceManager {
   constructor(public workspaces: Workspaces) {
     super()
   }

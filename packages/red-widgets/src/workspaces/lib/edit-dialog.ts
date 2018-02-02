@@ -9,12 +9,19 @@ interface IDialogForm extends JQuery<HTMLElement> {
   i18n: Function
 }
 
+export interface IWorkspaceEditDialog {
+  /**
+     * show rename Workspace Dialog
+     * @param id
+     */
+  showRenameWorkspaceDialog(id: string | number)
+}
+
 @delegateTarget()
-export class WorkspaceEditDialog extends Context {
+export class WorkspaceEditDialog extends Context implements IWorkspaceEditDialog {
   constructor(public workspaces: Workspaces) {
     super()
   }
-
 
   /**
    * show rename Workspace Dialog
@@ -179,7 +186,6 @@ export class WorkspaceEditDialog extends Context {
   }
 
   // protected
-
   protected toggleOn(i) {
     const {
       RED

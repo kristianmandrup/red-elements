@@ -9,8 +9,27 @@ interface IDialogForm extends JQuery<HTMLElement> {
   i18n: Function
 }
 
+export interface IWorkspaceTabs {
+  /**
+    * Create Workspace tabs
+    */
+  createWorkspaceTabs()
+
+  /**
+   * Detect if workspace has tab with specific id
+   * @param id
+   */
+  hasTabId(id: string)
+
+  /**
+   * retrieve workspace Tab at index
+   * @param workspaceIndex
+   */
+  workspaceTabAt(workspaceIndex: number)
+}
+
 @delegateTarget()
-export class WorkspaceTabs extends Context {
+export class WorkspaceTabs extends Context implements IWorkspaceTabs {
   constructor(public workspaces: Workspaces) {
     super()
   }

@@ -6,8 +6,27 @@ import {
   container
 } from './_base'
 
+export interface IWorkspacesDisplay {
+  /**
+     * Shows workspace tabs with given id
+     * also activates it via activateTab
+     * @param id
+     */
+  show(id: string)
+
+  /**
+   * Refresh workspace display
+   */
+  refresh()
+
+  /**
+   * Resize workspace display
+   */
+  resize()
+}
+
 @delegateTarget()
-export class WorkspacesDisplay extends Context {
+export class WorkspacesDisplay extends Context implements IWorkspacesDisplay {
   constructor(public workspaces: Workspaces) {
     super()
   }
