@@ -22,7 +22,10 @@ import {
   INodes
 } from '../interfaces'
 
-import { lazyInject, TYPES } from '../_container';
+import {
+  lazyInject,
+  TYPES
+} from '../_container';
 
 export interface IUndo {
   undoEvent(ev: IEvent): IUndo

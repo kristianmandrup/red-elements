@@ -5,7 +5,7 @@ import {
 } from '../../context'
 import { Flows } from './index';
 
-export interface FlowsTypeManager {
+export interface IFlowsTypeManager {
   checkTypeInUse(id: string)
   updateMissingTypes()
 }

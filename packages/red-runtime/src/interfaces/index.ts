@@ -14,3 +14,8 @@ export {
 export {
   INodes
 } from '../nodes'
+
+export {
+  INotifications,
+  IUser
+} from '@tecla5/red-widgets'

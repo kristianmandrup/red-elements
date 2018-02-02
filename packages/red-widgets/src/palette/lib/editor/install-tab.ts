@@ -6,12 +6,25 @@ import {
   delegator
 } from './_base'
 
+import {
+  lazyInject,
+  $TYPES
+} from '../../../_container'
+
+import {
+  ISettings
+} from '../../../_interfaces'
+
+const TYPES = $TYPES.all
+
 export interface IInstallTab {
   initInstallTab()
 }
 
 @delegator(container)
 export class InstallTab extends Context implements IInstallTab {
+  @lazyInject(TYPES.settings) settings: ISettings
+
   constructor(public editor: PaletteEditor) {
     super()
   }
@@ -30,6 +43,8 @@ export class InstallTab extends Context implements IInstallTab {
       catalogueLoadStart,
       catalogueCount,
     } = this.editor
+
+    const { settings } = this
 
     const {
     handleCatalogResponse,
@@ -59,7 +74,7 @@ export class InstallTab extends Context implements IInstallTab {
       packageList.editableList('empty');
 
       $(".palette-module-shade-status").html(this.RED._('palette.editor.loading'));
-      var catalogues = this.RED.settings.theme('palette.catalogues') || ['https://catalogue.nodered.org/catalogue.json'];
+      var catalogues = settings.theme('palette.catalogues') || ['https://catalogue.nodered.org/catalogue.json'];
       catalogueLoadStatus = [];
       catalogueLoadErrors = false;
       catalogueCount = catalogues.length;
