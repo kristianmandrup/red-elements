@@ -80,6 +80,7 @@ export class Iterator extends Context {
   }
 
   /**
+   * TODO: FIX
    * Iterate all workspaces
    * @param cb { function } For each iterated workspace, call this callback function
    */
@@ -90,7 +91,8 @@ export class Iterator extends Context {
     } = this.nodes
 
     for (var i = 0; i < workspacesOrder.length; i++) {
-      cb(workspaces[workspacesOrder[i]]);
+      const workspace = workspacesOrder[i]
+      cb(workspaces[workspace]);
     }
   }
 }

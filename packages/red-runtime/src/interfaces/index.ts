@@ -15,11 +15,14 @@ export {
   INodes
 } from '../nodes'
 
+export {
+  II18n
+} from '../i18n'
 
 // TODO: move to red-interfaces to act as central hub
 // avoid circular module dependencies!
 export interface INotifications {
-  notify(msg: any)
+  notify(msg: any, ...args)
 }
 
 export interface IUser {
@@ -27,5 +30,5 @@ export interface IUser {
 }
 
 export interface IWorkspaces {
-
+  refresh()
 }

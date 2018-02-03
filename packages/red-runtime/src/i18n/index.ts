@@ -112,7 +112,7 @@ export class I18n extends Context implements II18n {
    *   locales/[namespace]?lng=[language]
    */
   async loadCatalog(namespace: string) {
-    return this.catalog.loadCatalog(namespace)
+    return this.catalog.loadLanguages(namespace)
   }
 
   /**
@@ -123,7 +123,7 @@ export class I18n extends Context implements II18n {
    *   locales/nodes?lng=[language]
    */
   async loadNodeCatalogs() {
-    return this.catalog.loadNodeCatalogs()
+    return this.catalog.loadNodeLanguages()
   }
 
   /**

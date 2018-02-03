@@ -53,7 +53,7 @@ export interface INodes {
   nodes: INode[]
   links: ILink[]
   workspaces: any // workspace map?
-  workspacesOrder: IWorkspace[]
+  workspacesOrder: string[] // order of workspace ids
   subflows: any
   n: INode
   initialLoad: any
@@ -118,7 +118,7 @@ export interface INodes {
    * @param n { Node } the node to convert
    * @param exportCreds { boolean } if node (user) credentials should also be exported
    **/
-  convertNode(n: INode, exportCreds: boolean): INode
+  convertNode(n: INode, exportCreds?: boolean): INode
 
   /**
    * Convert a node to a Subflow
@@ -280,15 +280,15 @@ export interface INodes {
 
   /**
    * Get the current workspace order
-   * @returns { Workspace[] } list of workspaces in current order
+   * @returns { string[] } list of workspaces in current order
    */
-  getWorkspaceOrder(): IWorkspace[]
+  getWorkspaceOrder(): string[]
 
   /**
    * Set the workspace order
-   * @param order { Workspace[] } list of workspaces in a given order
+   * @param order { string[] } list of workspaces in a given order
    */
-  setWorkspaceOrder(order: any[]): INodes
+  setWorkspaceOrder(order: string[]): INodes
 
   // core nodes methods
 
@@ -342,7 +342,7 @@ export class Nodes extends Context implements INodes {
   public nodes: INode[] = []
   public links: ILink[] = []
   public workspaces = {}
-  public workspacesOrder = []
+  public workspacesOrder: string[] = []
   public subflows = {}
   public n = null // {}
   public initialLoad = null // {}
@@ -806,7 +806,7 @@ export class Nodes extends Context implements INodes {
    * Get the current workspace order
    * @returns { Workspace[] } list of workspaces in current order
    */
-  getWorkspaceOrder(): IWorkspace[] {
+  getWorkspaceOrder(): string[] {
     return this.workspaceManager.getWorkspaceOrder()
   }
 
@@ -859,7 +859,7 @@ export class Nodes extends Context implements INodes {
     var configNodes = {};
     var links = [];
     workspaces = {};
-    var workspacesOrder = [];
+    var workspacesOrder: string[] = [];
     subflows = {};
     var loadedFlowVersion = null;
 

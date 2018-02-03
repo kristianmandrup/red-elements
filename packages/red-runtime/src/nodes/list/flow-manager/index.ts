@@ -5,7 +5,9 @@ import {
 import {
   Context,
   delegateTarget,
-  delegator
+  delegator,
+  $TYPES,
+  lazyInject
 } from '../_base'
 
 import {
@@ -33,6 +35,8 @@ export interface IFlowManager {
 }
 
 
+const TYPES = $TYPES.all
+
 @delegateTarget()
 @delegator({
   map: {
@@ -41,6 +45,8 @@ export interface IFlowManager {
 })
 export class FlowManager extends Context implements IFlowManager {
   subflowMatcher: ISubflowMatcher
+
+  @lazyInject(TYPES.nodes) $nodes: INodes
 
   constructor(public nodes: INodes) {
     super()
@@ -53,9 +59,12 @@ export class FlowManager extends Context implements IFlowManager {
    */
   addSubflow(sf: ISubflow, createNewIds?: boolean): INodes {
     const {
-      RED,
       subflows
     } = this.nodes
+
+    const {
+      $nodes
+    } = this
 
     this._validateNode(sf, 'sf', 'addSubflow')
 
@@ -76,7 +85,7 @@ export class FlowManager extends Context implements IFlowManager {
       sf.name = subflowName;
     }
     subflows[sf.id] = sf;
-    RED.nodes.registerType("subflow:" + sf.id, {
+    $nodes.registerType("subflow:" + sf.id, {
       defaults: {
         name: {
           value: ""
@@ -89,13 +98,13 @@ export class FlowManager extends Context implements IFlowManager {
       outputs: sf.out.length,
       color: "#da9",
       label: function () {
-        return this.name || RED.nodes.subflow(sf.id).name
+        return this.name || $nodes.subflow(sf.id).name
       },
       labelStyle: function () {
         return this.name ? "node_label_italic" : "";
       },
       paletteLabel: function () {
-        return RED.nodes.subflow(sf.id).name
+        return $nodes.subflow(sf.id).name
       },
       inputLabels: function (i: number) {
         return sf.inputLabels ? sf.inputLabels[i] : null
@@ -107,7 +116,7 @@ export class FlowManager extends Context implements IFlowManager {
         module: "node-red"
       }
     });
-    sf._def = RED.nodes.getType("subflow:" + sf.id);
+    sf._def = $nodes.getType("subflow:" + sf.id);
 
     return this.nodes
   }

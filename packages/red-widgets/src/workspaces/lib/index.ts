@@ -32,6 +32,9 @@ import {
 } from './_base'
 
 export interface IWorkspaces {
+  add(ws: IWorkspaceDef, skipHistoryEntry?: boolean) // alias
+  remove(ws: IWorkspaceDef) // alias
+
   configure()
   /**
    * activate Last Workspace
@@ -43,7 +46,7 @@ export interface IWorkspaces {
    * @param ws
    * @param skipHistoryEntry
    */
-  addWorkspace(ws: IWorkspaceDef, skipHistoryEntry?: boolean)
+  addWorkspace?(ws: IWorkspaceDef, skipHistoryEntry?: boolean)
 
   /**
    * delete Workspace
@@ -185,6 +188,16 @@ export class Workspaces extends Context {
   @delegateTo('manager')
   activateLastWorkspace() {
     // return this.manager.activateLastWorkspace()
+  }
+
+  // alias
+  add(ws: IWorkspaceDef, skipHistoryEntry?: boolean): any {
+    return this.addWorkspace(ws, skipHistoryEntry)
+  }
+
+  // alias
+  remove(ws: IWorkspaceDef) {
+    return this.removeWorkspace(ws)
   }
 
   /**

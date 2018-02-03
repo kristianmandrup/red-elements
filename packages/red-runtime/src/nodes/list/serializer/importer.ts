@@ -3,18 +3,26 @@ import {
 } from '../'
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  delegateTarget,
+  $TYPES,
+  lazyInject
+} from '../_base'
 
 import {
   INode,
-  INodeDef
+  INodeDef,
+  INotifications
 } from '../../../interfaces'
 import { ISerializer } from '.';
+import { II18n } from '../../../index';
+import { IWorkspaces } from '../../../../../red-widgets/src/workspaces/index';
 
 export interface IImporter {
   importNodes(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean)
 }
+
+const TYPES = $TYPES.all
 
 /**
  * Import nodes from a serialized format (String, JSON etc.)
@@ -22,8 +30,14 @@ export interface IImporter {
  * TODO:
  * Perhaps introduce additional helper classes for complex parts of Import flow
  */
+@delegateTarget()
 export class Importer extends Context {
   nodes: INodes
+
+  @lazyInject(TYPES.i18n) $i18n: II18n
+  @lazyInject(TYPES.notifications) $notifications: INotifications
+  @lazyInject(TYPES.workspaces) $workspaces: IWorkspaces
+  @lazyInject(TYPES.nodes) $nodes: INodes
 
   constructor(public serializer: ISerializer) {
     super()
@@ -32,8 +46,8 @@ export class Importer extends Context {
 
   _parse(newNodesObj: string): INode[] {
     const {
-      RED
-    } = this.nodes
+      $i18n
+    } = this
 
     if (newNodesObj === "") {
       return []
@@ -41,7 +55,7 @@ export class Importer extends Context {
     try {
       return JSON.parse(newNodesObj);
     } catch (err) {
-      var e = new Error(RED._("clipboard.invalidFlow", {
+      var e = new Error($i18n.t("clipboard.invalidFlow", {
         message: err.message
       }));
       e['code'] = "NODE_RED";
@@ -60,7 +74,6 @@ export class Importer extends Context {
       nodes
     } = this
     const {
-      RED,
       registry,
     } = nodes
 
@@ -90,13 +103,14 @@ export class Importer extends Context {
 
   _notifyUnknownTypes(unknownTypes: any[]) {
     const {
-      RED
-    } = this.nodes
+      $notifications,
+      $i18n
+    } = this
 
     if (unknownTypes.length > 0) {
       var typeList = "<ul><li>" + unknownTypes.join("</li><li>") + "</li></ul>";
       var type = "type" + (unknownTypes.length > 1 ? "s" : "");
-      RED.notify("<strong>" + RED._("clipboard.importUnrecognised", {
+      $notifications.notify("<strong>" + $i18n.t("clipboard.importUnrecognised", {
         count: unknownTypes.length
       }) + "</strong>" + typeList, "error", false, 10000);
     }
@@ -292,7 +306,9 @@ export class Importer extends Context {
 
   _findAndUpdateConfigNodes(newNodes: any, createNewIds: boolean, createMissingWorkspace: boolean, config: any) {
     const {
-      nodes
+      nodes,
+      $nodes,
+      $workspaces
     } = this
 
     const {
@@ -313,7 +329,6 @@ export class Importer extends Context {
 
     const {
       registry,
-      RED
     } = nodes
 
     const {
@@ -341,7 +356,7 @@ export class Importer extends Context {
               if (!workspaces[n.z]) {
                 if (createMissingWorkspace) {
                   if (missingWorkspace === null) {
-                    missingWorkspace = RED.workspaces.add(null, true);
+                    missingWorkspace = $workspaces.add(null, true);
                     new_workspaces.push(missingWorkspace);
                   }
                   n.z = missingWorkspace.id;
@@ -351,7 +366,7 @@ export class Importer extends Context {
               }
             }
           }
-          existingConfigNode = RED.nodes.node(n.id);
+          existingConfigNode = $nodes.node(n.id);
           if (existingConfigNode) {
             if (n.z && existingConfigNode.z !== n.z) {
               existingConfigNode = null;
@@ -399,7 +414,7 @@ export class Importer extends Context {
           }
           node_map[n.id] = configNode;
           new_nodes.push(configNode);
-          RED.nodes.add(configNode);
+          $nodes.add(configNode);
         }
       }
     }
@@ -764,10 +779,10 @@ export class Importer extends Context {
    */
   importNodes(newNodesObj: any, createNewIds?: boolean, createMissingWorkspace?: boolean): any[] {
     const {
-      nodes
+      nodes,
+      $workspaces
     } = this
     const {
-      RED,
       registry,
     } = nodes
 
@@ -869,7 +884,7 @@ export class Importer extends Context {
       subflow_map
     })
 
-    RED.workspaces.refresh();
+    $workspaces.refresh();
     // TODO: return an object not a list!
     return [new_nodes, new_links, new_workspaces, new_subflows, missingWorkspace];
   }

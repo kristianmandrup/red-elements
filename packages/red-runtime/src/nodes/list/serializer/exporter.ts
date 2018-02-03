@@ -7,17 +7,26 @@ import {
 } from '../../../interfaces'
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  lazyInject,
+  $TYPES,
+  delegateTarget
+} from '../_base'
+
 import { ISerializer } from './index';
+
+const TYPES = $TYPES.all
 
 export interface IExporter {
   createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object)
   createCompleteNodeSet(exportCredentials: boolean)
 }
 
+@delegateTarget()
 export class Exporter extends Context {
   nodes: INodes
+
+  @lazyInject(TYPES.nodes) $nodes: INodes
 
   constructor(public serializer: ISerializer) {
     super()
@@ -32,11 +41,11 @@ export class Exporter extends Context {
    */
   createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object) {
     const {
+      $nodes,
       nodes
     } = this
 
     const {
-      RED,
       registry,
       configNodes,
     } = nodes
@@ -49,8 +58,6 @@ export class Exporter extends Context {
         'createExportableNodeSet',
         'convertSubflow'
       ], nodes)
-
-    const $nodes = this
 
     var nns = [];
     exportedConfigNodes = exportedConfigNodes || {};
@@ -67,10 +74,7 @@ export class Exporter extends Context {
           exportedSubflows[subflowId] = true;
           var subflow = getSubflow(subflowId);
           var subflowSet = [subflow];
-          RED.nodes.eachNode(function (n) {
-
-            $nodes._validateNode(n, 'n', 'iterate RED nodes')
-
+          $nodes.eachNode(function (n) {
             if (n.z == subflowId) {
               subflowSet.push(n);
             }
@@ -80,7 +84,7 @@ export class Exporter extends Context {
         }
       }
       if (node.type != "subflow") {
-        var convertedNode = RED.nodes.convertNode(node);
+        var convertedNode = $nodes.convertNode(node);
         for (var d in node._def.defaults) {
           if (node._def.defaults[d].type && node[d] in configNodes) {
             var confNode = configNodes[node[d]];
@@ -132,8 +136,10 @@ export class Exporter extends Context {
     }
     var nns = [];
     for (let i = 0; i < workspacesOrder.length; i++) {
-      if (workspaces[workspacesOrder[i]].type == "tab") {
-        nns.push(convertWorkspace(workspaces[workspacesOrder[i]]));
+      const index = workspacesOrder[i]
+      const ws = workspaces[index]
+      if (ws.type == "tab") {
+        nns.push(convertWorkspace(ws));
       }
     }
     for (let flowId in subflows) {

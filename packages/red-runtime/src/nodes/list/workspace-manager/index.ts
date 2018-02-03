@@ -22,8 +22,8 @@ export interface IWorkspaceManager {
   addWorkspace(ws: IWorkspace): INodes
   removeWorkspace(id: string): any
   getWorkspace(id: string): IWorkspace
-  getWorkspaceOrder(): IWorkspace[]
-  setWorkspaceOrder(order: any[]): INodes
+  getWorkspaceOrder(): string[]
+  setWorkspaceOrder(order: string[]): INodes
 }
 
 const TYPES = $TYPES.all
@@ -53,7 +53,7 @@ export class WorkspaceManager extends Context implements IWorkspaceManager {
 
     workspaces[ws.id] = ws;
     ws._def = $nodes.getType('tab');
-    workspacesOrder.push(ws);
+    workspacesOrder.push(ws.id);
     return nodes
   }
 
@@ -127,9 +127,9 @@ export class WorkspaceManager extends Context implements IWorkspaceManager {
 
   /**
    * Get the current workspace order
-   * @returns { Workspace[] } list of workspaces in current order
+   * @returns { number[] } list of workspaces in current order
    */
-  getWorkspaceOrder(): IWorkspace[] {
+  getWorkspaceOrder(): string[] {
     const {
       nodes
     } = this
@@ -141,7 +141,7 @@ export class WorkspaceManager extends Context implements IWorkspaceManager {
    * Set the workspace order
    * @param order { Workspace[] } list of workspaces in a given order
    */
-  setWorkspaceOrder(order: any[]): INodes {
+  setWorkspaceOrder(order: string[]): INodes {
     const {
       nodes
     } = this

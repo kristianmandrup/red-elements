@@ -14,8 +14,11 @@ import {
 import {
   INode,
   IWorkspaces,
-  IEvents
+  IEvents,
+  II18n
 } from '../../../interfaces'
+
+const TYPES = $TYPES.all
 
 const { log } = console
 
@@ -28,9 +31,10 @@ export interface INodeManager {
 
 @delegateTarget()
 export class NodeManager extends Context {
-  @lazyInject($TYPES.all.workspaces) $workspaces: IWorkspaces
-  @lazyInject($TYPES.all.nodes) $nodes: INodes
-  @lazyInject($TYPES.all.nodes) $events: IEvents
+  @lazyInject(TYPES.workspaces) $workspaces: IWorkspaces
+  @lazyInject(TYPES.nodes) $nodes: INodes
+  @lazyInject(TYPES.events) $events: IEvents
+  @lazyInject(TYPES.i18n) $i18n: II18n
 
   constructor(public nodes: INodes) {
     super()
@@ -46,8 +50,13 @@ export class NodeManager extends Context {
    */
   addNode(n: INode): INodes {
     const {
+      $i18n,
+      $nodes,
+      $events
+    } = this
+
+    const {
       nodes,
-      RED,
       configNodes
     } = this.nodes
 
@@ -63,7 +72,7 @@ export class NodeManager extends Context {
     if (n.type.indexOf("subflow") !== 0) {
       n["_"] = n._def._;
     } else {
-      n["_"] = RED._;
+      n["_"] = $i18n.t;
     }
     if (n._def.category == "config") {
       configNodes[n.id] = n;
@@ -81,14 +90,14 @@ export class NodeManager extends Context {
       _updateConfigNodeUsers(n);
       if (n._def.category == "subflows" && typeof n.i === "undefined") {
         var nextId = 0;
-        RED.nodes.eachNode(function (node: INode) {
+        $nodes.eachNode(function (node: INode) {
           nextId = Math.max(nextId, node.i || 0);
         });
         n.i = nextId + 1;
       }
       nodes.push(n);
     }
-    RED.events.emit('nodes:add', n);
+    $events.emit('nodes:add', n);
 
     return this.nodes
   }
@@ -121,7 +130,10 @@ export class NodeManager extends Context {
    */
   removeNode(id: string): any {
     const {
-      RED,
+      $events,
+      $workspaces
+    } = this
+    const {
       configNodes,
       nodes,
       links,
@@ -145,8 +157,8 @@ export class NodeManager extends Context {
     if (id in configNodes) {
       node = configNodes[id];
       delete configNodes[id];
-      RED.events.emit('nodes:remove', node);
-      RED.workspaces.refresh();
+      $events.emit('nodes:remove', node);
+      $workspaces.refresh();
     } else {
       node = getNode(id);
       if (!node) {
@@ -186,9 +198,9 @@ export class NodeManager extends Context {
         }
       }
       if (updatedConfigNode) {
-        RED.workspaces.refresh();
+        $workspaces.refresh();
       }
-      RED.events.emit('nodes:remove', node);
+      $events.emit('nodes:remove', node);
     }
     if (node && node._def.onremove) {
       node._def.onremove.call(n);
