@@ -1,13 +1,15 @@
 import {
+  Context,
+  delegator
+} from './_base'
+
+import {
   I18n
 } from './'
 
 const { log } = console
 
-import {
-  Context
-} from '../context'
-import { I18nCatalogApi } from '../api/i18n-catalog-api';
+import { I18nCatalogApi } from '../api';
 
 export interface ICatalog {
   loadLanguages: (namespace: string) => void
@@ -17,6 +19,11 @@ export interface ICatalog {
 /**
  * Catalog loader for i18n translation resource bundles
  */
+@delegator({
+  map: {
+    i18nCatalogApi: 'II18nCatalogApi'
+  }
+})
 export class Catalog extends Context implements ICatalog {
   protected i18nCatalogApi
 
@@ -24,10 +31,10 @@ export class Catalog extends Context implements ICatalog {
     super()
   }
 
-  prepareLoad() {
-    this.i18nCatalogApi = new I18nCatalogApi({
-      $context: this
-    })
+  /**
+   * Perform any API related preparation
+   */
+  protected prepareLoad() {
   }
 
   /**

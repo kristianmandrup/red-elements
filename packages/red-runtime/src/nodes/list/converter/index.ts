@@ -1,6 +1,7 @@
 import {
-  Context
-} from '../../../context'
+  Context,
+  delegateTarget
+} from '../_base'
 
 import {
   INodes,
@@ -20,6 +21,7 @@ export interface IConverter {
   convertSubflow(n: INode): ISubflow
 }
 
+@delegateTarget()
 export class Converter extends Context {
   constructor(public nodes: INodes) {
     super()

@@ -1,16 +1,29 @@
 import {
-  Context
-} from '../context'
+  Context,
+  delegator,
+  Settings,
+  ISettings
+} from './_base'
 
 import {
-  Settings, ISettings
-} from './'
+  ISettingsApi,
+  IBaseApi
+} from '../api';
 
 export interface ISettingsLoader {
   load(): Promise<any>
 }
 
+@delegator({
+  map: {
+    settingsApi: 'ISettingsApi'
+  }
+})
 export class SettingsLoader extends Context implements ISettingsLoader {
+  settingsApi: ISettingsApi
+
+  protected AccessTokenExp = /[?&]access_token=(.*?)(?:$|&)/
+
   constructor(public settings: ISettings) {
     super()
   }
@@ -21,7 +34,7 @@ export class SettingsLoader extends Context implements ISettingsLoader {
   async load(): Promise<any> {
     const {
       settingsApi
-    } = this.settings
+    } = this
 
     return await settingsApi.read.all()
   }
@@ -76,3 +89,4 @@ export class SettingsLoader extends Context implements ISettingsLoader {
       });
     }
   }
+}

@@ -4,8 +4,11 @@ import {
 } from '../'
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  lazyInject,
+  $TYPES,
+  delegateTarget
+} from '../_base'
 
 // TODO: import from red-interfaces, central interface hub
 import {
@@ -13,15 +16,6 @@ import {
   IWorkspaces,
   IEvents
 } from '../../../interfaces'
-
-import {
-  lazyInject,
-} from '../../../_container';
-
-// TODO: move $TYPES to red-base
-import {
-  $TYPES
-} from '@tecla5/red-base'
 
 const { log } = console
 
@@ -32,6 +26,7 @@ export interface INodeManager {
   updateConfigNodeUsers(n: INode)
 }
 
+@delegateTarget()
 export class NodeManager extends Context {
   @lazyInject($TYPES.all.workspaces) $workspaces: IWorkspaces
   @lazyInject($TYPES.all.nodes) $nodes: INodes

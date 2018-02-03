@@ -33,6 +33,7 @@ export {
 
 export {
   SettingsApi,
+  ISettingsApi
 } from './settings'
 
 export {

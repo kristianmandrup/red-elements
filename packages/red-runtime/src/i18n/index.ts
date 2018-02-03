@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import {
-  Context
-} from '../context'
 
 import {
+  Context,
   delegator
-} from '../_container'
+} from './_base'
 
 import * as I18next from 'i18next'
 import { InitOptions } from 'i18next';
@@ -154,6 +152,10 @@ export class I18n extends Context implements II18n {
    * Initialize i18n (async)
    */
   async init() {
+    const {
+      i18n
+    } = this
+
     return new Promise((resolve, reject) => {
       i18n.init(this.config, (err, t) => {
         err ? reject(err) : resolve()

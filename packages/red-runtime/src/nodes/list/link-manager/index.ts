@@ -3,8 +3,9 @@ import {
 } from '../'
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  delegateTarget
+} from '../_base'
 
 import {
   ILink
@@ -17,6 +18,7 @@ export interface ILinkManager {
   addLink(link: ILink)
 }
 
+@delegateTarget()
 export class LinkManager extends Context {
   constructor(public nodes: Nodes) {
     super()

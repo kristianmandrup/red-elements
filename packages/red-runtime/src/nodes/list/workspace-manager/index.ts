@@ -4,17 +4,19 @@ import {
 } from '../'
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  delegateTarget,
+  $TYPES,
+  lazyInject
+} from '../_base'
 
 import {
   IWorkspace
 } from '../../../interfaces'
-import { lazyInject } from '../../../../../red-base/src/context/index';
-import { TYPES } from '../../../_container/index';
 
 export interface Subflow extends Node {
 }
+
 
 export interface IWorkspaceManager {
   addWorkspace(ws: IWorkspace): INodes
@@ -24,10 +26,11 @@ export interface IWorkspaceManager {
   setWorkspaceOrder(order: any[]): INodes
 }
 
-const { nodes } = TYPES.runtime
+const TYPES = $TYPES.all
 
+@delegateTarget()
 export class WorkspaceManager extends Context implements IWorkspaceManager {
-  @lazyInject(nodes) $nodes: INodes
+  @lazyInject(TYPES.nodes) $nodes: INodes
 
   constructor(public nodes: INodes) {
     super()
@@ -75,13 +78,14 @@ export class WorkspaceManager extends Context implements IWorkspaceManager {
    */
   removeWorkspace(id: string): any {
     const {
-      RED,
+      $nodes
+    } = this
+
+    const {
       nodes,
       configNodes,
       workspacesOrder,
     } = this.nodes
-    const $nodes = this.nodes
-
     const {
       removeNode
     } = this.rebind([

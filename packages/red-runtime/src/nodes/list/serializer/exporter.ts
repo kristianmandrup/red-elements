@@ -9,6 +9,7 @@ import {
 import {
   Context
 } from '../../../context'
+import { ISerializer } from './index';
 
 export interface IExporter {
   createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object)
@@ -16,8 +17,11 @@ export interface IExporter {
 }
 
 export class Exporter extends Context {
-  constructor(public nodes: INodes) {
+  nodes: INodes
+
+  constructor(public serializer: ISerializer) {
     super()
+    this.nodes = serializer.nodes
   }
 
   /**

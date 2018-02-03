@@ -1,10 +1,7 @@
 import {
-  Context
-} from '../context'
-
-import {
-  INode,
-} from '../interfaces'
+  Context,
+  INode
+} from './_base'
 
 /**
  * A single Node definition

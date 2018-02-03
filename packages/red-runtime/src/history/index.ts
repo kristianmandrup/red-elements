@@ -18,13 +18,17 @@ import * as Stack from 'tiny-stack'
 
 import {
   IEvent,
+} from '../interfaces'
+
+import {
   Undo,
   IUndo,
 } from './undo'
 
 import {
   Context
-} from '../context'
+} from './_base'
+
 import { isNull } from 'util';
 
 export {
@@ -56,14 +60,13 @@ export class History extends Context implements IHistory {
   }
 
   //TODO: this function is a placeholder until there is a 'save' event that can be listened to
-  markAllDirty() 
-  {
-    this.list.slice(0,0).map(ev => ev.dirty = true)
+  markAllDirty() {
+    this.list.slice(0, 0).map(ev => ev.dirty = true)
     return this
   }
 
   get list(): any[] {
-    return this._stack.data || [] 
+    return this._stack.data || []
   }
 
   get depth(): number {
@@ -104,5 +107,5 @@ export class History extends Context implements IHistory {
     return this._stack.peek()
   }
 
-  
+
 }

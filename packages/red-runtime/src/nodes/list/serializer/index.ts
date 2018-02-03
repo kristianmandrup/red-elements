@@ -1,6 +1,8 @@
 import {
   Context,
-} from '../../../context'
+  delegateTarget,
+  delegator
+} from '../_base'
 
 import {
   INodes
@@ -20,16 +22,26 @@ import {
   INode
 } from '../../../interfaces'
 
+
 export interface ISerializer {
+  nodes: INodes
   importNodes(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean)
   createExportableNodeSet(set: INode[], exportedSubflows: object, exportedConfigNodes: object)
   createCompleteNodeSet(exportCredentials: boolean)
 }
 
 
+@delegateTarget()
+@delegator({
+  map: {
+    importer: 'IImporter',
+    exporter: 'IExporter'
+  }
+})
 export class Serializer extends Context {
-  public importer: IImporter
-  public exporter: IExporter
+  // delegates/helpers
+  importer: IImporter
+  exporter: IExporter
 
   /**
    *
@@ -39,8 +51,6 @@ export class Serializer extends Context {
    */
   constructor(public nodes: INodes) {
     super()
-    this.importer = new Importer(this.nodes)
-    this.exporter = new Exporter(this.nodes)
   }
 
   /**

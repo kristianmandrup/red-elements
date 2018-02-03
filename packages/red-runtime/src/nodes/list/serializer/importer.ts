@@ -10,6 +10,7 @@ import {
   INode,
   INodeDef
 } from '../../../interfaces'
+import { ISerializer } from '.';
 
 export interface IImporter {
   importNodes(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean)
@@ -22,8 +23,11 @@ export interface IImporter {
  * Perhaps introduce additional helper classes for complex parts of Import flow
  */
 export class Importer extends Context {
-  constructor(public nodes: INodes) {
+  nodes: INodes
+
+  constructor(public serializer: ISerializer) {
     super()
+    this.nodes = serializer.nodes
   }
 
   _parse(newNodesObj: string): INode[] {

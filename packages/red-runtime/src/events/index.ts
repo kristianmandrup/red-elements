@@ -23,8 +23,6 @@ import {
 } from '../interfaces'
 
 
-const { log } = console
-
 export class Events extends Context implements IEvents {
   public handlers: any = {}
   public lastEmitted: any

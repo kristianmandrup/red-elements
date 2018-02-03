@@ -9,6 +9,7 @@ export const runtime = {
   flow: 'IFlow',
   flows: 'IFlows',
   settings: 'ISettings',
+  localstorage: 'ILocalStorage'
 
   // .. TODO: more const to type name bindings, one for each class to be bound
 }

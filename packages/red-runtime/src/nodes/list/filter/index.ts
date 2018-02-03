@@ -3,8 +3,9 @@ import {
 } from '../'
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  delegateTarget
+} from '../_base'
 
 import {
   INode,
@@ -16,6 +17,7 @@ export interface IFilter {
   filterLinks(filter: any): ILink[]
 }
 
+@delegateTarget()
 export class Filter extends Context {
   constructor(public nodes: INodes) {
     super()

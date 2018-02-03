@@ -3,11 +3,14 @@ import {
 } from '../'
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  delegateTarget,
+  delegator
+} from '../_base'
 
 import {
-  SubflowMatcher
+  SubflowMatcher,
+  ISubflowMatcher
 } from './subflow-matcher'
 
 import {
@@ -16,7 +19,6 @@ import {
   INode
 } from '../../../interfaces'
 
-const { log } = console
 
 export interface IFlowManager {
   nodes: INodes
@@ -31,7 +33,15 @@ export interface IFlowManager {
 }
 
 
+@delegateTarget()
+@delegator({
+  map: {
+    subflowMatcher: 'ISubflowMatcher'
+  }
+})
 export class FlowManager extends Context implements IFlowManager {
+  subflowMatcher: ISubflowMatcher
+
   constructor(public nodes: INodes) {
     super()
   }
@@ -147,7 +157,7 @@ export class FlowManager extends Context implements IFlowManager {
     // instantiate a helper class SubflowMatcher with sfid and nodeid and constructor params
     // move functions in here
     // test helper class SubflowMatcher on its own
-    const subflowMatcher = new SubflowMatcher(this).configure(sfid, nodeid)
+    const subflowMatcher = this.subflowMatcher.configure(sfid, nodeid)
     return subflowMatcher.contains()
   }
 

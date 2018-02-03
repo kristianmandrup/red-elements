@@ -17,4 +17,6 @@ export {
   NodesApi,
   SettingsApi,
   SessionsApi,
+
+  ISettingsApi
 } from './src'

@@ -15,7 +15,17 @@ export {
   INodes
 } from '../nodes'
 
-export {
-  INotifications,
-  IUser
-} from '@tecla5/red-widgets'
+
+// TODO: move to red-interfaces to act as central hub
+// avoid circular module dependencies!
+export interface INotifications {
+  notify(msg: any)
+}
+
+export interface IUser {
+  login(options?: any): Promise<any>
+}
+
+export interface IWorkspaces {
+
+}

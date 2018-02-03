@@ -3,13 +3,10 @@ import {
 } from './'
 
 import {
-  Context
-} from '../context'
-
-import {
+  Context,
   lazyInject,
   $TYPES
-} from '../_container'
+} from './_base'
 
 import {
   INotifications,
@@ -36,10 +33,10 @@ export interface IConnector {
  * - receive message on socket channel
  */
 export class Connector extends Context implements IConnector {
-  @lazyInject(TYPES.notify) notify: INotifications
+  @lazyInject(TYPES.notifications) notifications: INotifications
   @lazyInject(TYPES.user) user: IUser
 
-  
+
   protected auth_tokens: AuthTokens
   protected pending_auth: boolean
   protected active: boolean
@@ -198,7 +195,8 @@ export class Connector extends Context implements IConnector {
       connectCountdownTimer,
     } = this.communications
 
-    const { notify } = this
+    const { notifications } = this
+    const notify = notifications.notify.bind(notifications)
 
     const {
       connectWS
@@ -269,7 +267,7 @@ export class Connector extends Context implements IConnector {
         'connectWS'
       ])
 
-    ws.onmessage = function (event) {
+    ws.onmessage = async function (event) {
       log('websocket: message', {
         event
       })
@@ -282,11 +280,10 @@ export class Connector extends Context implements IConnector {
         } else if (msg.auth === "fail") {
           // anything else is an error...
           active = false;
-          user.login({
+          await user.login({
             updateMenu: true
-          }, () => {
-            connectWS();
           })
+          connectWS()
         }
       } else if (msg.topic) {
         for (let t in subscriptions) {

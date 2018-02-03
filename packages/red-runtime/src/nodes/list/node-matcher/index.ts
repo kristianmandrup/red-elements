@@ -3,8 +3,9 @@ import {
 } from '../'
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  delegateTarget
+} from '../_base'
 
 import {
   ISubflow,
@@ -18,6 +19,8 @@ export interface INodeMatcher {
   compareNodes(nodeA: INode, nodeB: INode, idMustMatch: boolean): boolean
 }
 
+
+@delegateTarget()
 export class NodeMatcher extends Context {
   constructor(public nodes: INodes) {
     super()

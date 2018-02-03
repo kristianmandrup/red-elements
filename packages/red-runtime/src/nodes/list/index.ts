@@ -1,10 +1,8 @@
 import {
-  Context
-} from '../../context'
-
-import {
-  todo
-} from '../../_decorators'
+  Context,
+  todo,
+  delegator
+} from '../_base'
 
 import {
   INodesRegistry,
@@ -320,6 +318,19 @@ import {
  * A set of Nodes that form a subflow or similar grouping
  */
 @injectable()
+@delegator({
+  map: {
+    serializer: 'ISerializer',
+    converter: 'IConverter',
+    iterator: 'IIterator',
+    filter: 'IFilter',
+    nodeMatcher: 'INodeMatcher',
+    nodeManager: 'INodeManager',
+    linkManager: 'ILinkManager',
+    flowManager: 'IFlowManager',
+    workspaceManager: 'IWorkspaceManager'
+  }
+})
 export class Nodes extends Context implements INodes {
   public registry = new NodesRegistry()
   public configNodes = {
@@ -338,32 +349,22 @@ export class Nodes extends Context implements INodes {
   public loadedFlowVersion: string
   public defaultWorkspace = {}
 
-  public serializer: ISerializer
-  public converter: IConverter
-  public iterator: IIterator
-  public filter: IFilter
-  public nodeMatcher: INodeMatcher
-  public nodeManager: INodeManager
-  public linkManager: ILinkManager
-  public flowManager: IFlowManager
-  public workspaceManager: IWorkspaceManager
+  // injected delegates (helpers)
+  serializer: ISerializer
+  converter: IConverter
+  iterator: IIterator
+  filter: IFilter
+  nodeMatcher: INodeMatcher
+  nodeManager: INodeManager
+  linkManager: ILinkManager
+  flowManager: IFlowManager
+  workspaceManager: IWorkspaceManager
 
   constructor() {
     super()
     const {
       RED
     } = this
-
-    // TODO: use injectable instead!
-    this.serializer = new Serializer(this)
-    this.nodeMatcher = new NodeMatcher(this)
-    this.nodeManager = new NodeManager(this)
-    this.linkManager = new LinkManager(this)
-    this.flowManager = new FlowManager(this)
-    this.workspaceManager = new WorkspaceManager(this)
-    this.converter = new Converter(this)
-    this.iterator = new Iterator(this)
-    this.filter = new Filter(this)
 
     this._validateObj(RED.events, 'RED.events', 'Nodes constructor')
     this._configureNodeTypeAddedHandler()

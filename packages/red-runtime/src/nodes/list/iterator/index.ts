@@ -3,8 +3,9 @@ import {
 } from '../'
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  delegateTarget
+} from '../_base'
 
 export interface IIterator {
   eachNode(cb: Function): void
@@ -14,6 +15,7 @@ export interface IIterator {
   eachWorkspace(cb: Function): void
 }
 
+@delegateTarget()
 export class Iterator extends Context {
   constructor(public nodes: INodes) {
     super()

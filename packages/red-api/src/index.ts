@@ -20,4 +20,6 @@ export {
   SettingsApi,
   SessionsApi,
   ProjectsApi,
+
+  ISettingsApi
 } from './api'

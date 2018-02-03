@@ -1,6 +1,7 @@
 import {
-  Context
-} from '../../../context'
+  Context,
+  delegateTarget
+} from '../_base'
 
 import {
   IFlowManager
@@ -21,6 +22,7 @@ export interface ISubflowMatcher {
   _matchNodeIsSubflow(match: string)
 }
 
+@delegateTarget()
 export class SubflowMatcher extends Context implements ISubflowMatcher {
   protected sfid: string
   protected nodeid: string

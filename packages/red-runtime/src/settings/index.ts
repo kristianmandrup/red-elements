@@ -14,8 +14,11 @@
  * limitations under the License.
  **/
 import {
-  Context
-} from '../context'
+  Context,
+  delegator,
+  lazyInject,
+  $TYPES
+} from './_base'
 
 import {
   ILocalStorage,
@@ -23,7 +26,6 @@ import {
 } from './localstorage'
 
 export interface ISettings {
-  settingsApi: SettingsApi
   userDir: string
   hasLocalStorage(): boolean
   get(key: string): string
@@ -55,25 +57,27 @@ export interface ISettings {
 }
 
 import {
-  SettingsApi,
-  IBaseApi
-} from '../api'
-import { ISettingsLoader, SettingsLoader } from './loader';
+  ISettingsLoader,
+  SettingsLoader
+} from './loader';
 
-const { log } = console
+const TYPES = $TYPES.all
+
+@delegator({
+  map: {
+    loader: 'ISettingsLoader'
+  }
+})
 export class Settings extends Context implements ISettings {
   userDir: string
   loadedSettings: any = {}
 
-  protected AccessTokenExp = /[?&]access_token=(.*?)(?:$|&)/
   protected tokenMatchExpr = /[?&]access_token=(.*?)(?:$|&)/
 
-  protected localStorage: ILocalStorage = new LocalStorage() // service?
-  settingsApi: SettingsApi = new SettingsApi({
-    $context: this
-  })
 
-  protected loader: ISettingsLoader = new SettingsLoader(this) // service
+  @lazyInject(TYPES.localstorage) localStorage: ILocalStorage
+
+  protected loader: ISettingsLoader
 
   constructor() {
     super()

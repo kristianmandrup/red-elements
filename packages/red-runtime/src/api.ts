@@ -11,5 +11,7 @@ export {
   LibrariesApi,
   NodesApi,
   SettingsApi,
-  SessionsApi
+  SessionsApi,
+
+  ISettingsApi
 } from '@tecla5/red-api'
