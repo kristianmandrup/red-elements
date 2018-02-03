@@ -4,6 +4,7 @@ export {
 } from './search'
 
 export {
-  TypeSearch
+  TypeSearch,
+  ITypeSearch
 } from './type-search'
 

@@ -1,9 +1,7 @@
-
 import {
-  Library
-} from './'
-
-import {
+  Library,
+  lazyInject,
+  $TYPES,
   log,
   Context,
   container,
@@ -11,11 +9,6 @@ import {
   delegator,
   LibrariesApi
 } from './_base'
-
-import {
-  lazyInject,
-  $TYPES
-} from '../../../_container'
 
 import {
   ISettings,

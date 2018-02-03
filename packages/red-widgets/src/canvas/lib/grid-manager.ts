@@ -1,6 +1,5 @@
-import { Canvas } from '.'
-
 import {
+  Canvas,
   Context,
   container,
   delegateTarget

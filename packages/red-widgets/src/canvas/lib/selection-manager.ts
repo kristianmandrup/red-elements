@@ -1,15 +1,11 @@
-import { Canvas } from './'
-
 import {
+  Canvas,
   Context,
   container,
-  delegateTarget
-} from './_base'
-
-import {
+  delegateTarget,
   lazyInject,
-  $TYPES
-} from '../../_container'
+  $TYPES,
+} from './_base'
 
 import { IHistory } from '@tecla5/red-runtime'
 
@@ -19,7 +15,8 @@ import {
   IEvents,
   IEditor,
   ISubflow,
-  INotifications
+  INotifications,
+  I18n
 } from '../../_interfaces'
 
 const TYPES = $TYPES.all
@@ -83,6 +80,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
   @lazyInject(TYPES.subflow) subflow: ISubflow
   @lazyInject(TYPES.history) history: IHistory
   @lazyInject(TYPES.notifications) notifications: INotifications
+  @lazyInject(TYPES.i18n) i18n: II18n
 
   constructor(protected canvas: Canvas) {
     super()
@@ -412,7 +410,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
       var removedSubflowInputs = [];
       var subflowInstances = [];
 
-      var startDirty = nodes.dirty();
+      var startDirty = nodes.dirty;
       var startChanged = false;
       if (moving_set.length > 0) {
         for (var i = 0; i < moving_set.length; i++) {
@@ -490,7 +488,8 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
       //RED,
       canvas,
       notifications,
-      nodes
+      nodes,
+      i18n
     } = this
     const {
       activeSubflow,
@@ -523,7 +522,7 @@ export class CanvasSelectionManager extends Context implements ICanvasSelectionM
         }
       }
       clipboard = JSON.stringify(nns);
-      notifications.notify(RED._('clipboard.nodeCopied', {
+      notifications.notify(i18n.t('clipboard.nodeCopied', {
         count: nns.length
       }), null, "", 0);
     }

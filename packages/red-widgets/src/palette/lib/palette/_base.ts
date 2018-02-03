@@ -7,5 +7,7 @@ export {
   delegateTo,
   EditableList,
   Searchbox,
-  LibrariesApi
+  LibrariesApi,
+  lazyInject,
+  $TYPES
 } from '../_base'

@@ -1,16 +1,12 @@
-import { Canvas } from '.'
-
 import {
+  Canvas,
   d3,
   Context,
   container,
-  delegateTarget
-} from './_base'
-
-import {
+  delegateTarget,
   lazyInject,
   $TYPES
-} from '../../_container'
+} from './_base'
 
 import {
   INodes,
@@ -38,7 +34,7 @@ export class CanvasConfiguration extends Context implements ICanvasConfiguration
   @lazyInject(TYPES.nodes) nodes: INodes
   @lazyInject(TYPES.events) events: IEvents
   @lazyInject(TYPES.history) history: IHistory
-  @lazyInject(TYPES.editor) editor: IEditor
+  @lazyInject(TYPES.nodeEditor) editor: IEditor
   @lazyInject(TYPES.actions) actions: IActions
   @lazyInject(TYPES.userSettings) userSettings: IUserSettings
 

@@ -1,5 +1,6 @@
 export const widgets = {
   canvas: 'ICanvas',
+  view: 'ICanvas', // alias
   clipboard: 'IClipboard',
   common: {
     checkboxSet: 'ICheckboxSet',
@@ -18,7 +19,9 @@ export const widgets = {
   keyboard: 'IKeyboard',
   library: 'ILibrary',
   main: 'IMain',
+  diff: 'INodeDiff', // alias
   nodeDiff: 'INodeDiff',
+  editor: 'INodeEditor', // alias
   nodeEditor: 'INodeEditor',
   notifications: 'INotifications',
   palette: 'IPalette',
@@ -29,6 +32,14 @@ export const widgets = {
     info: 'ISidebarTabsInfo',
     tabs: 'ISidebarTabs',
   },
+  subflow: 'ISublflow',
+  state: 'IState',
+  text: 'ITextFormat',
+  touch: {
+    main: 'ITouch', // ??
+    radialMenu: 'IRadialMenu'
+  },
+  bidi: 'IBidi',
   tray: 'ITray',
   user: 'IUser',
   userSettings: 'IUserSettings',

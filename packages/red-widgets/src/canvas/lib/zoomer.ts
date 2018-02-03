@@ -1,9 +1,6 @@
 import {
-  Context
-} from '../../context'
-import { Canvas } from '../../'
-
-import {
+  Canvas,
+  Context,
   container,
   delegateTarget
 } from './_base'

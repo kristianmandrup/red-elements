@@ -1,17 +1,11 @@
 import {
-  Library
-} from '.'
-
-import {
+  Library,
   Context,
   container,
-  delegateTarget
-} from './_base'
-
-import {
+  delegateTarget,
   lazyInject,
   $TYPES
-} from '../../../_container'
+} from './_base'
 
 import {
   ISettings

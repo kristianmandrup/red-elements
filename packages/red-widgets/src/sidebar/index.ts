@@ -4,6 +4,7 @@ import {
   SidebarTabInfo,
   TabInfoTips,
 
+  ISidebarTabInfo,
   ISidebar
 } from './lib'
 
@@ -22,5 +23,6 @@ export {
   SidebarTabInfo,
   TabInfoTips,
 
+  ISidebarTabInfo,
   ISidebar
 }

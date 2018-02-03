@@ -1,8 +1,7 @@
 import {
-  Context
-} from '../../../context'
-
-import { DiffPanel } from './'
+  Context,
+  DiffPanel
+} from './_base'
 
 export interface INodePropertiesTable {
   /**

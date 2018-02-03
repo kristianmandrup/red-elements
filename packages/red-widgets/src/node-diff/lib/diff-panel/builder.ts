@@ -1,8 +1,8 @@
 import {
-  Context
-} from '../../../context'
+  Context,
+  DiffPanel
+} from './_base'
 
-import { DiffPanel } from './'
 
 export interface IPanelBuilder {
   /**
@@ -15,7 +15,7 @@ export interface IPanelBuilder {
 /**
  *
  */
-export class PanelBuilder extends Context implements IPanelBuilder { 
+export class PanelBuilder extends Context implements IPanelBuilder {
   constructor(public diffPanel: DiffPanel) {
     super()
   }

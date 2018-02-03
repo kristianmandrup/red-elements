@@ -2,9 +2,8 @@ interface IDiffWidget extends JQuery<HTMLElement> {
   i18n: Function
 }
 
-import { Diff } from './index'
-
 import {
+  Diff,
   Context,
   container,
   delegateTarget

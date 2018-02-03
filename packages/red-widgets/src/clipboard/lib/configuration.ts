@@ -1,15 +1,11 @@
 import {
   Context,
   container,
-  delegateTarget
-} from './_base'
-
-import { Clipboard } from '../'
-
-import {
+  delegateTarget,
   lazyInject,
-  $TYPES
-} from '../../_container'
+  $TYPES,
+  Clipboard,
+} from './_base'
 
 import {
   INodes,

@@ -1,15 +1,12 @@
-import { Canvas } from '.'
-
 import {
+  Canvas,
   Context,
   container,
-  delegateTarget
+  delegateTarget,
+  lazyInject,
+  $TYPES,
 } from './_base'
 
-import {
-  lazyInject,
-  $TYPES
-} from '../../_container'
 
 import { IHistory } from '@tecla5/red-runtime'
 

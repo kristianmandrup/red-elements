@@ -24,23 +24,21 @@ import {
 
 import {
   SidebarTab
-}
-  from './tab'
+} from './tab'
 import {
-  SidebarTabInfo
-}
-  from './tab-info'
+  SidebarTabInfo,
+  ISidebarTabInfo
+} from './tab-info'
 
 export {
   SidebarTab
-}
-  from './tab'
+} from './tab'
 
 export {
   SidebarTabInfo,
-  TabInfoTips
-}
-  from './tab-info'
+  TabInfoTips,
+  ISidebarTabInfo
+} from './tab-info'
 
 // import 'jquery-ui-dist/jquery-ui'
 

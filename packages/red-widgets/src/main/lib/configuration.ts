@@ -1,5 +1,7 @@
-import { Main } from './index';
 import {
+  Main,
+  lazyInject,
+  $TYPES,
   Context,
   $,
   EditableList,
@@ -8,11 +10,6 @@ import {
   delegateTarget,
   log
 } from './_base'
-
-import {
-  lazyInject,
-  $TYPES
-} from '../../_container'
 
 import {
   INodes,

@@ -1,7 +1,5 @@
-import { Diff } from './index'
-
-
 import {
+  Diff,
   Context,
   container,
   delegateTarget

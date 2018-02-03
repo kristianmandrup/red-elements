@@ -4,10 +4,12 @@ export {
   $
 } from '../../context'
 export const { log } = console
-
+export { NodeEditor } from '.'
 export {
   container,
   delegateTarget,
   delegator,
-  delegateTo
+  delegateTo,
+  lazyInject,
+  $TYPES
 } from './container'

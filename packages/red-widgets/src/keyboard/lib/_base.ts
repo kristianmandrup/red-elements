@@ -5,5 +5,7 @@ export {
   Context,
 } from '../../context'
 export {
-  delegateTarget
+  delegateTarget,
+  lazyInject,
+  $TYPES
 } from './container'

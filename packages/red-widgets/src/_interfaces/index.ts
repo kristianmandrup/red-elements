@@ -13,14 +13,14 @@ export {
   INodes,
   ISettings,
   IRegistry,
-  IHistory
+  IHistory,
+  II18n
   // ...
 } from '@tecla5/red-runtime'
 
 export {
   IBidi
 } from '../text'
-
 
 export {
   IActions
@@ -118,11 +118,6 @@ export interface IView {
   focus()
 }
 
-export interface I18n {
-  t(key: string): string,
-  init: Function
-}
-
 export interface IState {
   JOINING,
   MOVING_ACTIVE,
@@ -150,7 +145,9 @@ export interface IEditor {
   editSubflow(activeSubflow: any)
 }
 
-export { ITypeSearch } from '../search/lib/type-search';
+export {
+  ITypeSearch
+} from '../search/lib/type-search';
 
 export interface I18nWidget extends JQElem {
   i18n: Function

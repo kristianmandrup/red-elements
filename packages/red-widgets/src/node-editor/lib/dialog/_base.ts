@@ -5,5 +5,6 @@ export {
   delegateTarget,
   delegator,
   delegateTo,
+  NodeEditor
   // LibrariesApi
 } from '../_base'

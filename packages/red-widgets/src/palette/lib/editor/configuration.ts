@@ -7,17 +7,14 @@ import {
   Searchbox,
   container,
   delegateTarget,
-  delegator
+  delegator,
+  lazyInject,
+  $TYPES
 } from './_base'
 
 export interface IPaletteEditorConfiguration {
   configure()
 }
-
-import {
-  lazyInject,
-  $TYPES
-} from '../../../_container'
 
 import {
   IRegistry,

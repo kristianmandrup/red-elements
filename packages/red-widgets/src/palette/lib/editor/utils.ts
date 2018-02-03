@@ -4,32 +4,41 @@ import {
   container,
   delegateTarget,
   delegateTo,
-  delegator
+  delegator,
+  lazyInject,
+  $TYPES
 } from './_base'
+
+import {
+  I18n
+} from '../../../_interfaces'
 
 export interface IPaletteUtils {
   formatUpdatedAt(dateString)
 }
 
+const TYPES = $TYPES.all
+
 @delegator(container)
 export class PaletteUtils extends Context implements IPaletteUtils {
+  @lazyInject(TYPES.i18n) i18n: I18n
+
   formatUpdatedAt(dateString) {
     const {
-      RED
+      i18n
     } = this
-
     var now = new Date();
     var d = new Date(dateString);
     var delta = (Date.now() - new Date(dateString).getTime()) / 1000;
     if (delta < 60) {
-      return RED._('palette.editor.times.seconds');
+      return i18n.t('palette.editor.times.seconds');
     }
     delta = Math.floor(delta / 60);
     if (delta < 10) {
-      return RED._('palette.editor.times.minutes');
+      return i18n.t('palette.editor.times.minutes');
     }
     if (delta < 60) {
-      return RED._('palette.editor.times.minutesV', {
+      return i18n.t('palette.editor.times.minutesV', {
         count: delta
       });
     }
@@ -37,7 +46,7 @@ export class PaletteUtils extends Context implements IPaletteUtils {
     delta = Math.floor(delta / 60);
 
     if (delta < 24) {
-      return RED._('palette.editor.times.hoursV', {
+      return i18n.t('palette.editor.times.hoursV', {
         count: delta
       });
     }
@@ -45,7 +54,7 @@ export class PaletteUtils extends Context implements IPaletteUtils {
     delta = Math.floor(delta / 24);
 
     if (delta < 7) {
-      return RED._('palette.editor.times.daysV', {
+      return i18n.t('palette.editor.times.daysV', {
         count: delta
       })
     }
@@ -53,7 +62,7 @@ export class PaletteUtils extends Context implements IPaletteUtils {
     var days = delta % 7;
 
     if (weeks < 4) {
-      return RED._('palette.editor.times.weeksV', {
+      return i18n.t('palette.editor.times.weeksV', {
         count: weeks
       })
     }
@@ -62,7 +71,7 @@ export class PaletteUtils extends Context implements IPaletteUtils {
     weeks = weeks % 4;
 
     if (months < 12) {
-      return RED._('palette.editor.times.monthsV', {
+      return i18n.t('palette.editor.times.monthsV', {
         count: months
       })
     }
@@ -70,11 +79,11 @@ export class PaletteUtils extends Context implements IPaletteUtils {
     months = months % 12;
 
     if (months === 0) {
-      return RED._('palette.editor.times.yearsV', {
+      return i18n.t('palette.editor.times.yearsV', {
         count: years
       })
     } else {
-      return RED._('palette.editor.times.year' + (years > 1 ? 's' : '') + 'MonthsV', {
+      return i18n.t('palette.editor.times.year' + (years > 1 ? 's' : '') + 'MonthsV', {
         y: years,
         count: months
       })

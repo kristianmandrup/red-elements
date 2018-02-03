@@ -9,3 +9,7 @@ export {
 export {
   ace
 } from './ace'
+
+export {
+  jsonata
+} from './jsonata/formatter'

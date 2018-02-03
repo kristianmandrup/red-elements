@@ -1,6 +1,5 @@
 export { Context, $ } from '../../context';
 export const { log } = console
-
 export {
   Deploy,
   IDeploy
@@ -14,7 +13,9 @@ export {
   container,
   delegateTarget,
   delegator,
-  delegateTo
+  delegateTo,
+  lazyInject,
+  $TYPES
 } from './container'
 
 export {

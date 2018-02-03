@@ -1,10 +1,9 @@
 import {
   Context,
   container,
-  delegateTarget
+  delegateTarget,
+  Clipboard,
 } from './_base'
-
-import { Clipboard } from '../'
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function

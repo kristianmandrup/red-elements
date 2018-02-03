@@ -1,7 +1,4 @@
 export {
-  todo
-} from '@tecla5/red-base'
-
-export {
+  todo,
   autobind
-} from 'javascript-decorators'
+} from '@tecla5/red-base'

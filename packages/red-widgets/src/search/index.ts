@@ -2,7 +2,8 @@ import {
   Search,
   ISearch,
 
-  TypeSearch
+  TypeSearch,
+  ITypeSearch
 }
   from './lib'
 
@@ -17,5 +18,6 @@ export {
   Search,
   ISearch,
 
-  TypeSearch
+  TypeSearch,
+  ITypeSearch
 }

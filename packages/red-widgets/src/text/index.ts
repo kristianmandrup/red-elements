@@ -1,5 +1,7 @@
 import {
   TextFormat,
+  ITextFormat,
+  IBidi,
   Bidi
 } from './lib'
 
@@ -12,5 +14,7 @@ export default text
 
 export {
   TextFormat,
-  Bidi
+  Bidi,
+  ITextFormat,
+  IBidi,
 }

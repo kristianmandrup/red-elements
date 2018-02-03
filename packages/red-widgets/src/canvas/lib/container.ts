@@ -13,6 +13,11 @@ export const container = createContainer({
   test: 'testing',
 })
 
+import {
+  lazyInject,
+  TYPES
+} from '../../_container'
+
 const {
   delegateTarget,
   delegator
@@ -21,5 +26,7 @@ const {
 export {
   delegateTo,
   delegateTarget,
-  delegator
+  delegator,
+  lazyInject,
+  TYPES as $TYPES
 }

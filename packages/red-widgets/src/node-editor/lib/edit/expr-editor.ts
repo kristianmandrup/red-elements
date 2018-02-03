@@ -1,7 +1,5 @@
-import { NodeEditor } from '../'
-import { } from '../../../../common'
-
 import {
+  NodeEditor,
   Context,
   $,
   container,

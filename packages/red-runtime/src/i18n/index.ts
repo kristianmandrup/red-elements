@@ -16,12 +16,15 @@
 import {
   Context
 } from '../context'
-import * as i18n from 'i18next'
+
+import {
+  delegator
+} from '../_container'
+
+import * as I18next from 'i18next'
 import { InitOptions } from 'i18next';
 
 const { log } = console
-
-const { promisify } = require('util')
 
 /**
  * Detect language used via browser language or user agent
@@ -41,6 +44,8 @@ import {
 } from './catalog'
 
 export interface II18n {
+
+  t(key: string, arg?: any)
   /**
    * Load node catalog for a particular namespace
    * For a given language, load a translation resource bundle a specific namespace
@@ -81,19 +86,22 @@ export interface II18n {
 }
 
 // See: https://www.i18next.com/getting-started.html
+@delegator({
+  map: {
+    catalog: 'ICatalog'
+  }
+})
 export class I18n extends Context implements II18n {
   public i18n: any
-  protected catalog: Catalog
+  protected catalog: ICatalog
 
   constructor() {
     super()
-    const { RED } = this
-    RED._ = (key, arg) => {
-      return this.i18n.t(key, arg);
-    }
-    this.RED = RED
-    this.i18n = i18n;
-    this.catalog = new Catalog(this)
+    this.i18n = I18next
+  }
+
+  t(key: string, arg?: any) {
+    return this.i18n.t(key, arg)
   }
 
   // delegate catalog

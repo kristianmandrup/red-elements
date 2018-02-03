@@ -1,4 +1,5 @@
 export {
+  Library,
   LibrariesApi,
   Context,
   $,
@@ -6,5 +7,7 @@ export {
   container,
   delegateTarget,
   delegator,
-  delegateTo
+  delegateTo,
+  lazyInject,
+  $TYPES
 } from '../_base'

@@ -4,13 +4,10 @@ import {
   d3,
   Context,
   container,
-  delegateTarget
-} from './_base'
-
-import {
+  delegateTarget,
   lazyInject,
   $TYPES
-} from '../../_container'
+} from './_base'
 
 import {
   INotifications

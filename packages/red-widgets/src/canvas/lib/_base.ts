@@ -1,11 +1,13 @@
 export { Context, $ } from '../../context';
 export const { log } = console
-
+export { Canvas } from '.'
 export {
   container,
   delegateTarget,
   delegator,
-  delegateTo
+  delegateTo,
+  lazyInject,
+  $TYPES
 } from './container'
 
 export {

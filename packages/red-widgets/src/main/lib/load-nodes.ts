@@ -1,13 +1,11 @@
 import {
+  Main,
   Context,
   container,
   delegateTarget,
   log,
   NodesApi
 } from './_base'
-
-import { Main } from './';
-
 
 interface IBody extends JQuery<HTMLElement> {
   i18n: Function

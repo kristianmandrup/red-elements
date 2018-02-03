@@ -1,5 +1,6 @@
 import {
-  RadialMenu
+  RadialMenu,
+  IRadialMenu
 } from './lib'
 
 export const touch = {
@@ -9,5 +10,6 @@ export const touch = {
 export default touch
 
 export {
-  RadialMenu
+  RadialMenu,
+  IRadialMenu
 }

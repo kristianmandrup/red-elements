@@ -1,6 +1,5 @@
-import { NodeEditor } from '../'
-
 import {
+  NodeEditor,
   Context,
   $,
   container,

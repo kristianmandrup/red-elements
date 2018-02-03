@@ -1,16 +1,10 @@
 import {
-  Context
-} from '../../../context'
-import { Canvas } from '../../';
-
-import {
-  d3
-} from '../d3'
-
-import {
+  Canvas,
+  Context,
   lazyInject,
-  $TYPES
-} from '../../../_container'
+  $TYPES,
+  d3
+} from '../_base'
 
 import {
   IState,
@@ -29,7 +23,7 @@ export class CanvasPortMouse extends Context {
   @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
   @lazyInject(TYPES.subflow) subflow: ISubflow
   @lazyInject(TYPES.history) history: IHistory
-  
+
 
 
   constructor(protected canvas: Canvas) {

@@ -1,12 +1,9 @@
 import {
-  Context
-} from '../../../context'
-import { Canvas } from '../../';
-
-import {
+  Context,
+  Canvas,
   lazyInject,
   $TYPES
-} from '../../../_container'
+} from '../_base'
 
 import {
   IRadialMenu,
@@ -96,7 +93,7 @@ export class CanvasTouchMenuManager extends Context {
     });
     options.push({
       name: 'undo',
-      disabled: (history.depth() === 0),
+      disabled: (history.depth === 0),
       onselect: () => {
         history.pop();
       }

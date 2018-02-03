@@ -1,25 +1,19 @@
-import { Canvas } from './'
-
 import {
+  Canvas,
   Context,
   container,
-  delegateTarget
-} from './_base'
-
-import {
+  delegateTarget,
   lazyInject,
-  $TYPES
-} from '../../_container'
-
-import { IHistory } from '@tecla5/red-runtime'
-
+  $TYPES,
+} from './_base'
 
 import {
   INodes,
   IWorkspaces,
   ISubflow,
   IKeyboard,
-  IState
+  IState,
+  IHistory
 } from '../../_interfaces'
 
 const TYPES = $TYPES.all

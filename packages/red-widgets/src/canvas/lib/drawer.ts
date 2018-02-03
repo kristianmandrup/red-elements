@@ -1,16 +1,12 @@
-import { Canvas } from '.'
-
 import {
+  Canvas,
   d3,
   Context,
   container,
-  delegateTarget
-} from './_base'
-
-import {
+  delegateTarget,
   lazyInject,
-  $TYPES
-} from '../../_container'
+  $TYPES,
+} from './_base'
 
 import {
   INodes,
@@ -38,12 +34,12 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
   @lazyInject(TYPES.nodes) nodes: INodes
   @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
   @lazyInject(TYPES.view) view: ICanvas
-  @lazyInject(TYPES.sidebar) sidebar: ISidebar
+  @lazyInject(TYPES.sidebar.main) sidebar: ISidebar
   @lazyInject(TYPES.state) state: IState
   @lazyInject(TYPES.text) text: IText
   @lazyInject(TYPES.utils) utils: IUtil
-  @lazyInject(TYPES.touch) touch: ITouch
-  @lazyInject(TYPES.text.bidi) bidi: IBidi
+  @lazyInject(TYPES.touch.main) touch: ITouch
+  @lazyInject(TYPES.bidi) bidi: IBidi
 
 
   constructor(protected canvas: Canvas) {

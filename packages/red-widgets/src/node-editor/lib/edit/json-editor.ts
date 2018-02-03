@@ -1,7 +1,7 @@
-import { NodeEditor } from '../'
-
 import {
-  Context, $,
+  NodeEditor,
+  Context,
+  $,
   container,
   delegateTarget
 } from './_base'

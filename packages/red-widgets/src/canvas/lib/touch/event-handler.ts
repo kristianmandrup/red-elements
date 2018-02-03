@@ -1,16 +1,10 @@
 import {
-  Context
-} from '../../../context'
-import { Canvas } from '../../';
-
-import {
-  d3
-} from '../d3'
-
-import {
+  Canvas,
+  Context,
   lazyInject,
-  $TYPES
-} from '../../../_container'
+  $TYPES,
+  d3
+} from '../_base'
 
 import {
   IRadialMenu

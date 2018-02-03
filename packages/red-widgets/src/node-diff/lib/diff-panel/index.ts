@@ -1,4 +1,3 @@
-import { Diff } from '../index'
 import { DiffPanelUtils } from './utils';
 import { NodeDiffRow } from './diff-row';
 import { NodePropertiesTable } from './properties-table';
@@ -6,6 +5,7 @@ import { NodeConflict } from './node-conflict';
 import { PanelBuilder } from './builder';
 
 import {
+  Diff,
   Context,
   container,
   delegateTarget,

@@ -12,8 +12,6 @@ const isMac = /Mac/i.test(window.navigator.platform);
 
 const cmdCtrlKey = '<span class="help-key">' + (isMacLike ? '&#8984;' : 'Ctrl') + '</span>';
 
-const { log } = console
-
 const keyMap = {
   "left": 37,
   "up": 38,

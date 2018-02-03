@@ -1,20 +1,22 @@
-
-import {
-  Diff
-} from './'
-
-const { log } = console
-
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
 }
 
 import {
+  Diff,
   Context,
   container,
   delegateTarget,
-  FlowsApi
+  FlowsApi,
+  lazyInject,
+  $TYPES
 } from './_base'
+
+import {
+  INodes
+} from '../../_interfaces'
+
+const TYPES = $TYPES.all
 
 export interface IFlowsLoader {
   loadFlows()
@@ -25,6 +27,8 @@ export interface IFlowsLoader {
 @delegateTarget()
 export class FlowsLoader extends Context implements IFlowsLoader {
   protected flowsApi: FlowsApi
+
+  @lazyInject(TYPES.nodes) $nodes: INodes
 
   constructor(public diff: Diff) {
     super()
@@ -55,7 +59,9 @@ export class FlowsLoader extends Context implements IFlowsLoader {
 
   onLoadSuccess(nodes) {
     const {
-      RED,
+      $nodes
+    } = this
+    const {
       generateDiff,
       resolveDiffs
     } = this.rebind([
@@ -63,8 +69,9 @@ export class FlowsLoader extends Context implements IFlowsLoader {
         'resolveDiffs'
       ], this.diff)
 
-    var localFlow = RED.nodes.createCompleteNodeSet();
-    var originalFlow = RED.nodes.originalFlow();
+    var localFlow = $nodes.createCompleteNodeSet();
+    var originalFlow = $nodes.originalFlow();
+
     var remoteFlow = nodes.flows;
     var localDiff = generateDiff(originalFlow, localFlow);
     var remoteDiff = generateDiff(originalFlow, remoteFlow);

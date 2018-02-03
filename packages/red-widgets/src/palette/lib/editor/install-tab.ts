@@ -3,13 +3,10 @@ import { PaletteEditor } from './';
 import {
   Context,
   container,
-  delegator
-} from './_base'
-
-import {
+  delegator,
   lazyInject,
   $TYPES
-} from '../../../_container'
+} from './_base'
 
 import {
   ISettings
