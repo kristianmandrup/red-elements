@@ -1,9 +1,14 @@
-class Word {
+import {
+  stext
+}
+  from './stext'
+
+export class Comma {
   format(text, args, isRtl, isHtml, locale, parseOnly) {
     var fArgs = {
       guiDir: isRtl ? "rtl" : "ltr",
-      dir: args.dir ? args.dir : isRtl ? "rtl" : "ltr",
-      points: " ,.!?;:",
+      dir: "ltr",
+      points: ","
     };
     if (!parseOnly) {
       return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
@@ -12,5 +17,4 @@ class Word {
     }
   }
 }
-
-export const word = new Word()
+export const comma = new Comma()

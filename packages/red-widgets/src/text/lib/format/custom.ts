@@ -1,9 +1,9 @@
 import {
   stext
 }
-from './stext'
+  from './stext'
 
-class Custom {
+export class Custom {
   format(text, args, isRtl, isHtml, locale, parseOnly) {
     var hArgs = {};
     var prop = "";

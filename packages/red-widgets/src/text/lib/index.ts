@@ -1,10 +1,10 @@
 export {
-  Bidi
-}
-  from './bidi'
+  Bidi,
+  IBidi
+} from './bidi'
 
 export {
   TextFormat,
+  ITextFormat,
   format
-}
-  from './format'
+} from './format'

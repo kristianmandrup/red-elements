@@ -1,14 +1,9 @@
-import {
-  stext
-}
-from './stext'
-
-class Filepath {
+export class Url {
   format(text, args, isRtl, isHtml, locale, parseOnly) {
     var fArgs = {
       guiDir: isRtl ? "rtl" : "ltr",
       dir: "ltr",
-      points: "/\\:."
+      points: ":?#/@.[]="
     };
     if (!parseOnly) {
       return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
@@ -18,4 +13,4 @@ class Filepath {
   }
 }
 
-export const filepath = new Filepath()
+export const url = new Url()

@@ -1,9 +1,14 @@
-class Underscore {
+import {
+  stext
+}
+  from './stext'
+
+export class Filepath {
   format(text, args, isRtl, isHtml, locale, parseOnly) {
     var fArgs = {
       guiDir: isRtl ? "rtl" : "ltr",
       dir: "ltr",
-      points: "_"
+      points: "/\\:."
     };
     if (!parseOnly) {
       return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
@@ -13,4 +18,4 @@ class Underscore {
   }
 }
 
-export const underscore = new Underscore()
+export const filepath = new Filepath()

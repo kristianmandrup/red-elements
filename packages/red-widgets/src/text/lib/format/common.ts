@@ -2,7 +2,7 @@ import {
   tools
 } from './tools'
 
-class Common {
+export class Common {
   handle(content, segments, args, locale) {
     var cases = [];
     if (Array.isArray(args.cases)) {

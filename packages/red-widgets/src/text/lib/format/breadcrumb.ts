@@ -1,9 +1,9 @@
 import {
   stext
 }
-from './stext'
+  from './stext'
 
-class Breadcrumb {
+export class Breadcrumb {
   format(text, args, isRtl, isHtml, locale, parseOnly) {
     var fArgs = {
       guiDir: isRtl ? "rtl" : "ltr",

@@ -6,7 +6,7 @@ var RLM = "\u200F";
 var LRO = "\u202D";
 var RLO = "\u202E";
 
-class Misc {
+export class Misc {
   constructor() {
     this.LRE = LRE
     this.RLE = RLE

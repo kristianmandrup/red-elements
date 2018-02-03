@@ -1,25 +1,30 @@
 import {
   stext
-}
-from './stext'
+} from './stext'
 
-class Message {
+import {
+  TextSegment
+} from './text-segment'
+
+export class Message {
+  params: any = {
+    msgLang: "en",
+    msgDir: "",
+    phLang: "",
+    phDir: "",
+    phPacking: ["{", "}"],
+    phStt: {
+      type: "none",
+      args: {}
+    },
+    guiDir: ""
+  }
+  parametersChecked: boolean = false
+
   constructor() {
-    this.params = {
-      msgLang: "en",
-      msgDir: "",
-      phLang: "",
-      phDir: "",
-      phPacking: ["{", "}"],
-      phStt: {
-        type: "none",
-        args: {}
-      },
-      guiDir: ""
-    };
-    this.parametersChecked = false;
   }
 
+  // @autobind()
   getDirectionOfLanguage(lang) {
     if (lang === "he" || lang === "iw" || lang === "ar") {
       return "rtl";
@@ -29,7 +34,7 @@ class Message {
 
   checkParameters(obj) {
     if (obj.msgDir.length === 0) {
-      obj.msgDir = getDirectionOfLanguage(obj.msgLang);
+      obj.msgDir = this.getDirectionOfLanguage(obj.msgLang);
     }
     obj.msgDir = obj.msgDir !== "ltr" && obj.msgDir !== "rtl" && obj.msgDir != "auto" ? "ltr" : obj.msgDir;
     if (obj.guiDir.length === 0) {
@@ -37,7 +42,7 @@ class Message {
     }
     obj.guiDir = obj.guiDir !== "rtl" ? "ltr" : "rtl";
     if (obj.phDir.length === 0) {
-      obj.phDir = obj.phLang.length === 0 ? obj.msgDir : getDirectionOfLanguage(obj.phLang);
+      obj.phDir = obj.phLang.length === 0 ? obj.msgDir : this.getDirectionOfLanguage(obj.phLang);
     }
     obj.phDir = obj.phDir !== "ltr" && obj.phDir !== "rtl" && obj.phDir != "auto" ? "ltr" : obj.phDir;
     if (typeof (obj.phPacking) === "string") {
@@ -59,7 +64,7 @@ class Message {
         params[prop] = args[prop];
       }
     }
-    checkParameters(params);
+    this.checkParameters(params);
     parametersChecked = true;
   }
 
@@ -70,7 +75,7 @@ class Message {
     } = this
 
     if (!parametersChecked) {
-      checkParameters(params);
+      this.checkParameters(params);
       parametersChecked = true;
     }
     var isHtml = false;

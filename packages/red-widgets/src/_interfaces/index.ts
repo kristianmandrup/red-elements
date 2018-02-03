@@ -13,10 +13,14 @@ export {
   INodes,
   ISettings,
   IRegistry,
-  IBidi,
   IHistory
   // ...
 } from '@tecla5/red-runtime'
+
+export {
+  IBidi
+} from '../text'
+
 
 export {
   IActions

@@ -50,7 +50,7 @@ export class WorkspaceManager extends Context implements IWorkspaceManager {
 
     workspaces[ws.id] = ws;
     ws._def = $nodes.getType('tab');
-    workspacesOrder.push(ws.id);
+    workspacesOrder.push(ws);
     return nodes
   }
 

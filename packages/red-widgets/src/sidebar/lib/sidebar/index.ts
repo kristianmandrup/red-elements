@@ -55,17 +55,6 @@ import {
 
 import { SidebarConfiguration } from './configuration';
 
-export interface ISidebarTabInfo {
-  init()
-  refresh(node: any)
-  show()
-  jsonFilter(key, value)
-  addTargetToExternalLinks(el)
-  setInfoText(infoText)
-  clear()
-  set(html)
-}
-
 export interface ISidebar {
   /**
    * Create new Tabs
@@ -104,7 +93,7 @@ export interface ISidebar {
 
   show(name: string)
 
-  addTab : Function
+  addTab: Function
 }
 
 @delegator({

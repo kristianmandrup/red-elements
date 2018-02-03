@@ -1,13 +1,13 @@
 import {
   common
 }
-from './stext'
+  from './stext'
 import {
   misc
 }
-from './stext'
+  from './stext'
 
-class SText {
+export class SText {
   // args
   //   handler: main handler (default - dbidi/stt/handlers/common)
   //   guiDir: GUI direction (default - "ltr")

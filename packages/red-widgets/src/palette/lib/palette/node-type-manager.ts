@@ -29,7 +29,7 @@ import {
   INodes,
   IWorkspaces,
   IBidi,
-  SidebarTabInfo
+  ISidebarTabInfo
 } from '../../../_interfaces'
 
 

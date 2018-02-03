@@ -41,8 +41,16 @@ export {
 
 import { TabInfoInitializer } from './initializer';
 
-import { ISidebarTabInfo } from '../../sidebar'
-
+export interface ISidebarTabInfo {
+  init()
+  refresh(node: any)
+  show()
+  jsonFilter(key, value)
+  addTargetToExternalLinks(el)
+  setInfoText(infoText)
+  clear()
+  set(html)
+}
 
 @delegator({
   container,
@@ -92,7 +100,7 @@ export class SidebarTabInfo extends Context implements ISidebarTabInfo {
   }
 
   show() {
-   this.sidebar.show("info");
+    this.sidebar.show("info");
   }
 
   jsonFilter(key, value) {

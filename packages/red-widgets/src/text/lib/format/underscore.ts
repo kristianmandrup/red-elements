@@ -1,14 +1,9 @@
-import {
-  stext
-}
-from './stext'
-
-class Formula {
+export class Underscore {
   format(text, args, isRtl, isHtml, locale, parseOnly) {
     var fArgs = {
       guiDir: isRtl ? "rtl" : "ltr",
       dir: "ltr",
-      points: " /%^&[]<>=!?~:.,|()+-*{}",
+      points: "_"
     };
     if (!parseOnly) {
       return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
@@ -18,4 +13,4 @@ class Formula {
   }
 }
 
-export const formula = new Formula()
+export const underscore = new Underscore()

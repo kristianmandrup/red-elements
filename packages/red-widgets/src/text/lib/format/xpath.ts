@@ -1,4 +1,4 @@
-class XPath {
+export class XPath {
   format(text, args, isRtl, isHtml, locale, parseOnly) {
     var fArgs = {
       guiDir: isRtl ? "rtl" : "ltr",
@@ -8,13 +8,13 @@ class XPath {
         handler: common,
         args: {
           bounds: [{
-              startAfter: "\"",
-              endBefore: "\""
-            },
-            {
-              startAfter: "'",
-              endBefore: "'"
-            }
+            startAfter: "\"",
+            endBefore: "\""
+          },
+          {
+            startAfter: "'",
+            endBefore: "'"
+          }
           ],
           points: ""
         }

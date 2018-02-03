@@ -1,9 +1,9 @@
-class Url {
+export class Word {
   format(text, args, isRtl, isHtml, locale, parseOnly) {
     var fArgs = {
       guiDir: isRtl ? "rtl" : "ltr",
-      dir: "ltr",
-      points: ":?#/@.[]="
+      dir: args.dir ? args.dir : isRtl ? "rtl" : "ltr",
+      points: " ,.!?;:",
     };
     if (!parseOnly) {
       return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
@@ -13,4 +13,4 @@ class Url {
   }
 }
 
-export const url = new Url()
+export const word = new Word()

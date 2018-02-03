@@ -1,13 +1,13 @@
 import {
   stext
 }
-from './stext'
+  from './stext'
 import {
   misc
 }
-from './misc'
+  from './misc'
 
-class Email {
+export class Email {
   getDir(text, locale) {
     if (misc.getLocaleDetails(locale).lang !== "ar") {
       return "ltr";
@@ -29,13 +29,13 @@ class Email {
         handler: common,
         args: {
           bounds: [{
-              startAfter: "\"",
-              endBefore: "\""
-            },
-            {
-              startAfter: "(",
-              endBefore: ")"
-            }
+            startAfter: "\"",
+            endBefore: "\""
+          },
+          {
+            startAfter: "(",
+            endBefore: ")"
+          }
           ],
           points: ""
         }

@@ -1,14 +1,14 @@
 import {
   stext
 }
-from './stext'
+  from './stext'
 
-class Comma {
+export class Formula {
   format(text, args, isRtl, isHtml, locale, parseOnly) {
     var fArgs = {
       guiDir: isRtl ? "rtl" : "ltr",
       dir: "ltr",
-      points: ","
+      points: " /%^&[]<>=!?~:.,|()+-*{}",
     };
     if (!parseOnly) {
       return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
@@ -17,4 +17,5 @@ class Comma {
     }
   }
 }
-export const comma = new Comma()
+
+export const formula = new Formula()

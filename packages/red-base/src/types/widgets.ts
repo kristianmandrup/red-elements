@@ -24,7 +24,11 @@ export const widgets = {
   palette: 'IPalette',
   paletteEditor: 'IPaletteEditor',
   search: 'ISearch',
-  sidebar: 'ISidebar',
+  sidebar: {
+    main: 'ISidebar',
+    info: 'ISidebarTabsInfo',
+    tabs: 'ISidebarTabs',
+  },
   tray: 'ITray',
   user: 'IUser',
   userSettings: 'IUserSettings',
