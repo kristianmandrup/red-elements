@@ -2,6 +2,13 @@ import {
   Context
 } from '../../context'
 
+import {
+  lazyInject,
+  $TYPES
+} from './container'
+
+import { IKeyboard } from '../../keyboard';
+
 export interface IActions {
   count: number
   add(name, handler)
@@ -11,8 +18,12 @@ export interface IActions {
   list()
 }
 
+const TYPES = $TYPES.all
+
 export class Actions extends Context {
   public actions: any = {}
+
+  @lazyInject(TYPES.keyboard) $keyboard: IKeyboard
 
   constructor() {
     super()
@@ -41,10 +52,12 @@ export class Actions extends Context {
   }
 
   list() {
-    var RED = this.RED;
+    const {
+      $keyboard
+    } = this
     var result = [];
     Object.keys(this.actions).forEach((action) => {
-      var shortcut = RED.keyboard.getShortcut(action);
+      var shortcut = $keyboard.getShortcut(action);
       result.push({
         id: action,
         scope: shortcut ? shortcut.scope : undefined,

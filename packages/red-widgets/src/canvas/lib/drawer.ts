@@ -31,16 +31,15 @@ export interface ICanvasDrawer {
 @delegateTarget()
 export class CanvasDrawer extends Context implements ICanvasDrawer {
 
-  @lazyInject(TYPES.nodes) nodes: INodes
-  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
-  @lazyInject(TYPES.view) view: ICanvas
-  @lazyInject(TYPES.sidebar.main) sidebar: ISidebar
-  @lazyInject(TYPES.state) state: IState
-  @lazyInject(TYPES.text) text: IText
-  @lazyInject(TYPES.utils) utils: IUtil
-  @lazyInject(TYPES.touch.main) touch: ITouch
-  @lazyInject(TYPES.bidi) bidi: IBidi
-
+  @lazyInject(TYPES.nodes) $nodes: INodes
+  @lazyInject(TYPES.workspaces) $workspaces: IWorkspaces
+  @lazyInject(TYPES.view) $view: ICanvas
+  @lazyInject(TYPES.sidebar.main) $sidebar: ISidebar
+  @lazyInject(TYPES.state) $state: IState
+  @lazyInject(TYPES.text) $text: IText
+  @lazyInject(TYPES.utils) $utils: IUtil
+  @lazyInject(TYPES.touch.main) $touch: ITouch
+  @lazyInject(TYPES.bidi) $bidi: IBidi
 
   constructor(protected canvas: Canvas) {
     super()
@@ -53,22 +52,22 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
   reveal(id) {
     const {
       //RED
-      nodes,
-      workspaces,
-      view,
-      sidebar,
-      state,
-      utils,
-      touch
+      $nodes,
+      $workspaces,
+      $view,
+      $sidebar,
+      $state,
+      $utils,
+      $touch
     } = this
-    if (nodes.workspace(id) || nodes.subflow(id)) {
-      workspaces.show(id);
+    if (nodes.workspace(id) || $nodes.subflow(id)) {
+      $workspaces.show(id);
     } else {
-      var node = nodes.node(id);
+      var node: any = nodes.node(id);
       if (node._def.category !== 'config' && node.z) {
         node.highlighted = true;
         node.dirty = true;
-        workspaces.show(node.z);
+        $workspaces.show(node.z);
 
         var screenSize = [$('#chart').width(), $('#chart').height()];
         var scrollPos = [$('#chart').scrollLeft(), $('#chart').scrollTop()];
@@ -100,7 +99,8 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
           flashFunc();
         }
       } else if (node._def.category === 'config') {
-        sidebar.config.show(id);
+        // FIX
+        $sidebar.config.show(id);
       }
     }
   }
@@ -114,9 +114,11 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
       canvas,
       rebind,
       handleError,
-      state,
-      text,
-      bidi
+
+      $state,
+      $text,
+      $bidi,
+      $touch,
       //RED
     } = this
     const {
@@ -218,7 +220,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
       .attr('height', space_height * scaleFactor);
 
     // Don't bother redrawing nodes if we're drawing links
-    if (mouse_mode != state.JOINING) {
+    if (mouse_mode != $state.JOINING) {
 
       var dirtyNodes = {};
 
@@ -252,10 +254,9 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
             nodeMouseDown.call(this, d)
           })
           .on('touchend', (d) => {
-            const { touch } = this
             clearTimeout(touchStartTime);
             touchStartTime = null;
-            if (touch.radialMenu.active()) {
+            if ($touch.radialMenu.active()) {
               d3.event.stopPropagation();
               return;
             }
@@ -645,7 +646,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
             return 'translate(' + (d.x - d.w / 2) + ',' + (d.y - d.h / 2) + ')';
           });
 
-          if (mouse_mode != state.MOVING_ACTIVE) {
+          if (mouse_mode != $state.MOVING_ACTIVE) {
             thisNode.selectAll('.node')
               .attr('width', function (d: any) {
                 return d.w
@@ -762,7 +763,7 @@ export class CanvasDrawer extends Context implements ICanvasDrawer {
                 l = d._def.label;
                 try {
                   l = (typeof l === 'function' ? l.call(d) : l) || '';
-                  l = bidi.enforceTextDirectionWithUCC(l);
+                  l = $bidi.enforceTextDirectionWithUCC(l);
                 } catch (err) {
                   console.log('Definition error: ' + d.type + '.label', err);
                   l = d.type;

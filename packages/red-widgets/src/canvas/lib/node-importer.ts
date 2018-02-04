@@ -25,12 +25,12 @@ export interface ICanvasNodeImporter {
 @delegateTarget()
 export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
 
-  @lazyInject(TYPES.nodes) nodes: INodes
-  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
-  @lazyInject(TYPES.history) history: IHistory
-  @lazyInject(TYPES.subflow) subflow: ISubflow
-  @lazyInject(TYPES.keyboard) keyboard: IKeyboard
-  @lazyInject(TYPES.state) state: IState
+  @lazyInject(TYPES.nodes) $nodes: INodes
+  @lazyInject(TYPES.workspaces) $workspaces: IWorkspaces
+  @lazyInject(TYPES.history) $history: IHistory
+  @lazyInject(TYPES.subflow) $subflow: ISubflow
+  @lazyInject(TYPES.keyboard) $keyboard: IKeyboard
+  @lazyInject(TYPES.state) $state: IState
 
   constructor(protected canvas: Canvas) {
     super()
@@ -47,12 +47,13 @@ export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
       // RED,
       canvas,
       rebind,
-      nodes,
-      workspaces,
-      history,
-      subflow,
-      keyboard,
-      state
+
+      $nodes,
+      $workspaces,
+      $history,
+      $subflow,
+      $keyboard,
+      $state
     } = this
     const {
       activeSubflow,
@@ -80,7 +81,7 @@ export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
       if (activeSubflow) {
         activeSubflowChanged = activeSubflow.changed;
       }
-      var result = nodes.import(newNodesStr, true, addNewFlow);
+      var result = $nodes.import(newNodesStr, true, addNewFlow);
       if (result) {
         var new_nodes = result[0];
         var new_links = result[1];
@@ -88,10 +89,10 @@ export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
         var new_subflows = result[3];
         var new_default_workspace = result[4];
         if (addNewFlow && new_default_workspace) {
-          workspaces.show(new_default_workspace.id);
+          $workspaces.show(new_default_workspace.id);
         }
         var new_ms = new_nodes.filter(function (n) {
-          return n.hasOwnProperty('x') && n.hasOwnProperty('y') && n.z == workspaces.active()
+          return n.hasOwnProperty('x') && n.hasOwnProperty('y') && n.z == $workspaces.active
         }).map(function (n) {
           return {
             n: n
@@ -144,7 +145,7 @@ export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
 
           }
           if (!touchImport) {
-            mouse_mode = state.IMPORT_DRAGGING;
+            mouse_mode = $state.IMPORT_DRAGGING;
             spliceActive = false;
             if (new_ms.length === 1) {
               node = new_ms[0];
@@ -153,10 +154,10 @@ export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
                 node.n._def.outputs > 0;
             }
           }
-          keyboard.add('*', 'escape', function () {
-            keyboard.remove('escape');
+          $keyboard.add('*', 'escape', function () {
+            $keyboard.remove('escape');
             clearSelection();
-            history.pop();
+            $history.pop();
             mouse_mode = 0;
           });
           clearSelection();
@@ -172,10 +173,10 @@ export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
           dirty: nodes.dirty()
         };
         if (new_ms.length === 0) {
-          nodes.dirty(true);
+          $nodes.dirty(true);
         }
         if (activeSubflow) {
-          var subflowRefresh = subflow.refresh(true);
+          var subflowRefresh = $subflow.refresh(true);
           if (subflowRefresh) {
             historyEvent.subflow = {
               id: activeSubflow.id,
@@ -184,7 +185,7 @@ export class CanvasNodeImporter extends Context implements ICanvasNodeImporter {
             }
           }
         }
-        history.push(historyEvent);
+        $history.push(historyEvent);
 
         updateActiveNodes();
         redraw();

@@ -26,10 +26,10 @@ export interface INotifications {
    * @param fixed
    * @param timeout
    */
-  notify(msg, type: string, fixed, timeout: number)
+  notify(msg, type?: string, fixed?, timeout?: number)
   update?()
   close?()
-  call : Function
+  call: Function
 }
 
 

@@ -3,7 +3,9 @@ import { Tray } from './'
 import {
   Context,
   delegateTarget,
-  container
+  container,
+  lazyInject,
+  $TYPES
 } from './_base'
 
 export interface ITrayConfiguration {

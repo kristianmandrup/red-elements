@@ -31,6 +31,7 @@ export interface ISettings {
   get(key: string): string
   set(key: string, value: any)
   delete(prop: string)
+  remove(prop: string)
 
   /**
    * Initialize user settings by preparing access token and ajax call
@@ -163,7 +164,11 @@ export class Settings extends Context implements ISettings {
     }
     this.loadedSettings = data;
     return this
-  };
+  }
+
+  remove(prop: string) {
+    return this.delete(prop)
+  }
 
   delete(prop: string) {
     const {

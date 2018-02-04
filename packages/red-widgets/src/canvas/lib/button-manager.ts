@@ -12,6 +12,7 @@ import {
 import {
   INotifications
 } from '../../_interfaces'
+import { II18n } from '../../../../red-runtime/src/i18n/index';
 
 const TYPES = $TYPES.all
 
@@ -22,7 +23,9 @@ export interface ICanvasButtonManager {
 
 @delegateTarget()
 export class CanvasButtonManager extends Context implements ICanvasButtonManager {
-  @lazyInject(TYPES.notifications) notifications: INotifications
+  // TODO: use $ prefix convention
+  @lazyInject(TYPES.notifications) $notifications: INotifications
+  @lazyInject(TYPES.i18n) $i18n: II18n
 
   constructor(protected canvas: Canvas) {
     super()
@@ -49,7 +52,10 @@ export class CanvasButtonManager extends Context implements ICanvasButtonManager
    * @param d
    */
   nodeButtonClicked(d) {
-    const { notifications } = this
+    const {
+      $notifications,
+      $i18n
+    } = this
     const {
       activeSubflow,
       redraw
@@ -71,8 +77,8 @@ export class CanvasButtonManager extends Context implements ICanvasButtonManager
         redraw();
       }
     } else {
-      notifications.notify(this.RED._('notification.warning', {
-        message: this.RED._('notification.warnings.nodeActionDisabled')
+      $notifications.notify($i18n.t('notification.warning', {
+        message: $i18n.t('notification.warnings.nodeActionDisabled')
       }), 'warning', "", 0);
     }
     d3.event.preventDefault();

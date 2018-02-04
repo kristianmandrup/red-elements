@@ -1,7 +1,13 @@
 import {
   Context,
-  INode
+  INode,
+  $TYPES,
+  lazyInject
 } from './_base'
+
+import { IEvents } from '../';
+
+const TYPES = $TYPES.all
 
 /**
  * A single Node definition
@@ -23,18 +29,20 @@ export class Node extends Context implements INode {
   public type: string
   public module?: any
 
+  @lazyInject(TYPES.events) $events: IEvents
+
   constructor() {
     super()
   }
 
   setDirty(d) {
     let {
-      RED,
+      $events,
       dirty
     } = this
 
     dirty = d;
-    RED.events.emit("nodes:change", {
+    $events.emit("nodes:change", {
       dirty: dirty
     });
   }

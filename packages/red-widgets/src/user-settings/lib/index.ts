@@ -23,15 +23,21 @@ import { UserSettingsConfiguration } from './configuration';
 
 import {
   delegator,
-  container
+  container,
+  lazyInject,
+  $TYPES
 } from './container'
+import { ISettings } from '../../../../red-runtime/src/settings/index';
+import { IActions } from '../../actions/lib/index';
+
+const TYPES = $TYPES.all
 
 export interface IUserSettings {
   configure()
   setSelected(id, value)
   toggle(id)
-  add : Function
-  show(name : string)
+  add: Function
+  show(name: string)
 }
 
 @delegator({
@@ -48,6 +54,10 @@ export class UserSettings extends Context {
 
   protected configuration: UserSettingsConfiguration // = new UserSettingsConfiguration(this)
 
+  @lazyInject(TYPES.settings) $settings: ISettings
+  @lazyInject(TYPES.actions) $actions: IActions
+
+
   constructor() {
     super()
     this.configure()
@@ -60,8 +70,9 @@ export class UserSettings extends Context {
 
   setSelected(id, value) {
     const {
-      RED,
-      allSettings
+      allSettings,
+      $settings,
+      $actions
     } = this
     var opt = allSettings[id];
     if (!opt) {
@@ -71,10 +82,10 @@ export class UserSettings extends Context {
       })
     }
 
-    RED.settings.set(opt.setting, value);
+    $settings.set(opt.setting, value);
     var callback = opt.onchange;
     if (typeof callback === 'string') {
-      callback = RED.actions.get(callback);
+      callback = $actions.get(callback);
     }
     if (typeof callback === 'function') {
       callback.call(opt, value);
@@ -83,7 +94,7 @@ export class UserSettings extends Context {
 
   toggle(id) {
     const {
-      RED,
+      $settings,
       allSettings
     } = this
     var opt = allSettings[id];
@@ -93,7 +104,7 @@ export class UserSettings extends Context {
         id
       })
     }
-    var state = RED.settings.get(opt.setting);
+    var state = $settings.get(opt.setting);
     this.setSelected(id, !state);
   }
 }

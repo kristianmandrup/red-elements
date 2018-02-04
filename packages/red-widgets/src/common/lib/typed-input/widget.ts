@@ -21,546 +21,568 @@ import {
 } from '../utils/validators'
 
 import jsonata from 'jsonata'
+import { lazyInject } from '../../../../../red-base/src/context/index';
+import { $TYPES } from '../../../palette/lib/container';
+import { ICommonUtils } from '../index';
+import { INodeEditor } from '../../../node-editor/index';
+import { II18n } from '../../../../../red-runtime/src/index';
 
 function icon(uri) {
   return 'images/typedInput/' + uri + '.png';
 }
 const { log } = console
+const TYPES = $TYPES.all
 
-export function Widget(RED) {
+export class Widget {
+  @lazyInject(TYPES.utils) $utils: ICommonUtils
+  @lazyInject(TYPES.editor) $editor: INodeEditor
+  @lazyInject(TYPES.i18n) $i18n: II18n
+
+  constructor() {
+    new Validators();
+    this.init()
+  }
   // https://stackoverflow.com/questions/31013221/typeerror-console-log-is-not-a-function
   // console.log({
   //   RED,
   //   Validators
   // });
-  new Validators(RED);
+
   //  console.log('create typedInput widget', {
   //    RED
   //  });
 
-  (function ($) {
-    // console.log('creating typedInput widget...', RED)
+  init() {
+    const {
+      $utils,
+      $editor,
+      $i18n
+    } = this;
 
-    var allOptions = {
-      msg: {
-        value: 'msg',
-        label: 'msg.',
-        validate: RED.utils.validatePropertyExpression
-      },
-      flow: {
-        value: 'flow',
-        label: 'flow.',
-        validate: RED.utils.validatePropertyExpression
-      },
-      global: {
-        value: 'global',
-        label: 'global.',
-        validate: RED.utils.validatePropertyExpression
-      },
-      str: {
-        value: 'str',
-        label: 'string',
-        icon: icon('az')
-      },
-      num: {
-        value: 'num',
-        label: 'number',
-        icon: icon('09'),
-        validate: /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/
-      },
-      bool: {
-        value: 'bool',
-        label: 'boolean',
-        icon: icon('bool'),
-        options: ['true', 'false']
-      },
-      json: {
-        value: 'json',
-        label: 'JSON',
-        icon: icon('json'),
-        validate: function (v) {
-          try {
-            JSON.parse(v);
-            return true;
-          } catch (e) {
-            return false;
+    (function ($) {
+      // console.log('creating typedInput widget...', RED)
+
+      var allOptions = {
+        msg: {
+          value: 'msg',
+          label: 'msg.',
+          validate: $utils.validatePropertyExpression
+        },
+        flow: {
+          value: 'flow',
+          label: 'flow.',
+          validate: $utils.validatePropertyExpression
+        },
+        global: {
+          value: 'global',
+          label: 'global.',
+          validate: $utils.validatePropertyExpression
+        },
+        str: {
+          value: 'str',
+          label: 'string',
+          icon: icon('az')
+        },
+        num: {
+          value: 'num',
+          label: 'number',
+          icon: icon('09'),
+          validate: /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/
+        },
+        bool: {
+          value: 'bool',
+          label: 'boolean',
+          icon: icon('bool'),
+          options: ['true', 'false']
+        },
+        json: {
+          value: 'json',
+          label: 'JSON',
+          icon: icon('json'),
+          validate: function (v) {
+            try {
+              JSON.parse(v);
+              return true;
+            } catch (e) {
+              return false;
+            }
+          },
+          expand: function () {
+            var value = this.value();
+            try {
+              value = JSON.stringify(JSON.parse(value), null, 4);
+            } catch (err) { }
+            $editor.editJSON({
+              value: value,
+              complete: (v) => {
+                var value = v;
+                try {
+                  value = JSON.stringify(JSON.parse(v));
+                } catch (err) { }
+                this.value(value);
+              }
+            })
           }
         },
-        expand: function () {
-          var value = this.value();
-          try {
-            value = JSON.stringify(JSON.parse(value), null, 4);
-          } catch (err) { }
-          RED.editor.editJSON({
-            value: value,
-            complete: (v) => {
-              var value = v;
-              try {
-                value = JSON.stringify(JSON.parse(v));
-              } catch (err) { }
-              this.value(value);
+        re: {
+          value: 're',
+          label: 'regular expression',
+          icon: icon('re')
+        },
+        date: {
+          value: 'date',
+          label: 'timestamp',
+          hasValue: false
+        },
+        jsonata: {
+          value: 'jsonata',
+          label: 'expression',
+          icon: icon('expr'),
+          validate: function (v) {
+            try {
+              jsonata(v);
+              return true;
+            } catch (e) {
+              return false;
             }
-          })
-        }
-      },
-      re: {
-        value: 're',
-        label: 'regular expression',
-        icon: icon('re')
-      },
-      date: {
-        value: 'date',
-        label: 'timestamp',
-        hasValue: false
-      },
-      jsonata: {
-        value: 'jsonata',
-        label: 'expression',
-        icon: icon('expr'),
-        validate: function (v) {
-          try {
-            jsonata(v);
-            return true;
-          } catch (e) {
-            return false;
+          },
+          expand: function () {
+            $editor.editExpression({
+              value: this.value().replace(/\t/g, '\n'),
+              complete: (v) => {
+                this.value(v.replace(/\n/g, '\t'));
+              }
+            })
           }
         },
-        expand: function () {
-          RED.editor.editExpression({
-            value: this.value().replace(/\t/g, '\n'),
-            complete: (v) => {
-              this.value(v.replace(/\n/g, '\t'));
+        bin: {
+          value: 'bin',
+          label: 'buffer',
+          icon: icon('bin'),
+          expand: function () {
+            $editor.editBuffer({
+              value: this.value(),
+              complete: (v) => {
+                this.value(v);
+              }
+            })
+          }
+        }
+      };
+      // log({
+      //   allOptions
+      // })
+
+      var nlsd = false;
+
+      $['widget']("nodered.typedInput", {
+        _create: function () {
+          if (!nlsd && $i18n.t) {
+            for (var i in allOptions) {
+              if (allOptions.hasOwnProperty(i)) {
+                allOptions[i].label = $i18n.t("typedInput.type." + i, {
+                  defaultValue: allOptions[i].label
+                });
+              }
+            }
+          }
+          nlsd = true;
+
+          this.disarmClick = false;
+          this.element.addClass('red-ui-typedInput');
+          this.uiWidth = this.element.outerWidth();
+          this.elementDiv = this.element.wrap("<div>").parent().addClass('red-ui-typedInput-input');
+          this.uiSelect = this.elementDiv.wrap("<div>").parent();
+          var attrStyle = this.element.attr('style');
+          var m;
+          if ((m = /width\s*:\s*(\d+(%|px))/i.exec(attrStyle)) !== null) {
+            this.element.css('width', '100%');
+            this.uiSelect.width(m[1]);
+            this.uiWidth = null;
+          } else {
+            this.uiSelect.width(this.uiWidth);
+          }
+          ["Right", "Left"].forEach((d) => {
+            var m = this.element.css("margin" + d);
+            this.uiSelect.css("margin" + d, m);
+            this.element.css("margin" + d, 0);
+          });
+          this.uiSelect.addClass("red-ui-typedInput-container");
+
+          this.options.types = this.options.types || Object.keys(allOptions);
+
+          this.selectTrigger = $('<button class="btnSelectTrigger" tabindex="0"></button>').prependTo(this.uiSelect);
+          $('<i class="fa fa-sort-desc"></i>').appendTo(this.selectTrigger);
+          this.selectLabel = $('<span></span>').appendTo(this.selectTrigger);
+
+          this.types(this.options.types);
+
+          if (this.options.typeField) {
+            this.typeField = $(this.options.typeField).hide();
+            var t = this.typeField.val();
+            if (t && this.typeMap[t]) {
+              this.options.default = t;
+            }
+          } else {
+            this.typeField = $("<input>", {
+              type: 'hidden'
+            }).appendTo(this.uiSelect);
+          }
+
+          this.element.on('focus', () => {
+            this.uiSelect.addClass('red-ui-typedInput-focus');
+          });
+          this.element.on('blur', () => {
+            this.uiSelect.removeClass('red-ui-typedInput-focus');
+          });
+          this.element.on('change', () => {
+            this.validate();
+          })
+          this.selectTrigger.click((event) => {
+            event.preventDefault();
+            this._showTypeMenu();
+          });
+          this.selectTrigger.on('keydown', (evt) => {
+            if (evt.keyCode === 40) {
+              // Down
+              this._showTypeMenu();
+            }
+          }).on('focus', () => {
+            this.uiSelect.addClass('red-ui-typedInput-focus');
+          })
+
+          // explicitly set optionSelectTrigger display to inline-block otherwise jQ sets it to 'inline'
+          this.optionSelectTrigger = $('<button tabindex="0" class="red-ui-typedInput-option-trigger" style="display:inline-block"><span class="red-ui-typedInput-option-caret"><i class="fa fa-sort-desc"></i></span></button>').appendTo(this.uiSelect);
+          this.optionSelectLabel = $('<span class="red-ui-typedInput-option-label"></span>').prependTo(this.optionSelectTrigger);
+          this.optionSelectTrigger.click((event) => {
+            event.preventDefault();
+            this._showOptionSelectMenu();
+          }).on('keydown', (evt) => {
+            if (evt.keyCode === 40) {
+              // Down
+              this._showOptionSelectMenu();
+            }
+          }).on('blur', () => {
+            this.uiSelect.removeClass('red-ui-typedInput-focus');
+          }).on('focus', () => {
+            this.uiSelect.addClass('red-ui-typedInput-focus');
+          });
+
+          this.optionExpandButton = $('<button tabindex="0" class="red-ui-typedInput-option-expand" style="display:inline-block"><i class="fa fa-ellipsis-h"></i></button>').appendTo(this.uiSelect);
+
+
+          this.type(this.options.default || this.typeList[0].value);
+        },
+        _showTypeMenu: function () {
+          if (this.typeList.length > 1) {
+            this._showMenu(this.menu, this.selectTrigger);
+            this.menu.find("[value='" + this.propertyType + "']").focus();
+          } else {
+            this.element.focus();
+          }
+        },
+        _showOptionSelectMenu: function () {
+          if (this.optionMenu) {
+            this.optionMenu.css({
+              minWidth: this.optionSelectLabel.width()
+            });
+
+            this._showMenu(this.optionMenu, this.optionSelectLabel);
+            var selectedOption = this.optionMenu.find("[value='" + this.value() + "']");
+            if (selectedOption.length === 0) {
+              selectedOption = this.optionMenu.children(":first");
+            }
+            selectedOption.focus();
+
+          }
+        },
+        _hideMenu: function (menu) {
+          $(document).off("mousedown.close-property-select");
+          menu.hide();
+          if (this.elementDiv.is(":visible")) {
+            this.element.focus();
+          } else if (this.optionSelectTrigger.is(":visible")) {
+            this.optionSelectTrigger.focus();
+          } else {
+            this.selectTrigger.focus();
+          }
+        },
+        _createMenu: function (opts, callback) {
+          var menu = $("<div>").addClass("red-ui-typedInput-options");
+          opts.forEach((opt) => {
+            if (typeof opt === 'string') {
+              opt = {
+                value: opt,
+                label: opt
+              };
+            }
+            var op = $('<a class="typeOpt" href="#"></a>').attr("value", opt.value).appendTo(menu);
+            if (opt.label) {
+              op.text(opt.label);
+            }
+            if (opt.icon) {
+              $('<img>', {
+                src: opt.icon,
+                style: "margin-right: 4px; height: 18px;"
+              }).prependTo(op);
+            } else {
+              op.css({
+                paddingLeft: "18px"
+              });
+            }
+
+            op.click((event) => {
+              event.preventDefault();
+              callback(opt.value);
+              this._hideMenu(menu);
+            });
+          });
+          menu.css({
+            display: "none",
+          });
+          menu.appendTo(document.body);
+
+          menu.on('keydown', (evt) => {
+            if (evt.keyCode === 40) {
+              // DOWN
+              $(this).children(":focus").next().focus();
+            } else if (evt.keyCode === 38) {
+              // UP
+              $(this).children(":focus").prev().focus();
+            } else if (evt.keyCode === 27) {
+              this._hideMenu(menu);
             }
           })
-        }
-      },
-      bin: {
-        value: 'bin',
-        label: 'buffer',
-        icon: icon('bin'),
-        expand: function () {
-          RED.editor.editBuffer({
-            value: this.value(),
-            complete: (v) => {
-              this.value(v);
+
+
+
+          return menu;
+
+        },
+        _showMenu: function (menu, relativeTo) {
+          if (this.disarmClick) {
+            this.disarmClick = false;
+            return
+          }
+          var pos = relativeTo.offset();
+          var height = relativeTo.height();
+          var menuHeight = menu.height();
+          var top = (height + pos.top - 3);
+          if (top + menuHeight > $(window).height()) {
+            top -= (top + menuHeight) - $(window).height() + 5;
+          }
+          menu.css({
+            top: top + "px",
+            left: (2 + pos.left) + "px",
+          });
+          menu.slideDown(100);
+          this._delay(() => {
+            this.uiSelect.addClass('red-ui-typedInput-focus');
+            $(document).on("mousedown.close-property-select", function (event) {
+              if (!$(event.target).closest(menu).length) {
+                this._hideMenu(menu);
+              }
+              if ($(event.target).closest(relativeTo).length) {
+                this.disarmClick = true;
+                event.preventDefault();
+              }
+            })
+          });
+        },
+        _getLabelWidth: function (label) {
+          var labelWidth = label.outerWidth();
+          if (labelWidth === 0) {
+            var container = $('<div class="red-ui-typedInput-container"></div>').css({
+              position: "absolute",
+              top: 0,
+              left: -1000
+            }).appendTo(document.body);
+            var newTrigger = label.clone().appendTo(container);
+            labelWidth = newTrigger.outerWidth();
+            container.remove();
+          }
+          return labelWidth;
+        },
+        _resize: function () {
+          if (this.uiWidth !== null) {
+            this.uiSelect.width(this.uiWidth);
+          }
+          if (this.typeMap[this.propertyType] && this.typeMap[this.propertyType].hasValue === false) {
+            this.selectTrigger.addClass("red-ui-typedInput-full-width");
+          } else {
+            this.selectTrigger.removeClass("red-ui-typedInput-full-width");
+            var labelWidth = this._getLabelWidth(this.selectTrigger);
+            this.elementDiv.css('left', labelWidth + "px");
+            if (this.optionExpandButton.is(":visible")) {
+              this.elementDiv.css('right', "22px");
+            } else {
+              this.elementDiv.css('right', '0');
             }
-          })
-        }
-      }
-    };
-    // log({
-    //   allOptions
-    // })
-
-    var nlsd = false;
-
-    $.widget("nodered.typedInput", {
-      _create: function () {
-        if (!nlsd && RED && RED._) {
-          for (var i in allOptions) {
-            if (allOptions.hasOwnProperty(i)) {
-              allOptions[i].label = RED._("typedInput.type." + i, {
-                defaultValue: allOptions[i].label
+            if (this.optionSelectTrigger) {
+              this.optionSelectTrigger.css({
+                'left': (labelWidth) + "px",
+                'width': 'calc( 100% - ' + labelWidth + 'px )'
               });
             }
           }
-        }
-        nlsd = true;
-
-        this.disarmClick = false;
-        this.element.addClass('red-ui-typedInput');
-        this.uiWidth = this.element.outerWidth();
-        this.elementDiv = this.element.wrap("<div>").parent().addClass('red-ui-typedInput-input');
-        this.uiSelect = this.elementDiv.wrap("<div>").parent();
-        var attrStyle = this.element.attr('style');
-        var m;
-        if ((m = /width\s*:\s*(\d+(%|px))/i.exec(attrStyle)) !== null) {
-          this.element.css('width', '100%');
-          this.uiSelect.width(m[1]);
-          this.uiWidth = null;
-        } else {
-          this.uiSelect.width(this.uiWidth);
-        }
-        ["Right", "Left"].forEach((d) => {
-          var m = this.element.css("margin" + d);
-          this.uiSelect.css("margin" + d, m);
-          this.element.css("margin" + d, 0);
-        });
-        this.uiSelect.addClass("red-ui-typedInput-container");
-
-        this.options.types = this.options.types || Object.keys(allOptions);
-
-        this.selectTrigger = $('<button class="btnSelectTrigger" tabindex="0"></button>').prependTo(this.uiSelect);
-        $('<i class="fa fa-sort-desc"></i>').appendTo(this.selectTrigger);
-        this.selectLabel = $('<span></span>').appendTo(this.selectTrigger);
-
-        this.types(this.options.types);
-
-        if (this.options.typeField) {
-          this.typeField = $(this.options.typeField).hide();
-          var t = this.typeField.val();
-          if (t && this.typeMap[t]) {
-            this.options.default = t;
-          }
-        } else {
-          this.typeField = $("<input>", {
-            type: 'hidden'
-          }).appendTo(this.uiSelect);
-        }
-
-        this.element.on('focus', () => {
-          this.uiSelect.addClass('red-ui-typedInput-focus');
-        });
-        this.element.on('blur', () => {
-          this.uiSelect.removeClass('red-ui-typedInput-focus');
-        });
-        this.element.on('change', () => {
-          this.validate();
-        })
-        this.selectTrigger.click((event) => {
-          event.preventDefault();
-          this._showTypeMenu();
-        });
-        this.selectTrigger.on('keydown', (evt) => {
-          if (evt.keyCode === 40) {
-            // Down
-            this._showTypeMenu();
-          }
-        }).on('focus', () => {
-          this.uiSelect.addClass('red-ui-typedInput-focus');
-        })
-
-        // explicitly set optionSelectTrigger display to inline-block otherwise jQ sets it to 'inline'
-        this.optionSelectTrigger = $('<button tabindex="0" class="red-ui-typedInput-option-trigger" style="display:inline-block"><span class="red-ui-typedInput-option-caret"><i class="fa fa-sort-desc"></i></span></button>').appendTo(this.uiSelect);
-        this.optionSelectLabel = $('<span class="red-ui-typedInput-option-label"></span>').prependTo(this.optionSelectTrigger);
-        this.optionSelectTrigger.click((event) => {
-          event.preventDefault();
-          this._showOptionSelectMenu();
-        }).on('keydown', (evt) => {
-          if (evt.keyCode === 40) {
-            // Down
-            this._showOptionSelectMenu();
-          }
-        }).on('blur', () => {
-          this.uiSelect.removeClass('red-ui-typedInput-focus');
-        }).on('focus', () => {
-          this.uiSelect.addClass('red-ui-typedInput-focus');
-        });
-
-        this.optionExpandButton = $('<button tabindex="0" class="red-ui-typedInput-option-expand" style="display:inline-block"><i class="fa fa-ellipsis-h"></i></button>').appendTo(this.uiSelect);
-
-
-        this.type(this.options.default || this.typeList[0].value);
-      },
-      _showTypeMenu: function () {
-        if (this.typeList.length > 1) {
-          this._showMenu(this.menu, this.selectTrigger);
-          this.menu.find("[value='" + this.propertyType + "']").focus();
-        } else {
-          this.element.focus();
-        }
-      },
-      _showOptionSelectMenu: function () {
-        if (this.optionMenu) {
-          this.optionMenu.css({
-            minWidth: this.optionSelectLabel.width()
-          });
-
-          this._showMenu(this.optionMenu, this.optionSelectLabel);
-          var selectedOption = this.optionMenu.find("[value='" + this.value() + "']");
-          if (selectedOption.length === 0) {
-            selectedOption = this.optionMenu.children(":first");
-          }
-          selectedOption.focus();
-
-        }
-      },
-      _hideMenu: function (menu) {
-        $(document).off("mousedown.close-property-select");
-        menu.hide();
-        if (this.elementDiv.is(":visible")) {
-          this.element.focus();
-        } else if (this.optionSelectTrigger.is(":visible")) {
-          this.optionSelectTrigger.focus();
-        } else {
-          this.selectTrigger.focus();
-        }
-      },
-      _createMenu: function (opts, callback) {
-        var menu = $("<div>").addClass("red-ui-typedInput-options");
-        opts.forEach((opt) => {
-          if (typeof opt === 'string') {
-            opt = {
-              value: opt,
-              label: opt
-            };
-          }
-          var op = $('<a class="typeOpt" href="#"></a>').attr("value", opt.value).appendTo(menu);
-          if (opt.label) {
-            op.text(opt.label);
-          }
-          if (opt.icon) {
-            $('<img>', {
-              src: opt.icon,
-              style: "margin-right: 4px; height: 18px;"
-            }).prependTo(op);
-          } else {
-            op.css({
-              paddingLeft: "18px"
-            });
-          }
-
-          op.click((event) => {
-            event.preventDefault();
-            callback(opt.value);
-            this._hideMenu(menu);
-          });
-        });
-        menu.css({
-          display: "none",
-        });
-        menu.appendTo(document.body);
-
-        menu.on('keydown', (evt) => {
-          if (evt.keyCode === 40) {
-            // DOWN
-            $(this).children(":focus").next().focus();
-          } else if (evt.keyCode === 38) {
-            // UP
-            $(this).children(":focus").prev().focus();
-          } else if (evt.keyCode === 27) {
-            this._hideMenu(menu);
-          }
-        })
-
-
-
-        return menu;
-
-      },
-      _showMenu: function (menu, relativeTo) {
-        if (this.disarmClick) {
-          this.disarmClick = false;
-          return
-        }
-        var pos = relativeTo.offset();
-        var height = relativeTo.height();
-        var menuHeight = menu.height();
-        var top = (height + pos.top - 3);
-        if (top + menuHeight > $(window).height()) {
-          top -= (top + menuHeight) - $(window).height() + 5;
-        }
-        menu.css({
-          top: top + "px",
-          left: (2 + pos.left) + "px",
-        });
-        menu.slideDown(100);
-        this._delay(() => {
-          this.uiSelect.addClass('red-ui-typedInput-focus');
-          $(document).on("mousedown.close-property-select", function (event) {
-            if (!$(event.target).closest(menu).length) {
-              this._hideMenu(menu);
-            }
-            if ($(event.target).closest(relativeTo).length) {
-              this.disarmClick = true;
-              event.preventDefault();
-            }
-          })
-        });
-      },
-      _getLabelWidth: function (label) {
-        var labelWidth = label.outerWidth();
-        if (labelWidth === 0) {
-          var container = $('<div class="red-ui-typedInput-container"></div>').css({
-            position: "absolute",
-            top: 0,
-            left: -1000
-          }).appendTo(document.body);
-          var newTrigger = label.clone().appendTo(container);
-          labelWidth = newTrigger.outerWidth();
-          container.remove();
-        }
-        return labelWidth;
-      },
-      _resize: function () {
-        if (this.uiWidth !== null) {
-          this.uiSelect.width(this.uiWidth);
-        }
-        if (this.typeMap[this.propertyType] && this.typeMap[this.propertyType].hasValue === false) {
-          this.selectTrigger.addClass("red-ui-typedInput-full-width");
-        } else {
-          this.selectTrigger.removeClass("red-ui-typedInput-full-width");
-          var labelWidth = this._getLabelWidth(this.selectTrigger);
-          this.elementDiv.css('left', labelWidth + "px");
-          if (this.optionExpandButton.is(":visible")) {
-            this.elementDiv.css('right', "22px");
-          } else {
-            this.elementDiv.css('right', '0');
-          }
-          if (this.optionSelectTrigger) {
-            this.optionSelectTrigger.css({
-              'left': (labelWidth) + "px",
-              'width': 'calc( 100% - ' + labelWidth + 'px )'
-            });
-          }
-        }
-      },
-      _destroy: function () {
-        this.menu.remove();
-      },
-      types: function (types) {
-        var currentType = this.type();
-        this.typeMap = {};
-        this.typeList = types.map((opt) => {
-          var result;
-          if (typeof opt === 'string') {
-            result = allOptions[opt];
-          } else {
-            result = opt;
-          }
-          this.typeMap[result.value] = result;
-          return result;
-        });
-        this.selectTrigger.toggleClass("disabled", this.typeList.length === 1);
-        if (this.menu) {
+        },
+        _destroy: function () {
           this.menu.remove();
-        }
-        this.menu = this._createMenu(this.typeList, (v) => {
-          this.type(v)
-        });
-        if (currentType && !this.typeMap.hasOwnProperty(currentType)) {
-          this.type(this.typeList[0].value);
-        }
-      },
-      width: function (desiredWidth) {
-        this.uiWidth = desiredWidth;
-        this._resize();
-      },
-      value: function (value) {
-        if (!arguments.length) {
-          return this.element.val();
-        } else {
-          if (this.typeMap[this.propertyType].options) {
-            if (this.typeMap[this.propertyType].options.indexOf(value) === -1) {
-              value = "";
+        },
+        types: function (types) {
+          var currentType = this.type();
+          this.typeMap = {};
+          this.typeList = types.map((opt) => {
+            var result;
+            if (typeof opt === 'string') {
+              result = allOptions[opt];
+            } else {
+              result = opt;
             }
-            this.optionSelectLabel.text(value);
+            this.typeMap[result.value] = result;
+            return result;
+          });
+          this.selectTrigger.toggleClass("disabled", this.typeList.length === 1);
+          if (this.menu) {
+            this.menu.remove();
           }
-          this.element.val(value);
-          this.element.trigger('change', this.type(), value);
-        }
-      },
-      type: function (type) {
-        if (!arguments.length) {
-          return this.propertyType;
-        } else {
-          var opt = this.typeMap[type];
-          if (opt && this.propertyType !== type) {
-            this.propertyType = type;
-            this.typeField.val(type);
-            this.selectLabel.empty();
-            var image;
-            if (opt.icon) {
-              image = new Image();
-              image.name = opt.icon;
-              image.src = opt.icon;
-              $('<img>', {
-                src: opt.icon,
-                style: "margin-right: 4px;height: 18px;"
-              }).prependTo(this.selectLabel);
-            } else {
-              this.selectLabel.text(opt.label);
-            }
-            if (opt.options) {
-              if (this.optionExpandButton) {
-                this.optionExpandButton.hide();
-              }
-              if (this.optionSelectTrigger) {
-                this.optionSelectTrigger.show();
-                this.elementDiv.hide();
-                this.optionMenu = this._createMenu(opt.options, (v) => {
-                  this.optionSelectLabel.text(v);
-                  this.value(v);
-                });
-                var currentVal = this.element.val();
-                if (opt.options.indexOf(currentVal) !== -1) {
-                  this.optionSelectLabel.text(currentVal);
-                } else {
-                  this.value(opt.options[0]);
-                }
-              }
-            } else {
-              if (this.optionMenu) {
-                this.optionMenu.remove();
-                this.optionMenu = null;
-              }
-              if (this.optionSelectTrigger) {
-                this.optionSelectTrigger.hide();
-              }
-              if (opt.hasValue === false) {
-                this.oldValue = this.element.val();
-                this.element.val("");
-                this.elementDiv.hide();
-              } else {
-                if (this.oldValue !== undefined) {
-                  this.element.val(this.oldValue);
-                  delete this.oldValue;
-                }
-                this.elementDiv.show();
-              }
-              if (opt.expand && typeof opt.expand === 'function') {
-                this.optionExpandButton.show();
-                this.optionExpandButton.off('click');
-                this.optionExpandButton.on('click', function (evt) {
-                  evt.preventDefault();
-                  opt.expand.call(this);
-                })
-              } else {
-                this.optionExpandButton.hide();
-              }
-              this.element.trigger('change', this.propertyType, this.value());
-            }
-            if (image) {
-              image.onload = () => {
-                this._resize();
-              }
-              image.onerror = () => {
-                this._resize();
-              }
-            } else {
-              this._resize();
-            }
+          this.menu = this._createMenu(this.typeList, (v) => {
+            this.type(v)
+          });
+          if (currentType && !this.typeMap.hasOwnProperty(currentType)) {
+            this.type(this.typeList[0].value);
           }
-        }
-      },
-      validate: function () {
-        var result;
-        var value = this.value();
-        var type = this.type();
-        if (this.typeMap[type] && this.typeMap[type].validate) {
-          var val = this.typeMap[type].validate;
-          if (typeof val === 'function') {
-            result = val(value);
+        },
+        width: function (desiredWidth) {
+          this.uiWidth = desiredWidth;
+          this._resize();
+        },
+        value: function (value) {
+          if (!arguments.length) {
+            return this.element.val();
           } else {
-            result = val.test(value);
+            if (this.typeMap[this.propertyType].options) {
+              if (this.typeMap[this.propertyType].options.indexOf(value) === -1) {
+                value = "";
+              }
+              this.optionSelectLabel.text(value);
+            }
+            this.element.val(value);
+            this.element.trigger('change', this.type(), value);
           }
-        } else {
-          result = true;
+        },
+        type: function (type) {
+          if (!arguments.length) {
+            return this.propertyType;
+          } else {
+            var opt = this.typeMap[type];
+            if (opt && this.propertyType !== type) {
+              this.propertyType = type;
+              this.typeField.val(type);
+              this.selectLabel.empty();
+              var image;
+              if (opt.icon) {
+                image = new Image();
+                image.name = opt.icon;
+                image.src = opt.icon;
+                $('<img>', {
+                  src: opt.icon,
+                  style: "margin-right: 4px;height: 18px;"
+                }).prependTo(this.selectLabel);
+              } else {
+                this.selectLabel.text(opt.label);
+              }
+              if (opt.options) {
+                if (this.optionExpandButton) {
+                  this.optionExpandButton.hide();
+                }
+                if (this.optionSelectTrigger) {
+                  this.optionSelectTrigger.show();
+                  this.elementDiv.hide();
+                  this.optionMenu = this._createMenu(opt.options, (v) => {
+                    this.optionSelectLabel.text(v);
+                    this.value(v);
+                  });
+                  var currentVal = this.element.val();
+                  if (opt.options.indexOf(currentVal) !== -1) {
+                    this.optionSelectLabel.text(currentVal);
+                  } else {
+                    this.value(opt.options[0]);
+                  }
+                }
+              } else {
+                if (this.optionMenu) {
+                  this.optionMenu.remove();
+                  this.optionMenu = null;
+                }
+                if (this.optionSelectTrigger) {
+                  this.optionSelectTrigger.hide();
+                }
+                if (opt.hasValue === false) {
+                  this.oldValue = this.element.val();
+                  this.element.val("");
+                  this.elementDiv.hide();
+                } else {
+                  if (this.oldValue !== undefined) {
+                    this.element.val(this.oldValue);
+                    delete this.oldValue;
+                  }
+                  this.elementDiv.show();
+                }
+                if (opt.expand && typeof opt.expand === 'function') {
+                  this.optionExpandButton.show();
+                  this.optionExpandButton.off('click');
+                  this.optionExpandButton.on('click', function (evt) {
+                    evt.preventDefault();
+                    opt.expand.call(this);
+                  })
+                } else {
+                  this.optionExpandButton.hide();
+                }
+                this.element.trigger('change', this.propertyType, this.value());
+              }
+              if (image) {
+                image.onload = () => {
+                  this._resize();
+                }
+                image.onerror = () => {
+                  this._resize();
+                }
+              } else {
+                this._resize();
+              }
+            }
+          }
+        },
+        validate: function () {
+          var result;
+          var value = this.value();
+          var type = this.type();
+          if (this.typeMap[type] && this.typeMap[type].validate) {
+            var val = this.typeMap[type].validate;
+            if (typeof val === 'function') {
+              result = val(value);
+            } else {
+              result = val.test(value);
+            }
+          } else {
+            result = true;
+          }
+          if (result) {
+            this.uiSelect.removeClass('input-error');
+          } else {
+            this.uiSelect.addClass('input-error');
+          }
+          return result;
+        },
+        show: function () {
+          this.uiSelect.show();
+          this._resize();
+        },
+        hide: function () {
+          this.uiSelect.hide();
         }
-        if (result) {
-          this.uiSelect.removeClass('input-error');
-        } else {
-          this.uiSelect.addClass('input-error');
-        }
-        return result;
-      },
-      show: function () {
-        this.uiSelect.show();
-        this._resize();
-      },
-      hide: function () {
-        this.uiSelect.hide();
-      }
-    });
-  })(jQuery);
+      });
+    })(jQuery);
+  }
 }

@@ -1,8 +1,4 @@
 import {
-  INodes
-} from '../'
-
-import {
   Context,
   delegateTarget,
   $TYPES,
@@ -10,13 +6,15 @@ import {
 } from '../_base'
 
 import {
+  INodes,
   INode,
   INodeDef,
-  INotifications
+  INotifications,
+  IWorkspaces,
+  INodeEditor
 } from '../../../interfaces'
 import { ISerializer } from '.';
 import { II18n } from '../../../index';
-import { IWorkspaces } from '../../../../../red-widgets/src/workspaces/index';
 
 export interface IImporter {
   importNodes(newNodesObj: string, createNewIds?: boolean, createMissingWorkspace?: boolean)
@@ -38,6 +36,7 @@ export class Importer extends Context {
   @lazyInject(TYPES.notifications) $notifications: INotifications
   @lazyInject(TYPES.workspaces) $workspaces: IWorkspaces
   @lazyInject(TYPES.nodes) $nodes: INodes
+  @lazyInject(TYPES.editor) $editor: INodeEditor
 
   constructor(public serializer: ISerializer) {
     super()
@@ -119,7 +118,8 @@ export class Importer extends Context {
   protected _validateSubflows(newNodes: INode[]) {
     const {
       nodes,
-      RED,
+      $workspaces,
+      $i18n
     } = this
 
     const {
@@ -134,7 +134,7 @@ export class Importer extends Context {
         'getSubflow',
       ], nodes)
 
-    var activeWorkspace = RED.workspaces.active();
+    var activeWorkspace = $workspaces.active();
     //TODO: check the z of the subflow instance and check _that_ if it exists
     var activeSubflow = getSubflow(activeWorkspace);
     for (let i = 0; i < newNodes.length; i++) {
@@ -145,10 +145,10 @@ export class Importer extends Context {
         if (parent) {
           var err;
           if (subflowId === parent.id) {
-            err = new Error(RED._("notification.errors.cannotAddSubflowToItself"));
+            err = new Error($i18n.t("notification.errors.cannotAddSubflowToItself"));
           }
           if (subflowContains(subflowId, parent.id)) {
-            err = new Error(RED._("notification.errors.cannotAddCircularReference"));
+            err = new Error($i18n.t("notification.errors.cannotAddCircularReference"));
           }
           if (err) {
             // TODO: standardise error codes
@@ -167,7 +167,7 @@ export class Importer extends Context {
   _findTabsAndSubflowTemplates(newNodes: INode[], nodeZmap, createNewIds?: boolean) {
     const {
       nodes,
-      RED
+      $workspaces
     } = this
 
     let {
@@ -217,7 +217,7 @@ export class Importer extends Context {
           n.id = nid;
         }
         addWorkspace(n);
-        RED.workspaces.add(n);
+        $workspaces.add(n);
         new_workspaces.push(n);
       } else if (n.type === "subflow") {
         var matchingSubflow = checkForMatchingSubflow(n, nodeZmap[n.id]);
@@ -265,7 +265,8 @@ export class Importer extends Context {
   _addTab(new_workspaces, activeWorkspace) {
     const {
       nodes,
-      RED
+      $i18n,
+      $workspaces
     } = this
 
     let {
@@ -286,16 +287,16 @@ export class Importer extends Context {
         id: getID(),
         disabled: false,
         info: "",
-        label: RED._('workspace.defaultName', {
+        label: $i18n.t('workspace.defaultName', {
           number: 1
         })
       };
       addWorkspace(defaultWorkspace);
-      RED.workspaces.add(defaultWorkspace);
+      $workspaces.add(defaultWorkspace);
 
       // side effects!
       new_workspaces.push(defaultWorkspace);
-      activeWorkspace = RED.workspaces.active();
+      activeWorkspace = $workspaces.active();
 
       // return {
       //   new_workspaces,
@@ -449,7 +450,8 @@ export class Importer extends Context {
 
     const {
       nodes,
-      RED
+      $workspaces,
+      $editor
     } = this
 
     const {
@@ -495,7 +497,7 @@ export class Importer extends Context {
               if (!workspaces[node.z]) {
                 if (createMissingWorkspace) {
                   if (missingWorkspace === null) {
-                    missingWorkspace = RED.workspaces.add(null, true);
+                    missingWorkspace = $workspaces.add(null, true);
                     new_workspaces.push(missingWorkspace);
                   }
                   node.z = missingWorkspace.id;
@@ -510,7 +512,7 @@ export class Importer extends Context {
             if (node.z == null || (!workspaces[node.z] && !subflow_map[node.z])) {
               if (createMissingWorkspace) {
                 if (missingWorkspace === null) {
-                  missingWorkspace = RED.workspaces.add(null, true);
+                  missingWorkspace = $workspaces.add(null, true);
                   new_workspaces.push(missingWorkspace);
                 }
                 node.z = missingWorkspace.id;
@@ -583,7 +585,7 @@ export class Importer extends Context {
             }
           }
           addNode(node);
-          RED.editor.validateNode(node);
+          $editor.validateNode(node);
           node_map[n.id] = node;
           if (node._def.category != "config") {
             new_nodes.push(node);
@@ -604,7 +606,8 @@ export class Importer extends Context {
    */
   _remapWiresAndConfigNodeRefs(new_nodes: INode[], config: any) {
     const {
-      RED,
+      $nodes,
+      $editor,
       nodes
     } = this
 
@@ -659,7 +662,7 @@ export class Importer extends Context {
         if (n._def.defaults.hasOwnProperty(d3)) {
           if (n._def.defaults[d3].type && node_map[n[d3]]) {
             n[d3] = node_map[n[d3]].id;
-            configNode = RED.nodes.node(n[d3]);
+            configNode = $nodes.node(n[d3]);
             if (configNode && configNode.users.indexOf(n) === -1) {
               configNode.users.push(n);
             }
@@ -677,14 +680,14 @@ export class Importer extends Context {
       // get added
       if (activeSubflow && /^link /.test(n.type) && n.links) {
         n.links = n.links.filter(function (id) {
-          var otherNode = RED.nodes.node(id);
+          var otherNode = $nodes.node(id);
           return (otherNode && otherNode.z === activeWorkspace)
         });
       }
 
       // With all properties now remapped to point at valid nodes,
       // we can validate the node
-      RED.editor.validateNode(n);
+      $editor.validateNode(n);
     }
   }
 

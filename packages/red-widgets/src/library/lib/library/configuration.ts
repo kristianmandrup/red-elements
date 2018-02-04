@@ -16,6 +16,7 @@ import {
   IActions,
   IEvents,
 } from '../../../_interfaces'
+import { II18n } from '../../../../../red-runtime/src/index';
 
 const TYPES = $TYPES.all
 
@@ -31,10 +32,11 @@ export interface ILibraryConfiguration {
 @delegateTarget()
 export class LibraryConfiguration extends Context implements ILibraryConfiguration {
 
-  @lazyInject(TYPES.actions) actions: IActions
-  @lazyInject(TYPES.events) events: IEvents
-  @lazyInject(TYPES.common.menu) menu: IMenu
-  @lazyInject(TYPES.settings) settings: ISettings
+  @lazyInject(TYPES.actions) $actions: IActions
+  @lazyInject(TYPES.events) $events: IEvents
+  @lazyInject(TYPES.common.menu) $menu: IMenu
+  @lazyInject(TYPES.settings) $settings: ISettings
+  @lazyInject(TYPES.i18n) $i18n: II18n
 
   constructor(public library: Library) {
     super()
@@ -45,6 +47,9 @@ export class LibraryConfiguration extends Context implements ILibraryConfigurati
   }
 
   configure(options: any = {}) {
+    const {
+      $i18n
+    } = this
     const {
       RED
     } = this.library
@@ -60,27 +65,27 @@ export class LibraryConfiguration extends Context implements ILibraryConfigurati
       ], this.library)
 
     const {
-      actions,
-      events,
-      menu,
-      settings
+      $actions,
+      $events,
+      $menu,
+      $settings
     } = this
 
-    actions.add("core:library-export", exportFlow);
+    $actions.add("core:library-export", exportFlow);
 
-    events.on("view:selection-changed", (selection) => {
+    $events.on("view:selection-changed", (selection) => {
       if (!selection.nodes) {
-        menu.setDisabled("menu-item-export", true);
-        menu.setDisabled("menu-item-export-clipboard", true);
-        menu.setDisabled("menu-item-export-library", true);
+        $menu.setDisabled("menu-item-export", true);
+        $menu.setDisabled("menu-item-export-clipboard", true);
+        $menu.setDisabled("menu-item-export-library", true);
       } else {
-        menu.setDisabled("menu-item-export", false);
-        menu.setDisabled("menu-item-export-clipboard", false);
-        menu.setDisabled("menu-item-export-library", false);
+        $menu.setDisabled("menu-item-export", false);
+        $menu.setDisabled("menu-item-export-clipboard", false);
+        $menu.setDisabled("menu-item-export-library", false);
       }
     });
 
-    if (settings.theme("menu.menu-item-import-library") !== false) {
+    if ($settings.theme("menu.menu-item-import-library") !== false) {
       loadFlowLibrary(true);
     }
 
@@ -91,10 +96,10 @@ export class LibraryConfiguration extends Context implements ILibraryConfigurati
         autoOpen: false,
         width: 500,
         resizable: false,
-        title: RED._("library.exportToLibrary"),
+        title: $i18n.t("library.exportToLibrary"),
         buttons: [{
           id: "library-dialog-cancel",
-          text: RED._("common.label.cancel"),
+          text: $i18n.t("common.label.cancel"),
           click: function () {
             (<any>$(this)).dialog("close");
           }
@@ -102,7 +107,7 @@ export class LibraryConfiguration extends Context implements ILibraryConfigurati
         {
           id: "library-dialog-ok",
           class: "primary",
-          text: RED._("common.label.export"),
+          text: $i18n.t("common.label.export"),
           click: () => {
             //TODO: move this to RED.library
             var flowName: any = $("#node-input-library-filename").val();

@@ -77,7 +77,7 @@ export interface IKeyboardConfiguration {
   endEditShortcut(cancel: boolean)
   buildShortcutRow(container: JQuery<HTMLElement>, object: any)
   getSettingsPane(): JQuery<HTMLElement>
-  getShortcut(actionName): object
+  getShortcut(actionName: string): object
 }
 
 @delegateTarget()

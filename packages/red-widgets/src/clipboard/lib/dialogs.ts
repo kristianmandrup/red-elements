@@ -3,7 +3,12 @@ import {
   container,
   delegateTarget,
   Clipboard,
+  lazyInject,
+  $TYPES
 } from './_base'
+import { II18n } from '../../../../red-runtime/src/i18n/index';
+import { ICanvas } from '../../canvas/index';
+import { INotifications } from '../../notifications/lib/index';
 
 interface IDialog extends JQuery<HTMLElement> {
   dialog: Function
@@ -13,17 +18,27 @@ export interface IClipboardDialogs {
   setupDialogs()
 }
 
+const TYPES = $TYPES.all
+
 @delegateTarget()
 export class ClipboardDialogs extends Context implements IClipboardDialogs {
   disabled: boolean
+
+  @lazyInject(TYPES.i18n) $i18n: II18n
+  @lazyInject(TYPES.notifications) $notifications: INotifications
+  @lazyInject(TYPES.view) $view: ICanvas
 
   constructor(protected clipboard: Clipboard) {
     super()
   }
 
   setupDialogs() {
+    const {
+      $i18n,
+      $notifications,
+      $view
+    } = this
     let {
-      RED,
       dialog,
       dialogContainer,
       exportNodesDialog,
@@ -40,7 +55,7 @@ export class ClipboardDialogs extends Context implements IClipboardDialogs {
         resizable: false,
         buttons: [{
           id: "clipboard-dialog-cancel",
-          text: RED._("common.label.cancel"),
+          text: $i18n.t("common.label.cancel"),
           click: function () {
             dialog.dialog("close");
           }
@@ -48,7 +63,7 @@ export class ClipboardDialogs extends Context implements IClipboardDialogs {
         {
           id: "clipboard-dialog-close",
           class: "primary",
-          text: RED._("common.label.close"),
+          text: $i18n.t("common.label.close"),
           click: function () {
             dialog.dialog("close");
           }
@@ -56,21 +71,22 @@ export class ClipboardDialogs extends Context implements IClipboardDialogs {
         {
           id: "clipboard-dialog-copy",
           class: "primary",
-          text: RED._("clipboard.export.copy"),
+          text: $i18n.t("clipboard.export.copy"),
           click: function () {
             $("#clipboard-export").select();
             document.execCommand("copy");
             document.getSelection().removeAllRanges();
-            RED.notify(RED._("clipboard.nodesExported"));
+            const msg = $i18n.t("clipboard.nodesExported")
+            $notifications.notify(msg);
             dialog.dialog("close");
           }
         },
         {
           id: "clipboard-dialog-ok",
           class: "primary",
-          text: RED._("common.label.import"),
+          text: $i18n.t("common.label.import"),
           click: function () {
-            RED.view.importNodes($("#clipboard-import").val(), $("#import-tab > a.selected").attr('id') === 'import-tab-new');
+            $view.importNodes($("#clipboard-import").val(), $("#import-tab > a.selected").attr('id') === 'import-tab-new');
             dialog.dialog("close");
           }
         }
@@ -104,7 +120,7 @@ export class ClipboardDialogs extends Context implements IClipboardDialogs {
 
     importNodesDialog = '<div class="form-row">' +
       '<textarea style="resize: none; width: 100%; border-radius: 0px;font-family: monospace; font-size: 12px; background:#eee; padding-left: 0.5em; box-sizing:border-box;" id="clipboard-import" rows="5" placeholder="' +
-      RED._("clipboard.pasteNodes") +
+      $i18n.t("clipboard.pasteNodes") +
       '"></textarea>' +
       '</div>' +
       '<div class="form-row">' +

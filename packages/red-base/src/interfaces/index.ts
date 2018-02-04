@@ -26,6 +26,7 @@ export interface ISubflow extends INode {
   refresh(bool: boolean)
   removeOutput(removedSubflowOutputs: any[])
   removeInput()
+  removeSubflow(...args)
 }
 
 /**
@@ -58,22 +59,22 @@ export type EventType =
  */
 export interface IEvent {
   t: EventType,
-  events: IEvent[],
-  changed: boolean,
-  config: object,
-  rev: string, // revision (ie. version)
-  links: ILink[],
-  workspaces: any,
-  activeWorkspace: IWorkspace,
-  nodes: INode[],
-  subflow: ISubflow,
-  subflows: any,
-  removedLinks: any[],
-  subflowOutputs: any[],
-  subflowInputs: any[],
-  changes: any[],
-  node: INode,
-  outputMap: object,
-  order: any[],
-  dirty: boolean
+  events?: IEvent[],
+  changed?: boolean,
+  config?: object,
+  rev?: string, // revision (ie. version)
+  links?: ILink[],
+  workspaces?: any,
+  activeWorkspace?: IWorkspace,
+  nodes?: INode[],
+  subflow?: ISubflow,
+  subflows?: any,
+  removedLinks?: any[],
+  subflowOutputs?: any[],
+  subflowInputs?: any[],
+  changes?: any[],
+  node?: INode,
+  outputMap?: object,
+  order?: any[],
+  dirty?: boolean
 }

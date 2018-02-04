@@ -75,7 +75,7 @@ export class Events extends Context implements IEvents {
         let lastEmitted = handler(arg);
         this.lastEmitted = lastEmitted
       } catch (err) {
-        this.handleError(`RED.events.emit error: [${evt}]`, {
+        this.handleError(`events.emit error: [${evt}]`, {
           err
         });
       }

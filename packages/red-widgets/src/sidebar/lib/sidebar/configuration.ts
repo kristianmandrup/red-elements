@@ -13,11 +13,13 @@ import {
   Context,
   $,
   delegateTarget,
-  container
+  container,
+  lazyInject,
+  $TYPES
 } from './_base'
 
 interface ISidebar extends JQuery<HTMLElement> {
-  tabs: Function
+  tabs: any
 }
 
 export interface ISidebarConfiguration {
@@ -26,21 +28,36 @@ export interface ISidebarConfiguration {
 
 @delegateTarget()
 export class SidebarConfiguration extends Context implements ISidebarConfiguration {
+
+
+  $actions
+  $sidebar
+  $menu
+  $tabs
+  $events
+
   constructor(public sidebar: Sidebar) {
     super()
   }
 
   configure() {
-    const {
-      RED
+    let {
+      $tabs,
+      $actions
     } = this
+    const {
+      $menu,
+      $events,
+      $sidebar
+    } = this
+
 
     new Tabs()
 
     const sidebarElement = <ISidebar>$('#sidebar')
     sidebarElement.tabs();
 
-    this.sidebar.sidebar_tabs = RED.tabs
+    this.sidebar.sidebar_tabs = $tabs
 
     const {
       createTabs,
@@ -55,7 +72,7 @@ export class SidebarConfiguration extends Context implements ISidebarConfigurati
       ])
 
     // create Tabs
-    RED.tabs = createTabs({
+    $tabs = createTabs({
       id: "sidebar-tabs",
       onchange: (tab) => {
         $("#sidebar-content").children().hide();
@@ -107,15 +124,15 @@ export class SidebarConfiguration extends Context implements ISidebarConfigurati
         this.sidebarSeparator.chartWidth = $("#workspace").width();
         this.sidebarSeparator.chartRight = winWidth - $("#workspace").width() - $("#workspace").offset().left - 2;
 
-        if (!RED.menu.isSelected("menu-item-sidebar")) {
+        if (!$menu.isSelected("menu-item-sidebar")) {
           this.sidebarSeparator.opening = true;
           var newChartRight = 7;
           $("#sidebar").addClass("closing");
           $("#workspace").css("right", newChartRight);
           $("#editor-stack").css("right", newChartRight + 1);
           $("#sidebar").width(0);
-          RED.menu.setSelected("menu-item-sidebar", true);
-          RED.events.emit("sidebar:resize");
+          $menu.setSelected("menu-item-sidebar", true);
+          $events.emit("sidebar:resize");
         }
         this.sidebarSeparator.width = $("#sidebar").width();
       },
@@ -155,12 +172,12 @@ export class SidebarConfiguration extends Context implements ISidebarConfigurati
         $("#sidebar").width(newSidebarWidth);
 
         this.sidebar_tabs.resize();
-        RED.events.emit("sidebar:resize");
+        $events.emit("sidebar:resize");
       },
       stop: function (event, ui) {
         if (this.sidebarSeparator.closing) {
           $("#sidebar").removeClass("closing");
-          RED.menu.setSelected("menu-item-sidebar", false);
+          $menu.setSelected("menu-item-sidebar", false);
           if ($("#sidebar").width() < 180) {
             $("#sidebar").width(180);
             $("#workspace").css("right", 187);
@@ -169,14 +186,14 @@ export class SidebarConfiguration extends Context implements ISidebarConfigurati
         }
         $("#sidebar-separator").css("left", "auto");
         $("#sidebar-separator").css("right", ($("#sidebar").width() + 2) + "px");
-        RED.events.emit("sidebar:resize");
+        $events.emit("sidebar:resize");
       }
     });
 
     // add Actions
-    RED.actions = createActions((state) => {
+    $actions = createActions((state) => {
       if (state === undefined) {
-        RED.menu.toggleSelected("menu-item-sidebar");
+        $menu.toggleSelected("menu-item-sidebar");
       } else {
         toggleSidebar(state);
       }
@@ -184,12 +201,12 @@ export class SidebarConfiguration extends Context implements ISidebarConfigurati
 
     showSidebar();
 
-    RED.sidebar.info = new SidebarTabInfo();
-    RED.sidebar.SidebarTab = new SidebarTab(RED.sidebar)
-    //RED.sidebar.config = new SidebarTabConfig();
+    $sidebar.info = new SidebarTabInfo();
+    $sidebar.SidebarTab = new SidebarTab()
+    //$sidebar.config = new SidebarTabConfig();
     // hide info bar at start if screen rather narrow...
     if ($(window).width() < 600) {
-      RED.menu.setSelected("menu-item-sidebar", false);
+      $menu.setSelected("menu-item-sidebar", false);
     }
   }
 }

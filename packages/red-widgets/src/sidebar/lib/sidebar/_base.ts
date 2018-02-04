@@ -8,5 +8,7 @@ export {
   Tabs,
   I18n,
   marked,
-  JQElem
+  JQElem,
+  lazyInject,
+  $TYPES
 } from '../_base'

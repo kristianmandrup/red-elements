@@ -1,6 +1,10 @@
 import {
-  Context
-} from '../../../context'
+  Context,
+  lazyInject,
+  delegator,
+  delegateTarget,
+  $TYPES
+} from '../../_base'
 
 const { log } = console
 
@@ -11,7 +15,8 @@ import {
 
 import {
   INodeSet,
-  INode
+  INode,
+  IEvents
 } from '../../../interfaces'
 
 import {
@@ -19,6 +24,7 @@ import {
   NodeTypeManager
 } from './node-type-manager'
 
+const TYPES = $TYPES.all
 
 export interface INodesRegistry {
   // delegating to NodeSetManager
@@ -42,6 +48,13 @@ export interface INodesRegistry {
   setNodeList(list: INode[])
 }
 
+@delegateTarget()
+@delegator({
+  map: {
+    nodeSetManager: 'INodeSetManager',
+    nodeTypeManager: 'INodeTypeManager'
+  }
+})
 export class NodesRegistry extends Context {
   public moduleList = {};
   public nodeList = [];
@@ -63,14 +76,13 @@ export class NodesRegistry extends Context {
     }
   }
 
-  // TODO: lazy injection!?
+  @lazyInject(TYPES.events) $events: IEvents
+
   protected nodeSetManager: INodeSetManager
   protected nodeTypeManager: INodeTypeManager
 
   constructor() {
     super()
-    this.nodeSetManager = new NodeSetManager(this)
-    this.nodeTypeManager = new NodeTypeManager(this)
   }
 
   // delegating to NodeSetManager
@@ -110,13 +122,13 @@ export class NodesRegistry extends Context {
 
   setModulePendingUpdated(moduleId, version) {
     const {
-      RED,
+      $events,
       moduleList
     } = this
 
     let $module = this.getModule(moduleId)
     $module.pending_version = version;
-    RED.events.emit("registry:module-updated", {
+    $events.emit("registry:module-updated", {
       module: moduleId,
       version: version
     });

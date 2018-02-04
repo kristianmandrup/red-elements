@@ -31,6 +31,7 @@ export interface ICanvasConfiguration {
 @delegateTarget()
 export class CanvasConfiguration extends Context implements ICanvasConfiguration {
 
+  // TODO: use $ prefix convention
   @lazyInject(TYPES.nodes) nodes: INodes
   @lazyInject(TYPES.events) events: IEvents
   @lazyInject(TYPES.history) history: IHistory

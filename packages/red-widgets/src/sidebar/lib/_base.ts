@@ -12,7 +12,9 @@ export {
   container,
   delegateTarget,
   delegator,
-  delegateTo
+  delegateTo,
+  lazyInject,
+  $TYPES
 } from './container'
 
 export { I18n } from '@tecla5/red-runtime';
@@ -23,4 +25,4 @@ export {
 
 export {
   JQElem
-} from '@tecla5/red-base';
+} from '../../_interfaces';

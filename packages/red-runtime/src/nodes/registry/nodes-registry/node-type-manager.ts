@@ -2,10 +2,6 @@ import {
   NodesRegistry
 } from '.'
 
-import {
-  INodeSet
-} from '../../interfaces'
-
 export interface INodeTypeManager {
   registerNodeType(nt: string, def: any): NodesRegistry
   removeNodeType(nt: string): NodesRegistry
@@ -13,22 +9,35 @@ export interface INodeTypeManager {
 }
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  lazyInject,
+  $TYPES
+} from '../../_base'
 
+import {
+  IEvents,
+  II18n,
+  INodeSet
+} from '../../../interfaces';
+
+const TYPES = $TYPES.all
 const { log } = console
 
 export class NodeTypeManager extends Context implements INodeTypeManager {
+  @lazyInject(TYPES.events) $events: IEvents
+  @lazyInject(TYPES.i18n) $i18n: II18n
+
   constructor(public registry: NodesRegistry) {
     super()
   }
 
   registerNodeType(nt: string, def: any): NodesRegistry {
     const {
-      registry
+      registry,
+      $i18n,
+      $events
     } = this
     const {
-      RED,
       typeToId
     } = registry
     let {
@@ -57,14 +66,14 @@ export class NodeTypeManager extends Context implements INodeTypeManager {
         nodeSet
       })
 
-      
-    /* edited code start*/
-    def.set = {}
-    if (nodeSet)
-      def.set = nodeSet
-    else
+
+      /* edited code start*/
       def.set = {}
-    /* edited code end*/
+      if (nodeSet)
+        def.set = nodeSet
+      else
+        def.set = {}
+      /* edited code end*/
 
 
       this._validateObj(def.set, 'def.set', 'registerNodeType')
@@ -97,7 +106,7 @@ export class NodeTypeManager extends Context implements INodeTypeManager {
         if (args[0].indexOf(":") === -1) {
           args[0] = ns + ":" + args[0];
         }
-        var result = RED._.apply(null, args);
+        var result = $i18n.t.apply(null, args);
         if (result === args[0]) {
           result = original;
         }
@@ -106,17 +115,17 @@ export class NodeTypeManager extends Context implements INodeTypeManager {
 
       // TODO: too tightly coupled into palette UI
     }
-    RED.events.emit("registry:node-type-added", nt);
+    $events.emit("registry:node-type-added", nt);
     return registry
   }
 
   removeNodeType(nt: string): NodesRegistry {
     const {
-      registry
+      registry,
+      $events
     } = this
 
     let {
-      RED,
       nodeDefinitions
     } = registry
 
@@ -125,7 +134,7 @@ export class NodeTypeManager extends Context implements INodeTypeManager {
       throw new Error(`this api is subflow only (ie. 'subflow:xyz'). called with: ${nt}`);
     }
     delete nodeDefinitions[nt];
-    RED.events.emit("registry:node-type-removed", nt);
+    $events.emit("registry:node-type-removed", nt);
     return registry
   }
 

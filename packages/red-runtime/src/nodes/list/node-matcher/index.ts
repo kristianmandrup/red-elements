@@ -1,16 +1,17 @@
 import {
-  INodes
-} from '../'
-
-import {
   Context,
-  delegateTarget
+  delegateTarget,
+  lazyInject,
+  $TYPES
 } from '../_base'
 
 import {
   ISubflow,
-  INode
+  INode,
+  INodes
 } from '../../../interfaces'
+
+const TYPES = $TYPES.all
 
 const { log } = console
 
@@ -22,6 +23,8 @@ export interface INodeMatcher {
 
 @delegateTarget()
 export class NodeMatcher extends Context {
+  @lazyInject(TYPES.nodes) $nodes: INodes
+
   constructor(public nodes: INodes) {
     super()
   }
@@ -33,7 +36,7 @@ export class NodeMatcher extends Context {
    */
   checkForMatchingSubflow(subflow: INode, subflowNodes: INode[]): ISubflow | null {
     const {
-      RED
+      $nodes
     } = this
     const {
       createExportableNodeSet
@@ -47,7 +50,7 @@ export class NodeMatcher extends Context {
     var i;
     var match = null;
     try {
-      RED.nodes.eachSubflow((sf) => {
+      $nodes.eachSubflow((sf) => {
         this._validateNode(sf, 'sf', 'checkForMatchingSubflow', 'iterate subflow nodes')
 
         log('eachSubflow', {
@@ -60,7 +63,7 @@ export class NodeMatcher extends Context {
           sf.out.length != subflow.out.length) {
           return;
         }
-        var sfNodes = RED.nodes.filterNodes({
+        var sfNodes = $nodes.filterNodes({
           z: sf.id
         });
 

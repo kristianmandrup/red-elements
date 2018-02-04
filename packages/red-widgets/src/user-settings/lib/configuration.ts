@@ -5,13 +5,10 @@ import { UserSettingsDisplay } from './display';
 import {
   delegator,
   delegateTarget,
-  container
-} from './container'
-
-import {
+  container,
   lazyInject,
   $TYPES
-} from '../../_container'
+} from './container'
 
 import {
   IActions,
@@ -20,6 +17,8 @@ import {
 } from '../../_interfaces'
 
 import { ISettings } from '@tecla5/red-runtime'
+import { II18n } from '../../../../red-runtime/src/i18n/index';
+import { IUserSettings } from '../index';
 
 const TYPES = $TYPES.all
 
@@ -46,9 +45,10 @@ export interface IViewSetting {
 })
 export class UserSettingsConfiguration extends Context {
 
-  @lazyInject(TYPES.actions) actions: IActions
-  @lazyInject(TYPES.canvas) view: ICanvas
-  @lazyInject(TYPES.settings) settings: ISettings
+  @lazyInject(TYPES.actions) $actions: IActions
+  @lazyInject(TYPES.canvas) $view: ICanvas
+  @lazyInject(TYPES.settings) $settings: ISettings
+  @lazyInject(TYPES.i18n) $i18n: II18n
 
   allSettings = {}
   trayWidth = 700;
@@ -57,16 +57,17 @@ export class UserSettingsConfiguration extends Context {
 
   protected display: UserSettingsDisplay //= new UserSettingsDisplay(this.settings, this)
 
-  constructor() {
+  constructor(public settings: IUserSettings) {
     super()
   }
 
   configure() {
     const {
-      RED,
       rebind,
-      settings,
-      actions
+
+      $settings,
+      $actions,
+      $i18n
   } = this
 
     let {
@@ -89,20 +90,22 @@ export class UserSettingsConfiguration extends Context {
         'setInstanceVars',
         'addPane',
         'setSelected'
-      ], settings)
+      ], $settings)
 
     if (!actions) {
-      handleError('UserSettings: missing actions', RED);
+      handleError('UserSettings: missing actions', {
+        $settings
+      });
     }
 
-    actions.add("core:show-user-settings", show);
-    actions.add("core:show-help", () => {
+    $actions.add("core:show-user-settings", show);
+    $actions.add("core:show-help", () => {
       show('keyboard')
     });
 
     display.addPane({
       id: 'view',
-      title: RED._("menu.label.view.view"),
+      title: $i18n.t("menu.label.view.view"),
       get: createViewPane,
       close: () => {
         viewSettings.forEach(function (section: IViewSetting) {
@@ -121,23 +124,23 @@ export class UserSettingsConfiguration extends Context {
     viewSettings.forEach((section) => {
       section.options.forEach(function (opt: any) {
         if (opt.oldSetting) {
-          var oldValue = RED.settings.get(opt.oldSetting);
+          var oldValue = $settings.get(opt.oldSetting);
           if (oldValue !== undefined && oldValue !== null) {
-            settings.set(opt.setting, oldValue);
-            settings.remove(opt.oldSetting);
+            $settings.set(opt.setting, oldValue);
+            $settings.remove(opt.oldSetting);
           }
         }
         allSettings[opt.setting] = opt;
         if (opt.onchange) {
-          var value = settings.get(opt.setting);
+          var value = $settings.get(opt.setting);
           if (value === null && opt.hasOwnProperty('default')) {
             value = opt.default;
-            RED.settings.set(opt.setting, value);
+            $settings.set(opt.setting, value);
           }
 
           var callback = opt.onchange;
           if (typeof callback === 'string') {
-            callback = actions.get(callback);
+            callback = $actions.get(callback);
           }
           if (typeof callback === 'function') {
             callback.call(opt, value);
@@ -154,7 +157,7 @@ export class UserSettingsConfiguration extends Context {
 
   get viewSettings(): IViewSetting[] {
     const {
-      view
+      $view
     } = this
     return [{
       title: "menu.label.view.grid",
@@ -177,7 +180,7 @@ export class UserSettingsConfiguration extends Context {
         label: "menu.label.view.gridSize",
         type: "number",
         default: 20,
-        onchange: view.gridSize
+        onchange: $view.gridSize
       }
       ]
     },

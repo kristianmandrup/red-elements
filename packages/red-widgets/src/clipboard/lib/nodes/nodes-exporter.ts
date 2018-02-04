@@ -2,13 +2,27 @@ import {
   Context
 } from '../../../context'
 import { Clipboard } from '../../';
+import { lazyInject, $TYPES } from '../container';
+import { II18n } from '../../../../../red-runtime/src/index';
+import { ISettings } from '../../../../../red-runtime/src/settings/index';
+import { ICanvas } from '../../../canvas/index';
+import { INodes } from '../../../../../red-runtime/src/nodes/list/interface';
+import { IWorkspaces } from '../../../../../red-runtime/src/interfaces/index';
 
 interface IButton extends JQuery<HTMLElement> {
   button: Function
 }
 
+const TYPES = $TYPES.all
+
 export class ClipboardNodesExporter extends Context {
   disabled: boolean
+
+  @lazyInject(TYPES.i18n) $i18n: II18n
+  @lazyInject(TYPES.settings) $settings: ISettings
+  @lazyInject(TYPES.view) $view: ICanvas
+  @lazyInject(TYPES.nodes) $nodes: INodes
+  @lazyInject(TYPES.workspaces) $workspaces: IWorkspaces
 
   constructor(protected clipboard: Clipboard) {
     super()
@@ -17,7 +31,13 @@ export class ClipboardNodesExporter extends Context {
 
   exportNodes(clipboard: Clipboard) {
     const {
-      RED,
+      $i18n,
+      $settings,
+      $view,
+      $nodes,
+      $workspaces
+    } = this
+    const {
       disabled,
       dialog,
       dialogContainer,
@@ -28,13 +48,13 @@ export class ClipboardNodesExporter extends Context {
       return;
     }
 
-     //const clipboard = this
+    //const clipboard = this
     clipboard.validateDialogContainer()
 
     dialogContainer.empty();
     dialogContainer.append($(exportNodesDialog));
     dialogContainer.i18n();
-    let format = RED.settings.flowFilePretty ? "export-format-full" : "export-format-mini";
+    let format = $settings.get('flowFilePretty') ? "export-format-full" : "export-format-mini";
 
     const formatGroup = $("#export-format-group > a")
     formatGroup.click(function (evt) {
@@ -76,26 +96,27 @@ export class ClipboardNodesExporter extends Context {
 
       //const { clipboard } = this.clipboard
       if (type === 'export-range-selected') {
-        var selection = RED.view.selection();
-        clipboard._validateObj(selection, 'selection', 'exportNodes', 'exportRangeGroupLink.click')
-        clipboard._validateObj(nodes, 'RED.nodes', 'exportNodes')
+        var selection = $view.selection();
+        // clipboard._validateObj(selection, 'selection', 'exportNodes', 'exportRangeGroupLink.click')
+        // clipboard._validateObj(nodes, '$nodes', 'exportNodes')
 
         // Don't include the subflow meta-port nodes in the exported selection
-        nodes = RED.nodes.createExportableNodeSet(selection.nodes.filter(function (n) {
+        nodes = $nodes.createExportableNodeSet(selection.nodes.filter(function (n) {
           return n.type !== 'subflow'
         }));
       } else if (type === 'export-range-flow') {
-        var activeWorkspace = RED.workspaces.active();
-        clipboard._validateObj(activeWorkspace, 'activeWorkspace', 'exportNodes')
+        var activeWorkspace: string = $workspaces.active;
+        // clipboard._validateObj(activeWorkspace, 'activeWorkspace', 'exportNodes')
 
-        nodes = RED.nodes.filterNodes({
+        nodes = $nodes.filterNodes({
           z: activeWorkspace
         });
-        var parentNode = RED.nodes.workspace(activeWorkspace) || RED.nodes.subflow(activeWorkspace);
+        // TODO: FIX
+        var parentNode = $nodes.workspace(activeWorkspace) || $nodes.subflow(activeWorkspace);
         nodes.unshift(parentNode);
-        nodes = RED.nodes.createExportableNodeSet(nodes);
+        nodes = $nodes.createExportableNodeSet(nodes);
       } else if (type === 'export-range-full') {
-        nodes = RED.nodes.createCompleteNodeSet(false);
+        nodes = $nodes.createCompleteNodeSet(false);
       }
       if (nodes !== null) {
         if (format === "export-format-full") {
@@ -117,7 +138,7 @@ export class ClipboardNodesExporter extends Context {
     $("#clipboard-dialog-cancel").hide();
     $("#clipboard-dialog-copy").hide();
     $("#clipboard-dialog-close").hide();
-    var selection = RED.view.selection();
+    var selection = $view.selection();
     this._validateObj(selection, 'selection', 'exportNodes')
 
     const { nodes } = selection
@@ -141,7 +162,7 @@ export class ClipboardNodesExporter extends Context {
           return false;
         })
       });
-    dialog.dialog("option", "title", RED._("clipboard.exportNodes")).dialog("open");
+    dialog.dialog("option", "title", $i18n.t("clipboard.exportNodes")).dialog("open");
 
     $("#clipboard-export").focus();
     if (!document.queryCommandSupported("copy")) {

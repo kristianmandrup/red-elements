@@ -10,10 +10,11 @@ import {
 import {
   lazyInject,
   $TYPES
-} from '../../../_container'
+} from '../container'
 
 import {
-  INotifications
+  INotifications,
+  II18n
 } from '../../../_interfaces'
 
 const TYPES = $TYPES.all
@@ -30,8 +31,8 @@ export interface ILibraryPoster {
   container,
 })
 export class LibraryPoster extends Context implements ILibraryPoster {
-
-  @lazyInject(TYPES.notifications) notifications: INotifications
+  @lazyInject(TYPES.notifications) $notifications: INotifications
+  @lazyInject(TYPES.i18n) $i18n: II18n
 
   protected librariesApi: LibrariesApi
   constructor(public ui: LibraryUI) {
@@ -40,7 +41,6 @@ export class LibraryPoster extends Context implements ILibraryPoster {
 
   async postLibrary(data: any, options: any) {
     const url = 'library/' + options.url + '/' + options.fullpath
-
     const {
       librariesApi,
       onPostSuccess,
@@ -61,28 +61,28 @@ export class LibraryPoster extends Context implements ILibraryPoster {
 
   onPostSuccess(data, options: any = {}) {
     const {
-      RED,
-      notifications
+      $i18n,
+      $notifications
     } = this
-    notifications.notify(RED._("library.savedType", {
+    $notifications.notify($i18n.t("library.savedType", {
       type: options.type
     }), "success", "", 0);
   }
 
   onPostError(error) {
     const {
-      RED
-    } = this
-    const {
       jqXHR
     } = error
-    const { notifications } = this
+    const {
+      $i18n,
+      $notifications
+    } = this
     if (jqXHR.status === 401) {
-      notifications.notify(RED._("library.saveFailed", {
-        message: RED._("user.notAuthorized")
+      $notifications.notify($i18n.t("library.saveFailed", {
+        message: $i18n.t("user.notAuthorized")
       }), "error", "", 0);
     } else {
-      notifications.notify(RED._("library.saveFailed", {
+      $notifications.notify($i18n.t("library.saveFailed", {
         message: jqXHR.responseText
       }), "error", "", 0);
     }

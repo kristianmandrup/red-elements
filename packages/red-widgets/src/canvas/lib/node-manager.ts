@@ -12,7 +12,8 @@ import {
   INodes,
   INotifications,
   IWorkspaces,
-  ISubflow
+  ISubflow,
+  II18n
 } from '../../_interfaces'
 
 const TYPES = $TYPES.all
@@ -40,10 +41,12 @@ export interface ICanvasNodeManager {
 
 @delegateTarget()
 export class CanvasNodeManager extends Context implements ICanvasNodeManager {
-  @lazyInject(TYPES.nodes) nodes: INodes
-  @lazyInject(TYPES.notification) notification: INotifications
-  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
-  @lazyInject(TYPES.subflow) subflow: ISubflow
+  @lazyInject(TYPES.nodes) $nodes: INodes
+  @lazyInject(TYPES.notifications) $notifications: INotifications
+  @lazyInject(TYPES.workspaces) $workspaces: IWorkspaces
+  @lazyInject(TYPES.subflow) $subflow: ISubflow
+  @lazyInject(TYPES.i18n) $i18n: II18n
+
 
   constructor(protected canvas: Canvas) {
     super()
@@ -57,7 +60,6 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
     const {
       rebind,
       canvas,
-      nodes
     } = this
     const {
       getNodeElementPosition
@@ -95,21 +97,21 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
     const {
       //RED,
       canvas,
-      nodes,
-      workspaces
+      $nodes,
+      $workspaces
     } = this
     let {
       activeNodes,
       activeLinks
     } = canvas
 
-    var activeWorkspace = workspaces.active();
+    var activeWorkspace = $workspaces.active
 
-    activeNodes = nodes.filterNodes({
+    activeNodes = $nodes.filterNodes({
       z: activeWorkspace
     });
 
-    activeLinks = nodes.filterLinks({
+    activeLinks = $nodes.filterLinks({
       source: {
         z: activeWorkspace
       },
@@ -129,10 +131,12 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
     const {
       //RED,
       canvas,
-      nodes,
-      notification,
-      workspaces,
-      subflow
+
+      $nodes,
+      $notifications,
+      $workspaces,
+      $subflow,
+      $i18n
     } = this
     const {
       activeSubflow,
@@ -145,26 +149,26 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
     if (activeSubflow && m) {
       var subflowId = m[1];
       if (subflowId === activeSubflow.id) {
-        notification.notify(RED._('notification.error', {
-          message: RED._('notification.errors.cannotAddSubflowToItself')
+        $notifications.notify($i18n.t('notification.error', {
+          message: $i18n.t('notification.errors.cannotAddSubflowToItself')
         }), 'error', "", 0);
         return;
       }
-      if (nodes.subflowContains(m[1], activeSubflow.id)) {
-        notification.notify(RED._('notification.error', {
-          message: RED._('notification.errors.cannotAddCircularReference')
+      if ($nodes.subflowContains(m[1], activeSubflow.id)) {
+        $notifications.notify($i18n.t('notification.error', {
+          message: $i18n.t('notification.errors.cannotAddCircularReference')
         }), 'error', "", 0);
         return;
       }
     }
 
     var nn: any = {
-      id: nodes.id(),
-      z: workspaces.active()
+      id: $nodes.id(),
+      z: $workspaces.active
     };
 
     nn.type = type;
-    nn._def = nodes.getType(nn.type);
+    nn._def = $nodes.getType(nn.type);
 
     if (!m) {
       nn.inputs = nn._def.inputs || 0;
@@ -186,7 +190,7 @@ export class CanvasNodeManager extends Context implements ICanvasNodeManager {
         }
       }
     } else {
-      var subflow = nodes.subflow(m[1]);
+      var subflow = $nodes.subflow(m[1]);
       nn.inputs = subflow.in.length;
       nn.outputs = subflow.out.length;
     }

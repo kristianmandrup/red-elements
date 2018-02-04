@@ -6,13 +6,10 @@ import {
   delegator,
   delegateTarget,
   delegateTo,
-  container
-} from './_base'
-
-import {
+  container,
   lazyInject,
   $TYPES
-} from '../../_container'
+} from './_base'
 
 import {
   ISettings
@@ -36,8 +33,8 @@ export interface IUserConfiguration {
   }
 })
 export class UserConfiguration extends Context implements IUserConfiguration {
-  @lazyInject(TYPES.settings) settings: ISettings
-  @lazyInject(TYPES.menu) menu: IMenu
+  @lazyInject(TYPES.settings) $settings: ISettings
+  @lazyInject(TYPES.common.menu) $menu: IMenu
 
   constructor(public user: User) {
     super()
@@ -46,19 +43,23 @@ export class UserConfiguration extends Context implements IUserConfiguration {
   protected display: UserDisplay //= new UserDisplay(this.user)
 
   configure() {
-    const { settings, menu } = this
+    const {
+      $settings,
+      $menu
+    } = this
 
-    if (settings.user) {
-      if (!settings.editorTheme || !settings.editorTheme.hasOwnProperty("userMenu")) {
+    if ($settings.get('user')) {
+      const editorTheme = $settings.get('editorTheme')
+      if (!editorTheme || !editorTheme.hasOwnProperty('userMenu')) {
+        const user: any = $settings.get('user')
         const userMenu = this.userMenu
-        settings.user.image ? this.addUserProfile(userMenu) : this.addUserIcon(userMenu)
-        menu.init({
+        user.image ? this.addUserProfile(userMenu) : this.addUserIcon(userMenu)
+        $menu.init({
           id: "btn-usermenu",
           options: []
         });
 
         this.updateUserMenu();
-
       }
     }
   }
@@ -82,10 +83,11 @@ export class UserConfiguration extends Context implements IUserConfiguration {
 
   protected addUserProfile(userMenu) {
     const {
-      settings
+      $settings
     } = this
+    const user: any = $settings.get('user')
     $('<span class="user-profile"></span>').css({
-      backgroundImage: "url(" + settings.user.image + ")",
+      backgroundImage: "url(" + user.image + ")",
     }).appendTo(userMenu.find("a"));
   }
 }

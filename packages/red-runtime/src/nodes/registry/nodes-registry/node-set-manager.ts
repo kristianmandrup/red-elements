@@ -3,8 +3,9 @@ import {
 } from '.'
 
 import {
-  INodeSet
-} from '../../interfaces'
+  INodeSet,
+  IEvents
+} from '../../../interfaces'
 
 export interface INodeSetManager {
   addNodeSet(ns: INodeSet): NodesRegistry
@@ -16,19 +17,26 @@ export interface INodeSetManager {
 }
 
 import {
-  Context
-} from '../../../context'
+  Context,
+  lazyInject,
+  $TYPES
+} from '../../_base'
+
+const TYPES = $TYPES.all
 
 const { log } = console
 
 export class NodeSetManager extends Context implements INodeSetManager {
+  @lazyInject(TYPES.events) $events: IEvents
+
   constructor(public registry: NodesRegistry) {
     super()
   }
 
   addNodeSet(ns: INodeSet): NodesRegistry {
     const {
-      registry
+      registry,
+      $events
     } = this
 
     let {
@@ -73,7 +81,7 @@ export class NodeSetManager extends Context implements INodeSetManager {
       moduleList[ns.module].pending_version = ns.pending_version;
     }
     moduleList[ns.module].sets[ns.name] = ns;
-    RED.events.emit("registry:node-set-added", ns);
+    $events.emit("registry:node-set-added", ns);
 
     this.setInstanceVars({
       typeToId,
@@ -85,7 +93,8 @@ export class NodeSetManager extends Context implements INodeSetManager {
 
   removeNodeSet(id: string): INodeSet {
     const {
-      registry
+      registry,
+      $events
     } = this
 
     let {
@@ -111,7 +120,7 @@ export class NodeSetManager extends Context implements INodeSetManager {
     if (Object.keys(moduleList[ns.module].sets).length === 0) {
       delete moduleList[ns.module];
     }
-    RED.events.emit("registry:node-set-removed", ns);
+    $events.emit("registry:node-set-removed", ns);
     return ns;
   }
 
@@ -128,7 +137,8 @@ export class NodeSetManager extends Context implements INodeSetManager {
 
   enableNodeSet(id: string): NodesRegistry {
     const {
-      registry
+      registry,
+      $events
     } = this
     const {
       RED,
@@ -137,13 +147,14 @@ export class NodeSetManager extends Context implements INodeSetManager {
 
     var ns = nodeSets[id];
     ns.enabled = true;
-    RED.events.emit("registry:node-set-enabled", ns);
+    $events.emit("registry:node-set-enabled", ns);
     return registry
   }
 
   disableNodeSet(id: string): NodesRegistry {
     const {
-      registry
+      registry,
+      $events
     } = this
     const {
       RED,
@@ -152,7 +163,7 @@ export class NodeSetManager extends Context implements INodeSetManager {
 
     var ns = nodeSets[id];
     ns.enabled = false;
-    RED.events.emit("registry:node-set-disabled", ns);
+    $events.emit("registry:node-set-disabled", ns);
     return registry
   }
 

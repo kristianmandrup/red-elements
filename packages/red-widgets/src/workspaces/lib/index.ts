@@ -119,7 +119,7 @@ export interface IWorkspaces {
   /**
    * Get active workspace
    */
-  active: boolean
+  active: string
 
   /**
    * Shows workspace tabs with given id
@@ -157,7 +157,7 @@ export class Workspaces extends Context {
     return new Tabs(options)
   }
 
-  public activeWorkspace: number = 0
+  public activeWorkspace: string
   public workspaceIndex: number = 0
   public workspace_tabs: any  //TODO: Array<Tab> ??
 
@@ -316,7 +316,7 @@ export class Workspaces extends Context {
   /**
    * Get active workspace
    */
-  get active() {
+  get active(): string {
     return this.activeWorkspace
   }
 

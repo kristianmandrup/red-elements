@@ -21,7 +21,9 @@ import {
   delegator,
   I18n,
   marked,
-  JQElem
+  JQElem,
+  lazyInject,
+  $TYPES
 } from '../_base'
 
 import {
@@ -40,6 +42,7 @@ export {
 }
 
 import { TabInfoInitializer } from './initializer';
+import { ITextFormat, IBidi } from '../../../../text/index';
 
 export interface ISidebarTabInfo {
   init()
@@ -51,6 +54,8 @@ export interface ISidebarTabInfo {
   clear()
   set(html)
 }
+
+const TYPES = $TYPES.all
 
 @delegator({
   container,
@@ -77,6 +82,8 @@ export class SidebarTabInfo extends Context implements ISidebarTabInfo {
   protected initializer: TabInfoInitializer
   protected refresher: TabInfoRefresher
   protected i18n: I18n
+
+  @lazyInject(TYPES.bidi) $bidi: IBidi
 
   constructor() {
     super()
@@ -133,7 +140,7 @@ export class SidebarTabInfo extends Context implements ISidebarTabInfo {
 
   setInfoText(infoText) {
     const {
-      RED,
+      $bidi,
       infoSection
     } = this;
     const {
@@ -143,7 +150,7 @@ export class SidebarTabInfo extends Context implements ISidebarTabInfo {
       ])
     var info = addTargetToExternalLinks(
       $('<div class="node-help"><span class="bidiAware" dir=\"'
-        + text.bidi.resolveBaseTextDir(infoText)
+        + $bidi.resolveBaseTextDir(infoText)
         + '">' + infoText + '</span></div>')
     ).appendTo(infoSection.content);
 

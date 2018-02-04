@@ -10,8 +10,10 @@ import {
 
 import {
   INotifications,
-  IUser
+  IUser,
+  ISettings
 } from '../interfaces'
+import { II18n } from '../index';
 
 const TYPES = $TYPES.all
 
@@ -33,9 +35,10 @@ export interface IConnector {
  * - receive message on socket channel
  */
 export class Connector extends Context implements IConnector {
-  @lazyInject(TYPES.notifications) notifications: INotifications
-  @lazyInject(TYPES.user) user: IUser
-
+  @lazyInject(TYPES.notifications) $notifications: INotifications
+  @lazyInject(TYPES.user) $user: IUser
+  @lazyInject(TYPES.user) $settings: ISettings
+  @lazyInject(TYPES.i18n) $i18n: II18n
 
   protected auth_tokens: AuthTokens
   protected pending_auth: boolean
@@ -55,7 +58,7 @@ export class Connector extends Context implements IConnector {
 
   connect() {
     const {
-      RED
+      $settings
     } = this
 
     let location1
@@ -82,7 +85,7 @@ export class Connector extends Context implements IConnector {
     const location = window.location
     const path = this.pathOf(location);
 
-    const auth_tokens = RED.settings.get("auth-tokens");
+    const auth_tokens = $settings.get("auth-tokens");
     const pendingAuth = (auth_tokens != null);
 
     //const ws = new WebSocket(path);
@@ -185,7 +188,6 @@ export class Connector extends Context implements IConnector {
 
   protected _onClose() {
     let {
-      RED,
       reconnectAttempts,
       errornotification,
       clearErrorTimer,
@@ -195,9 +197,10 @@ export class Connector extends Context implements IConnector {
       connectCountdownTimer,
     } = this.communications
 
-    const { notifications } = this
-    const notify = notifications.notify.bind(notifications)
-
+    const {
+      $notifications,
+      $i18n
+    } = this
     const {
       connectWS
     } = this.rebind([
@@ -219,7 +222,7 @@ export class Connector extends Context implements IConnector {
       if (reconnectAttempts < 10) {
         setTimeout(connectWS, 1000);
         if (reconnectAttempts > 5 && errornotification == null) {
-          errornotification = notify.notify(RED._("notification.errors.lostConnection"), "error", true);
+          errornotification = $notifications.notify($i18n.t("notification.errors.lostConnection"), "error", true);
         }
       } else if (reconnectAttempts < 20) {
         setTimeout(connectWS, 2000);
@@ -228,17 +231,17 @@ export class Connector extends Context implements IConnector {
         connectCountdownTimer = setInterval(function () {
           connectCountdown--;
           if (connectCountdown === 0) {
-            errornotification.update(RED._("notification.errors.lostConnection"));
+            errornotification.update($i18n.t("notification.errors.lostConnection"));
             clearInterval(connectCountdownTimer);
             connectWS();
           } else {
-            var msg = RED._("notification.errors.lostConnectionReconnect", {
+            var msg = $i18n.t("notification.errors.lostConnectionReconnect", {
               time: connectCountdown
-            }) + ' <a href="#">' + RED._("notification.errors.lostConnectionTry") + '</a>';
+            }) + ' <a href="#">' + $i18n.t("notification.errors.lostConnectionTry") + '</a>';
             errornotification.update(msg);
             $(errornotification).find("a").click(function (e) {
               e.preventDefault();
-              errornotification.update(RED._("notification.errors.lostConnection"));
+              errornotification.update($i18n.t("notification.errors.lostConnection"));
               clearInterval(connectCountdownTimer);
               connectWS();
             })
@@ -257,7 +260,9 @@ export class Connector extends Context implements IConnector {
       subscriptions
     } = this.communications
 
-    const { user } = this
+    const {
+      $user
+    } = this
 
     const {
       completeConnection,
@@ -280,7 +285,7 @@ export class Connector extends Context implements IConnector {
         } else if (msg.auth === "fail") {
           // anything else is an error...
           active = false;
-          await user.login({
+          await $user.login({
             updateMenu: true
           })
           connectWS()
@@ -288,7 +293,8 @@ export class Connector extends Context implements IConnector {
       } else if (msg.topic) {
         for (let t in subscriptions) {
           if (subscriptions.hasOwnProperty(t)) {
-            var re = new RegExp("^" + t.replace(/([\[\]\?\(\)\\\\$\^\*\.|])/g, "\\$1").replace(/\+/g, "[^/]+").replace(/\/#$/, "(\/.*)?") + "$");
+            const topic = + t.replace(/([\[\]\?\(\)\\\\$\^\*\.|])/g, "\\$1").replace(/\+/g, "[^/]+").replace(/\/#$/, "(\/.*)?")
+            var re = new RegExp("^" + topic + "$");
             if (re.test(msg.topic)) {
               var subscribers = subscriptions[t];
               if (subscribers) {

@@ -7,7 +7,15 @@ import {
   $TYPES,
 } from './_base'
 
-import { INodes, IHistory } from '../../_interfaces'
+import {
+  INodes,
+  IHistory,
+} from '../../_interfaces'
+
+import {
+  IEvent
+} from '@tecla5/red-base'
+
 
 const TYPES = $TYPES.all
 
@@ -18,8 +26,8 @@ export interface ICanvasKeyboard {
 @delegateTarget()
 export class CanvasKeyboard extends Context implements ICanvasKeyboard {
 
-  @lazyInject(TYPES.nodes) nodes: INodes
-  @lazyInject(TYPES.history) history: IHistory
+  @lazyInject(TYPES.nodes) $nodes: INodes
+  @lazyInject(TYPES.history) $history: IHistory
 
   constructor(protected canvas: Canvas) {
     super()
@@ -31,8 +39,9 @@ export class CanvasKeyboard extends Context implements ICanvasKeyboard {
   endKeyboardMove() {
     const {
       canvas,
-      nodes,
-      history
+
+      $nodes,
+      $history
     } = this
     const {
       moving_set
@@ -66,12 +75,13 @@ export class CanvasKeyboard extends Context implements ICanvasKeyboard {
         delete moving_set[i].oy;
       }
       redraw();
-      history.push({
+      const event: IEvent = {
         t: 'move',
         nodes: ns,
-        dirty: nodes.dirty()
-      });
-      nodes.dirty(true);
+        dirty: $nodes.dirty()
+      }
+      $history.push(event);
+      $nodes.dirty(true);
     }
 
     setInstanceVars({

@@ -35,9 +35,9 @@ export interface ICanvasEventManager {
 
 @delegateTarget()
 export class CanvasEventManager extends Context implements ICanvasEventManager {
-  @lazyInject(TYPES.nodes) nodes: INodes
-  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
-  @lazyInject(TYPES.menu) menu: IMenu
+  @lazyInject(TYPES.nodes) $nodes: INodes
+  @lazyInject(TYPES.workspaces) $workspaces: IWorkspaces
+  @lazyInject(TYPES.common.menu) $menu: IMenu
 
   constructor(protected canvas: Canvas) {
     super()
@@ -85,9 +85,10 @@ export class CanvasEventManager extends Context implements ICanvasEventManager {
       RED,
       canvas,
       rebind,
-      nodes,
-      menu,
-      workspaces
+
+      $nodes,
+      $menu,
+      $workspaces
     } = this
     const {
       mouse_position
@@ -118,10 +119,10 @@ export class CanvasEventManager extends Context implements ICanvasEventManager {
     var scrollStartLeft = chart.scrollLeft();
     var scrollStartTop = chart.scrollTop();
 
-    activeSubflow = nodes.subflow(event.workspace);
+    activeSubflow = $nodes.subflow(event.workspace);
 
-    menu.setDisabled('menu-item-workspace-edit', activeSubflow);
-    menu.setDisabled('menu-item-workspace-delete', workspaces.count == 1 || activeSubflow);
+    $menu.setDisabled('menu-item-workspace-edit', activeSubflow);
+    $menu.setDisabled('menu-item-workspace-delete', $workspaces.count == 1 || activeSubflow);
 
     if (workspaceScrollPositions[event.workspace]) {
       chart.scrollLeft(workspaceScrollPositions[event.workspace].left);
@@ -137,7 +138,7 @@ export class CanvasEventManager extends Context implements ICanvasEventManager {
       mouse_position[1] += scrollDeltaTop;
     }
     clearSelection();
-    nodes.eachNode(function (n) {
+    $nodes.eachNode(function (n) {
       n.dirty = true;
     });
     updateSelection();

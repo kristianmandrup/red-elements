@@ -54,6 +54,7 @@ import {
 import { SidebarConfiguration } from './configuration';
 
 export interface ISidebar {
+  tabs: ITabs
   /**
    * Create new Tabs
    * @param options
