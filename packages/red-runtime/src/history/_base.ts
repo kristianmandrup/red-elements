@@ -3,5 +3,7 @@ export {
 } from '../context'
 
 export {
-  delegator
+  delegator,
+  $TYPES,
+  lazyInject
 } from '../_container'

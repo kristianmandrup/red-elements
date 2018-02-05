@@ -9,6 +9,7 @@ import {
   ISettingsApi,
   IBaseApi
 } from '../api';
+import { delegateTarget } from '../../../red-widgets/src/node-editor/lib/container';
 
 export interface ISettingsLoader {
   load(): Promise<any>
@@ -19,6 +20,7 @@ export interface ISettingsLoader {
     settingsApi: 'ISettingsApi'
   }
 })
+@delegateTarget()
 export class SettingsLoader extends Context implements ISettingsLoader {
   settingsApi: ISettingsApi
 

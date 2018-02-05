@@ -69,7 +69,7 @@ export class FlowErrorHandler extends Context implements IFlowErrorHandler {
           }
           var errorMessage;
           if (msg) {
-            errorMessage = redUtil.cloneMessage(msg);
+            errorMessage = $redUtils.cloneMessage(msg);
           } else {
             errorMessage = {};
           }

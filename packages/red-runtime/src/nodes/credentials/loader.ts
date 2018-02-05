@@ -1,6 +1,11 @@
 import {
-  Context
-} from '../../context'
+  Context,
+  delegateTarget,
+  lazyInject,
+  $TYPES
+} from '../_base'
+
+const TYPES = $TYPES.all
 
 import {
   crypto
@@ -10,6 +15,8 @@ import {
   NodeCredentials,
   INodeCredentials
 } from './'
+import { ILogger } from '../../log/logger';
+import { ISettings } from '../../index';
 
 export interface INodeCredentialsLoader {
   /**
@@ -19,7 +26,11 @@ export interface INodeCredentialsLoader {
   load(credentials: any): Promise<any>
 }
 
+@delegateTarget()
 export class NodeCredentialsLoader extends Context implements INodeCredentialsLoader {
+  @lazyInject(TYPES.logger) $log: ILogger
+  @lazyInject(TYPES.settings) $settings: ISettings
+
   constructor(public nodeCredentials: INodeCredentials) {
     super()
   }
@@ -32,12 +43,11 @@ export class NodeCredentialsLoader extends Context implements INodeCredentialsLo
     const {
       nodeCredentials,
       rebind,
-      _decryptCredentials
+      _decryptCredentials,
+
+      $log,
+      $settings,
     } = this
-    const {
-      log,
-      settings,
-    } = nodeCredentials
     let {
       encryptedCredentials,
       encryptionKey,
@@ -69,30 +79,30 @@ export class NodeCredentialsLoader extends Context implements INodeCredentialsLo
     if (encryptionEnabled === null) {
       var defaultKey;
       try {
-        defaultKey = settings.get('_credentialSecret');
+        defaultKey = $settings.get('_credentialSecret');
       } catch (err) { }
       if (defaultKey) {
         defaultKey = crypto.createHash('sha256').update(defaultKey).digest();
       }
       var userKey;
       try {
-        userKey = settings.get('credentialSecret');
+        userKey = $settings.get('credentialSecret');
       } catch (err) {
         userKey = false;
       }
       if (userKey === false) {
-        log.debug("red/runtime/nodes/credentials.load : user disabled encryption");
+        $log.debug("red/runtime/nodes/credentials.load : user disabled encryption");
         // User has disabled encryption
         encryptionEnabled = false;
         // Check if we have a generated _credSecret to decrypt with and remove
         if (defaultKey) {
-          log.debug("red/runtime/nodes/credentials.load : default key present. Will migrate");
+          $log.debug("red/runtime/nodes/credentials.load : default key present. Will migrate");
           if (credentialsEncrypted) {
             try {
               credentials = _decryptCredentials(defaultKey, credentials)
             } catch (err) {
               credentials = {};
-              log.warn(log._("nodes.credentials.error", {
+              $log.warn($log._("nodes.credentials.error", {
                 message: err.toString()
               }))
             }
@@ -101,13 +111,13 @@ export class NodeCredentialsLoader extends Context implements INodeCredentialsLo
           removeDefaultKey = true;
         }
       } else if (typeof userKey === 'string') {
-        log.debug("red/runtime/nodes/credentials.load : user provided key");
+        $log.debug("red/runtime/nodes/credentials.load : user provided key");
         // User has provided own encryption key, get the 32-byte hash of it
         encryptionKey = crypto.createHash('sha256').update(userKey).digest();
         encryptionEnabled = true;
 
         if (defaultKey) {
-          log.debug("red/runtime/nodes/credentials.load : default key present. Will migrate");
+          $log.debug("red/runtime/nodes/credentials.load : default key present. Will migrate");
           // User has provided their own key, but we already have a default key
           // Decrypt using default key
           if (credentialsEncrypted) {
@@ -115,7 +125,7 @@ export class NodeCredentialsLoader extends Context implements INodeCredentialsLo
               credentials = _decryptCredentials(defaultKey, credentials)
             } catch (err) {
               credentials = {};
-              log.warn(log._("nodes.credentials.error", {
+              $log.warn($log._("nodes.credentials.error", {
                 message: err.toString()
               }))
             }
@@ -124,27 +134,27 @@ export class NodeCredentialsLoader extends Context implements INodeCredentialsLo
           removeDefaultKey = true;
         }
       } else {
-        log.debug("red/runtime/nodes/credentials.load : no user key present");
+        $log.debug("red/runtime/nodes/credentials.load : no user key present");
         // User has not provide their own key
         encryptionKey = defaultKey;
         encryptionEnabled = true;
         if (encryptionKey === undefined) {
-          log.debug("red/runtime/nodes/credentials.load : no default key present - generating one");
+          $log.debug("red/runtime/nodes/credentials.load : no default key present - generating one");
           // No user-provided key, no generated key
           // Generate a new key
           defaultKey = crypto.randomBytes(32).toString('hex');
           try {
-            setupEncryption = settings.set('_credentialSecret', defaultKey);
+            setupEncryption = $settings.set('_credentialSecret', defaultKey);
             encryptionKey = crypto.createHash('sha256').update(defaultKey).digest();
           } catch (err) {
-            log.debug("red/runtime/nodes/credentials.load : settings unavailable - disabling encryption");
+            $log.debug("red/runtime/nodes/credentials.load : settings unavailable - disabling encryption");
             // Settings unavailable
             encryptionEnabled = false;
             encryptionKey = null;
           }
           dirty = true;
         } else {
-          log.debug("red/runtime/nodes/credentials.load : using default key");
+          $log.debug("red/runtime/nodes/credentials.load : using default key");
         }
       }
     }
@@ -161,7 +171,7 @@ export class NodeCredentialsLoader extends Context implements INodeCredentialsLo
       } catch (err) {
         credentialCache = {};
         markDirty();
-        log.warn(log._("nodes.credentials.error", {
+        $log.warn($log._("nodes.credentials.error", {
           message: err.toString()
         }))
 

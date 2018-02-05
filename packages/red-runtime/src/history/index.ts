@@ -14,8 +14,6 @@
  * limitations under the License.
  **/
 
-import * as Stack from 'tiny-stack'
-
 import {
   IEvent,
 } from '../interfaces'
@@ -26,10 +24,12 @@ import {
 } from './undo'
 
 import {
-  Context
+  Context,
+  $TYPES
 } from './_base'
 
 import { isNull } from 'util';
+import { lazyInject } from '../../../red-widgets/src/search/lib/container';
 
 export {
   Undo,
@@ -46,14 +46,28 @@ export interface IHistory {
 
   push(ev: IEvent)
   pop()
-  peek()
+  peek(): any
   undo()
 }
 
+export interface IStack {
+  data: any[]
+  push(item: any): void
+  pop(): any
+  peek(): any
+  length(): number
+}
+
+const TYPES = $TYPES.all
+
 export class History extends Context implements IHistory {
   // SEE: https://github.com/avoidwork/tiny-stack/blob/master/src/constructor.js
-  protected _stack = new Stack()
-  protected _undo: IUndo = new Undo()
+
+  @lazyInject(TYPES.event.stack) $stack: IStack
+  @lazyInject(TYPES.event.undo) $undo: IUndo
+
+  // protected _stack = new Stack()
+  // protected _undo: IUndo = new Undo()
 
   constructor() {
     super()
@@ -66,11 +80,11 @@ export class History extends Context implements IHistory {
   }
 
   get list(): any[] {
-    return this._stack.data || []
+    return this.$stack.data || []
   }
 
   get depth(): number {
-    return this._stack.length()
+    return this.$stack.length()
   }
 
   /**
@@ -78,7 +92,7 @@ export class History extends Context implements IHistory {
    * @param ev
    */
   push(ev: IEvent) {
-    this._stack.push(ev);
+    this.$stack.push(ev);
     return this
   }
 
@@ -88,8 +102,8 @@ export class History extends Context implements IHistory {
    * Return self for more chaining
    */
   undo() {
-    const ev: IEvent = this._stack.pop();
-    this._undo.undoEvent(ev)
+    const ev: IEvent = this.$stack.pop();
+    this.$undo.undoEvent(ev)
     return this
   }
 
@@ -97,15 +111,13 @@ export class History extends Context implements IHistory {
    * Pop top event from stack
    */
   pop() {
-    return this._stack.pop();
+    return this.$stack.pop();
   }
 
   /**
    * Peek at top event from stack
    */
   peek() {
-    return this._stack.peek()
+    return this.$stack.peek()
   }
-
-
 }

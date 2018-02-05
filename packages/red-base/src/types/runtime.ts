@@ -1,5 +1,9 @@
 export const runtime = {
   actions: 'IActions',
+  event: {
+    stack: 'IStack',
+    undo: 'IUndo'
+  },
   events: 'IEvents',
   communications: 'ICommunications',
   history: 'IHistory',

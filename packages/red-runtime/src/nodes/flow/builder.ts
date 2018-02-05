@@ -11,6 +11,8 @@ import {
 const TYPES = $TYPES.all
 
 import { Flow } from './index';
+import { ILogger } from '../../log/logger';
+import { IRegistry, IFlowUtils } from '../../index';
 
 export interface IFlowBuilder {
   createNode(type: string, config: any)
@@ -20,6 +22,10 @@ export interface IFlowBuilder {
 @delegateTarget()
 export class FlowBuilder extends Context implements IFlowBuilder {
   @lazyInject(TYPES.redUtils) $redUtils: IRedUtils
+  @lazyInject(TYPES.logger) $log: ILogger
+  @lazyInject(TYPES.typeRegistry) $typeRegistry: IRegistry
+  @lazyInject(TYPES.flowUtils) $flowUtils: IFlowUtils
+
 
   constructor(protected flow: Flow) {
     super()
@@ -32,14 +38,14 @@ export class FlowBuilder extends Context implements IFlowBuilder {
    */
   createNode(type: string, config: any) {
     const {
-      flow
+      flow,
+      $log,
+      $typeRegistry,
+      $flowUtils
     } = this
 
     const {
       keys,
-      logger,
-      typeRegistry,
-      flowUtil
     } = flow
     const {
       log,
@@ -55,13 +61,13 @@ export class FlowBuilder extends Context implements IFlowBuilder {
     // function getNodeConstructor(type) {
     //   var id = nodeTypeToId[type];
 
-    var nt = typeRegistry.get(type);
+    var nt = $typeRegistry.get(type);
     if (nt) {
       var conf = clone(config);
       delete conf.credentials;
       for (var p in conf) {
         if (conf.hasOwnProperty(p)) {
-          flowUtil.mapEnvVarProperties(conf, p);
+          $flowUtils.mapEnvVarProperties(conf, p);
         }
       }
       try {
@@ -75,7 +81,7 @@ export class FlowBuilder extends Context implements IFlowBuilder {
         });
       }
     } else {
-      error(logger._("nodes.flow.unknown-type", {
+      error($log.t("nodes.flow.unknown-type", {
         type: type
       }));
     }

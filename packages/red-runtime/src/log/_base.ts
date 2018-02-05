@@ -5,7 +5,11 @@ export {
 export {
   delegator,
   delegateTarget,
-  lazyInject,
-  $TYPES
+  $TYPES,
+  lazyInject
 } from '../_container'
 
+export {
+  todo,
+  // autobind
+} from '../_decorators'

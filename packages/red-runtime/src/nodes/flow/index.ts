@@ -47,10 +47,10 @@ import {
 import {
   keys as logKeys
 } from '../../log/constants'
-import { FlowExecuter } from './executer';
-import { FlowBuilder } from './builder';
-import { FlowErrorHandler } from './error-handler';
-import { FlowStatusHandler } from './status-handler';
+import { FlowExecuter, IFlowExecuter } from './executer';
+import { FlowBuilder, IFlowBuilder } from './builder';
+import { FlowErrorHandler, IFlowErrorHandler } from './error-handler';
+import { FlowStatusHandler, IFlowStatusHandler } from './status-handler';
 
 export interface IFlow {
   id: string
@@ -73,10 +73,10 @@ export interface IFlow {
 
 @delegator({
   map: {
-    executer: 'FlowExecuter',
-    builder: 'FlowBuilder',
-    errorHandler: 'FlowErrorHandler',
-    statusHandler: 'FlowStatusHandler'
+    executer: 'IFlowExecuter',
+    builder: 'IFlowBuilder',
+    errorHandler: 'IFlowErrorHandler',
+    statusHandler: 'IFlowStatusHandler'
   }
 })
 export class Flow extends Context {
@@ -96,10 +96,10 @@ export class Flow extends Context {
 
   @lazyInject(TYPES.logger) $log: ILogger
 
-  protected executer: FlowExecuter // = new FlowExecuter(this)
-  protected builder: FlowBuilder // = new FlowBuilder(this)
-  protected errorHandler: FlowErrorHandler // = new FlowErrorHandler(this)
-  protected statusHandler: FlowStatusHandler // = new FlowStatusHandler(this)
+  protected executer: IFlowExecuter // = new FlowExecuter(this)
+  protected builder: IFlowBuilder // = new FlowBuilder(this)
+  protected errorHandler: IFlowErrorHandler // = new FlowErrorHandler(this)
+  protected statusHandler: IFlowStatusHandler // = new FlowStatusHandler(this)
 
   constructor(public configs = {}) {
     super()

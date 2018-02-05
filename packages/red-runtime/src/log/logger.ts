@@ -1,8 +1,15 @@
-import * as i18n from 'i18n'
+import {
+  Context,
+  delegateTarget,
+  lazyInject,
+  $TYPES
+} from './_base'
+
+const TYPES = $TYPES.all
 
 import {
-  Context
-} from '../context'
+  i18n
+} from '../_libs'
 
 import {
   Settings
@@ -19,6 +26,7 @@ import {
 import {
   ILogMessage
 } from './interfaces'
+import { ISettings } from '../index';
 
 export interface ILogger {
   addHandler(func: Function)
@@ -40,8 +48,9 @@ export class Logger extends Context implements ILogger {
   logHandlers = []
   loggerSettings = {}
 
-  // TODO: Fix - use service injection
-  settings = new Settings()
+  @lazyInject(TYPES.settings) $settings: ISettings
+  // settings = new Settings()
+
   verbose: boolean
   _: Function
   t: Function
@@ -52,12 +61,13 @@ export class Logger extends Context implements ILogger {
     let {
       metricsEnabled,
       logHandlers,
-      loggerSettings
+      loggerSettings,
+      rebind
     } = this
 
     const {
       addHandler
-    } = this.rebind([
+    } = rebind([
         'addHandler'
       ])
 

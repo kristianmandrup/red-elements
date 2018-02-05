@@ -3,8 +3,9 @@ import {
 } from './'
 
 import {
-  Context
-} from '../context'
+  Context,
+  delegateTarget
+} from './_base'
 
 export interface ISubscriber {
   subscribe(topic: string, callback: Function): void
@@ -13,6 +14,7 @@ export interface ISubscriber {
 
 const { log } = console
 
+@delegateTarget()
 export class Subscriber extends Context implements ISubscriber {
   constructor(public communications: Communications) {
     super()

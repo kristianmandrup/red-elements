@@ -1,9 +1,12 @@
-import * as util from 'util'
 const EventEmitter = require('events').EventEmitter
 
 import {
   Context
 } from '../context'
+
+import {
+  util
+} from '../_libs'
 
 import {
   levelNames,
@@ -34,7 +37,7 @@ export class LogHandler extends Context {
   metricsEnabled: boolean = false;
   keys = keys
 
-  // TODO: use LogSettings type
+  // TODO: use LogSettings type, rename to options
   constructor(settings?: any) {
     super()
 

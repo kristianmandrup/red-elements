@@ -19,19 +19,25 @@ import {
 } from '../../log'
 
 import {
-  Settings
+  Settings, ISettings
 } from '../../settings'
 
 import {
-  Context
-} from '../../context'
+  Context,
+  delegator,
+  lazyInject,
+  $TYPES
+} from '../_base'
+
+const TYPES = $TYPES.all
 
 import {
   crypto
 } from '../../_libs'
 
-import { NodeCredentialsLoader } from './loader';
-import { NodeCredentialsExporter } from './exporter';
+import { NodeCredentialsLoader, INodeCredentialsLoader } from './loader';
+import { NodeCredentialsExporter, INodeCredentialsExporter } from './exporter';
+import { ILogger } from '../../log/logger';
 
 export interface INodeCredentials {
   encryptedCredentials: any
@@ -41,8 +47,9 @@ export interface INodeCredentials {
   encryptionEnabled: boolean
   encryptionAlgorithm: string
   encryptionKey: any
-  log: Logger
-  settings: Settings
+
+  $log: ILogger
+  $settings: ISettings
 
   load(credentials: any): Promise<any>
   add(id: string, creds: any): INodeCredentials
@@ -54,6 +61,12 @@ export interface INodeCredentials {
   dirty: boolean
 }
 
+@delegator({
+  map: {
+    loader: 'INodeCredentialsLoader',
+    exporter: 'INodeCredentialsExporter'
+  }
+})
 export class NodeCredentials extends Context implements INodeCredentials {
   protected _dirty = false;
 
@@ -66,11 +79,13 @@ export class NodeCredentials extends Context implements INodeCredentials {
   encryptionKey;
 
   // TOODO: Fix - use service injection instead
-  log: Logger = new Logger()
-  settings: Settings = new Settings()
+  // log: Logger = new Logger()
+  // settings: Settings = new Settings()
+  @lazyInject(TYPES.logger) $log: ILogger
+  @lazyInject(TYPES.settings) $settings: ISettings
 
-  protected loader: NodeCredentialsLoader = new NodeCredentialsLoader(this)
-  protected exporter: NodeCredentialsExporter = new NodeCredentialsExporter(this)
+  protected loader: INodeCredentialsLoader // = new NodeCredentialsLoader(this)
+  protected exporter: INodeCredentialsExporter // = new NodeCredentialsExporter(this)
 
   // use service injection instead
   constructor(runtime?: any) {
@@ -219,7 +234,7 @@ export class NodeCredentials extends Context implements INodeCredentials {
     const {
       credentialsDef,
       credentialCache,
-      log
+      $log
     } = this
 
     const {
@@ -237,7 +252,7 @@ export class NodeCredentials extends Context implements INodeCredentials {
       var dashedType = nodeType.replace(/\s+/g, '-');
       var definition = credentialsDef[dashedType];
       if (!definition) {
-        log.warn(log._("nodes.credentials.not-registered", {
+        $log.warn($log.t("nodes.credentials.not-registered", {
           type: nodeType
         }));
         return;

@@ -75,7 +75,6 @@ export class Settings extends Context implements ISettings {
 
   protected tokenMatchExpr = /[?&]access_token=(.*?)(?:$|&)/
 
-
   @lazyInject(TYPES.localstorage) localStorage: ILocalStorage
 
   protected loader: ISettingsLoader

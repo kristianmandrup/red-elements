@@ -14,8 +14,9 @@
  * limitations under the License.
  **/
 import {
-  Context
-} from '../context'
+  Context,
+  delegator
+} from './_base'
 
 import {
   IConnector,
@@ -29,8 +30,11 @@ import {
 
 const { log } = console
 
+import {
+  WebSocket
+} from '../_libs'
+
 // https://www.npmjs.com/package/@types/ws
-import * as WebSocket from 'ws'
 
 // https://medium.com/factory-mind/websocket-node-js-express-step-by-step-using-typescript-725114ad5fe4
 
@@ -40,6 +44,12 @@ export interface ICommunications {
   unsubscribe(topic, callback)
 }
 
+@delegator({
+  map: {
+    connector: 'IConnector',
+    subscriber: 'ISubscriber'
+  }
+})
 export class Communications extends Context implements ICommunications {
 
   // TODO: perhaps make most/all protected?
@@ -55,14 +65,11 @@ export class Communications extends Context implements ICommunications {
   public ws: any
 
   // TODO: use injection
-  protected connector: IConnector
-  protected subscriber: ISubscriber
+  protected connector: IConnector // = new Connector(this)
+  protected subscriber: ISubscriber // = new Subscriber(this)
 
   constructor() {
     super()
-    // TODO: use injection
-    this.connector = new Connector(this)
-    this.subscriber = new Subscriber(this)
   }
 
   connect() {

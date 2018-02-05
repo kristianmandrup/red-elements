@@ -5,7 +5,8 @@ import {
 import {
   Context,
   lazyInject,
-  $TYPES
+  $TYPES,
+  delegateTarget
 } from './_base'
 
 import {
@@ -34,6 +35,7 @@ export interface IConnector {
  * - close socket channel
  * - receive message on socket channel
  */
+@delegateTarget()
 export class Connector extends Context implements IConnector {
   @lazyInject(TYPES.notifications) $notifications: INotifications
   @lazyInject(TYPES.user) $user: IUser

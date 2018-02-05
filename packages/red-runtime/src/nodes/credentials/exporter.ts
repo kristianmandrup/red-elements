@@ -1,6 +1,11 @@
 import {
-  Context
-} from '../../context'
+  Context,
+  delegateTarget,
+  lazyInject,
+  $TYPES
+} from '../_base'
+
+const TYPES = $TYPES.all
 
 import {
   crypto
@@ -10,6 +15,8 @@ import {
   NodeCredentials,
   INodeCredentials
 } from './'
+import { ILogger } from '../../log/logger';
+import { ISettings } from '../../index';
 
 export interface INodeCredentialsExporter {
   /**
@@ -18,7 +25,11 @@ export interface INodeCredentialsExporter {
   export(): Promise<any>
 }
 
+@delegateTarget()
 export class NodeCredentialsExporter extends Context implements INodeCredentialsExporter {
+  @lazyInject(TYPES.logger) $log: ILogger
+  @lazyInject(TYPES.settings) $settings: ISettings
+
   constructor(public nodeCredentials: INodeCredentials) {
     super()
   }
@@ -30,6 +41,8 @@ export class NodeCredentialsExporter extends Context implements INodeCredentials
     const {
       nodeCredentials,
       rebind,
+      $log,
+      $settings,
     } = this
 
     const {
@@ -46,8 +59,6 @@ export class NodeCredentialsExporter extends Context implements INodeCredentials
 
     const {
       dirty,
-      log,
-      settings,
       credentialCache,
       encryptedCredentials,
       encryptionEnabled,
@@ -59,14 +70,14 @@ export class NodeCredentialsExporter extends Context implements INodeCredentials
     if (encryptionEnabled) {
       if (dirty) {
         try {
-          log.debug("red/runtime/nodes/credentials.export : encrypting");
+          $log.debug("red/runtime/nodes/credentials.export : encrypting");
           var initVector = crypto.randomBytes(16);
           var cipher = crypto.createCipheriv(encryptionAlgorithm, encryptionKey, initVector);
           result = {
             "$": initVector.toString('hex') + cipher.update(JSON.stringify(credentialCache), 'utf8', 'base64') + cipher.final('base64')
           };
         } catch (err) {
-          log.warn(log._("nodes.credentials.error-saving", {
+          $log.warn($log.t("nodes.credentials.error-saving", {
             message: err.toString()
           }))
         }
@@ -78,8 +89,8 @@ export class NodeCredentialsExporter extends Context implements INodeCredentials
     markClean()
 
     if (removeDefaultKey) {
-      log.debug("red/runtime/nodes/credentials.export : removing unused default key");
-      return settings.delete('_credentialSecret').then(function () {
+      $log.debug("red/runtime/nodes/credentials.export : removing unused default key");
+      return $settings.delete('_credentialSecret').then(function () {
         removeDefaultKey = false;
         return result;
       })
