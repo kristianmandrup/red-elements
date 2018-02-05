@@ -19,58 +19,11 @@ const {
   log
 } = console
 
-export interface ITabs {
-  create(options, red : any)
+import {
+  ITabs
+} from './interface'
 
-  nextTab()
-
-  previousTab()
-
-  resize()
-
-  scrollEventHandler(evt, dir)
-
-
-  onTabClick()
-
-  updateScroll()
-
-  onTabDblClick()
-
-  isActivated(id)
-
-  activateTab(link)
-
-  activatePreviousTab()
-
-  activateNextTab()
-
-  updateTabWidths()
-
-  removeTab(id)
-
-  ids: string[]
-
-  addTabs(...tabs: Array<Object>)
-
-  addTab(tab)
-
-  count()
-
-  countOnPage()
-
-  contains(id)
-
-  renameTab(id, label)
-
-  order(order)
-
-  handleAddButtonClickedEvent(evt, options)
-
-  handleScrollMoveMouseClickEvent(evt)
-}
-
-export class Tabs extends Context {
+export class Tabs extends Context implements ITabs {
   public static create(options) {
     return new Tabs(options)
   }

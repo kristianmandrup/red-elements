@@ -7,4 +7,6 @@ export {
   delegateTo,
   EditableList,
   Searchbox,
+  lazyInject,
+  $TYPES
 } from '../_base'

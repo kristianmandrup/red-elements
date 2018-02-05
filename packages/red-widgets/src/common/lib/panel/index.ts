@@ -15,11 +15,11 @@
  **/
 import { Context, $ } from '../context';
 
-export interface IPanel {
-  resize(height: number)
-}
+import {
+  IPanel
+} from './interface'
 
-export class Panel extends Context {
+export class Panel extends Context implements IPanel {
   protected children: any
   protected container: any
   protected panelRatio: any

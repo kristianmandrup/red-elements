@@ -29,13 +29,9 @@ import { LibraryFlowsLoader } from './flows-loader';
 
 const { log } = console
 
-export interface ILibrary {
-  configure()
-  postLibraryFlow(flowName)
-  loadFlowsLibrary()
-  createUI(options)
-  exportFlow()
-}
+import {
+  ILibrary
+} from './interface'
 
 @delegator({
   container,

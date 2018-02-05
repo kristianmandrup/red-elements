@@ -93,21 +93,11 @@ import { FlowsLoader } from './loader';
 import { IFlowManager } from './flow-manager';
 import { IFlowsLoader } from '../../../../red-widgets/src/node-diff/lib/flows-loader';
 
-// var deprecated = require("../registry/deprecated");
 
-export interface IFlows {
-  load(): Promise<any>
-  setFlows(_config: any, type: string, muteLog: boolean): Promise<any>
-  loadFlows(): Promise<any> // TODO: returns IFlow??
-  getNode(id: string): INode
-  eachNode(cb: Function)
-  getFlows(): IFlow[]
+import {
+  IFlows
+} from './interface'
 
-  startFlows(type: string, diff: any, muteLog: boolean): Promise<any>
-  stopFlows(type: string, diff: any, muteLog: boolean): Promise<any>
-  addFlow(flow: IFlow): Promise<any>
-  checkTypeInUse(id: string): void
-}
 
 @delegator({
   map: {

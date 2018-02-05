@@ -25,19 +25,9 @@ import {
   container
 } from './_base'
 
-export interface ITray {
-  /**
-   * Configure Tray
-   */
-
-  configure()
-
-  show(options)
-
-  handleWindowResize()
-
-  close(): Promise<any>
-}
+import {
+  ITray
+} from './interface'
 
 @delegator({
   container,
@@ -47,7 +37,7 @@ export interface ITray {
     display: TrayDisplayer
   }
 })
-export class Tray extends Context {
+export class Tray extends Context implements ITray {
   stack: any = []
   editorStack: any = $("#editor-stack")
   openingTray: boolean = false

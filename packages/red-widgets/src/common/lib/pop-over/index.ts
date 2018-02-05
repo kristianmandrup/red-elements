@@ -32,24 +32,11 @@ import {
   autobind
 } from '../../../_decorators'
 
-export interface IPopover {
-  /**
-   * Set content
-   */
-  setContent(_content)
+import {
+  IPopover
+} from './interface'
 
-  /**
-   * open
-   */
-  open()
-
-  /**
-   * close
-   */
-  close()
-}
-
-export class Popover extends Context {
+export class Popover extends Context implements IPopover {
 
   public static create(ctx) {
     return new Popover(ctx)

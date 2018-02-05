@@ -31,13 +31,10 @@ interface ISearchResults extends JQuery<HTMLElement> {
 import {
   container,
   delegator,
-  delegateTo
-} from './_base'
-
-import {
+  delegateTo,
   lazyInject,
   $TYPES
-} from '../../../_container'
+} from './_base'
 
 import {
   INotifications

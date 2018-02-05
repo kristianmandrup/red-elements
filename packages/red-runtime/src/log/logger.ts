@@ -28,20 +28,6 @@ import {
 } from './interfaces'
 import { ISettings } from '../index';
 
-export interface ILogger {
-  addHandler(func: Function)
-  removeHandler(func: Function)
-  log(msg: ILogMessage)
-  info(msg: any): void
-  warn(msg: any)
-  error(msg: any)
-  trace(msg: any)
-  debug(msg: any)
-  metric()
-  audit(msg: ILogMessage, req: any)
-  _: Function
-  t: Function
-}
 
 export class Logger extends Context implements ILogger {
   metricsEnabled: boolean = false

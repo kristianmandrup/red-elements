@@ -15,25 +15,14 @@
  **/
 import { Context, $ } from '../context';
 
-export interface IMenu {
-  menuItems: any
-  createMenuItem(opt)
-  setInitialState(opt, link)
-  triggerAction(id, args?)
-  isSelected(id)
-  setSelected(id, state)
-  toggleSelected(id)
-  setDisabled(id, state)
-  addItem(id, opt)
-  removeItem(id)
-  setAction(id, action)
-  init(opt)
-}
+import {
+  IMenu
+} from './interface'
 
 import {
   lazyInject,
   $TYPES
-} from '../../../_container'
+} from '../container'
 
 import {
   ISettings
@@ -45,10 +34,9 @@ import {
 
 const TYPES = $TYPES.all
 
-export class Menu extends Context {
+export class Menu extends Context implements IMenu {
   @lazyInject(TYPES.settings) settings: ISettings
   @lazyInject(TYPES.actions) actions: IActions
-
 
   menuItems: any;
   constructor(options) {

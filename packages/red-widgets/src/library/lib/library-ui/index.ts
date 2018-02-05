@@ -8,10 +8,9 @@ import { LibraryConfiguration } from './configuration';
 import { LibrarySaver } from './library-saver';
 import { FileListBuilder } from './file-list-builder';
 
-export interface ILibraryUI {
-  buildFileList(root: string, data: any[])
-  saveToLibrary(overwrite, options): Promise<any>
-}
+import {
+  ILibraryUI
+} from './interface'
 
 export class LibraryUI extends Context {
   libraryEditor: any;

@@ -18,20 +18,9 @@ import {
   $
 } from '../../context'
 
-export interface INotifications {
-  /**
-   * Notify with message
-   * @param msg
-   * @param type
-   * @param fixed
-   * @param timeout
-   */
-  notify(msg, type?: string, fixed?, timeout?: number)
-  update?()
-  close?()
-  call: Function
-}
-
+import {
+  INotifications
+} from './interface'
 
 export class Notifications extends Context {
   public currentNotifications = [];

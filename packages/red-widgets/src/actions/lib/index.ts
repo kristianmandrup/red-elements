@@ -9,14 +9,9 @@ import {
 
 import { IKeyboard } from '../../keyboard';
 
-export interface IActions {
-  count: number
-  add(name, handler)
-  remove(name)
-  get(name)
-  invoke(name)
-  list()
-}
+import {
+  IActions
+} from './interface'
 
 const TYPES = $TYPES.all
 

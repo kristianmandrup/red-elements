@@ -31,6 +31,10 @@ import {
   container
 } from './container'
 
+import {
+  IUser
+} from './interface'
+
 @delegator({
   container,
   map: {
@@ -40,15 +44,6 @@ import {
     display: UserDisplay
   }
 })
-
-export interface IUser {
-  configure()
-  updateUserMenu()
-  loginDialog(opts): Promise<any>
-}
-
-// Uses: jQuery UI Dialog
-// https://jqueryui.com/dialog/
 export class User extends Context {
   public loggedIn: boolean = false
 

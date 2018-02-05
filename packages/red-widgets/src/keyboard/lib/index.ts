@@ -56,20 +56,14 @@ import {
 import { KeyboardConfiguration } from './configuration';
 
 import {
-  delegator,
-  container
-} from '../../deploy/lib/container'
+  delegator
+} from './container'
 
-export interface IKeyboard {
-  configure()
-  add: Function
-  remove(name: string)
-  getShortcut(actionName: string)
-  formatKey(key: string)
-}
+import {
+  IKeyboard
+} from './interface'
 
 @delegator({
-  container,
   map: {
     configuration: KeyboardConfiguration
   }

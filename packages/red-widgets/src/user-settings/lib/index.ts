@@ -28,17 +28,13 @@ import {
   $TYPES
 } from './container'
 import { ISettings } from '../../../../red-runtime/src/settings/index';
-import { IActions } from '../../actions/lib/index';
+import { IActions } from '../../actions';
 
 const TYPES = $TYPES.all
 
-export interface IUserSettings {
-  configure()
-  setSelected(id, value)
-  toggle(id)
-  add: Function
-  show(name: string)
-}
+import {
+  IUserSettings
+} from './interface'
 
 @delegator({
   container,
@@ -46,7 +42,7 @@ export interface IUserSettings {
     configuration: UserSettingsConfiguration,
   }
 })
-export class UserSettings extends Context {
+export class UserSettings extends Context implements IUserSettings {
   allSettings: any;
   settingsVisible: any;
   trayWidth: any;
@@ -61,6 +57,14 @@ export class UserSettings extends Context {
   constructor() {
     super()
     this.configure()
+  }
+
+  add(id: string, value: any) {
+    const {
+      $settings
+    } = this
+
+    $settings.set(id, value)
   }
 
   configure() {

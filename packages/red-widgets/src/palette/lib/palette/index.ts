@@ -44,13 +44,9 @@ import {
   delegateTo
 } from '../container'
 
-export interface IPalette {
-  configure()
-
-  marked(content)
-
-  filterChange(val)
-}
+import {
+  IPalette
+} from './interface'
 
 @delegator({
   container,

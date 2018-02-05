@@ -15,12 +15,9 @@
  **/
 import { Context, $ } from '../context'
 
-export interface IStack {
-  add(entry)
-  hide()
-  show()
-  handleHeaderClickedEvent(options, entry, entries)
-}
+import {
+  IStack
+} from './interface'
 
 export class Stack extends Context {
   container: any
