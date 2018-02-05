@@ -1,14 +1,19 @@
 // TODO: extract from Flow class
 
 import {
-  Context
-} from '../../context'
+  Context,
+  delegateTarget
+} from './_base'
+
 import { Flow } from './index';
+import { ILogger } from '../../log/logger';
 
 export interface IFlowStatusHandler {
   handleStatus(node, statusMessage: any)
 }
 
+
+@delegateTarget()
 export class FlowStatusHandler extends Context implements IFlowStatusHandler {
   constructor(protected flow: Flow) {
     super()
@@ -21,13 +26,12 @@ export class FlowStatusHandler extends Context implements IFlowStatusHandler {
    */
   handleStatus(node, statusMessage: any) {
     const {
-      flow
+      flow,
     } = this
     const {
       statusNodeMap,
       activeNodes,
       catchNodeMap,
-      logger
     } = flow
 
     var targetStatusNodes = null;

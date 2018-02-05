@@ -11,7 +11,8 @@ export interface INodeTypeManager {
 import {
   Context,
   lazyInject,
-  $TYPES
+  $TYPES,
+  delegateTarget,
 } from '../../_base'
 
 import {
@@ -23,6 +24,7 @@ import {
 const TYPES = $TYPES.all
 const { log } = console
 
+@delegateTarget()
 export class NodeTypeManager extends Context implements INodeTypeManager {
   @lazyInject(TYPES.events) $events: IEvents
   @lazyInject(TYPES.i18n) $i18n: II18n

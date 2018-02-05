@@ -1,14 +1,26 @@
 // TODO: extract from Flow class
 
 import {
-  Context
-} from '../../context'
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils,
+  clone
+} from './_base'
+
+const TYPES = $TYPES.all
+
 import { Flows } from './index';
 import { Flow } from '../flow';
 
 import {
   deprecated
 } from '../registry/deprecated'
+import { ISettings, IEvents } from '../../index';
+import { ILogger } from '../../log/logger';
 
 export interface IFlowsExecuter {
   started: boolean
@@ -16,8 +28,13 @@ export interface IFlowsExecuter {
   stopFlows(type: string, diff: any, muteLog: boolean)
 }
 
+@delegateTarget()
 export class FlowsExecuter extends Context implements IFlowsExecuter {
   protected _started: boolean
+
+  @lazyInject(TYPES.settings) $settings: ISettings
+  @lazyInject(TYPES.events) $events: IEvents
+  @lazyInject(TYPES.logger) $log: ILogger
 
   constructor(protected flows: Flows) {
     super()
@@ -50,9 +67,9 @@ export class FlowsExecuter extends Context implements IFlowsExecuter {
       rebind
     } = this
     const {
-      events, // service
-      settings, // service
-      log, // service
+      $events, // service
+      $settings, // service
+      $log, // service
       activeFlowConfig,
       activeFlows,
       activeNodesToFlow,
@@ -69,28 +86,28 @@ export class FlowsExecuter extends Context implements IFlowsExecuter {
     setStarted()
     var i;
     if (activeFlowConfig.missingTypes.length > 0) {
-      log.info(log._("nodes.flows.missing-types"));
+      $log.info($log.t("nodes.flows.missing-types"));
       var knownUnknowns = 0;
       for (i = 0; i < activeFlowConfig.missingTypes.length; i++) {
         var nodeType = activeFlowConfig.missingTypes[i];
         var info = deprecated.get(nodeType);
         if (info) {
-          log.info(log._("nodes.flows.missing-type-provided", {
+          $log.info($log.t("nodes.flows.missing-type-provided", {
             type: activeFlowConfig.missingTypes[i],
             module: info.module
           }));
           knownUnknowns += 1;
         } else {
-          log.info(" - " + activeFlowConfig.missingTypes[i]);
+          $log.info(" - " + activeFlowConfig.missingTypes[i]);
         }
       }
       if (knownUnknowns > 0) {
-        log.info(log._("nodes.flows.missing-type-install-1"));
-        log.info("  npm install <module name>");
-        log.info(log._("nodes.flows.missing-type-install-2"));
-        log.info("  " + settings.userDir);
+        $log.info($log.t("nodes.flows.missing-type-install-1"));
+        $log.info("  npm install <module name>");
+        $log.info($log.t("nodes.flows.missing-type-install-2"));
+        $log.info("  " + $settings.userDir);
       }
-      events.emit("runtime-event", {
+      $events.emit("runtime-event", {
         id: "runtime-state",
         type: "warning",
         text: "notification.warnings.missing-types"
@@ -99,9 +116,9 @@ export class FlowsExecuter extends Context implements IFlowsExecuter {
     }
     if (!muteLog) {
       if (diff) {
-        log.info(log._("nodes.flows.starting-modified-" + type));
+        $log.info($log.t("nodes.flows.starting-modified-" + type));
       } else {
-        log.info(log._("nodes.flows.starting-flows"));
+        $log.info($log.t("nodes.flows.starting-flows"));
       }
     }
     var id;
@@ -143,16 +160,16 @@ export class FlowsExecuter extends Context implements IFlowsExecuter {
 
       }
     }
-    events.emit("nodes-started");
-    events.emit("runtime-event", {
+    $events.emit("nodes-started");
+    $events.emit("runtime-event", {
       id: "runtime-state"
     });
 
     if (!muteLog) {
       if (diff) {
-        log.info(log._("nodes.flows.started-modified-" + type));
+        $log.info($log.t("nodes.flows.started-modified-" + type));
       } else {
-        log.info(log._("nodes.flows.started-flows"));
+        $log.info($log.t("nodes.flows.started-flows"));
       }
     }
     return Promise.resolve();
@@ -167,10 +184,10 @@ export class FlowsExecuter extends Context implements IFlowsExecuter {
   async stopFlows(type: string, diff: any, muteLog: boolean): Promise<any> {
     const {
       flows,
-      rebind
+      rebind,
+      $log, // service
     } = this
     const {
-      log, // service
       activeFlows,
       activeNodesToFlow
     } = flows
@@ -186,9 +203,9 @@ export class FlowsExecuter extends Context implements IFlowsExecuter {
     type = type || "full";
     if (!muteLog) {
       if (diff) {
-        log.info(log._("nodes.flows.stopping-modified-" + type));
+        $log.info($log.t("nodes.flows.stopping-modified-" + type));
       } else {
-        log.info(log._("nodes.flows.stopping-flows"));
+        $log.info($log.t("nodes.flows.stopping-flows"));
       }
     }
     setStopped()
@@ -229,9 +246,9 @@ export class FlowsExecuter extends Context implements IFlowsExecuter {
         subflowInstanceNodeMap = {};
         if (!muteLog) {
           if (diff) {
-            log.info(log._("nodes.flows.stopped-modified-" + type));
+            $log.info($log.t("nodes.flows.stopped-modified-" + type));
           } else {
-            log.info(log._("nodes.flows.stopped-flows"));
+            $log.info($log.t("nodes.flows.stopped-flows"));
           }
         }
 

@@ -148,7 +148,7 @@ export interface INodes {
    * Return the original flow definition
    * @param flow { IFlow } the flow
    */
-  originalFlow(flow: IFlow)
+  originalFlow(flow?: IFlow)
 
   /**
    * Iterate all nodes

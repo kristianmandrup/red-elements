@@ -15,9 +15,16 @@
  **/
 
 import {
-  Context
-} from '../../context'
-
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  IRedUtils,
+  todo,
+  clone
+} from './_base'
+const TYPES = $TYPES.all
 
 import {
   IRegistry,
@@ -34,7 +41,6 @@ import {
   Logger
 } from '../../log'
 import {
-  IUtil as IRedUtils,
   Util as RedUtils
 } from '../../util'
 
@@ -65,6 +71,14 @@ export interface IFlow {
   getActiveNodes()
 }
 
+@delegator({
+  map: {
+    executer: 'FlowExecuter',
+    builder: 'FlowBuilder',
+    errorHandler: 'FlowErrorHandler',
+    statusHandler: 'FlowStatusHandler'
+  }
+})
 export class Flow extends Context {
   activeNodes = {}
   subflowInstanceNodes = {}
@@ -78,21 +92,20 @@ export class Flow extends Context {
   nodes: any[] // INode[] ??
   subflows: any[] // ISubflow[] or IFlow[]
 
-  typeRegistry: IRegistry = new Registry()
-  logger: ILogger = new Logger()
   keys: any = logKeys
-  redUtil: IRedUtils = new RedUtils()
-  flowUtil: IFlowUtils = new FlowUtils()
 
-  protected executer: FlowExecuter = new FlowExecuter(this)
-  protected builder: FlowBuilder = new FlowBuilder(this)
-  protected errorHandler: FlowErrorHandler = new FlowErrorHandler(this)
-  protected statusHandler: FlowStatusHandler = new FlowStatusHandler(this)
+  @lazyInject(TYPES.logger) $log: ILogger
+
+  protected executer: FlowExecuter // = new FlowExecuter(this)
+  protected builder: FlowBuilder // = new FlowBuilder(this)
+  protected errorHandler: FlowErrorHandler // = new FlowErrorHandler(this)
+  protected statusHandler: FlowStatusHandler // = new FlowStatusHandler(this)
 
   constructor(public configs = {}) {
     super()
   }
 
+  // TODO: What is this global flow!? WTF!
   static create($global: IFlow, conf?: object) {
     return conf ? new Flow(conf) : $global
   }
@@ -178,7 +191,7 @@ export class Flow extends Context {
 
 
   protected log(msg: any) {
-    this.logger.log(msg)
+    this.$log.log(msg)
   }
 
   /**
@@ -186,6 +199,6 @@ export class Flow extends Context {
    * @param msg
    */
   protected error(msg: any) {
-    this.logger.error(msg)
+    this.$log.error(msg)
   }
 }

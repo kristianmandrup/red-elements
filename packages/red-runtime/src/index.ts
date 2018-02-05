@@ -8,12 +8,12 @@ import {
 
 export {
   IUtil,
+  IUtil as IRedUtils,
   Util
 } from './util'
 
 export {
-  runtimeContainer,
-  TYPES
+  $TYPES
 } from './_container'
 
 

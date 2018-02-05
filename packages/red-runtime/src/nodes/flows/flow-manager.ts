@@ -1,24 +1,34 @@
-// TODO: extract from Flow class
-
 import {
-  Context
-} from '../../context'
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils,
+  clone
+} from './_base'
+
+const TYPES = $TYPES.all
+
 import { Flows } from './index';
 import { IFlow } from '../flow/index';
 
-import {
-  clone
-} from '../../_libs'
+import { ILogger } from '../../log/logger';
 
 export interface IFlowManager {
-  getFlows: IFlow[]
+  getFlows(): IFlow[]
   addFlow(flow: IFlow)
   getFlow(id: string)
   updateFlow(id: string, newFlow: IFlow)
   removeFlow(id: string)
 }
 
+@delegateTarget()
 export class FlowManager extends Context {
+  @lazyInject(TYPES.redUtils) $redUtils: IRedUtils
+  @lazyInject(TYPES.logger) $log: ILogger
+
   constructor(protected flows: Flows) {
     super()
   }
@@ -37,13 +47,13 @@ export class FlowManager extends Context {
    */
   async addFlow(flow: IFlow): Promise<any> {
     const {
-      flows
+      flows,
+      $log, // service
+      $redUtils // service
     } = this
     const {
       activeConfig,
       activeFlowConfig,
-      log, // service
-      redUtil // service
     } = flows
     const {
       setFlows,
@@ -55,7 +65,7 @@ export class FlowManager extends Context {
     if (!flow.hasOwnProperty('nodes')) {
       throw new Error('missing nodes property');
     }
-    flow.id = redUtil.generateId();
+    flow.id = $redUtils.generateId();
 
     var nodes = [{
       type: 'tab',
@@ -93,7 +103,7 @@ export class FlowManager extends Context {
     newConfig = newConfig.concat(nodes);
 
     return setFlows(newConfig, 'flows', true).then(function () {
-      log.info(log._("nodes.flows.added-flow", {
+      $log.info($log.t("nodes.flows.added-flow", {
         label: (flow.label ? flow.label + " " : "") + "[" + flow.id + "]"
       }));
       return flow.id;
@@ -179,7 +189,9 @@ export class FlowManager extends Context {
    */
   updateFlow(id: string, newFlow: IFlow) {
     const {
-      log, // service
+      $log, // service
+    } = this
+    const {
       activeFlowConfig,
       activeConfig
     } = this.flows
@@ -238,7 +250,7 @@ export class FlowManager extends Context {
 
     newConfig = newConfig.concat(nodes);
     return setFlows(newConfig, 'flows', true).then(function () {
-      log.info(log._("nodes.flows.updated-flow", {
+      $log.info($log.t("nodes.flows.updated-flow", {
         label: (label ? label + " " : "") + "[" + id + "]"
       }));
     })
@@ -250,7 +262,9 @@ export class FlowManager extends Context {
    */
   removeFlow(id: string) {
     const {
-      log, // service
+      $log, // service
+    } = this
+    const {
       activeFlowConfig,
       activeConfig
     } = this.flows
@@ -279,7 +293,7 @@ export class FlowManager extends Context {
     });
 
     return setFlows(newConfig, 'flows', true).then(function () {
-      log.info(log._("nodes.flows.removed-flow", {
+      $log.info($log.t("nodes.flows.removed-flow", {
         label: (flow.label ? flow.label + " " : "") + "[" + flow.id + "]"
       }));
     });

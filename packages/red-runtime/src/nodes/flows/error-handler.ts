@@ -1,8 +1,18 @@
 // TODO: extract from Flow class
 
 import {
-  Context
-} from '../../context'
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils,
+  clone
+} from './_base'
+
+const TYPES = $TYPES.all
+
 import { Flows } from './index';
 
 import {
@@ -14,6 +24,7 @@ export interface IFlowsErrorHandler {
   $handleError(node, logMessage, msg)
 }
 
+@delegateTarget()
 export class FlowsErrorHandler extends Context {
   constructor(protected flows: Flows) {
     super()

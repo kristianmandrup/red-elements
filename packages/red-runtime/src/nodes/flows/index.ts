@@ -15,9 +15,16 @@
  **/
 
 import {
-  Context
-} from '../../context'
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils
+} from './_base'
 
+const TYPES = $TYPES.all
 
 import {
   INode,
@@ -54,13 +61,7 @@ import {
   Registry
 } from '../registry/type-registry'
 
-import {
-  IUtil as IRedUtils,
-  Util as RedUtils
-} from '../../util'
 
-
-// TODO: register as services and inject instead!
 import {
   IFlowUtils,
   FlowUtils
@@ -82,13 +83,15 @@ import {
   IUtil as IRedUtil,
   Util as RedUtil
 } from '../../util'
-import { FlowsConfiguration } from './configuration';
+import { FlowsConfiguration, IFlowsConfiguration } from './configuration';
 import { FlowManager } from './flow-manager';
-import { FlowsNodeManager } from './node-manager';
-import { FlowsErrorHandler } from './error-handler';
-import { FlowsStatusHandler } from './status-handler';
-import { FlowsExecuter } from './executer';
+import { FlowsNodeManager, IFlowsNodeManager } from './node-manager';
+import { FlowsErrorHandler, IFlowsErrorHandler } from './error-handler';
+import { FlowsStatusHandler, IFlowsStatusHandler } from './status-handler';
+import { FlowsExecuter, IFlowsExecuter } from './executer';
 import { FlowsLoader } from './loader';
+import { IFlowManager } from './flow-manager';
+import { IFlowsLoader } from '../../../../red-widgets/src/node-diff/lib/flows-loader';
 
 // var deprecated = require("../registry/deprecated");
 
@@ -106,6 +109,17 @@ export interface IFlows {
   checkTypeInUse(id: string): void
 }
 
+@delegator({
+  map: {
+    configuration: 'IFlowsConfiguration',
+    flowManager: 'IFlowManager',
+    nodeManager: 'IFlowsNodeManager',
+    errorHandler: 'IFlowsErrorHandler',
+    statusHandler: 'IFlowsStatusHandler',
+    executer: 'IFlowsExecuter',
+    loader: 'IFlowsLoader'
+  }
+})
 export class Flows extends Context {
   storage = null
   activeConfig = null
@@ -116,24 +130,33 @@ export class Flows extends Context {
   typeEventRegistered = false
   protected _started = false
 
+  @lazyInject(TYPES.settings) $settings: ISettings
+  @lazyInject(TYPES.events) $events: IEvents
+  @lazyInject(TYPES.logger) $log: ILogger
+  @lazyInject(TYPES.typeRegistry) $registry: IRegistry
+  @lazyInject(TYPES.flowUtils) $flowUtils: IFlowUtils
+  @lazyInject(TYPES.redUtils) $redUtils: IRedUtils
+  @lazyInject(TYPES.credentials) $credentials: INodeCredentials
+  @lazyInject(TYPES.context) $context: INodesContext
+
   // TODO: Fix - temporary until proper service injection
-  context: INodesContext = new NodesContext()
-  credentials: INodeCredentials = new NodeCredentials()
-  settings: ISettings = new Settings()
-  events: IEvents = new Events()
-  log: ILogger = new Logger()
-  redUtil: IRedUtils = new RedUtils()
-  flowUtil: IFlowUtils = new FlowUtils()
-  typeRegistry: IRegistry = new Registry()
+  // context: INodesContext = new NodesContext()
+  // credentials: INodeCredentials = new NodeCredentials()
+  // settings: ISettings = new Settings()
+  // events: IEvents = new Events()
+  // log: ILogger = new Logger()
+  // redUtil: IRedUtils = new RedUtils()
+  // flowUtil: IFlowUtils = new FlowUtils()
+  // typeRegistry: IRegistry = new Registry()
 
   // TODO: service injection
-  protected configuration: FlowsConfiguration = new FlowsConfiguration(this)
-  protected flowManager: FlowManager = new FlowManager(this)
-  protected nodeManager: FlowsNodeManager = new FlowsNodeManager(this)
-  protected errorHandler: FlowsErrorHandler = new FlowsErrorHandler(this)
-  protected statusHandler: FlowsStatusHandler = new FlowsStatusHandler(this)
-  protected executer: FlowsExecuter = new FlowsExecuter(this)
-  protected loader: FlowsLoader = new FlowsLoader(this)
+  protected configuration: IFlowsConfiguration // = new FlowsConfiguration(this)
+  protected flowManager: IFlowManager // = new FlowManager(this)
+  protected nodeManager: IFlowsNodeManager // = new FlowsNodeManager(this)
+  protected errorHandler: IFlowsErrorHandler // = new FlowsErrorHandler(this)
+  protected statusHandler: IFlowsStatusHandler // = new FlowsStatusHandler(this)
+  protected executer: IFlowsExecuter // = new FlowsExecuter(this)
+  protected loader: IFlowsLoader // = new FlowsLoader(this)
 
   /**
    * TODO:
@@ -238,7 +261,7 @@ export class Flows extends Context {
    * @return a promise for the loading of the config
    */
   async load(): Promise<any> {
-    return await this.loader.load()
+    return await this.loader.loadFlows()
   }
 
   /**

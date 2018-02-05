@@ -8,11 +8,12 @@ import {
   INode
 } from '../../interfaces'
 
-export interface FlowsNodeManager {
+export interface IFlowsNodeManager {
   getNode(id: string)
   eachNode(cb: Function)
 }
 
+@delegateTarget()
 export class FlowsNodeManager extends Context implements FlowsNodeManager {
   constructor(protected flows: Flows) {
     super()

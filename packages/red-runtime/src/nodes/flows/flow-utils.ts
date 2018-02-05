@@ -14,12 +14,17 @@
  * limitations under the License.
  **/
 import {
-  Context
-} from '../../context'
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils,
+  clone
+} from './_base'
 
-import clone from 'clone'
-
-// var redUtil = require('../../util');
+const TYPES = $TYPES.all
 
 // use as injectable service
 import {
@@ -52,13 +57,17 @@ export interface IFlowUtils {
   diffConfigs(oldConfig: any, newConfig: any): any
 }
 
+@delegateTarget()
 export class FlowUtils extends Context implements IFlowUtils {
   static EnvVarPropertyRE = /^\$\((\S+)\)$/;
   static subflowInstanceRE = /^subflow:(.+)$/;
 
   // TODO: Fix - inject services instead
-  redUtil: any = new RedUtil()
-  typeRegistry: IRegistry = new Registry()
+  // redUtil: any = new RedUtil()
+  // typeRegistry: IRegistry = new Registry()
+  @lazyInject(TYPES.typeRegistry) $registry: IRegistry
+  @lazyInject(TYPES.redUtils) $redUtils: IRedUtils
+
 
   // TODO: add injectable services via decorators
   constructor() {
@@ -67,7 +76,7 @@ export class FlowUtils extends Context implements IFlowUtils {
 
   diffNodes(oldNode: INode, newNode: INode): any {
     const {
-      redUtil
+      $redUtils
     } = this
 
     if (oldNode == null) {
@@ -84,7 +93,7 @@ export class FlowUtils extends Context implements IFlowUtils {
     }
     for (var i = 0; i < newKeys.length; i++) {
       var p = newKeys[i];
-      if (!redUtil.compareObjects(oldNode[p], newNode[p])) {
+      if (!$redUtils.compareObjects(oldNode[p], newNode[p])) {
         return true;
       }
     }
@@ -126,7 +135,7 @@ export class FlowUtils extends Context implements IFlowUtils {
 
   parseConfig(config: any): IFlow {
     const {
-      typeRegistry
+      $registry
     } = this
     const subflowInstanceRE = FlowUtils.subflowInstanceRE
 
@@ -161,7 +170,7 @@ export class FlowUtils extends Context implements IFlowUtils {
       if (n.type !== 'subflow' && n.type !== 'tab') {
         var subflowDetails = subflowInstanceRE.exec(n.type);
 
-        if ((subflowDetails && !flow.subflows[subflowDetails[1]]) || (!subflowDetails && !typeRegistry.get(n.type))) {
+        if ((subflowDetails && !flow.subflows[subflowDetails[1]]) || (!subflowDetails && !$registry.get(n.type))) {
           if (flow.missingTypes.indexOf(n.type) === -1) {
             flow.missingTypes.push(n.type);
           }
@@ -247,7 +256,7 @@ export class FlowUtils extends Context implements IFlowUtils {
 
   diffConfigs(oldConfig: any, newConfig: any) {
     const {
-      redUtil
+      $redUtils
     } = this
     const {
       diffNodes
@@ -316,7 +325,7 @@ export class FlowUtils extends Context implements IFlowUtils {
             }
           }
           // This node's wiring has changed
-          if (!redUtil.compareObjects(node.wires, newConfig.allNodes[id].wires)) {
+          if (!$redUtils.compareObjects(node.wires, newConfig.allNodes[id].wires)) {
             wiringChanged[id] = newConfig.allNodes[id];
             // Mark the container as changed
             if (newConfig.allNodes[wiringChanged[id].z]) {

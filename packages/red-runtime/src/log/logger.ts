@@ -32,6 +32,7 @@ export interface ILogger {
   metric()
   audit(msg: ILogMessage, req: any)
   _: Function
+  t: Function
 }
 
 export class Logger extends Context implements ILogger {
@@ -43,6 +44,7 @@ export class Logger extends Context implements ILogger {
   settings = new Settings()
   verbose: boolean
   _: Function
+  t: Function
 
   constructor(settings: any = {}) {
     super()
@@ -78,7 +80,8 @@ export class Logger extends Context implements ILogger {
       addHandler(new LogHandler());
     }
 
-    this['_'] = i18n._
+    this._ = i18n._
+    this.t = this._
   }
 
   addHandler(func: Function) {

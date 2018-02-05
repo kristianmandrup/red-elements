@@ -1,14 +1,28 @@
 import {
-  Context
-} from '../../context'
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils,
+  clone
+} from './_base'
+const TYPES = $TYPES.all
+
 import { Flow } from './index';
+import { ILogger } from '../../log/logger';
 
 export interface IFlowExecuter {
   start(diff)
   stop(stopList)
 }
 
+@delegateTarget()
 export class FlowExecuter extends Context implements IFlowExecuter {
+  @lazyInject(TYPES.logger) $log: ILogger
+  @lazyInject(TYPES.redUtils) $redUtils: IRedUtils
+
   constructor(protected flow: Flow) {
     super()
   }
@@ -29,7 +43,7 @@ export class FlowExecuter extends Context implements IFlowExecuter {
     } = flow
 
     const {
-      $global,
+      $global, // TODO: FIX - what does it reference in this context!?!?! - see node-red project!
       activeNodes,
       subflowInstanceNodes
     } = flow

@@ -1,16 +1,26 @@
 import {
-  Context
-} from '../../context'
-import { Flow } from './index';
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils,
+  clone
+} from './_base'
+const TYPES = $TYPES.all
 
-import clone from 'clone'
+import { Flow } from './index';
 
 export interface IFlowBuilder {
   createNode(type: string, config: any)
   createSubflow(sf, sfn, subflows, globalSubflows, activeNodes)
 }
 
+@delegateTarget()
 export class FlowBuilder extends Context implements IFlowBuilder {
+  @lazyInject(TYPES.redUtils) $redUtils: IRedUtils
+
   constructor(protected flow: Flow) {
     super()
   }
@@ -83,12 +93,9 @@ export class FlowBuilder extends Context implements IFlowBuilder {
   createSubflow(sf, sfn, subflows, globalSubflows, activeNodes) {
     const {
       flow,
-      rebind
+      rebind,
+      $redUtils
     } = this
-
-    const {
-      redUtil
-    } = flow
 
     const {
       createNode,
@@ -96,7 +103,7 @@ export class FlowBuilder extends Context implements IFlowBuilder {
     } = this.rebind([
         'createNode',
         'createSubflow'
-      ])
+      ], flow)
 
     //console.log("CREATE SUBFLOW",sf.id,sfn.id);
     var nodes = [];
@@ -108,7 +115,7 @@ export class FlowBuilder extends Context implements IFlowBuilder {
 
     var createNodeInSubflow = function (def) {
       node = clone(def);
-      var nid = redUtil.generateId();
+      var nid = $redUtils.generateId();
       node_map[node.id] = node;
       node._alias = node.id;
       node.id = nid;

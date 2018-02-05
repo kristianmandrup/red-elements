@@ -44,7 +44,7 @@ export class FlowsLoader extends Context implements IFlowsLoader {
     this.flowsApi = new FlowsApi()
 
     try {
-      const result = await flowsApi.load()
+      const result = await flowsApi.read.all()
       onLoadSuccess(result)
     } catch (error) {
       onLoadError(error)

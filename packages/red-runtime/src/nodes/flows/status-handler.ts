@@ -1,20 +1,31 @@
-// TODO: extract from Flow class
-
 import {
-  Context
-} from '../../context'
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils,
+  clone
+} from './_base'
+const TYPES = $TYPES.all
+
 import { Flows } from './index';
 
 import {
   INode
 } from '../../interfaces'
+import { IEvents } from '../../index';
 
 export interface IFlowsStatusHandler {
   delegateStatus(node, statusMessage)
   handleStatus(node: INode, statusMessage: string)
 }
 
+@delegateTarget()
 export class FlowsStatusHandler extends Context implements IFlowsStatusHandler {
+  @lazyInject(TYPES.events) $events: IEvents
+
   constructor(protected flows: Flows) {
     super()
   }
@@ -38,11 +49,11 @@ export class FlowsStatusHandler extends Context implements IFlowsStatusHandler {
 
   handleStatus(node: INode, statusMessage: string): void {
     const {
-      flows
+      flows,
+      $events, // service
     } = this
 
     const {
-      events, // service
       activeFlowConfig,
     } = flows
     const {
@@ -51,7 +62,7 @@ export class FlowsStatusHandler extends Context implements IFlowsStatusHandler {
         'delegateStatus',
       ])
 
-    events.emit("node-status", {
+    $events.emit("node-status", {
       id: node.id,
       status: statusMessage
     });

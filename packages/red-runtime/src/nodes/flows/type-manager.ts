@@ -1,16 +1,29 @@
-// TODO: extract from Flow class
-
 import {
-  Context
-} from '../../context'
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils,
+  clone
+} from './_base'
+const TYPES = $TYPES.all
+
 import { Flows } from './index';
+import { ILogger } from '../../log/logger';
+import { IRegistry } from '../../index';
 
 export interface IFlowsTypeManager {
   checkTypeInUse(id: string)
   updateMissingTypes()
 }
 
+@delegateTarget()
 export class FlowsTypeManager extends Context implements IFlowsTypeManager {
+  @lazyInject(TYPES.logger) $log: ILogger
+  @lazyInject(TYPES.typeRegistry) $typeRegistry: IRegistry
+
   constructor(protected flows: Flows) {
     super()
   }
@@ -21,8 +34,8 @@ export class FlowsTypeManager extends Context implements IFlowsTypeManager {
    */
   checkTypeInUse(id: string): void {
     const {
-      log,
-      typeRegistry
+      $log,
+      $typeRegistry
     } = this
     const {
       getFlows,
@@ -30,9 +43,9 @@ export class FlowsTypeManager extends Context implements IFlowsTypeManager {
         'getFlows',
       ])
 
-    var nodeInfo = typeRegistry.getNodeInfo(id);
+    var nodeInfo = $typeRegistry.getNodeInfo(id);
     if (!nodeInfo) {
-      throw new Error(log._("nodes.index.unrecognised-id", {
+      throw new Error($log.t("nodes.index.unrecognised-id", {
         id: id
       }));
     } else {
@@ -49,7 +62,7 @@ export class FlowsTypeManager extends Context implements IFlowsTypeManager {
       });
       if (nodesInUse.length > 0) {
         const msg = nodesInUse.join(", ");
-        const err: any = new Error(log._("nodes.index.type-in-use", {
+        const err: any = new Error($log.t("nodes.index.type-in-use", {
           msg
         }));
         err.code = "type_in_use";
@@ -60,9 +73,13 @@ export class FlowsTypeManager extends Context implements IFlowsTypeManager {
 
   updateMissingTypes() {
     const {
-      activeFlowConfig,
-      typeRegistry
+      $typeRegistry,
+      flows
     } = this
+
+    const {
+      activeFlowConfig,
+    } = flows
 
     var subflowInstanceRE = /^subflow:(.+)$/;
     activeFlowConfig.missingTypes = [];
@@ -72,7 +89,7 @@ export class FlowsTypeManager extends Context implements IFlowsTypeManager {
         var node = activeFlowConfig.allNodes[id];
         if (node.type !== 'tab' && node.type !== 'subflow') {
           var subflowDetails = subflowInstanceRE.exec(node.type);
-          if ((subflowDetails && !activeFlowConfig.subflows[subflowDetails[1]]) || (!subflowDetails && !typeRegistry.get(node.type))) {
+          if ((subflowDetails && !activeFlowConfig.subflows[subflowDetails[1]]) || (!subflowDetails && !$typeRegistry.get(node.type))) {
             if (activeFlowConfig.missingTypes.indexOf(node.type) === -1) {
               activeFlowConfig.missingTypes.push(node.type);
             }

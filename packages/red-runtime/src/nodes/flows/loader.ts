@@ -1,16 +1,28 @@
-// TODO: extract from Flow class
-
 import {
-  Context
-} from '../../context'
-import { Flows } from './index';
-
-import {
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils,
   clone
-} from '../../_libs'
+} from './_base'
 
+const TYPES = $TYPES.all
 
+import { Flows } from './index';
+import { ISettings, INodeCredentials, INodesContext, IFlowUtils } from '../../index';
+import { ILogger } from '../../log';
+
+@delegateTarget()
 export class FlowsLoader extends Context {
+  @lazyInject(TYPES.settings) $settings: ISettings
+  @lazyInject(TYPES.credentials) $credentials: INodeCredentials
+  @lazyInject(TYPES.logger) $log: ILogger
+  @lazyInject(TYPES.context) $context: INodesContext
+  @lazyInject(TYPES.flowUtils) $flowUtils: IFlowUtils
+
   constructor(protected flows: Flows) {
     super()
   }
@@ -36,15 +48,15 @@ export class FlowsLoader extends Context {
    */
   protected async setFlows(_config: any, type: string, muteLog: boolean): Promise<any> {
     const {
-      flows
+      flows,
+      $context, // service
+      $credentials, // service
+      $log, // service
+      $flowUtils // service
     } = this
     const {
       started,
       storage,
-      context, // service
-      credentials, // service
-      log, // service
-      flowUtil // service
     } = flows
     let {
       activeFlowConfig,
@@ -72,19 +84,19 @@ export class FlowsLoader extends Context {
       isLoad = true;
       configSavePromise = loadFlows().then(function (_config) {
         config = clone(_config.flows);
-        newFlowConfig = flowUtil.parseConfig(clone(config));
+        newFlowConfig = $flowUtils.parseConfig(clone(config));
         type = "full";
         return _config.rev;
       });
     } else {
       config = clone(_config);
-      newFlowConfig = flowUtil.parseConfig(clone(config));
+      newFlowConfig = $flowUtils.parseConfig(clone(config));
       if (type !== 'full') {
-        diff = flowUtil.diffConfigs(activeFlowConfig, newFlowConfig);
+        diff = $flowUtils.diffConfigs(activeFlowConfig, newFlowConfig);
       }
-      credentials.clean(config);
-      var credsDirty = credentials.dirty;
-      configSavePromise = credentials.export().then(function (creds) {
+      $credentials.clean(config);
+      var credsDirty = $credentials.dirty;
+      configSavePromise = $credentials.export().then(function (creds) {
         var saveConfig = {
           flows: config,
           credentialsDirty: credsDirty,
@@ -97,7 +109,7 @@ export class FlowsLoader extends Context {
     return configSavePromise
       .then(function (flowRevision) {
         if (!isLoad) {
-          log.debug("saved flow revision: " + flowRevision);
+          $log.debug("saved flow revision: " + flowRevision);
         }
         activeConfig = {
           flows: config,
@@ -106,7 +118,7 @@ export class FlowsLoader extends Context {
         activeFlowConfig = newFlowConfig;
         if (started) {
           return stopFlows(type, diff, muteLog).then(function () {
-            context.clean(activeFlowConfig);
+            $context.clean(activeFlowConfig);
             startFlows(type, diff, muteLog);
             return flowRevision;
           }).otherwise(function (err) { })
@@ -119,18 +131,21 @@ export class FlowsLoader extends Context {
    */
   protected async loadFlows(): Promise<any> {
     const {
-      credentials, // service
+      $credentials, // service
+      $log // service
+    } = this
+
+    const {
       storage,
-      log // service
     } = this.flows
 
     return storage.getFlows().then(function (config) {
-      log.debug("loaded flow revision: " + config.rev);
-      return credentials.load(config.credentials).then(function () {
+      $log.debug("loaded flow revision: " + config.rev);
+      return $credentials.load(config.credentials).then(function () {
         return config;
       });
     }).catch(function (err) {
-      log.warn(log._("nodes.flows.error", {
+      $log.warn($log.t("nodes.flows.error", {
         message: err.toString()
       }));
       console.log(err.stack);

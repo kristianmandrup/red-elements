@@ -1,15 +1,29 @@
 // TODO: extract from Flow class
 
 import {
-  Context
-} from '../../context'
+  Context,
+  delegator,
+  delegateTarget,
+  $TYPES,
+  lazyInject,
+  todo,
+  IRedUtils,
+  clone
+} from './_base'
+const TYPES = $TYPES.all
+
 import { Flow } from './index';
+import { ILogger } from '../../log/logger';
 
 export interface IFlowErrorHandler {
   $handleError(node, logMessage: any, msg)
 }
 
+@delegateTarget()
 export class FlowErrorHandler extends Context implements IFlowErrorHandler {
+  @lazyInject(TYPES.logger) $log: ILogger
+  @lazyInject(TYPES.redUtils) $redUtils: IRedUtils
+
   constructor(protected flow: Flow) {
     super()
   }
@@ -22,12 +36,12 @@ export class FlowErrorHandler extends Context implements IFlowErrorHandler {
    */
   $handleError(node, logMessage: any, msg) {
     const {
-      flow
+      flow,
+      $log,
+      $redUtils,
     } = this
     const {
-      logger,
       catchNodeMap,
-      redUtil,
       activeNodes
     } = flow
 
@@ -37,7 +51,7 @@ export class FlowErrorHandler extends Context implements IFlowErrorHandler {
         if (msg.error.source.id === node.id) {
           count = msg.error.source.count + 1;
           if (count === 10) {
-            node.warn(logger._("nodes.flow.error-loop"));
+            node.warn($log.t("nodes.flow.error-loop"));
             return;
           }
         }

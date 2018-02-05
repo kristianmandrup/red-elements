@@ -19,13 +19,15 @@ export interface INodeSetManager {
 import {
   Context,
   lazyInject,
-  $TYPES
+  $TYPES,
+  delegateTarget,
 } from '../../_base'
 
 const TYPES = $TYPES.all
 
 const { log } = console
 
+@delegateTarget()
 export class NodeSetManager extends Context implements INodeSetManager {
   @lazyInject(TYPES.events) $events: IEvents
 
