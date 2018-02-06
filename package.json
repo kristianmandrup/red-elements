@@ -1,4 +1,6 @@
 {
+  "name": "red-rum",
+  "version": "1.0.0",
   "dependencies": {
     "global": "^4.3.2",
     "i18n": "^0.8.3",
