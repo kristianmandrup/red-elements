@@ -3,7 +3,9 @@ import {
   Context,
   $,
   delegateTarget,
-  container
+  container,
+  lazyInject,
+  $TYPES
 } from './_base'
 
 export interface ISidebarTabManager {
@@ -27,6 +29,8 @@ export interface ISidebarTabManager {
 
 @delegateTarget()
 export class SidebarTabManager extends Context implements ISidebarTabManager {
+  $menu
+
   constructor(public sidebar: Sidebar) {
     super()
   }
@@ -39,8 +43,11 @@ export class SidebarTabManager extends Context implements ISidebarTabManager {
    * @param visible
    */
   addTab(title, content, closeable, visible) {
+    const {
+      $menu
+    } = this
+
     let {
-      RED,
       sidebar_tabs,
       knownTabs
     } = this.sidebar
@@ -103,7 +110,7 @@ export class SidebarTabManager extends Context implements ISidebarTabManager {
       })
     }
 
-    RED.menu.addItem("menu-item-view-menu", {
+    $menu.addItem("menu-item-view-menu", {
       id: "menu-item-view-menu-" + id,
       label: name,
       onselect: () => {
@@ -179,7 +186,7 @@ export class SidebarTabManager extends Context implements ISidebarTabManager {
       footer.remove();
     }
     delete knownTabs[id];
-    RED.menu.removeItem("menu-item-view-menu-" + id);
+    $menu.removeItem("menu-item-view-menu-" + id);
   }
 
   // protected

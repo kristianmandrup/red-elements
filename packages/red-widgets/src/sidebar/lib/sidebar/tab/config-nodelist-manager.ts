@@ -1,4 +1,7 @@
-import { Sidebar, ISidebarTabInfo } from '../'
+import {
+  Sidebar,
+  ISidebarTabInfo
+} from '../'
 import {
   SidebarTab
 } from '.'
@@ -9,30 +12,30 @@ import {
   $,
   Tabs,
   container,
-  delegateTarget
-} from '../_base'
-
-import {
+  delegateTarget,
   lazyInject,
   $TYPES
-} from '../../../../_container'
+} from '../_base'
 
 import {
   IUtils,
   IEditor,
   INodes,
-  ISidebarTabInfo,
   I18nWidget
 } from '../../../../_interfaces'
+import { ICanvas } from '../../../../../../red-runtime/src/interfaces/index';
+import { II18n } from '../../../../../../red-runtime/src/i18n/interface';
 
 const TYPES = $TYPES.all
 
 @delegateTarget()
 export class SidebarTabInitializer extends Context {
-  @lazyInject(TYPES.utils) utils: IUtils
-  @lazyInject(TYPES.editor) editor: IEditor
-  @lazyInject(TYPES.nodes) nodes: INodes
-  @lazyInject(TYPES.sidebar.info) info: ISidebarTabInfo
+  @lazyInject(TYPES.utils) $utils: IUtils
+  @lazyInject(TYPES.editor) $editor: IEditor
+  @lazyInject(TYPES.nodes) $nodes: INodes
+  @lazyInject(TYPES.sidebar.info) $tabInfo: ISidebarTabInfo
+  @lazyInject(TYPES.view) $view: ICanvas
+  @lazyInject(TYPES.i18n) $i18n: II18n
 
   constructor(public sidebarTab: SidebarTab) {
     super()
@@ -43,16 +46,21 @@ export class SidebarTabInitializer extends Context {
   public subflowCategories: JQuery<HTMLElement>
 
   createConfigNodeList(id, nodes) {
-    const { utils, editor, info } = this
+    const {
+      $utils,
+      $editor,
+      $tabInfo,
+      $view,
+      $i18n
+    } = this
 
     let {
-      RED,
       showUnusedOnly
     } = this.sidebarTab
 
     const {
-    getOrCreateCategory
-  } = this.rebind([
+      getOrCreateCategory
+    } = this.rebind([
         'getOrCreateCategory'
       ])
 
@@ -75,7 +83,7 @@ export class SidebarTabInitializer extends Context {
       })
       hiddenCount = hiddenCount - nodes.length;
       if (hiddenCount > 0) {
-        list.parent().find('.config-node-filter-info').text(RED._('sidebar.config.filtered', {
+        list.parent().find('.config-node-filter-info').text($i18n.t('sidebar.config.filtered', {
           count: hiddenCount
         })).show();
       } else {
@@ -92,7 +100,7 @@ export class SidebarTabInitializer extends Context {
     } else {
       var currentType = "";
       nodes.forEach(function (node) {
-        var label = utils.getNodeLabel(node, node.id);
+        var label = $utils.getNodeLabel(node, node.id);
         if (node.type != currentType) {
           $('<li class="config_node_type">' + node.type + '</li>').appendTo(list);
           currentType = node.type;
@@ -109,10 +117,10 @@ export class SidebarTabInitializer extends Context {
           }
         }
         entry.on('click', function (e) {
-          info.refresh(node);
+          $tabInfo.refresh(node);
         });
         entry.on('dblclick', function (e) {
-          editor.editConfig("", node.type, node.id);
+          $editor.editConfig("", node.type, node.id);
         });
         var userArray = node.users.map(function (n) {
           return n.id
@@ -124,7 +132,7 @@ export class SidebarTabInitializer extends Context {
               node.dirty = true;
             }
           });
-          view.redraw();
+          $view.redraw();
         });
 
         entry.on('mouseout', function (e) {
@@ -134,7 +142,7 @@ export class SidebarTabInitializer extends Context {
               node.dirty = true;
             }
           });
-          view.redraw();
+          $view.redraw();
         });
       });
       category.open(true);
@@ -147,8 +155,8 @@ export class SidebarTabInitializer extends Context {
       globalCategories,
       flowCategories,
       subflowCategories,
-      RED,
-      nodes
+
+      $nodes
   } = this
 
     var validList = {
@@ -157,11 +165,11 @@ export class SidebarTabInitializer extends Context {
 
     this.sidebarTab.getOrCreateCategory("global", globalCategories);
 
-    nodes.eachWorkspace((ws) => {
+    $nodes.eachWorkspace((ws) => {
       validList[ws.id.replace(/\./g, "-")] = true;
       this.sidebarTab.getOrCreateCategory(ws.id, flowCategories, ws.label);
     })
-    nodes.eachSubflow((sf) => {
+    $nodes.eachSubflow((sf) => {
       validList[sf.id.replace(/\./g, "-")] = true;
       this.sidebarTab.getOrCreateCategory(sf.id, subflowCategories, sf.name);
     })
@@ -174,7 +182,7 @@ export class SidebarTabInitializer extends Context {
     })
     var globalConfigNodes = [];
     var configList = {};
-    nodes.eachConfig((cn) => {
+    $nodes.eachConfig((cn) => {
       if (cn.z) { //} == RED.workspaces.active()) {
         configList[cn.z.replace(/\./g, "-")] = configList[cn.z.replace(/\./g, "-")] || [];
         configList[cn.z.replace(/\./g, "-")].push(cn);

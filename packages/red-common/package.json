@@ -1,0 +1,45 @@
+{
+  "name": "@tecla5/red-common-widgets",
+  "productName": "red-common-widgets",
+  "private": true,
+  "description": "node-red common-widgets service and widget",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "dist",
+  "scripts": {
+    "test": "jest --no-cache --config ./jest.config.js",
+    "test:watch": "jest --watch",
+    "lerna:bootstrap": "lerna bootstrap --scope @tecla5/red-common-widgets",
+    "lerna:update": "npm run lerna:clean && npm run lerna:bootstrap",
+    "lerna:update:win": "npm run lerna:clean:win && npm run lerna:bootstrap",
+    "lerna:clean": "rm -f package.json.lock 2> /dev/null && echo y | lerna clean --scope @tecla5/red-common-widgets",
+    "lerna:clean:win": "npm run clean:lock | lerna clean --scope @tecla5/red-common-widgets",
+    "clean:win": "npm run clean:lock | clean:modules",
+    "clean:lock": "del /s /f /q package-lock.json.lock",
+    "clean:modules": "del /s /f /q node_modules/*",
+    "link:shared": "npm link @tecla5/red-widgets"
+  },
+  "dependencies": {
+    "@tecla5/red-interfaces": "^0.0.1",
+    "@tecla5/red-base": "^0.0.1",
+    "@tecla5/red-runtime": "^0.0.1",
+    "@tecla5/red-api": "^0.0.1",
+    "jquery": "^3.3.1",
+    "reflect-metadata": "^0.1.12"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.2.16",
+    "@types/jest": "^21.1.9",
+    "browser-env": "^2.0.31",
+    "cross-env": "^5.0.0",
+    "enzyme": "^3.1.1",
+    "enzyme-to-json": "^3.2.2",
+    "faker": "^4.1.0",
+    "jest": "^22.1.4",
+    "jest-cli": "^22.1.4",
+    "jest-jquery-matchers": "^2.0.0",
+    "puppeteer": "^0.13.0",
+    "ts-jest": "^22.0.1",
+    "typescript": "^2.6.2"
+  }
+}

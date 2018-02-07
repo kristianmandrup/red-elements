@@ -35,20 +35,33 @@ export interface IUser {
   login(options?: any): Promise<any>
 }
 
+
+export interface ITabs {
+  create(config: any)
+}
+
+
+export interface IPanels {
+  create(config: any)
+}
+
 export interface IWorkspaces {
   refresh()
   active: string
   add(ws: IWorkspace, x?: boolean)
   remove(id: string)
+  show(id: string)
 }
 
 
 export interface INodeEditor {
   validateNode(node)
+  createEditor(config: any)
 }
 
 export interface ICanvas {
   redraw(x?: true)
+  state(state?: any)
 }
 
 export interface ISidebar {

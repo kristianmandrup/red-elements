@@ -12,13 +12,10 @@ import {
   $,
   Tabs,
   container,
-  delegateTarget
-} from '../_base'
-
-import {
+  delegateTarget,
   lazyInject,
   $TYPES
-} from '../../../../_container'
+} from '../_base'
 
 import {
   ISidebar,
@@ -28,16 +25,22 @@ import {
   IWorkspaces,
   INodes
 } from '../../../../_interfaces'
+import { II18n } from '../../../../../../red-runtime/src/i18n/interface';
+import { IStack } from '../../../../../../red-runtime/src/history/index';
 
 const TYPES = $TYPES.all
 
 @delegateTarget()
 export class TabInfoInitializer extends Context {
-  @lazyInject(TYPES.actions) actions: IActions
-  @lazyInject(TYPES.events) events: IEvents
-  @lazyInject(TYPES.workspaces) workspaces: IWorkspaces
-  @lazyInject(TYPES.nodes) nodes: INodes
+  @lazyInject(TYPES.actions) $actions: IActions
+  @lazyInject(TYPES.events) $events: IEvents
+  @lazyInject(TYPES.workspaces) $workspaces: IWorkspaces
+  @lazyInject(TYPES.nodes) $nodes: INodes
+  @lazyInject(TYPES.sidebar.main) $sidebar: ISidebar
+  @lazyInject(TYPES.notifications) $notifications: INotifications
 
+  @lazyInject(TYPES.i18n) $i18n: II18n
+  @lazyInject(TYPES.common.stack) $stack: IUiStack
 
   constructor(public sidebarTabInfo: SidebarTabInfo) {
     super()
@@ -45,12 +48,12 @@ export class TabInfoInitializer extends Context {
 
   async init(i18n) {
     const {
-      RED,
-    } = this.sidebarTabInfo
-
-    const {
-      actions,
-      events
+      $actions,
+      $events,
+      $sidebar,
+      $notifications,
+      $i18n,
+      $stack
      } = this
 
     let {
@@ -99,30 +102,21 @@ export class TabInfoInitializer extends Context {
     content = document.createElement("div");
     content.className = "sidebar-node-info"
 
-    const required = ['actions', 'sidebar', 'events']
-    required.map(name => {
-      if (!RED[name]) {
-        this.handleError(`init: RED missing ${name}`, {
-          RED
-        })
-      }
-    })
-
-    actions.add("core:show-info-tab", show);
+    $actions.add("core:show-info-tab", show);
 
     const stackContainer = this.buildStackContainer(content)
 
     // create stack
-    sections = RED.stack = createStack({
+    sections = $stack.createStack({
       container: stackContainer
     }).hide();
 
     nodeSection = sections.add({
-      title: RED._("sidebar.info.node"),
+      title: $i18n.t("sidebar.info.node"),
       collapsible: false
     });
     infoSection = sections.add({
-      title: RED._("sidebar.info.information"),
+      title: $i18n.t("sidebar.info.information"),
       collapsible: false
     });
     infoSection.content.css("padding", "6px");
@@ -141,14 +135,14 @@ export class TabInfoInitializer extends Context {
     var tipClose = this.addTipClose(tipButtons)
     tipClose.click(function (e) {
       e.preventDefault();
-      actions.invoke("core:toggle-show-tips");
-      RED.notify(RED._("sidebar.info.showTips"));
+      $actions.invoke("core:toggle-show-tips");
+      $notifications.notify($i18n.t("sidebar.info.showTips"));
     });
 
-    sidebar.addTab({
+    $sidebar.addTab({
       id: "info",
-      label: RED._("sidebar.info.label"),
-      name: RED._("sidebar.info.name"),
+      label: $i18n.t("sidebar.info.label"),
+      name: $i18n.t("sidebar.info.name"),
       content: content,
       enableOnEdit: true
     });
@@ -158,7 +152,23 @@ export class TabInfoInitializer extends Context {
       tips.stop();
     }
 
-    events.on("view:selection-changed", function (selection) {
+    this.configEvents()
+  }
+
+  // protected
+
+  protected configEvents() {
+    const { $events } = this
+    const {
+      refresh,
+      clear
+    } = this.rebind([
+        'refresh',
+        'clear'
+      ], this.sidebarTabInfo)
+
+
+    $events.on("view:selection-changed", function (selection) {
       const { workspaces, nodes } = this
 
       if (selection.nodes) {
@@ -188,7 +198,6 @@ export class TabInfoInitializer extends Context {
     })
   }
 
-  // protected
 
   protected buildStackContainer(content) {
     return $("<div>", {

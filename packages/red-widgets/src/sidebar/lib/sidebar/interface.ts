@@ -2,9 +2,11 @@ import {
   IActions,
   ITabs
 } from '../../../_interfaces'
+import { ISidebarTabInfo } from './tab-info/index';
 
 export interface ISidebar {
   tabs: ITabs
+  info: ISidebarTabInfo
   /**
    * Create new Tabs
    * @param options

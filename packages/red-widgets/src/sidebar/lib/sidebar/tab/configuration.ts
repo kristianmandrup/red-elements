@@ -1,14 +1,11 @@
 import { Sidebar } from '../'
 import {
-  SidebarTab
+  ISidebarTab
 } from '.'
 
 import {
-  I18n,
   Context,
   $,
-  Tabs,
-  container,
   delegateTarget
 } from '../_base'
 
@@ -16,7 +13,7 @@ import {
 export class SidebarTabConfiguration extends Context {
   sidebar_tabs: any
 
-  constructor(public sidebarTab: SidebarTab) {
+  constructor(public sidebarTab: ISidebarTab) {
     super()
   }
 
@@ -25,15 +22,15 @@ export class SidebarTabConfiguration extends Context {
   }
 
   configure() {
-    const { RED } = this
+    const {
+    } = this
     let {
       toolbar,
       globalCategories,
       flowCategories,
       subflowCategories,
       showUnusedOnly,
-      categories,
-      i18n
+      categories
     } = this.sidebarTab
     const content = document.createElement("div");
     content.className = "sidebar-node-config";

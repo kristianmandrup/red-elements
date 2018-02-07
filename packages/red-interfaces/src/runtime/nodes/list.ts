@@ -274,5 +274,5 @@ export interface INodes {
    * Return (or set) Nodes dirty state
    * @param d { boolean } set dirty state
    */
-  dirty(d: boolean): INodes | boolean
+  dirty(d?: boolean): INodes | boolean
 }

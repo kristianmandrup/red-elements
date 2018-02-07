@@ -12,14 +12,10 @@ import {
   Context,
   $,
   Tabs,
-  container,
-  delegateTarget
-} from '../_base'
-
-import {
+  delegateTarget,
   lazyInject,
   $TYPES
-} from '../../../../_container'
+} from '../_base'
 
 import {
   ISidebar,
@@ -30,13 +26,11 @@ const TYPES = $TYPES.all
 
 @delegateTarget()
 export class SidebarTabInitializer extends Context {
-  @lazyInject(TYPES.sidebar) sidebar: ISidebar
+  @lazyInject(TYPES.sidebar.main) sidebar: ISidebar
   @lazyInject(TYPES.actions) actions: IActions
 
-  
   constructor(public sidebarTab: SidebarTab) {
     super()
-
   }
 
   public content: HTMLElement;

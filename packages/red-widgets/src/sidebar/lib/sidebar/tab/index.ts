@@ -17,9 +17,10 @@ import {
   Context,
   $,
   delegator,
-  container,
   I18n,
-  JQElem
+  JQElem,
+  lazyInject,
+  $TYPES
 } from '../_base'
 
 import { SidebarTabInitializer } from './config-nodelist-manager'
@@ -38,26 +39,21 @@ export interface ISidebarTab {
 }
 
 import {
-  lazyInject,
-  $TYPES
-} from '../../../../_container'
-
-import {
   ISidebar
 } from '../../../../_interfaces'
 
 const TYPES = $TYPES.all
 
 @delegator({
-  container,
   map: {
     initializer: SidebarTabInitializer,
     configuration: SidebarTabConfiguration
   }
 })
 export class SidebarTab extends Context {
-  @lazyInject(TYPES.sidebar) sidebar: ISidebar
+  @lazyInject(TYPES.sidebar.main) $sidebar: ISidebar
 
+  public sidebar: ISidebar
   public content: HTMLElement
   public toolbar: JQElem
   public globalCategories: JQElem

@@ -64,6 +64,7 @@ export class Sidebar extends Context {
   knownTabs: any = {}
   tabs: any
   sidebar_tabs: any
+  info: ISidebarTabInfo
 
   configuration: SidebarConfiguration = new SidebarConfiguration(this)
 

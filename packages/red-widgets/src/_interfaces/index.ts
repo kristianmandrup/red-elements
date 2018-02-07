@@ -111,7 +111,8 @@ export interface IEditor {
 }
 
 export interface IState {
-  IMPORT_DRAGGING
+  IMPORT_DRAGGING: boolean
+  EDITING: boolean
 }
 
 export interface IView {
@@ -164,7 +165,7 @@ export interface IButton extends JQElem {
   button: () => any
 }
 export interface IDialogElem extends JQElem {
-  dialog: (name: string) => IDialog
+  dialog: (config: any) => IDialog
 }
 
 export {

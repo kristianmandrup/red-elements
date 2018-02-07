@@ -12,7 +12,9 @@ import {
   $,
   Tabs,
   container,
-  delegateTarget
+  delegateTarget,
+  lazyInject,
+  $TYPES
 } from '../_base'
 
 @delegateTarget()
@@ -23,7 +25,6 @@ export class TabInfoRefresher extends Context {
 
   refresh(node?: INode) {
     const {
-      RED,
       rebind,
       sidebarTabInfo
     } = this
@@ -52,23 +53,23 @@ export class TabInfoRefresher extends Context {
     var subflowNode;
     if (node.type === "tab") {
 
-      nodeSection.title.html(RED._("sidebar.info.flow"));
-      propRow = $('<tr class="node-info-node-row"><td>' + RED._("sidebar.info.tabName") + '</td><td></td></tr>').appendTo(tableBody);
+      nodeSection.title.html($i18n.t("sidebar.info.flow"));
+      propRow = $('<tr class="node-info-node-row"><td>' + $i18n.t("sidebar.info.tabName") + '</td><td></td></tr>').appendTo(tableBody);
       $(propRow.children()[1]).html('&nbsp;' + (node.label || ""))
-      propRow = $('<tr class="node-info-node-row"><td>' + RED._("sidebar.info.id") + "</td><td></td></tr>").appendTo(tableBody);
-      RED.utils.createObjectElement(node.id).appendTo(propRow.children()[1]);
-      propRow = $('<tr class="node-info-node-row"><td>' + RED._("sidebar.info.status") + '</td><td></td></tr>').appendTo(tableBody);
-      $(propRow.children()[1]).html((!!!node.disabled) ? RED._("sidebar.info.enabled") : RED._("sidebar.info.disabled"))
+      propRow = $('<tr class="node-info-node-row"><td>' + $i18n.t("sidebar.info.id") + "</td><td></td></tr>").appendTo(tableBody);
+      $utils.createObjectElement(node.id).appendTo(propRow.children()[1]);
+      propRow = $('<tr class="node-info-node-row"><td>' + $i18n.t("sidebar.info.status") + '</td><td></td></tr>').appendTo(tableBody);
+      $(propRow.children()[1]).html((!!!node.disabled) ? $i18n.t("sidebar.info.enabled") : $i18n.t("sidebar.info.disabled"))
     } else {
 
-      nodeSection.title.html(RED._("sidebar.info.node"));
+      nodeSection.title.html($i18n.t("sidebar.info.node"));
 
       if (node.type !== "subflow" && node.name) {
-        $('<tr class="node-info-node-row"><td>' + RED._("common.label.name") + '</td><td>&nbsp;<span class="bidiAware" dir="' + RED.text.bidi.resolveBaseTextDir(node.name) + '">' + node.name + '</span></td></tr>').appendTo(tableBody);
+        $('<tr class="node-info-node-row"><td>' + $i18n.t("common.label.name") + '</td><td>&nbsp;<span class="bidiAware" dir="' + $text.bidi.resolveBaseTextDir(node.name) + '">' + node.name + '</span></td></tr>').appendTo(tableBody);
       }
-      $('<tr class="node-info-node-row"><td>' + RED._("sidebar.info.type") + "</td><td>&nbsp;" + node.type + "</td></tr>").appendTo(tableBody);
-      propRow = $('<tr class="node-info-node-row"><td>' + RED._("sidebar.info.id") + "</td><td></td></tr>").appendTo(tableBody);
-      RED.utils.createObjectElement(node.id).appendTo(propRow.children()[1]);
+      $('<tr class="node-info-node-row"><td>' + $i18n.t("sidebar.info.type") + "</td><td>&nbsp;" + node.type + "</td></tr>").appendTo(tableBody);
+      propRow = $('<tr class="node-info-node-row"><td>' + $i18n.t("sidebar.info.id") + "</td><td></td></tr>").appendTo(tableBody);
+      $utils.createObjectElement(node.id).appendTo(propRow.children()[1]);
 
       var m = /^subflow(:(.+))?$/.exec(node.type);
 
@@ -83,11 +84,11 @@ export class TabInfoRefresher extends Context {
               count++;
               propRow = $('<tr class="node-info-property-row' + (expandedSections.property ? "" : " hide") + '"><td>' + n + "</td><td></td></tr>").appendTo(tableBody);
               if (defaults[n].type) {
-                var configNode = RED.nodes.node(val);
+                var configNode = $nodes.node(val);
                 if (!configNode) {
-                  RED.utils.createObjectElement(undefined).appendTo(propRow.children()[1]);
+                  $utils.createObjectElement(undefined).appendTo(propRow.children()[1]);
                 } else {
-                  var configLabel = RED.utils.getNodeLabel(configNode, val);
+                  var configLabel = $utils.getNodeLabel(configNode, val);
                   var container = propRow.children()[1];
 
                   var div = $('<span>', {
@@ -97,7 +98,7 @@ export class TabInfoRefresher extends Context {
                     class: "palette_node palette_node_small"
                   }).appendTo(div);
                   var colour = configNode._def.color;
-                  var icon_url = RED.utils.getNodeIcon(configNode._def);
+                  var icon_url = $utils.getNodeIcon(configNode._def);
                   nodeDiv.css({
                     'backgroundColor': colour,
                     "cursor": "pointer"
@@ -115,39 +116,39 @@ export class TabInfoRefresher extends Context {
                   }).html(configLabel).appendTo(container);
 
                   nodeDiv.on('dblclick', function () {
-                    RED.editor.editConfig("", configNode.type, configNode.id);
+                    $editor.editConfig("", configNode.type, configNode.id);
                   })
 
                 }
               } else {
-                RED.utils.createObjectElement(val).appendTo(propRow.children()[1]);
+                $utils.createObjectElement(val).appendTo(propRow.children()[1]);
               }
             }
           }
           if (count > 0) {
-            $('<tr class="node-info-property-expand blank"><td colspan="2"><a href="#" class=" node-info-property-header' + (expandedSections.property ? " expanded" : "") + '"><span class="node-info-property-show-more">' + RED._("sidebar.info.showMore") + '</span><span class="node-info-property-show-less">' + RED._("sidebar.info.showLess") + '</span> <i class="fa fa-caret-down"></i></a></td></tr>').appendTo(tableBody);
+            $('<tr class="node-info-property-expand blank"><td colspan="2"><a href="#" class=" node-info-property-header' + (expandedSections.property ? " expanded" : "") + '"><span class="node-info-property-show-more">' + $i18n.t("sidebar.info.showMore") + '</span><span class="node-info-property-show-less">' + $i18n.t("sidebar.info.showLess") + '</span> <i class="fa fa-caret-down"></i></a></td></tr>').appendTo(tableBody);
           }
         }
       }
 
       if (m) {
         if (m[2]) {
-          subflowNode = RED.nodes.subflow(m[2]);
+          subflowNode = $nodes.subflow(m[2]);
         } else {
           subflowNode = node;
         }
 
-        $('<tr class="blank"><th colspan="2">' + RED._("sidebar.info.subflow") + '</th></tr>').appendTo(tableBody);
+        $('<tr class="blank"><th colspan="2">' + $i18n.t("sidebar.info.subflow") + '</th></tr>').appendTo(tableBody);
 
         var userCount = 0;
         var subflowType = "subflow:" + subflowNode.id;
-        RED.nodes.eachNode(function (n) {
+        $nodes.eachNode(function (n) {
           if (n.type === subflowType) {
             userCount++;
           }
         });
-        $('<tr class="node-info-subflow-row"><td>' + RED._("common.label.name") + '</td><td><span class="bidiAware" dir=\"' + RED.text.bidi.resolveBaseTextDir(subflowNode.name) + '">' + subflowNode.name + '</span></td></tr>').appendTo(tableBody);
-        $('<tr class="node-info-subflow-row"><td>' + RED._("sidebar.info.instances") + "</td><td>" + userCount + '</td></tr>').appendTo(tableBody);
+        $('<tr class="node-info-subflow-row"><td>' + $i18n.t("common.label.name") + '</td><td><span class="bidiAware" dir=\"' + $text.bidi.resolveBaseTextDir(subflowNode.name) + '">' + subflowNode.name + '</span></td></tr>').appendTo(tableBody);
+        $('<tr class="node-info-subflow-row"><td>' + $i18n.t("sidebar.info.instances") + "</td><td>" + userCount + '</td></tr>').appendTo(tableBody);
       }
     }
     $(table).appendTo(nodeSection.content);

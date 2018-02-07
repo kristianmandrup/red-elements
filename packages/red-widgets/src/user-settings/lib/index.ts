@@ -53,25 +53,53 @@ export class UserSettings extends Context implements IUserSettings {
   @lazyInject(TYPES.settings) $settings: ISettings
   @lazyInject(TYPES.actions) $actions: IActions
 
-
   constructor() {
     super()
     this.configure()
   }
 
-  add(id: string, value: any) {
+  show(name: string) {
+    this.handleError('show(name) not yet implemented')
+  }
+
+  // add(id: string, value?: any) {
+  /**
+   * Add a setting?
+   * @param obj
+   *
+   *
+   * $userSettings.add({
+   *   id: 'keyboard',
+   *   title: RED._('keyboard.keyboard'),
+   *   get: getSettingsPane,
+   *   focus: function () {
+   *      setTimeout(function () {
+   *        $('#user-settings-tab-keyboard-filter').focus();
+   *      }, 200);
+   *    }
+   * })
+   */
+  add(obj?: any) {
     const {
       $settings
     } = this
 
-    $settings.set(id, value)
+    $settings.set(obj.id, obj)
   }
 
+  /**
+   * configure
+   */
   configure() {
     this.configuration.configure()
     return this
   }
 
+  /**
+   * set Selected
+   * @param id
+   * @param value
+   */
   setSelected(id, value) {
     const {
       allSettings,
