@@ -19,6 +19,17 @@ export interface IWorkspaceEditDialog {
 
 @delegateTarget()
 export class WorkspaceEditDialog extends Context implements IWorkspaceEditDialog {
+  $nodes
+  $view
+  $state
+  $i18n
+  $tray
+  $history
+  $sidebar
+  $editor
+  $text
+
+
   constructor(public workspaces: Workspaces) {
     super()
   }
@@ -28,8 +39,20 @@ export class WorkspaceEditDialog extends Context implements IWorkspaceEditDialog
    * @param id
    */
   showRenameWorkspaceDialog(id: string | number) {
-    let {
-      RED,
+    const {
+      $view,
+      $state,
+      $i18n,
+      $tray,
+      $history,
+      $nodes,
+      $sidebar,
+      $editor,
+      $text
+
+    } = this
+
+    const {
       workspace_tabs,
     } = this.workspaces
 
@@ -39,34 +62,34 @@ export class WorkspaceEditDialog extends Context implements IWorkspaceEditDialog
         'deleteWorkspace'
       ])
 
-    var workspace = RED.nodes.workspace(id);
+    var workspace = $nodes.workspace(id);
 
-    RED.view.state(RED.state.EDITING);
+    $view.state($state.EDITING);
     var tabflowEditor;
     var trayOptions = {
-      title: RED._("workspace.editFlow", {
+      title: $i18n.t("workspace.editFlow", {
         name: workspace.label
       }),
       buttons: [{
         id: "node-dialog-delete",
         class: 'leftButton' + ((workspace_tabs.count() == 1) ? " disabled" : ""),
-        text: RED._("common.label.delete"), //'<i class="fa fa-trash"></i>',
+        text: $i18n.t("common.label.delete"), //'<i class="fa fa-trash"></i>',
         click: function () {
           deleteWorkspace(workspace);
-          RED.tray.close();
+          $tray.close();
         }
       },
       {
         id: "node-dialog-cancel",
-        text: RED._("common.label.cancel"),
+        text: $i18n.t("common.label.cancel"),
         click: function () {
-          RED.tray.close();
+          $tray.close();
         }
       },
       {
         id: "node-dialog-ok",
         class: "primary",
-        text: RED._("common.label.done"),
+        text: $i18n.t("common.label.done"),
         click: () => {
           var label = this.nameInput.val();
           var changed = false;
@@ -102,18 +125,18 @@ export class WorkspaceEditDialog extends Context implements IWorkspaceEditDialog
               t: "edit",
               changes: changes,
               node: workspace,
-              dirty: RED.nodes.dirty()
+              dirty: $nodes.dirty()
             }
             workspace.changed = true;
-            RED.history.push(historyEvent);
-            RED.nodes.dirty(true);
-            RED.sidebar.config.refresh();
-            var selection = RED.view.selection();
+            $history.push(historyEvent);
+            $nodes.dirty(true);
+            $sidebar.config.refresh();
+            var selection = $view.selection();
             if (!selection.nodes && !selection.links) {
-              RED.sidebar.info.refresh(workspace);
+              $sidebar.info.refresh(workspace);
             }
           }
-          RED.tray.close();
+          $tray.close();
         }
       }
       ],
@@ -134,7 +157,7 @@ export class WorkspaceEditDialog extends Context implements IWorkspaceEditDialog
         var trayBody = tray.find('.editor-tray-body');
         const dialogForm = this.buildDialogForm(trayBody)
 
-        tabflowEditor = RED.editor.createEditor({
+        tabflowEditor = $editor.createEditor({
           id: 'node-input-info',
           mode: 'ace/mode/markdown',
           value: ""
@@ -155,13 +178,13 @@ export class WorkspaceEditDialog extends Context implements IWorkspaceEditDialog
           $("#node-input-disabled").prop("checked", workspace.disabled);
           if (workspace.disabled) {
             dialogForm.find("#node-input-disabled-btn i").removeClass('fa-toggle-on').addClass('fa-toggle-off');
-            $("#node-input-disabled-label").html(RED._("editor:workspace.disabled"));
+            $("#node-input-disabled-label").html($i18n.t("editor:workspace.disabled"));
           } else {
-            $("#node-input-disabled-label").html(RED._("editor:workspace.enabled"));
+            $("#node-input-disabled-label").html($i18n.t("editor:workspace.enabled"));
           }
         } else {
           workspace.disabled = false;
-          $("#node-input-disabled-label").html(RED._("editor:workspace.enabled"));
+          $("#node-input-disabled-label").html($i18n.t("editor:workspace.enabled"));
         }
 
         $('<input type="text" style="display: none;" />').prependTo(dialogForm);
@@ -169,41 +192,41 @@ export class WorkspaceEditDialog extends Context implements IWorkspaceEditDialog
           e.preventDefault();
         });
         $("#node-input-name").val(workspace.label);
-        RED.text.bidi.prepareInput($("#node-input-name"));
+        $text.bidi.prepareInput($("#node-input-name"));
         tabflowEditor.getSession().setValue(workspace.info || "", -1);
         dialogForm.i18n();
       },
       close: () => {
-        if (RED.view.state() != RED.state.IMPORT_DRAGGING) {
-          RED.view.state(RED.state.DEFAULT);
+        if ($view.state() != $state.IMPORT_DRAGGING) {
+          $view.state($state.DEFAULT);
         }
-        RED.sidebar.info.refresh(workspace);
+        $sidebar.info.refresh(workspace);
         tabflowEditor.destroy();
       }
     }
-    RED.tray.show(trayOptions);
+    $tray.show(trayOptions);
     return this
   }
 
   // protected
   protected toggleOn(i) {
     const {
-      RED
+      $i18n
     } = this
     i.addClass('fa-toggle-on');
     i.removeClass('fa-toggle-off');
     $("#node-input-disabled").prop("checked", false);
-    $("#node-input-disabled-label").html(RED._("editor:workspace.enabled"));
+    $("#node-input-disabled-label").html($i18n.t("editor:workspace.enabled"));
   }
 
   protected toggleOff(i) {
     const {
-      RED
+      $i18n
     } = this
     i.addClass('fa-toggle-off');
     i.removeClass('fa-toggle-on');
     $("#node-input-disabled").prop("checked", true);
-    $("#node-input-disabled-label").html(RED._("editor:workspace.disabled"));
+    $("#node-input-disabled-label").html($i18n.t("editor:workspace.disabled"));
   }
 
 
